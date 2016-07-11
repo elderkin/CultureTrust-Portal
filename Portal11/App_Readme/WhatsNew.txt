@@ -1,0 +1,24 @@
+﻿Version 0.4
+
+Coordinators can now be System Administrators. The "Admin" menu item is now visible in their page header.
+Login: Coordinators are asked to pick the Project on which to work. If the Coordinator has work waiting for them in a Project, that Project now appears in bold.
+Login: Project Directors who are assigned to multiple Projects receive the same treatment - if they have work waiting on a Project, that Project now appears in bold.
+Staff Dashboard: There is a new "Project Name" filter at the top of the page. If a Project is selected, only Requests for that Project are displayed.
+Assign Person: If the Persons being assigned are Contractors, their W-9 status is displayed.
+
+Version 0.3
+
+Entities and Vendors are now a single table - Entity. The Administrator's Assign Entitys to Project function operates on Entities and Vendors.
+Entities and Persons can now have supporting documents.
+Persons have a new field: W-9 present. It is edited via the Administrator's Edit Person page.
+Deposit Requests and Expense Requests: In the drop down lists of Entities and Persons, there is now an option to request creation of a new Entity or Person.
+
+Version 0.2
+
+All Request Types: All fields of a Request, including Description, must be non-blank.
+Approval Requests now come in five types. Project Staff can now select the Review Type (Express or Full). CW Staff can change the Review Type while approving the Request.
+Project Dashboard: The buttons have been re-ordered.
+Project Dashboard: Only a Coordinator can create a Deposit.
+Staff Dashboard: The grid for Approvals now contains a Review Type column (Express or Full).
+
+
