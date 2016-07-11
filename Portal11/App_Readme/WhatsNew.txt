@@ -1,4 +1,8 @@
-﻿Version 0.4
+﻿Version 0.5
+
+Source code is now controlled by GitHub.
+
+Version 0.4
 
 Coordinators can now be System Administrators. The "Admin" menu item is now visible in their page header.
 Login: Coordinators are asked to pick the Project on which to work. If the Coordinator has work waiting for them in a Project, that Project now appears in bold.
