@@ -1,6 +1,9 @@
 ﻿Version 0.5
 
 Source code is now controlled by GitHub.
+The new role "Auditor" is now defined. This is a CW Staff role - they see the Staff Dashboard - that has read-only access to "Approved" requests.
+Project Dashboard: The "Request Status" and "Since" filters have floated to the top of the page and affect all Request types.
+Staff Dashboard: The "Next Reviewer" filter has floated to the top of the page where it is joined by the new "Date Range" filter. The "Request Type" filters stay where they were.
 
 Version 0.4
 

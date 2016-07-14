@@ -86,10 +86,30 @@ namespace Portal11.Proj
             return;
         }
 
-// Start of APPROVAL section
+        // The user changed one of the Filter selections check boxes. Recreate the grid views with new Filter criteria.
+
+        protected void ckRFilters_Changed(object sender, EventArgs e)
+        {
+            AllAppView.PageIndex = 0;                                   // Go back to the first page
+            LoadAllApps();                                              // Reload the GridView using new criteria
+            ResetAppContext();                                          // No selected row, no live buttons
+
+            AllDepView.PageIndex = 0;                                   // Go back to first page
+            LoadAllDeps();                                              // Reload the GridView using new criteria
+            ResetDepContext();                                          // No selected row, no live buttons
+
+            AllExpView.PageIndex = 0;                                   // Go back to first page
+            LoadAllExps();                                              // Reload the GridView using new criteria
+            ResetExpContext();                                          // No selected row, no live buttons
+
+            SaveCheckboxes();                                           // Save current checkbox settings in a cookie
+            return;
+        }
+
+        // Start of APPROVAL section
 
         // Collapse/Expand the panels of Approvals
-        
+
         protected void btnAppCollapse_Click(object sender, EventArgs e)
         {
             CollapseAppPanel();
@@ -121,22 +141,11 @@ namespace Portal11.Proj
             return;
         }
 
-        // The user clicked or unclicked one of the check boxes. Recreate the grid view with new Filter criteria.
-
-        protected void ckAFilters_CheckedChanged(object sender, EventArgs e)
-        {
-            AllAppView.PageIndex = 0;                                       // Go back to the first page
-            LoadAllApps();                                                  // Reload the GridView using new criteria
-            ResetAppContext();                                              // No selected row, no live buttons
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
-
         // The user changed selection in the Since drop down list. Recreate the grid view with new Since criteria.
 
         protected void ddlASince_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ckAFilters_CheckedChanged(sender, e);                           // Exactly the same action as Filter checkbox change
+            ckRFilters_Changed(sender, e);                           // Exactly the same action as Filter checkbox change
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             return;
         }
@@ -310,7 +319,7 @@ namespace Portal11.Proj
                     LogError.LogDatabaseError(ex, "ProjectDashboard",
                         "Error deleting App, SupportingDoc and AppHistory rows or deleting Supporting Document"); // Fatal error
                 }
-                ckAFilters_CheckedChanged(sender, e);                   // Update the grid view and buttons for display
+                ckRFilters_Changed(sender, e);                   // Update the grid view and buttons for display
                 litSuccessMessage.Text = "Approval deleted";            // Report success to our user
             }
         }
@@ -373,10 +382,10 @@ namespace Portal11.Proj
                 // Process check boxes for Deposit State. Combining checks is a little tricky because some of the checks overlap.
 
                 int filters = 0;
-                if (ckAAwaitingProjectStaff.Checked) filters = filters | 1;
-                if (ckAAwaitingCWStaff.Checked) filters = filters | 2;
-                if (ckAApproved.Checked) filters = filters | 4;
-                if (ckAReturned.Checked) filters = filters | 8;
+                if (ckRAwaitingProjectStaff.Checked) filters = filters | 1; // Implies Approved and Returned
+                if (ckRAwaitingCWStaff.Checked) filters = filters | 2;
+                if (ckRApproved.Checked) filters = filters | 4;
+                if (ckRReturned.Checked) filters = filters | 8;
 
                 switch (filters)
                 {
@@ -385,99 +394,82 @@ namespace Portal11.Proj
                             pred = pred.And(r => r.CurrentState == AppState.ReservedForFutureUse); // Doesn't ever match
                             break;
                         }
-                    case 1:
+                    case 1:                                             // Awaiting Project Staff
+                    case 5:                                             // Awaiting Project Staff and Approved
+                    case 9:                                             // Awaiting Project Staff and Returned
+                    case 13:                                            // Awaiting Project Staff, Approved and Returned
                         {
                             pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByCoordinator
                                               || r.CurrentState == AppState.UnsubmittedByProjectDirector
                                               || r.CurrentState == AppState.UnsubmittedByProjectStaff
                                               || r.CurrentState == AppState.AwaitingProjectDirector
-                                              || r.CurrentState == AppState.Returned);
-                            break;
-                        }
-                    case 2:
-                    case 10:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
-                                              || r.CurrentState == AppState.AwaitingFinanceDirector
-                                              || r.CurrentState == AppState.AwaitingCoordinator
-                                              || r.CurrentState == AppState.Approved);
-                            break;
-                        }
-                    case 3:
-                    case 11:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByCoordinator
-                                              || r.CurrentState == AppState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == AppState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == AppState.AwaitingProjectDirector
-                                              || r.CurrentState == AppState.AwaitingTrustDirector
-                                              || r.CurrentState == AppState.AwaitingFinanceDirector
-                                              || r.CurrentState == AppState.AwaitingCoordinator
                                               || r.CurrentState == AppState.Approved
                                               || r.CurrentState == AppState.Returned);
                             break;
                         }
-                    case 4:
+                    case 2:                                             // Awaiting CW Staff
+                        {
+                            pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
+                                              || r.CurrentState == AppState.AwaitingFinanceDirector
+                                              || r.CurrentState == AppState.AwaitingTrustExecutive
+                                              || r.CurrentState == AppState.AwaitingCoordinator);
+                            break;
+                        }
+                    case 4:                                             // Just Approved
                         {
                             pred = pred.And(r => r.CurrentState == AppState.Approved);
                             break;
                         }
-                    case 5:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByCoordinator
-                                              || r.CurrentState == AppState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == AppState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == AppState.AwaitingProjectDirector
-                                              || r.CurrentState == AppState.Approved);
-                            break;
-                        }
-                    case 6:
-                    case 14:
+                    case 6:                                             // Awaiting CW Staff and Approved
                         {
                             pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
                                               || r.CurrentState == AppState.AwaitingFinanceDirector
+                                              || r.CurrentState == AppState.AwaitingTrustExecutive
                                               || r.CurrentState == AppState.AwaitingCoordinator
-                                              || r.CurrentState == AppState.Approved
-                                              || r.CurrentState == AppState.Returned);
+                                              || r.CurrentState == AppState.Approved);
                             break;
                         }
-                    case 8:
+                    case 8:                                             // Just Returned
                         {
                             pred = pred.And(r => r.CurrentState == AppState.Returned);
                             break;
                         }
-                    case 9:
+                    case 10:                                            // Awaiting CW Staff and Returned
                         {
-                            pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByCoordinator
-                                              || r.CurrentState == AppState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == AppState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == AppState.AwaitingProjectDirector
+                            pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
+                                              || r.CurrentState == AppState.AwaitingFinanceDirector
+                                              || r.CurrentState == AppState.AwaitingTrustExecutive
+                                              || r.CurrentState == AppState.AwaitingCoordinator
                                               || r.CurrentState == AppState.Returned);
                             break;
                         }
-                    case 12:
+                    case 12:                                            // Approved and Returned
                         {
                             pred = pred.And(r => r.CurrentState == AppState.Approved
                                               || r.CurrentState == AppState.Returned);
                             break;
                         }
-                    case 13:
+                    case 14:                                            // Awaiting CW Staff, Approved and Returned
                         {
-                            pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByCoordinator
-                                              || r.CurrentState == AppState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == AppState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == AppState.AwaitingProjectDirector
+                            pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
+                                              || r.CurrentState == AppState.AwaitingFinanceDirector
+                                              || r.CurrentState == AppState.AwaitingTrustExecutive
+                                              || r.CurrentState == AppState.AwaitingCoordinator
                                               || r.CurrentState == AppState.Approved
                                               || r.CurrentState == AppState.Returned);
                             break;
                         }
-                    default:    // Includes case 7 and case 15 - all checked. Don't need a predicate to get all the rows
+                    case 3:                                             // Awaiting Project Staff, Awaiting CW Staff
+                    case 7:                                             // Awaiting Project Staff, Awaiting CW Staff and Approved
+                    case 11:                                            // Awaiting Project Staff, Awaiting CW Staff and Returned
+                    case 15:                                            // Awaiting Project Staff, Awaiting CW Staff, Approved and Returned 
+                    default:                                            // Don't need a predicate, just get all the rows
                         break;
                 }
 
                 // Process Since options
 
-                string since = ddlASince.SelectedValue;                 // Figure out which one was selected
+                string since = ddlRSince.SelectedValue;                 // Figure out which one was selected
                 if (since != "ProjectCreation")                         // If != a specific Since option was selected. Need predicate.
                 {
                     DateTime sinceDate = new DateTime();
@@ -578,21 +570,11 @@ namespace Portal11.Proj
 
         protected void ddlDSince_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ckDFilters_CheckedChanged(sender, e);                           // Exactly the same action as Filter checkbox change
+            ckRFilters_Changed(sender, e);                           // Exactly the same action as Filter checkbox change
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             return;
         }
 
-        // The user clicked or unclicked one of the check boxes. Recreate the grid view with new Filter criteria.
-
-        protected void ckDFilters_CheckedChanged(object sender, EventArgs e)
-        {
-            AllDepView.PageIndex = 0;                                       // Go back to the first page
-            LoadAllDeps();                                                  // Reload the GridView using new criteria
-            ResetDepContext();                                              // No selected row, no live buttons
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
 
         // Flip a page of the grid view control
 
@@ -720,9 +702,8 @@ namespace Portal11.Proj
                     LogError.LogDatabaseError(ex, "ProjectDashboard",
                         "Error deleting Deposit, SupportingDoc and DepHistory rows or deleting Supporting Document"); // Fatal error
                 }
-                ckDFilters_CheckedChanged(sender, e);                   // Update the grid view and buttons for display
+                ckRFilters_Changed(sender, e);                          // Update the grid view and buttons for display
                 litSuccessMessage.Text = "Deposit deleted";             // Report success to our user
-                //TODO: Update display?
             }
             return;
         }
@@ -784,10 +765,10 @@ namespace Portal11.Proj
                 // Process check boxes for Deposit State. Combining checks is a little tricky because some of the checks overlap.
 
                 int filters = 0;
-                if (ckDAwaitingProjectStaff.Checked) filters = filters | 1;
-                if (ckDAwaitingCWStaff.Checked) filters = filters | 2;
-                if (ckDDepositComplete.Checked) filters = filters | 4;
-                if (ckDReturned.Checked) filters = filters | 8;
+                if (ckRAwaitingProjectStaff.Checked) filters = filters | 1;
+                if (ckRAwaitingCWStaff.Checked) filters = filters | 2;
+                if (ckRApproved.Checked) filters = filters | 4;
+                if (ckRReturned.Checked) filters = filters | 8;
 
                 switch (filters)
                 {
@@ -796,73 +777,10 @@ namespace Portal11.Proj
                             pred = pred.And(r => r.CurrentState == DepState.ReservedForFutureUse); // Doesn't ever match
                             break;
                         }
-                    case 1:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByCoordinator
-                                              || r.CurrentState == DepState.AwaitingProjectDirector
-                                              || r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    case 2:
-                    case 10:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
-                                              || r.CurrentState == DepState.AwaitingFinanceDirector
-                                              || r.CurrentState == DepState.ApprovedReadyToDeposit);
-                            break;
-                        }
-                    case 3:
-                    case 11:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByCoordinator
-                                              || r.CurrentState == DepState.AwaitingProjectDirector
-                                              || r.CurrentState == DepState.AwaitingTrustDirector
-                                              || r.CurrentState == DepState.AwaitingFinanceDirector
-                                              || r.CurrentState == DepState.ApprovedReadyToDeposit
-                                              || r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    case 4:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.DepositComplete);
-                            break;
-                        }
-                    case 5:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByCoordinator
-                                              || r.CurrentState == DepState.AwaitingProjectDirector
-                                              || r.CurrentState == DepState.DepositComplete);
-                            break;
-                        }
-                    case 6:
-                    case 14:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
-                                              || r.CurrentState == DepState.AwaitingFinanceDirector
-                                              || r.CurrentState == DepState.ApprovedReadyToDeposit
-                                              || r.CurrentState == DepState.Returned
-                                              || r.CurrentState == DepState.DepositComplete);
-                            break;
-                        }
-                    case 8:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    case 9:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByCoordinator
-                                              || r.CurrentState == DepState.AwaitingProjectDirector
-                                              || r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    case 12:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.DepositComplete
-                                              || r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    case 13:
+                    case 1:                                         // Awaiting Project Staff (includes DepositComplete and Returned)
+                    case 5:                                         // Awaiting Project Staff and DepositComplete
+                    case 9:                                         // Awaiting Project Staff and Returned
+                    case 13:                                        // Awaiting Project Staff, DepositComplete and Returned
                         {
                             pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByCoordinator
                                               || r.CurrentState == DepState.AwaitingProjectDirector
@@ -870,13 +788,65 @@ namespace Portal11.Proj
                                               || r.CurrentState == DepState.Returned);
                             break;
                         }
-                    default:    // Includes case 7 and case 15 - all checked. Don't need a predicate to get all the rows
+                    case 2:                                         // Awaiting CW Staff
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
+                                              || r.CurrentState == DepState.AwaitingFinanceDirector
+                                              || r.CurrentState == DepState.ApprovedReadyToDeposit);
+                            break;
+                        }
+                    case 4:                                         // DepositComplete
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.DepositComplete);
+                            break;
+                        }
+                    case 6:                                         // Awaiting CW Staff and DepositComplete
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
+                                              || r.CurrentState == DepState.AwaitingFinanceDirector
+                                              || r.CurrentState == DepState.ApprovedReadyToDeposit
+                                              || r.CurrentState == DepState.DepositComplete);
+                            break;
+                        }
+                    case 8:                                         // Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.Returned);
+                            break;
+                        }
+                    case 10:                                        // Awaiting CW Staff and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
+                                              || r.CurrentState == DepState.AwaitingFinanceDirector
+                                              || r.CurrentState == DepState.ApprovedReadyToDeposit
+                                              || r.CurrentState == DepState.Returned);
+                            break;
+                        }
+                    case 12:                                        // DepositComplete and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.DepositComplete
+                                              || r.CurrentState == DepState.Returned);
+                            break;
+                        }
+                    case 14:                                        // Awaiting CW Staff, DepositComplete and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
+                                              || r.CurrentState == DepState.AwaitingFinanceDirector
+                                              || r.CurrentState == DepState.ApprovedReadyToDeposit
+                                              || r.CurrentState == DepState.DepositComplete
+                                              || r.CurrentState == DepState.Returned);
+                            break;
+                        }
+                    case 3:                                             // Awaiting Project Staff, Awaiting CW Staff
+                    case 7:                                             // Awaiting Project Staff, Awaiting CW Staff, Deposit Complete
+                    case 11:                                            // Awaiting Project Staff, Awaiting CW Staff, Returned
+                    case 15:                                            // Awaiting Project Staff, Awaiting CW Staff, Deposit Complete, Returned
+                    default:                                            // Don't need a predicate to get all the rows
                         break;
                 }
 
                 // Process Since options
 
-                string since = ddlDSince.SelectedValue;                 // Figure out which one was selected
+                string since = ddlRSince.SelectedValue;                 // Figure out which one was selected
                 if (since != "ProjectCreation")                         // If != a specific Since option was selected. Need predicate.
                 {
                     DateTime sinceDate = new DateTime();
@@ -1008,18 +978,7 @@ namespace Portal11.Proj
 
         protected void ddlESince_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ckEFilters_CheckedChanged(sender, e);                        // Exactly the same action as Filter checkbox change
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
-
-        // The user clicked or unclicked one of the check boxes. Recreate the grid view with new Filter criteria.
-
-        protected void ckEFilters_CheckedChanged(object sender, EventArgs e)
-        {
-            LoadAllExps();                                              // Reload the GridView using new criteria
-            AllExpView.PageIndex = 0;                                   // Go back to the first page
-            ResetExpContext();                                          // No selected row, no live buttons after a page flip
+            ckRFilters_Changed(sender, e);                        // Exactly the same action as Filter checkbox change
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             return;
         }
@@ -1186,9 +1145,8 @@ namespace Portal11.Proj
                     LogError.LogDatabaseError(ex, "ProjectDashboard", 
                         "Error deleting Exp, SupportingDoc and ExpHistory rows or deleting Supporting Document"); // Fatal error
                 }
-                ckEFilters_CheckedChanged(sender, e);                   // Update the grid view and buttons for display
+                ckRFilters_Changed(sender, e);                          // Update the grid view and buttons for display
                 litSuccessMessage.Text = "Expense deleted";             // Report success to our user
-                //TODO: Updaet the display
             }
        }
 
@@ -1256,10 +1214,10 @@ namespace Portal11.Proj
                 // Process check boxes for Expense State. Combining checks is a little tricky because some of the checks overlap.
 
                 int filters = 0;
-                if (ckEAwaitingProjectStaff.Checked) filters = filters | 1;
-                if (ckEAwaitingCWStaff.Checked) filters = filters | 2;
-                if (ckEPaid.Checked) filters = filters | 4;
-                if (ckEReturned.Checked) filters = filters | 8;
+                if (ckRAwaitingProjectStaff.Checked) filters = filters | 1; // Awaiting Project Staff
+                if (ckRAwaitingCWStaff.Checked) filters = filters | 2;      // Awaiting CW Staff
+                if (ckRApproved.Checked) filters = filters | 4;             // Paid
+                if (ckRReturned.Checked) filters = filters | 8;             // Returned
 
                 switch (filters)
                 {
@@ -1268,87 +1226,10 @@ namespace Portal11.Proj
                             pred = pred.And(r => r.CurrentState == ExpState.ReservedForFutureUse); // Doesn't ever match
                             break;
                         }
-                    case 1:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByCoordinator
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == ExpState.AwaitingProjectDirector
-                                              || r.CurrentState == ExpState.Returned);
-                            break;
-                        }
-                    case 2:
-                    case 10:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.AwaitingTrustDirector
-                                              || r.CurrentState == ExpState.AwaitingFinanceDirector
-                                              || r.CurrentState == ExpState.AwaitingTrustExecutive
-                                              || r.CurrentState == ExpState.Approved
-                                              || r.CurrentState == ExpState.PaymentSent);
-                            break;
-                        }
-                    case 3:
-                    case 11:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByCoordinator
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == ExpState.AwaitingProjectDirector
-                                              || r.CurrentState == ExpState.AwaitingTrustDirector
-                                              || r.CurrentState == ExpState.AwaitingFinanceDirector
-                                              || r.CurrentState == ExpState.AwaitingTrustExecutive
-                                              || r.CurrentState == ExpState.Approved
-                                              || r.CurrentState == ExpState.PaymentSent
-                                              || r.CurrentState == ExpState.Returned);
-                            break;
-                        }
-                    case 4:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.Paid);
-                            break;
-                        }
-                    case 5:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByCoordinator
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == ExpState.AwaitingProjectDirector
-                                              || r.CurrentState == ExpState.Paid);
-                            break;
-                        }
-                    case 6:
-                    case 14:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.AwaitingTrustDirector
-                                              || r.CurrentState == ExpState.AwaitingFinanceDirector
-                                              || r.CurrentState == ExpState.AwaitingTrustExecutive
-                                              || r.CurrentState == ExpState.Approved
-                                              || r.CurrentState == ExpState.PaymentSent
-                                              || r.CurrentState == ExpState.Returned
-                                              || r.CurrentState == ExpState.Paid);
-                            break;
-                        }
-                    case 8:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.Returned);
-                            break;
-                        }
-                    case 9:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByCoordinator
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == ExpState.AwaitingProjectDirector
-                                              || r.CurrentState == ExpState.Returned);
-                            break;
-                        }
-                    case 12:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.Paid
-                                              || r.CurrentState == ExpState.Returned);
-                            break;
-                        }
-                    case 13:
+                    case 1:                                             // Awaiting Project Staff (includes Paid and Returned)
+                    case 5:                                             // Awaiting Project Staff and Paid
+                    case 9:                                             // Awaiting Project Staff and Returned
+                    case 13:                                            // Awaiting Project Staff, Paid and Returned
                         {
                             pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByCoordinator
                                               || r.CurrentState == ExpState.UnsubmittedByProjectDirector
@@ -1358,13 +1239,73 @@ namespace Portal11.Proj
                                               || r.CurrentState == ExpState.Returned);
                             break;
                         }
-                    default:    // Includes case 7 and case 15 - all checked. Don't need a predicate to get all the rows
+                    case 2:                                             // Awaiting CW Staff
+                        {
+                            pred = pred.And(r => r.CurrentState == ExpState.AwaitingTrustDirector
+                                              || r.CurrentState == ExpState.AwaitingFinanceDirector
+                                              || r.CurrentState == ExpState.AwaitingTrustExecutive
+                                              || r.CurrentState == ExpState.Approved
+                                              || r.CurrentState == ExpState.PaymentSent);
+                            break;
+                        }
+                    case 4:                                             // Paid
+                        {
+                            pred = pred.And(r => r.CurrentState == ExpState.Paid);
+                            break;
+                        }
+                    case 6:                                             // Awaiting CW Staff and Paid
+                        {
+                            pred = pred.And(r => r.CurrentState == ExpState.AwaitingTrustDirector
+                                              || r.CurrentState == ExpState.AwaitingFinanceDirector
+                                              || r.CurrentState == ExpState.AwaitingTrustExecutive
+                                              || r.CurrentState == ExpState.Approved
+                                              || r.CurrentState == ExpState.PaymentSent
+                                              || r.CurrentState == ExpState.Paid);
+                            break;
+                        }
+                    case 8:                                             // Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == ExpState.Returned);
+                            break;
+                        }
+                    case 10:                                            // Awaiting CW Staff and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == ExpState.AwaitingTrustDirector
+                                              || r.CurrentState == ExpState.AwaitingFinanceDirector
+                                              || r.CurrentState == ExpState.AwaitingTrustExecutive
+                                              || r.CurrentState == ExpState.Approved
+                                              || r.CurrentState == ExpState.PaymentSent
+                                              || r.CurrentState == ExpState.Returned);
+                            break;
+                        }
+                    case 12:                                            // Paid and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == ExpState.Paid
+                                              || r.CurrentState == ExpState.Returned);
+                            break;
+                        }
+                    case 14:                                            // Awaiting CW Staff, Paid and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == ExpState.AwaitingTrustDirector
+                                              || r.CurrentState == ExpState.AwaitingFinanceDirector
+                                              || r.CurrentState == ExpState.AwaitingTrustExecutive
+                                              || r.CurrentState == ExpState.Approved
+                                              || r.CurrentState == ExpState.PaymentSent
+                                              || r.CurrentState == ExpState.Paid
+                                              || r.CurrentState == ExpState.Returned);
+                            break;
+                        }
+                    case 3:                                             // Awaiting Project Staff and Awaiting CW Staff
+                    case 7:                                             // Awaiting Project Staff, Awaiting CW Staff and Paid
+                    case 11:                                            // Awaiting Project Staff, Awaiting CW Staff and Returned
+                    case 15:                                            // Awaiting Project Staff, Awaiting CW Staff, Paid and Returned
+                    default:                                            // Don't need a predicate to get all the rows
                         break;
                 }
 
                 // Process Since options
 
-                string since = ddlESince.SelectedValue;                 // Figure out which one was selected
+                string since = ddlRSince.SelectedValue;                 // Figure out which one was selected
                 if (since != "ProjectCreation")                         // If != a specific Since option was selected. Need predicate.
                 {
                     DateTime sinceDate = new DateTime();
@@ -1489,23 +1430,15 @@ namespace Portal11.Proj
         {
             HttpCookie projectCheckboxesCookie = new HttpCookie(PortalConstants.CProjectCheckboxes);
 
+            projectCheckboxesCookie[PortalConstants.CProjectCkRAwaitingProjectStaff] = ckRAwaitingProjectStaff.Checked.ToString();
+            projectCheckboxesCookie[PortalConstants.CProjectCkRAwaitingCWStaff] = ckRAwaitingCWStaff.Checked.ToString();
+            projectCheckboxesCookie[PortalConstants.CProjectCkRApproved] = ckRApproved.Checked.ToString();
+            projectCheckboxesCookie[PortalConstants.CProjectCkRReturned] = ckRReturned.Checked.ToString();
+
+
             projectCheckboxesCookie[PortalConstants.CProjectAppVisible] = pnlApp.Visible.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkAAwaitingProjectStaff] = ckAAwaitingProjectStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkAAwaitingCWStaff] = ckAAwaitingCWStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkAApproved] = ckAApproved.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkAReturned] = ckAReturned.Checked.ToString();
-
             projectCheckboxesCookie[PortalConstants.CProjectDepVisible] = pnlDep.Visible.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkDAwaitingProjectStaff] = ckDAwaitingProjectStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkDAwaitingCWStaff] = ckDAwaitingCWStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkDDepositComplete] = ckDDepositComplete.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkDReturned] = ckDReturned.Checked.ToString();
-
             projectCheckboxesCookie[PortalConstants.CProjectExpVisible] = pnlExp.Visible.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkEAwaitingProjectStaff] = ckEAwaitingProjectStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkEAwaitingCWStaff] = ckEAwaitingCWStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkEPaid] = ckEPaid.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkEReturned] = ckEReturned.Checked.ToString();
 
             Response.Cookies.Add(projectCheckboxesCookie);                    // Store a new cookie
         }
@@ -1517,43 +1450,31 @@ namespace Portal11.Proj
             HttpCookie projectCheckboxesCookie = Request.Cookies[PortalConstants.CProjectCheckboxes]; // Ask for the Staff Checkbox cookie
             if (projectCheckboxesCookie != null)                              // If != the cookie is present
             {
+                ckRAwaitingProjectStaff.Checked = false;                        // Assume box should be unchecked
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkRAwaitingProjectStaff] == "True") ckRAwaitingProjectStaff.Checked = true;
+
+                ckRAwaitingCWStaff.Checked = false;                             // Assume box should be unchecked
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkRAwaitingCWStaff] == "True") ckRAwaitingCWStaff.Checked = true;
+
+                ckRApproved.Checked = false;                                // Assume box should be unchecked
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkRApproved] == "True") ckRApproved.Checked = true;
+
+                ckRReturned.Checked = false;                                    // Assume box should be unchecked
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkRReturned] == "True") ckRReturned.Checked = true;
+
+                // Approvel Panel
+
                 if (projectCheckboxesCookie[PortalConstants.CProjectAppVisible] == "True")
                     ExpandAppPanel();                                           // Expand, but don't fill Approval panel
                 else
                     CollapseAppPanel();                                         // Start with Approval panel collapsed
 
-                // Approvel Panel
-
-                ckAAwaitingProjectStaff.Checked = false;                        // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkAAwaitingProjectStaff] == "True") ckAAwaitingProjectStaff.Checked = true;
-
-                ckAAwaitingCWStaff.Checked = false;                             // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkAAwaitingCWStaff] == "True") ckAAwaitingCWStaff.Checked = true;
-
-                ckAApproved.Checked = false;                                // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkAApproved] == "True") ckAApproved.Checked = true;
-
-                ckDReturned.Checked = false;                                    // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkAReturned] == "True") ckAReturned.Checked = true;
+                // Deposit Panel
 
                 if (projectCheckboxesCookie[PortalConstants.CProjectDepVisible] == "True")
                     ExpandDepPanel();                                           // Expand, but don't fill Deposits panel
                 else
                     CollapseDepPanel();                                         // Start with Deposits panel collapsed
-
-                // Deposit Panel
-
-                ckDAwaitingProjectStaff.Checked = false;                        // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkDAwaitingProjectStaff] == "True") ckDAwaitingProjectStaff.Checked = true;
-
-                ckDAwaitingCWStaff.Checked = false;                             // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkDAwaitingCWStaff] == "True") ckDAwaitingCWStaff.Checked = true;
-
-                ckDDepositComplete.Checked = false;                             // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkDDepositComplete] == "True") ckDDepositComplete.Checked = true;
-
-                ckDReturned.Checked = false;                                    // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkDReturned] == "True") ckDReturned.Checked = true;
 
                 // Expense Panel
 
@@ -1562,17 +1483,6 @@ namespace Portal11.Proj
                 else
                     CollapseExpPanel();                                         // Start with Requests panel collapsed
 
-                ckEAwaitingProjectStaff.Checked = false;                        // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkEAwaitingProjectStaff] == "True") ckEAwaitingProjectStaff.Checked = true;
-
-                ckEAwaitingCWStaff.Checked = false;                             // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkEAwaitingCWStaff] == "True") ckEAwaitingCWStaff.Checked = true;
-
-                ckEPaid.Checked = false;                                        // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkEPaid] == "True") ckEPaid.Checked = true;
-
-                ckEReturned.Checked = false;                                    // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkEReturned] == "True") ckEReturned.Checked = true;
             }
         }
     }

@@ -49,6 +49,51 @@ namespace Portal11.Proj {
         protected global::System.Web.UI.WebControls.Literal litCurrentFunds;
         
         /// <summary>
+        /// ckRAwaitingProjectStaff control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckRAwaitingProjectStaff;
+        
+        /// <summary>
+        /// ckRAwaitingCWStaff control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckRAwaitingCWStaff;
+        
+        /// <summary>
+        /// ckRApproved control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckRApproved;
+        
+        /// <summary>
+        /// ckRReturned control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckRReturned;
+        
+        /// <summary>
+        /// ddlRSince control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlRSince;
+        
+        /// <summary>
         /// btnAppCollapse control.
         /// </summary>
         /// <remarks>
@@ -74,51 +119,6 @@ namespace Portal11.Proj {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlApp;
-        
-        /// <summary>
-        /// ckAAwaitingProjectStaff control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckAAwaitingProjectStaff;
-        
-        /// <summary>
-        /// ckAAwaitingCWStaff control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckAAwaitingCWStaff;
-        
-        /// <summary>
-        /// ckAApproved control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckAApproved;
-        
-        /// <summary>
-        /// ckAReturned control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckAReturned;
-        
-        /// <summary>
-        /// ddlASince control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlASince;
         
         /// <summary>
         /// AllAppView control.
@@ -211,51 +211,6 @@ namespace Portal11.Proj {
         protected global::System.Web.UI.WebControls.Panel pnlDep;
         
         /// <summary>
-        /// ckDAwaitingProjectStaff control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckDAwaitingProjectStaff;
-        
-        /// <summary>
-        /// ckDAwaitingCWStaff control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckDAwaitingCWStaff;
-        
-        /// <summary>
-        /// ckDDepositComplete control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckDDepositComplete;
-        
-        /// <summary>
-        /// ckDReturned control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckDReturned;
-        
-        /// <summary>
-        /// ddlDSince control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlDSince;
-        
-        /// <summary>
         /// AllDepView control.
         /// </summary>
         /// <remarks>
@@ -344,51 +299,6 @@ namespace Portal11.Proj {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlExp;
-        
-        /// <summary>
-        /// ckEAwaitingProjectStaff control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckEAwaitingProjectStaff;
-        
-        /// <summary>
-        /// ckEAwaitingCWStaff control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckEAwaitingCWStaff;
-        
-        /// <summary>
-        /// ckEPaid control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckEPaid;
-        
-        /// <summary>
-        /// ckEReturned control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckEReturned;
-        
-        /// <summary>
-        /// ddlESince control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlESince;
         
         /// <summary>
         /// AllExpView control.

@@ -13,34 +13,45 @@
     </p>
     <div class="form-horizontal">
         <div class="row">
-            <div class="col-xs-6">
+            <div class="panel panel-default col-md-3 col-xs-6">
                 <h4>Balance as of:&nbsp;<asp:Literal ID="litBalance" runat="server"></asp:Literal>
                 </h4>
 
                 <div class="row">
-                    <div class="col-xs-offset-1 col-xs-5">
+                    <div class="col-xs-offset-1 col-xs-11">
                         Current Funds:&nbsp;<asp:Literal ID="litCurrentFunds" runat="server" >$xxx,xxx.xx</asp:Literal>
                     </div>
                 </div>
-<%--                <div class="row">
-                    <div class="col-xs-offset-1 col-xs-5">
-                        Restricted Grants:&nbsp;<asp:Literal ID="litRestrictedGrants" runat="server">$yyy,yyy.yy</asp:Literal>
-                    </div>
-                </div>--%>
             </div>
 
-<%--           <div class="col-md-4 col-xs-6">
-                <div class="row">
-                    <div class="col-xs-offset-1 col-xs-11">
-                        <h4>Restricted Grants (current balance)</h4>
+            <div class="panel panel-default col-md-offset-1 col-md-4 col-xs-6">
+                <h4>Filter: Request Status</h4>
+                    <div class="checkbox">
+                        <asp:CheckBox ID="ckRAwaitingProjectStaff" runat="server" Text="Awaiting Project Staff" CssClass="col-xs-12" Checked="true"
+                            OnCheckedChanged="ckRFilters_Changed" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckRAwaitingCWStaff" runat="server" Text="Awaiting CW Staff" CssClass="col-xs-12"
+                            OnCheckedChanged="ckRFilters_Changed" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckRApproved" runat="server" Text="Approved/Complete/Paid" CssClass="col-xs-12" Checked="true"
+                            OnCheckedChanged="ckRFilters_Changed" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckRReturned" runat="server" Text="Returned" CssClass="col-xs-12" Checked="true"
+                            OnCheckedChanged="ckRFilters_Changed" AutoPostBack="true" />
                     </div>
-                    <div class="col-xs-12">
-                        <asp:ListBox ID="lstRestrictedGrants" runat="server" CssClass="form-control" CausesValidation="false" Rows="3" Enabled="false" />
-                    </div>
-                </div>
-            </div>--%>
+            </div>
+
+            <div class="panel panel-default col-md-offset-1 col-md-3 col-xs-6">
+                <h4>Filter: Since</h4>
+                    <asp:DropDownList ID="ddlRSince" runat="server" AutoPostBack="true"
+                        CssClass="form-control"
+                        OnSelectedIndexChanged="ckRFilters_Changed">
+                        <asp:ListItem Text="Project Creation" Value="ProjectCreation" Selected="True"></asp:ListItem>
+                        <asp:ListItem Text="Balance Date" Value="BalanceDate"></asp:ListItem>
+                        <asp:ListItem Text="Last 30 days" Value="Last30"></asp:ListItem>
+                        <asp:ListItem Text="Last 90 days" Value="Last90"></asp:ListItem>
+                        <asp:ListItem Text="Last 12 months" Value="Last12"></asp:ListItem>
+                    </asp:DropDownList>
+            </div>
+
         </div>
-        <hr />
 
         <div class="panel panel-success">
             <div class="panel-heading ">
@@ -55,7 +66,7 @@
             <asp:Panel ID="pnlApp" runat="server">
             <br />
 
-        <div class="form-group">
+<%--        <div class="form-group">
             <div class="row">
 
                 <div class="panel panel-default col-xs-offset-1 col-md-4 col-xs-5">
@@ -86,7 +97,7 @@
                     </asp:DropDownList>
                 </div>
             </div>
-        </div>
+        </div>--%>
 
         <!-- Make a grid of Approval Requests. Allow User to select one for further study. -->
         <div class="row">
@@ -186,7 +197,7 @@
             <asp:Panel ID="pnlDep" runat="server">
             <br />
 
-        <div class="form-group">
+<%--        <div class="form-group">
             <div class="row">
 
                 <div class="panel panel-default col-xs-offset-1 col-md-4 col-xs-5">
@@ -217,7 +228,7 @@
                     </asp:DropDownList>
                 </div>
             </div>
-        </div>
+        </div>--%>
 
         <!-- Make a grid of Deposit Requests. Allow User to select one for further study. -->
         <div class="row">
@@ -321,8 +332,7 @@
             <asp:Panel ID="pnlExp" runat="server">
             <br />
 
-
-        <div class="form-group">
+<%--        <div class="form-group">
             <div class="row">
                 <div class="panel panel-default col-xs-offset-1 col-md-4 col-xs-5">
                     Filters
@@ -352,7 +362,7 @@
                     </asp:DropDownList>
                 </div>
             </div>
-        </div>
+        </div>--%>
 
         <!-- Make a grid of equests. Allow User to select one for further study. -->
         <div class="row">

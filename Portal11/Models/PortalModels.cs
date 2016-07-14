@@ -1086,11 +1086,11 @@ namespace Portal11.Models
 
         public const string
             CProjectCheckboxes = "ProjectCheckboxesCookie",
+            CProjectCkRAwaitingProjectStaff = "CkRAwaitingProjectStaff",
+            CProjectCkRAwaitingCWStaff = "CkRAwaitingCWStaff",
+            CProjectCkRApproved = "CkRApproved",
+            CProjectCkRReturned = "CkRReturned",
             CProjectAppVisible = "ProjectAppVisible",
-            CProjectCkAAwaitingProjectStaff = "CkAAwaitingProjectStaff",
-            CProjectCkAAwaitingCWStaff = "CkAAwaitingCWStaff",
-            CProjectCkAApproved = "CkAApproved",
-            CProjectCkAReturned = "CkAReturned",
             CProjectDepVisible = "ProjectDepVisible",
             CProjectCkDAwaitingProjectStaff = "CkDAwaitingProjectStaff",
             CProjectCkDAwaitingCWStaff = "CkDAwaitingCWStaff",
