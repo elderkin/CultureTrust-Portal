@@ -135,7 +135,7 @@ namespace Portal11
                         default:                                                    // We shouldn't get here, but don't throw errors in the friggin' Navbar
                         {
                             litNoProjectRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // No project available. Use "base" role
-                            mnuNoProjectRole.Visible = true;                    // Make menu visible in Navbar; it doesn't link anywhere
+                            mnuNoProjectRole.Visible = true;                        // Make menu visible in Navbar; it doesn't link anywhere
                             break;
                         }
                     }
