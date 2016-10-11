@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Fatal Error" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="FatalError.aspx.cs" Inherits="Portal11.ErrorLog.FatalError" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h2>Internal Logic Error</h2>
+    <h2>Internal Logic Error in Portal</h2>
     <hr />
 
     <p class="text-success">
@@ -17,8 +17,12 @@
                   <strong>Oh snap!</strong> The Portal has encountered an internal logic error - a bug - named 
                     &quot;<asp:Literal runat="server" ID="litErrorText" />&quot; 
                     <br /> on page 
-                    &quot;<asp:Literal runat="server" ID="litPageName" />&quot; and cannot complete your task. 
-                  <br />Please report this problem to CultureWorks staff.
+                    &quot;<asp:Literal runat="server" ID="litPageName" />&quot; 
+                    <br /> from page 
+                    &quot;<asp:Literal runat="server" ID="litFromPathAndQuery" />&quot; at: &quot;<asp:Literal runat="server" ID="litCurrentTime" />&quot;
+                    <br /> and cannot complete your task. 
+                    <br /> 
+                  <br />Please write down this information - including the time - and report it to CultureWorks staff. Thank you.
                 </div>
             </div>
             <div class="col-xs-3">

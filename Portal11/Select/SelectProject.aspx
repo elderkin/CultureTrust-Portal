@@ -49,12 +49,12 @@
        <!-- GridView of All Projects -->
 
        <asp:Panel ID="pnlAllProject" runat="server">
-            <div class="col-md-7 col-xs-12">
+            <div class="col-md-10 col-xs-12">
 
                 <!-- Code assumes that ProjectID is the first column of this grid -->
                 <asp:GridView ID="AllProjectView" runat="server"
                     CssClass="table table-striped table-hover"
-                    ItemType="Portal11.Models.Project"
+                    ItemType="Portal11.Models.SelectProjectAllViewRow"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="10"
                     OnRowDataBound="AllProjectView_RowDataBound"
@@ -99,10 +99,19 @@
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Description">
                             <ItemTemplate>
-                                <asp:Label ID="lblDescription" runat="server" Text='<%# Eval("Description").ToString().TrimString(40) %>' />
+                                <asp:Label ID="lblDescription" runat="server" Text='<%# Eval("Description").ToString().TrimString(80) %>' />
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField DataField="Inactive" HeaderText="Inactive" />
+                        <asp:TemplateField HeaderText="To Review">
+                            <ItemTemplate>
+                                <asp:Label ID="lblCount" runat="server" Text='<%# Bind("Count") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Inactive">
+                            <ItemTemplate>
+                                <asp:Label ID="lblInactive" runat="server" Text='<%# Bind("Inactive") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
 
@@ -117,7 +126,7 @@
                 <!-- Code assumes that ProjectID is the first column of this grid -->
                 <asp:GridView ID="UserProjectView" runat="server"
                     CssClass="table table-striped table-hover"
-                    ItemType="Portal11.Models.UserProject"
+                    ItemType="Portal11.Models.SelectProjectUserViewRow"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="10"
                     OnRowDataBound="UserProjectView_RowDataBound"
@@ -157,15 +166,20 @@
                         </asp:TemplateField>
                          <asp:TemplateField HeaderText="Project Name">
                             <ItemTemplate>
-                                <asp:Label ID="lblName" runat="server" Text='<%# Bind("Project.Name") %>'></asp:Label>
+                                <asp:Label ID="lblName" runat="server" Text='<%# Bind("Name") %>'></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Description">
                             <ItemTemplate>
-                                <asp:Label ID="lblDescription" runat="server" Text='<%# Eval("Project.Description").ToString().TrimString(40) %>' />
+                                <asp:Label ID="lblDescription" runat="server" Text='<%# Eval("Description").ToString().TrimString(40) %>' />
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="ProjectRole"  HeaderText="Your Role" />
+                        <asp:TemplateField HeaderText="To Review">
+                            <ItemTemplate>
+                                <asp:Label ID="lblCount" runat="server" Text='<%# Bind("Count") %>' />
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
 

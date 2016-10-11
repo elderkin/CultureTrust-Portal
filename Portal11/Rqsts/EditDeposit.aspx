@@ -97,7 +97,8 @@
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Date of Check</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="input-group">
-                            <asp:TextBox runat="server" ID="txtDateOfDeposit" CssClass="form-control has-success" ></asp:TextBox>
+                            <asp:TextBox runat="server" ID="txtDateOfDeposit" CssClass="form-control has-success"
+                                 OnTextChanged="txtDateOfDeposit_TextChanged" AutoPostBack="true" ></asp:TextBox>
                             <span class="input-group-addon">
                                 <asp:LinkButton runat="server" ID="btnDateOfDeposit" CssClass="btn-xs btn-default"
                                     OnClick="btnDateOfDeposit_Click" CausesValidation="false">

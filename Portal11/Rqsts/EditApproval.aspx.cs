@@ -352,6 +352,7 @@ namespace Portal11.Rqsts
                     App dest = new App()
                     {                                               // Instantiate and fill the destination Rqst
                         Inactive = false,
+                        Archived = false,
                         CreatedTime = System.DateTime.Now,          // Rqst is created right now
                         AppType = src.AppType,
                         AppReviewType = src.AppReviewType,
@@ -413,6 +414,8 @@ namespace Portal11.Rqsts
 
                         App toSave = new App()
                         {                                           // Get a place to hold everything
+                            Inactive = false,
+                            Archived = false,
                             ProjectID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int, // Connect Approval to Project
                             CreatedTime = System.DateTime.Now       // Stamp time when Approval was first created as "now"
                         };
@@ -474,10 +477,14 @@ namespace Portal11.Rqsts
                 case AppType.Contract:
                 case AppType.Grant:
                 case AppType.Campaign:
-                case AppType.Certificate:
                 case AppType.Report:
                     {
                         litSupportingDocMin.Text = "1";
+                        break;
+                    }
+                case AppType.Certificate:
+                    {
+                        litSupportingDocMin.Text = "0";
                         break;
                     }
                 default:

@@ -226,7 +226,7 @@ namespace Portal11.Admin
                 litDangerMessage.Text = "The Project must have at least one Entity assigned to it in this role."; // Display the error
                 return;
             }
-            Response.Redirect(PortalConstants.URLStaffDashboard);       // Back to Project Dashboard
+            Response.Redirect(PortalConstants.URLAdminMain);            // Back to Main Admin page
         }
 
         // Fetch all the Entitys on this project and load them into a GridView

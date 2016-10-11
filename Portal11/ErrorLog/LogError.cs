@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Elmah;
-using Portal11.ErrorLog;
 using Portal11.Models;
 using System.Data.Entity.Validation;
 using System.Data;
@@ -12,6 +11,42 @@ namespace Portal11.ErrorLog
 {
     public class LogError : System.Web.UI.Page
     {
+
+        // In this case, we're not here "voluntarily," but as a result of the Runtime invoking Application_Error.
+        // Just log the error with elmah, then caller can fall through to the FatalError page (specified in Web.config) to report to user.
+
+        public static void LogApplication_ErrorException(Exception ex)
+        {
+            try
+            {
+                // log error to Elmah
+
+                string msg = "Application_Error caught internal error"; // Formulate error message
+                ErrorSignal.FromCurrentContext().Raise(new ErrorLog.Application_ErrorException(msg)); // Ask elmah to log this error
+
+            }
+            catch (Exception)
+            {
+                // uh oh! just keep going
+            }
+        }
+
+        // The Application has started. That seems profound enough to log to Emlah.
+
+        public static void LogApplicationStart()
+        {
+            try
+            {
+                // log message to Elmah. No HTTPContext available at this stage, so ErrorSignal will not work.
+
+                Exception msg = new Exception("Application has started", new ErrorLog.ApplicationStartException());
+                Elmah.ErrorLog.GetDefault(null).Log(new Elmah.Error(msg));  
+            }
+            catch (Exception)
+            {
+                // uh oh! just keep going
+            }
+        }
 
         // Come here when we're in a try block updating the database and something goes awry. In this case, we have a
         // live exception to report, which we do via elmah. Then we throw up a panicky error page that's specific to a database error.
@@ -70,7 +105,7 @@ namespace Portal11.ErrorLog
                 var annotatedException = new Exception(msg, ex);        // Include context information from the caller with the exception
                 ErrorSignal.FromCurrentContext().Raise(annotatedException); // Ask elmah to log this error with the annotation            
                 
-                HttpContext.Current.Server.Transfer("~/ErrorLog/DatabaseError.aspx?" + PortalConstants.QSErrorText + "=" + msg + "&" +
+                HttpContext.Current.Server.Transfer(PortalConstants.URLErrorDatabase + "?" + PortalConstants.QSErrorText + "=" + msg + "&" +
                                                         PortalConstants.QSPageName + "=" + pageName);
             }
             catch (Exception)
@@ -92,25 +127,8 @@ namespace Portal11.ErrorLog
                 string msg = "Page '" + pageName + "' experienced internal error: " + errorMessage; // Formulate error message
                 ErrorSignal.FromCurrentContext().Raise(new ErrorLog.InternalErrorException(msg)); // Ask elmah to log this error
 
-                HttpContext.Current.Server.Transfer("~/ErrorLog/FatalError.aspx?" + PortalConstants.QSErrorText + "=" + errorMessage + "&" +
+                HttpContext.Current.Server.Transfer(PortalConstants.URLErrorFatal + "?" + PortalConstants.QSErrorText + "=" + errorMessage + "&" +
                                                         PortalConstants.QSPageName + "=" + pageName);
-            }
-            catch (Exception)
-            {
-                // uh oh! just keep going
-            }
-        }
-        public static void LogInternalException(Exception ex)
-        {
-            try
-            {
-                // log error to Elmah
-
-                string msg = "Application_Error caught internal error"; // Formulate error message
-                ErrorSignal.FromCurrentContext().Raise(new ErrorLog.InternalErrorException(msg)); // Ask elmah to log this error
-
-                HttpContext.Current.Server.Transfer("~/ErrorLog/FatalError.aspx?" + PortalConstants.QSErrorText + "=" + msg + "&" +
-                                                        PortalConstants.QSPageName + "=Application_Error");
             }
             catch (Exception)
             {
@@ -130,7 +148,7 @@ namespace Portal11.ErrorLog
                 string msg = "Page '" + pageName + "' experienced Query String error: " + errorMessage; // Formulate error message
                 ErrorSignal.FromCurrentContext().Raise(new ErrorLog.QueryStringException(msg)); // Ask elmah to log this error
                 
-                HttpContext.Current.Server.Transfer("~/ErrorLog/FatalError.aspx?" + PortalConstants.QSErrorText + "=" + errorMessage + "&" +
+                HttpContext.Current.Server.Transfer(PortalConstants.URLErrorFatal + "?" + PortalConstants.QSErrorText + "=" + errorMessage + "&" +
                                                         PortalConstants.QSPageName + "=" + pageName);
             }
             catch (Exception)
@@ -152,7 +170,7 @@ namespace Portal11.ErrorLog
                 var annotatedException = new Exception(msg, ex);        // Include context information from the caller with the exception
                 ErrorSignal.FromCurrentContext().Raise(annotatedException); // Ask elmah to log this error with the annotation            
 
-                HttpContext.Current.Server.Transfer("~/ErrorLog/FatalError.aspx?" + PortalConstants.QSErrorText + "=" + errorMessage + "&" +
+                HttpContext.Current.Server.Transfer(PortalConstants.URLErrorFatal + "?" + PortalConstants.QSErrorText + "=" + errorMessage + "&" +
                                                         PortalConstants.QSPageName + "=" + pageName);
             }
             catch (Exception)

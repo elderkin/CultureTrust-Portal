@@ -7,10 +7,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Portal11.ErrorLog {
+namespace Portal11.Lists {
     
     
-    public partial class FatalError {
+    public partial class ListPortalUsers {
         
         /// <summary>
         /// litSuccessMessage control.
@@ -31,39 +31,75 @@ namespace Portal11.ErrorLog {
         protected global::System.Web.UI.WebControls.Literal litDangerMessage;
         
         /// <summary>
-        /// litErrorText control.
+        /// txtUser control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litErrorText;
+        protected global::System.Web.UI.WebControls.TextBox txtUser;
         
         /// <summary>
-        /// litPageName control.
+        /// btnUserHelper control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litPageName;
+        protected global::System.Web.UI.WebControls.Button btnUserHelper;
         
         /// <summary>
-        /// litFromPathAndQuery control.
+        /// btnUserSearch control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litFromPathAndQuery;
+        protected global::System.Web.UI.WebControls.LinkButton btnUserSearch;
         
         /// <summary>
-        /// litCurrentTime control.
+        /// chkInactive control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litCurrentTime;
+        protected global::System.Web.UI.WebControls.CheckBox chkInactive;
+        
+        /// <summary>
+        /// pnlGridView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlGridView;
+        
+        /// <summary>
+        /// AllPortalUsersView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView AllPortalUsersView;
+        
+        /// <summary>
+        /// btnDone control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDone;
+        
+        /// <summary>
+        /// btnPrint control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnPrint;
     }
 }

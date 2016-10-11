@@ -8,7 +8,17 @@ namespace Portal11.ErrorLog
     public class PortalExceptions
     {
     }
-    public class InternalErrorException : Exception 
+    public class Application_ErrorException : Exception
+    {
+        public Application_ErrorException(string message) : base(message) { }
+    }
+
+    public class ApplicationStartException : Exception 
+    {
+        public ApplicationStartException() : base() { }
+    }
+
+    public class InternalErrorException : Exception
     {
         public InternalErrorException(string message) : base(message) { }
     }

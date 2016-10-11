@@ -24,9 +24,9 @@ namespace Portal11.Logic
 
         public static AppState FindUnsubmittedAppState(string role)
         {
-            if (role == ProjectRole.Coordinator.ToString())         // If == User is a Coordinator
+            if (role == ProjectRole.InternalCoordinator.ToString())         // If == User is a Coordinator
             {
-                return AppState.UnsubmittedByCoordinator;           // Report actual enum value of AppState
+                return AppState.UnsubmittedByInternalCoordinator;           // Report actual enum value of AppState
             }
             else if (role == ProjectRole.ProjectDirector.ToString()) // If == User is a Project Director
             {
@@ -45,9 +45,9 @@ namespace Portal11.Logic
 
         public static DepState FindUnsubmittedDepState(string role)
         {
-            if (role == ProjectRole.Coordinator.ToString())         // If == User is a Coordinator
+            if (role == ProjectRole.InternalCoordinator.ToString())         // If == User is a Coordinator
             {
-                return DepState.UnsubmittedByCoordinator;           // Report actual enum value of DepState
+                return DepState.UnsubmittedByInternalCoordinator;           // Report actual enum value of DepState
             }
             else
             {
@@ -57,9 +57,9 @@ namespace Portal11.Logic
         }
         public static ExpState FindUnsubmittedExpState(string role)
         {
-            if (role == ProjectRole.Coordinator.ToString())         // If == User is a Coordinator
+            if (role == ProjectRole.InternalCoordinator.ToString())         // If == User is a Coordinator
             {
-                return ExpState.UnsubmittedByCoordinator;           // Report actual enum value of ExpState
+                return ExpState.UnsubmittedByInternalCoordinator;           // Report actual enum value of ExpState
             }
             else if (role == ProjectRole.ProjectDirector.ToString()) // If == User is a Project Director
             {
@@ -84,7 +84,7 @@ namespace Portal11.Logic
             {
                 switch (currentState)
                 {
-                    case AppState.UnsubmittedByCoordinator:
+                    case AppState.UnsubmittedByInternalCoordinator:
                     case AppState.UnsubmittedByProjectDirector:
                     case AppState.UnsubmittedByProjectStaff:
                     case AppState.AwaitingProjectDirector:
@@ -93,8 +93,8 @@ namespace Portal11.Logic
                         return UserRole.Project;
                     case AppState.AwaitingTrustDirector:
                         return UserRole.TrustDirector;
-                    case AppState.AwaitingCoordinator:
-                        return UserRole.Coordinator;
+                    case AppState.AwaitingInternalCoordinator:
+                        return UserRole.InternalCoordinator;
                     default:
                         {
                             LogError.LogInternalError("StateActions", $"Unable to process AppState value '{currentState.ToString()}' from database"); // Fatal error
@@ -106,7 +106,7 @@ namespace Portal11.Logic
             {
                 switch (currentState)
                 {
-                    case AppState.UnsubmittedByCoordinator:
+                    case AppState.UnsubmittedByInternalCoordinator:
                     case AppState.UnsubmittedByProjectDirector:
                     case AppState.UnsubmittedByProjectStaff:
                     case AppState.AwaitingProjectDirector:
@@ -119,8 +119,8 @@ namespace Portal11.Logic
                         return UserRole.FinanceDirector;
                     case AppState.AwaitingTrustExecutive:
                         return UserRole.TrustExecutive;
-                    case AppState.AwaitingCoordinator:
-                        return UserRole.Coordinator;
+                    case AppState.AwaitingInternalCoordinator:
+                        return UserRole.InternalCoordinator;
                     default:
                         {
                             LogError.LogInternalError("StateActions", $"Unable to process AppState value '{currentState.ToString()}' from database"); // Fatal error
@@ -134,7 +134,7 @@ namespace Portal11.Logic
         {
             switch (currentState)
             {
-                case DepState.UnsubmittedByCoordinator:
+                case DepState.UnsubmittedByInternalCoordinator:
                 case DepState.AwaitingProjectDirector:
                 case DepState.DepositComplete:
                 case DepState.Returned:
@@ -168,7 +168,7 @@ namespace Portal11.Logic
         {
             switch (currentState)
             {
-                case ExpState.UnsubmittedByCoordinator:
+                case ExpState.UnsubmittedByInternalCoordinator:
                 case ExpState.UnsubmittedByProjectStaff:
                 case ExpState.UnsubmittedByProjectDirector:
                 case ExpState.AwaitingProjectDirector:
@@ -305,15 +305,15 @@ namespace Portal11.Logic
 
                 switch (currentState)                                   // Break out by current state
                 {
-                    case AppState.UnsubmittedByCoordinator:
+                    case AppState.UnsubmittedByInternalCoordinator:
                     case AppState.UnsubmittedByProjectStaff:
                         return AppState.AwaitingProjectDirector;        // From Coordinator or Staff, go to Project Director
                     case AppState.UnsubmittedByProjectDirector:
                     case AppState.AwaitingProjectDirector:
                         return AppState.AwaitingTrustDirector;          // From Project Director, go to Trust Director
                     case AppState.AwaitingTrustDirector:
-                        return AppState.AwaitingCoordinator;
-                    case AppState.AwaitingCoordinator:
+                        return AppState.AwaitingInternalCoordinator;
+                    case AppState.AwaitingInternalCoordinator:
                         return AppState.Approved;
 
                     // None of these states should ever arrive here. Report an internal logic error.
@@ -338,7 +338,7 @@ namespace Portal11.Logic
 
                 switch (currentState)                                   // Break out by current state
                 {
-                    case AppState.UnsubmittedByCoordinator:
+                    case AppState.UnsubmittedByInternalCoordinator:
                     case AppState.UnsubmittedByProjectStaff:
                         return AppState.AwaitingProjectDirector;
                     case AppState.UnsubmittedByProjectDirector:
@@ -354,7 +354,7 @@ namespace Portal11.Logic
                     // None of these states should ever arrive here. Report an internal logic error.
 
                     case AppState.Approved:
-                    case AppState.AwaitingCoordinator:
+                    case AppState.AwaitingInternalCoordinator:
                     case AppState.Error:
                     case AppState.Returned:
                     case AppState.ReservedForFutureUse:
@@ -377,7 +377,7 @@ namespace Portal11.Logic
         {
             switch (currentState)                                   // Break out by current state
             {
-                case DepState.UnsubmittedByCoordinator:
+                case DepState.UnsubmittedByInternalCoordinator:
                     return DepState.AwaitingProjectDirector;        // From Coordinator, go to Project Director
                 case DepState.AwaitingProjectDirector:
                     return DepState.AwaitingTrustDirector;          // From Project Director, go to Trust Director
@@ -408,7 +408,7 @@ namespace Portal11.Logic
         {
             switch (currentState)                                   // Break out by current state
             {
-                case ExpState.UnsubmittedByCoordinator:
+                case ExpState.UnsubmittedByInternalCoordinator:
                 case ExpState.UnsubmittedByProjectStaff:
                     return ExpState.AwaitingProjectDirector;
                 case ExpState.UnsubmittedByProjectDirector:
@@ -529,8 +529,18 @@ namespace Portal11.Logic
         // There's a corner case in which the DDL is empty - no rows. This is a user error - the underlying master file is unpopulated.
         //
         // The caller is assumed to have created columns named "Name" and "ID" in the DataTable.
+        //
+        // ddl - the Dropdownlist control being processed.
+        // id - the DdlID of the selected row. If null, no row has been selected. Create a 0th row using "leader".
+        // tbl - the DataTable filled with value pairs, one per row.
+        // missing - the string to display if the DataTable is empty, which is an operator error. If this argument is empty, no message is displayed.
+        // leader - the string to display as a 0th row, if that's appropriate.
+        // needed - if true, add a trailing row using the "trailer" to signal that a new row is needed
+        // trailer - the string to display as a last row, if "needed" is true.
+        // alwaysDisplayLeader - if true, unconditionally display the "leader" row. Select it only if "id" is null.
 
-        public static void LoadDdl(DropDownList ddl, int? id, DataTable tbl, string missing, string leader, bool needed=false, string trailer=null)
+        public static void LoadDdl(DropDownList ddl, int? id, DataTable tbl, string missing, string leader, 
+            bool needed=false, string trailer=null, bool alwaysDisplayLeader=false)
         {
             ddl.DataSource = tbl;                                           // Pass the DataTable table of rows to drop down list
             ddl.DataTextField = PortalConstants.DdlName;                    // Display this column in the list
@@ -540,13 +550,16 @@ namespace Portal11.Logic
             // Special case 1: There's nothing in the list. This indicates an Administrator error - no entities have been assigned to the project.
             // Place a caller-supplied message in the first (and only) line of the DDL and select it.
 
-            if (ddl.Items.Count == 0)                                       // If == the ddl is empty. This is a corner case.
+            if (missing != "")                                              // If != the string is present. Caller wants us to process it
             {
-                ddl.Items.Insert(0, new ListItem(missing, String.Empty));   // Insert a caller-supplied message to tell the user there's a problem
-                ddl.SelectedIndex = 0;                                      // and select it. But don't fail. Rely on user to fix this problem.
-                return;
+                if (ddl.Items.Count == 0)                                       // If == the ddl is empty. This is a corner case.
+                {
+                    ddl.Items.Insert(0, new ListItem(missing, String.Empty));   // Insert a caller-supplied message to tell the user there's a problem
+                    ddl.SelectedIndex = 0;                                      // and select it. But don't fail. Rely on user to fix this problem.
+                    return;
+                }
+                //            ddl.ClearSelection();                                           // Get rid of any existing selection
             }
-//            ddl.ClearSelection();                                           // Get rid of any existing selection
 
             // Special case 2: The user has the option to ask the Administrator to create a new item.
             // Place a caller-supplied "trailer" in the last line.
@@ -564,6 +577,14 @@ namespace Portal11.Logic
                 ddl.Items.Insert(0, new ListItem(leader, String.Empty));    // Place an empty item at top of list to force selection of something
                 ddl.SelectedIndex = 0;                                      // and select it.
                 return;
+            }
+
+            // Special case 4: The list is populated and something is selected. But the caller still wants us to
+            // add a 0th line. 
+
+            if (alwaysDisplayLeader)                                        // We really want that leader line
+            {
+                ddl.Items.Insert(0, new ListItem(leader, String.Empty));    // Place an empty item at top of list to force selection of something
             }
 
             // The list is now complete. If a special case has discerned which row to select, we don't get here.

@@ -138,7 +138,7 @@ namespace Portal11.Rqsts
                                 // Let's say that it's only the Coordinator, since they're the only one who could create it.
 
                                 if ((dep.CurrentState == DepState.Returned) && 
-                                    (litSavedProjectRole.Text == ProjectRole.Coordinator.ToString())) // If true it's a Coordinator and a Returned Request
+                                    (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString())) // If true it's a Coordinator and a Returned Request
                                     btnRevise.Visible = true;       // Turn on the "Revise" button - specific to this case
                                 btnShowHistory.Visible = true;      // We can show the history so make button visible 
                                 pnlAdd.Visible = false;             // Can't figure out how to disable Add button, so make it invisible
@@ -174,6 +174,12 @@ namespace Portal11.Rqsts
             DepType selected = EnumActions.ConvertTextToDepType(rdoDepType.SelectedValue); // Fetch selected button, convert value to enum
             EnablePanels(selected);                                     // Turn on/off controls based on selected Exp Type
             FillDropDownLists();                                        // Load dropdown lists with unselected database values
+            return;
+        }
+
+        protected void txtDateOfDeposit_TextChanged(object sender, EventArgs e)
+        {
+            DateActions.ValidateDateInput(txtDateOfDeposit, lblDateOfDeposit.Text, litDangerMessage); // Do the heavy lifting
             return;
         }
 
@@ -459,6 +465,7 @@ namespace Portal11.Rqsts
                     Dep dest = new Dep()
                     {                                               // Instantiate and fill the destination Rqst
                         Inactive = false,
+                        Archived = false,
                         Amount = src.Amount,
                         CreatedTime = System.DateTime.Now,          // Rqst is created right now
                         DateOfDeposit = src.DateOfDeposit,
@@ -533,6 +540,8 @@ namespace Portal11.Rqsts
 
                         Dep toSave = new Dep()
                         {                                           // Get a place to hold everything
+                            Inactive = false,
+                            Archived = false,
                             ProjectID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int, // Connect Deposit to Project
                             CreatedTime = System.DateTime.Now       // Stamp time when Deposit was first created as "now"
                         };
@@ -685,7 +694,7 @@ namespace Portal11.Rqsts
                 }
 
                 StateActions.LoadDdl(ddlEntity, entityID, rows,
-                    " -- Error: No " + lblEntity.Text + "s assigned to Project --", "-- none selected --", 
+                    "", "-- none selected --", 
                     needed, "-- Please add new " + lblEntity.Text + " --"); // Put the cherry on top
 
             }
@@ -758,7 +767,7 @@ namespace Portal11.Rqsts
                 }
 
                 StateActions.LoadDdl(ddlPerson, personID, rows,
-                    " -- Error: No " + lblPerson.Text + "s assigned to Project --", "-- none selected --", 
+                    "", "-- none selected --", 
                     needed, "-- Please add new " + lblPerson.Text + " --"); // Put the cherry on top
 
             }
@@ -1027,6 +1036,5 @@ namespace Portal11.Rqsts
             }
             return;
         }
-
     }
 }

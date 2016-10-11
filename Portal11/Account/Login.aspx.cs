@@ -76,7 +76,7 @@ namespace Portal11.Account
 
                         // On a successful login, we have lots of work to do. But let's go somewhere else to do it, because of an odd
                         // ASP.NET "feature." The HttpContext.Current.User.IsInRole function does not seem to get updated until we flip
-                        // into a new page. If we check it here, the return is invariably "false." So let's go to the Default page. When
+                        // into a new page. If we check it here, the return is invariably "false." So let's go to the LoginDispatch page. When
                         // we do the same fuction there, we get a correct answer.
 
                         Response.Redirect(PortalConstants.URLLoginDispatch + "?" +

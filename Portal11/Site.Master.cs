@@ -82,7 +82,8 @@ namespace Portal11
 
                     //  1) Display their Full Name
 
-                    litFullName.Text = userInfoCookie[PortalConstants.CUserFullName]; //Load literal with user's full name from cookie
+                    labFullName.Text = userInfoCookie[PortalConstants.CUserFullName]; //Load label with user's full name from cookie
+                    labFullName.ToolTip = "This is a test";
 
                     //  2) If the User has Admin powers - regardless of role - turn on the Admin menu
 
@@ -102,16 +103,18 @@ namespace Portal11
                             mnuAdminRole.Visible = true;                        // Switch on the Role menu item, which links to the Admin Main page
                             break;
                         }
-                        case UserRole.Coordinator:
+                        case UserRole.InternalCoordinator:
                         case UserRole.Project:
                         {
                             mnuProject.Visible = true;                              // Unconditionally turn on Project menu, which links to Project functions
                             HttpCookie projectInfoCookie = Request.Cookies[PortalConstants.CProjectInfo]; // Ask for the Project Info cookie, if any
                             if (projectInfoCookie != null)                          // If != the cookie is present
                             {
-                                litProjectRole.Text = projectInfoCookie[PortalConstants.CProjectRoleDescription];
-                                // Load literal with user role description specific to this project
-                                mnuProjectRole.Visible = true;                      // Make the menu visible in the Navbar; it links to Project Dashboard
+                                mnuHomeProject.Visible = true;                      // Make appropriate Home menu visible
+                                                                                    // litProjectRole.Text = projectInfoCookie[PortalConstants.CProjectRoleDescription];
+                                labFullName.ToolTip = projectInfoCookie[PortalConstants.CProjectRoleDescription];
+                                // Load flyover with user role description specific to this project
+                                // mnuProjectRole.Visible = true;                      // Make the menu visible in the Navbar; it links to Project Dashboard
                                 litProjectName.Text = projectInfoCookie[PortalConstants.CProjectName]; // Load literal with project name from cookie
                                 mnuProjectName.Visible = true;                      // Make the menu visible in the Navbar, it also links to Project Dashboard
                             }
@@ -127,6 +130,7 @@ namespace Portal11
                         case UserRole.TrustDirector:
                         case UserRole.TrustExecutive:
                         {
+                            mnuHomeStaff.Visible = true;                            // Make appropriate Home menu visible
                             litStaffRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // Show that role in the Navbar, link to Staff Dashboard
                             mnuStaffRole.Visible = true;                            // Switch on the Role menu item
 //                            mnuAdminRole.Visible = false;                           // Don't display both Admin Role and Staff Role
@@ -152,7 +156,9 @@ namespace Portal11
 
         protected void Unnamed_LoggingOut(object sender, LoginCancelEventArgs e)
         {
-            CookieActions.DeleteUserInfoCookie(); CookieActions.DeleteProjectInfoCookie(); // Delete cookies that were created during this login session.
+            CookieActions.DeleteUserInfoCookie();
+            CookieActions.DeleteProjectInfoCookie();
+            CookieActions.DeleteCheckboxCookies();                      // Delete cookies that were created during this login session.
 
             Context.GetOwinContext().Authentication.SignOut();          // Shutdown ASP Identity logged in session
         }

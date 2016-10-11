@@ -1,4 +1,6 @@
-﻿using Portal11.ErrorLog;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Portal11.ErrorLog;
 using Portal11.Logic;
 using Portal11.Models;
 using System;
@@ -38,10 +40,13 @@ namespace Portal11.Account
 
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
-                var query = from u in context.Users
-                            where u.Email == email
-                            select u;
-                ApplicationUser loggedInUser = query.SingleOrDefault(); // Fetch the ApplicationUser record for the logged in user
+                var userMgr = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context)); // Open path to User Manager
+                ApplicationUser loggedInUser = userMgr.FindByEmail(email);             // Look for an existing user
+
+                //var query = from u in context.Users
+                //            where u.Email == email
+                //            select u;
+                //ApplicationUser loggedInUser = query.SingleOrDefault(); // Fetch the ApplicationUser record for the logged in user
                 if (loggedInUser == null)                               // Cannot re-locate record used during login
                 {
                     LogError.LogInternalError("LoginDispatch", string.Format("Unable to find User with email '{0}' in database",
@@ -57,6 +62,19 @@ namespace Portal11.Account
                         PortalConstants.QSStatus + "=This account is Inactive and cannot be used to log in");
                 }
                 string userID = loggedInUser.Id;                        // Copy User ID out of database row and save for later use
+
+                // Write down the fact that we just logged in the user
+
+                try
+                {
+                    loggedInUser.LoginCount++;                              // Count the login
+                    loggedInUser.LastLogin = System.DateTime.Now;           // Record the time of login
+                    userMgr.Update(loggedInUser);                           // Write changes to database
+                }
+                catch (Exception ex)
+                {
+                    LogError.LogDatabaseError(ex, "EditRegistration", "Unable to update User rows in Identity database"); // Fatal error
+                }
 
                 // Start building out the Login and UserInfo cookies, starting with the parts that are there for all users.
 
@@ -110,12 +128,12 @@ namespace Portal11.Account
                         userInfoCookie[PortalConstants.CUserProjectSelector] = PortalConstants.CUserProjectAll; // See all Projects
                         break;
                     }
-                    case UserRole.Coordinator:
+                    case UserRole.InternalCoordinator:
                     {
-                        userInfoCookie[PortalConstants.CUserTypeCoordinator] = "true"; // Note the Coordinator role in cookie
+                        userInfoCookie[PortalConstants.CUserTypeInternalCoordinator] = "true"; // Note the Coordinator role in cookie
                         userInfoCookie[PortalConstants.CUserTypeProject] = "true"; // Can also operate on a Project
-                        userInfoCookie[PortalConstants.CUserRole] = UserRole.Coordinator.ToString(); // Note our specific role
-                        userInfoCookie[PortalConstants.CUserRoleDescription] = EnumActions.GetEnumDescription(UserRole.Coordinator); // The formatted version
+                        userInfoCookie[PortalConstants.CUserRole] = UserRole.InternalCoordinator.ToString(); // Note our specific role
+                        userInfoCookie[PortalConstants.CUserRoleDescription] = EnumActions.GetEnumDescription(UserRole.InternalCoordinator); // The formatted version
                         userInfoCookie[PortalConstants.CUserProjectSelector] = PortalConstants.CUserProjectAll; // See all Projects
                         break;
                     }
@@ -161,7 +179,7 @@ namespace Portal11.Account
                 {
                     Response.Redirect(PortalConstants.URLStaffDashboard); // Transfer to CW Staff dashboard                       }
                 }
-                if (userInfoCookie[PortalConstants.CUserTypeCoordinator] != null) // If != the user is a Coordinator. Dispatch to pick a project
+                if (userInfoCookie[PortalConstants.CUserTypeInternalCoordinator] != null) // If != the user is a Coordinator. Dispatch to pick a project
                 {
                     Response.Redirect(PortalConstants.URLSelectProject + "?" + PortalConstants.QSUserID + "=" + userID + "&" +
                                                         PortalConstants.QSCommand + "=" + PortalConstants.QSCommandUserLogin + "&" +

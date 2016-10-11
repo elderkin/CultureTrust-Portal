@@ -86,6 +86,18 @@
         </div>
 
         <div class="form-group">
+            <asp:Label runat="server" AssociatedControlID="txtGridViewRows" CssClass="col-md-2 col-sm-2 control-label" Font-Bold="false">Rows in Each Grid</asp:Label>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <asp:TextBox runat="server" ID="txtGridViewRows" CssClass="form-control " ToolTip="On every web page of the Portal, include a maximum of this many rows in each table (or grid)." />
+            </div>
+           <div class="col-md-7">
+                <asp:RangeValidator runat="server" Type="Integer" 
+                MinimumValue="0" MaximumValue="100" ControlToValidate="txtGridViewRows" 
+                CssClass="text-danger" Display="Dynamic" ErrorMessage="Value must be a whole number between 0 and 100" />
+           </div>
+        </div>
+
+        <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="cblOptions" CssClass="col-md-2 col-sm-2 col-xs-12 control-label" Font-Bold="false">Options</asp:Label>
             <div class="col-md-3 col-sm-5 col-xs-6">
                 <div class="well">
@@ -109,7 +121,7 @@
                                 title="The User is a Project Director or Project Staff, not a CW staff member"></asp:ListItem>
                             <asp:ListItem Text="Auditor" Value="Auditor" data-toggle="tooltip"
                                 title="Examines, but does not change, Requests"></asp:ListItem>
-                            <asp:ListItem Text="Coordinator" Value="Coordinator" data-toggle="tooltip"
+                            <asp:ListItem Text="InternalCoordinator" Value="InternalCoordinator" data-toggle="tooltip"
                                 title="Creates Requests"></asp:ListItem>
                             <asp:ListItem Text="Finance Director" Value="FinanceDirector" data-toggle="tooltip"
                                 title="Reviews and Approves Requests"></asp:ListItem>

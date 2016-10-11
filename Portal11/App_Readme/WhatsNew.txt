@@ -1,4 +1,20 @@
-﻿Version 0.5
+﻿Version 0.7
+
+Approvals of Certificate of Insurance no longer require any Supporting Documents
+Projects can create Deposit and Expense requests before Entities and Persons are assigned to the project.
+Incorrectly formatted dates are now rejected.
+Select Project now includes the number of outstanding requests for each project.
+
+Version 0.6
+
+All pages: In the Navigation Bar at the top of each page, a new Home button takes project staff to the Project Dashboard and CW Staff to the Staff Dashboard.
+Staff Dashboard and Project Dashboard: Now contains a panel for Search Filters. Filters for search by Date Range, Entity, Person, and Archive status are available.
+Requests can be archived once they are complete. There is an option to include archived requests in the search functions on the Project Dashboard and System Dashboard pages.
+The "Coordinator" role is now called "Internal Coordinator."
+There is a new Admin function called "List Portal Users."
+Staff Dashboard and Project Dashboard: Now wake up with the Search panel collapsed.
+
+Version 0.5
 
 Source code is now controlled by GitHub.
 The new role "Auditor" is now defined. This is a CW Staff role - they see the Staff Dashboard - that has read-only access to "Approved" requests.

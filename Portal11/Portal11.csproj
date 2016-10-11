@@ -183,6 +183,8 @@
     <Content Include="Admin\EditGrant.aspx" />
     <Content Include="Admin\Main.aspx" />
     <Content Include="Admin\MaintainVendor.aspx" />
+    <Content Include="App_Readme\Elmah.SqlServer.sql" />
+    <Content Include="App_Readme\Elmah.SqlServer.txt" />
     <Content Include="App_Readme\Elmah.txt" />
     <Content Include="ErrorLog\DatabaseError.aspx" />
     <Content Include="ErrorLog\Error404.aspx" />
@@ -190,7 +192,9 @@
     <Content Include="ErrorLog\FatalError.aspx" />
     <Content Include="Images\LoginBackground-1024x768.jpg" />
     <Content Include="Images\LoginIcon-640x480.jpg" />
+    <Content Include="Lists\ListPortalUsers.aspx" />
     <Content Include="Proj\EditProjectClass.aspx" />
+    <Content Include="Proj\TestModal.aspx" />
     <Content Include="Rqsts\EditApproval.aspx" />
     <Content Include="Rqsts\EditDeposit.aspx" />
     <Content Include="Rqsts\EditExpense.aspx" />
@@ -217,9 +221,11 @@
     <Content Include="Account\Web.config" />
     <Content Include="App_Readme\WhatsNew.txt" />
     <None Include="Properties\PublishProfiles\cultureworksfoundry.org - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\cultureworksfoundry.org - Web Deploy.pubxml">
+    <None Include="Properties\PublishProfiles\Production - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\proto1 - Web Deploy.pubxml">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\PublishProfiles\stage - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Proj\ProjectDashboard.aspx" />
     <Content Include="Admin\EditProject.aspx" />
@@ -520,6 +526,13 @@
     <Compile Include="ErrorLog\LogError.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Lists\ListPortalUsers.aspx.cs">
+      <DependentUpon>ListPortalUsers.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Lists\ListPortalUsers.aspx.designer.cs">
+      <DependentUpon>ListPortalUsers.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Logic\CookieActions.cs" />
     <Compile Include="Logic\DateActions.cs" />
     <Compile Include="Logic\EnumActions.cs" />
@@ -528,12 +541,20 @@
     <Compile Include="Logic\SupportingActions.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Proj\EditProjectClass.aspx.cs">
       <DependentUpon>EditProjectClass.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Proj\EditProjectClass.aspx.designer.cs">
       <DependentUpon>EditProjectClass.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Proj\TestModal.aspx.cs">
+      <DependentUpon>TestModal.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Proj\TestModal.aspx.designer.cs">
+      <DependentUpon>TestModal.aspx</DependentUpon>
     </Compile>
     <Compile Include="Rqsts\EditApproval.aspx.cs">
       <DependentUpon>EditApproval.aspx</DependentUpon>

@@ -112,6 +112,17 @@ namespace Portal11.Account
                 return;
             }
 
+            // Process GridViewRows. A value of zero is legal; it means accept the default value
+
+            newUser.GridViewRows = 0;                               // Supply default
+            if (txtGridViewRows.Text != "")                         // If != there is a value available
+                newUser.GridViewRows = Convert.ToInt32(txtGridViewRows.Text); // Convert value user supplied
+
+            // Initialize login history information
+
+            newUser.LoginCount = 0;                                 // The user has never logged in
+            newUser.LastLogin = System.DateTime.Now;                // Save time account was created
+
             // Fill in the FranchiseKey for the User
 
             newUser.FranchiseKey = txtFranchiseKey.Text;            // Fetch this from control. The control is invisible unless its very first user

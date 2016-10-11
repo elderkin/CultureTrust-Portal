@@ -7,7 +7,8 @@ using Portal11.Logic;
 
 namespace Portal11.Models
 {
-    public class PortalDatabaseInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
+    public class PortalDatabaseInitializer : CreateDatabaseIfNotExists<ApplicationDbContext>
+//        public class PortalDatabaseInitializer : DropCreateDatabaseAlways<ApplicationDbContext>
     {
         protected override void Seed(ApplicationDbContext context)
         {
@@ -17,186 +18,186 @@ namespace Portal11.Models
 
             // Initialize rows of the Person table to get it created.
 
-            Person pers = new Person();
-            pers.FranchiseKey = Franchise.LocalFranchiseKey;
-            pers.Inactive = false;
-            pers.Name = "Doe, Jane";
-            pers.Address = "123 Anywhere St.\r\nPhiladelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "jane.doe@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //Person pers = new Person();
+            //pers.FranchiseKey = Franchise.LocalFranchiseKey;
+            //pers.Inactive = false;
+            //pers.Name = "Doe, Jane";
+            //pers.Address = "123 Anywhere St.\r\nPhiladelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "jane.doe@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            pers.Name = "Smith, John";
-            pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "john.smith@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //pers.Name = "Smith, John";
+            //pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "john.smith@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            pers.Name = "Aaaaaa, John";
-            pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "john.smith@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //pers.Name = "Aaaaaa, John";
+            //pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "john.smith@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            pers.Name = "Bbbbb, John";
-            pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "john.smith@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //pers.Name = "Bbbbb, John";
+            //pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "john.smith@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            pers.Name = "Ccccc, Hohn";
-            pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "john.smith@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //pers.Name = "Ccccc, Hohn";
+            //pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "john.smith@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            pers.Name = "Dddddd, John";
-            pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "john.smith@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //pers.Name = "Dddddd, John";
+            //pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "john.smith@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            pers.Name = "Eeeeee, John";
-            pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "john.smith@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //pers.Name = "Eeeeee, John";
+            //pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "john.smith@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            pers.Name = "Fffff, John";
-            pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "john.smith@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //pers.Name = "Fffff, John";
+            //pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "john.smith@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            pers.Name = "Ggggggg, John";
-            pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "john.smith@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //pers.Name = "Ggggggg, John";
+            //pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "john.smith@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            pers.Name = "Hhhhhhh, John";
-            pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "john.smith@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //pers.Name = "Hhhhhhh, John";
+            //pers.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "john.smith@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            pers.FranchiseKey = "wrong";
-            pers.Inactive = false;
-            pers.Name = "Wrong Franchise";
-            pers.Address = "123 Anywhere St.\r\nPhiladelphia, PA 19000";
-            pers.Phone = "215-456-7890";
-            pers.Email = "jane.doe@def.org";
-            pers.CreatedTime = System.DateTime.Now;
-            context.Persons.Add(pers);
-            context.SaveChanges();
+            //pers.FranchiseKey = "wrong";
+            //pers.Inactive = false;
+            //pers.Name = "Wrong Franchise";
+            //pers.Address = "123 Anywhere St.\r\nPhiladelphia, PA 19000";
+            //pers.Phone = "215-456-7890";
+            //pers.Email = "jane.doe@def.org";
+            //pers.CreatedTime = System.DateTime.Now;
+            //context.Persons.Add(pers);
+            //context.SaveChanges();
 
-            // Initialize rows of the Entity table to get it created.
+            //// Initialize rows of the Entity table to get it created.
 
-            Entity ent = new Entity();
-            ent.FranchiseKey = Franchise.LocalFranchiseKey;
-            ent.Inactive = false;
-            ent.EntityType = EntityType.Corporation;
-            ent.Name = "Acme Corporation";
-            ent.Address = "123 Anywhere St.\r\nPhiladelphia, PA 19000";
-            ent.Phone = "215-456-7890";
-            ent.Email = "jane.doe@def.org";
-            ent.CreatedTime = System.DateTime.Now;
-            context.Entitys.Add(ent);
-            context.SaveChanges();
+            //Entity ent = new Entity();
+            //ent.FranchiseKey = Franchise.LocalFranchiseKey;
+            //ent.Inactive = false;
+            //ent.EntityType = EntityType.Corporation;
+            //ent.Name = "Acme Corporation";
+            //ent.Address = "123 Anywhere St.\r\nPhiladelphia, PA 19000";
+            //ent.Phone = "215-456-7890";
+            //ent.Email = "jane.doe@def.org";
+            //ent.CreatedTime = System.DateTime.Now;
+            //context.Entitys.Add(ent);
+            //context.SaveChanges();
 
-            ent.Name = "Baker Hughes";
-            ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            ent.Phone = "215-456-7890";
-            ent.Email = "john.smith@def.org";
-            ent.CreatedTime = System.DateTime.Now;
-            context.Entitys.Add(ent);
-            context.SaveChanges();
+            //ent.Name = "Baker Hughes";
+            //ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //ent.Phone = "215-456-7890";
+            //ent.Email = "john.smith@def.org";
+            //ent.CreatedTime = System.DateTime.Now;
+            //context.Entitys.Add(ent);
+            //context.SaveChanges();
 
-            ent.Name = "Caterpiller Corporation";
-            ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            ent.Phone = "215-456-7890";
-            ent.Email = "john.smith@def.org";
-            ent.CreatedTime = System.DateTime.Now;
-            context.Entitys.Add(ent);
-            context.SaveChanges();
+            //ent.Name = "Caterpiller Corporation";
+            //ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //ent.Phone = "215-456-7890";
+            //ent.Email = "john.smith@def.org";
+            //ent.CreatedTime = System.DateTime.Now;
+            //context.Entitys.Add(ent);
+            //context.SaveChanges();
 
-            ent.Name = "Deere Equipment Corp";
-            ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            ent.Phone = "215-456-7890";
-            ent.Email = "john.smith@def.org";
-            ent.CreatedTime = System.DateTime.Now;
-            context.Entitys.Add(ent);
-            context.SaveChanges();
+            //ent.Name = "Deere Equipment Corp";
+            //ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //ent.Phone = "215-456-7890";
+            //ent.Email = "john.smith@def.org";
+            //ent.CreatedTime = System.DateTime.Now;
+            //context.Entitys.Add(ent);
+            //context.SaveChanges();
 
-            ent.Name = "Eaton Corporation";
-            ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            ent.Phone = "215-456-7890";
-            ent.Email = "john.smith@def.org";
-            ent.CreatedTime = System.DateTime.Now;
-            context.Entitys.Add(ent);
-            context.SaveChanges();
+            //ent.Name = "Eaton Corporation";
+            //ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //ent.Phone = "215-456-7890";
+            //ent.Email = "john.smith@def.org";
+            //ent.CreatedTime = System.DateTime.Now;
+            //context.Entitys.Add(ent);
+            //context.SaveChanges();
 
-            ent.Name = "Fluor Construction";
-            ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            ent.Phone = "215-456-7890";
-            ent.Email = "john.smith@def.org";
-            ent.CreatedTime = System.DateTime.Now;
-            context.Entitys.Add(ent);
-            context.SaveChanges();
+            //ent.Name = "Fluor Construction";
+            //ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //ent.Phone = "215-456-7890";
+            //ent.Email = "john.smith@def.org";
+            //ent.CreatedTime = System.DateTime.Now;
+            //context.Entitys.Add(ent);
+            //context.SaveChanges();
 
-            ent.Name = "General Mills";
-            ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            ent.Phone = "215-456-7890";
-            ent.Email = "john.smith@def.org";
-            ent.CreatedTime = System.DateTime.Now;
-            context.Entitys.Add(ent);
-            context.SaveChanges();
+            //ent.Name = "General Mills";
+            //ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //ent.Phone = "215-456-7890";
+            //ent.Email = "john.smith@def.org";
+            //ent.CreatedTime = System.DateTime.Now;
+            //context.Entitys.Add(ent);
+            //context.SaveChanges();
 
-            ent.Name = "Harris Corporation";
-            ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            ent.Phone = "215-456-7890";
-            ent.Email = "john.smith@def.org";
-            ent.CreatedTime = System.DateTime.Now;
-            context.Entitys.Add(ent);
-            context.SaveChanges();
+            //ent.Name = "Harris Corporation";
+            //ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //ent.Phone = "215-456-7890";
+            //ent.Email = "john.smith@def.org";
+            //ent.CreatedTime = System.DateTime.Now;
+            //context.Entitys.Add(ent);
+            //context.SaveChanges();
 
-            ent.Name = "IBM Corporation";
-            ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
-            ent.Phone = "215-456-7890";
-            ent.Email = "john.smith@def.org";
-            ent.CreatedTime = System.DateTime.Now;
-            context.Entitys.Add(ent);
-            context.SaveChanges();
+            //ent.Name = "IBM Corporation";
+            //ent.Address = "123 Anywhere St\r\n Philadelphia, PA 19000";
+            //ent.Phone = "215-456-7890";
+            //ent.Email = "john.smith@def.org";
+            //ent.CreatedTime = System.DateTime.Now;
+            //context.Entitys.Add(ent);
+            //context.SaveChanges();
 
-            ent.FranchiseKey = "wrong";
-            ent.Inactive = false;
-            ent.Name = "Wrong Franchise";
-            ent.Address = "123 Anywhere St.\r\nPhiladelphia, PA 19000";
-            ent.Phone = "215-456-7890";
-            ent.Email = "jane.doe@def.org";
-            ent.CreatedTime = System.DateTime.Now;
-            context.Entitys.Add(ent);
-            context.SaveChanges();
+            //ent.FranchiseKey = "wrong";
+            //ent.Inactive = false;
+            //ent.Name = "Wrong Franchise";
+            //ent.Address = "123 Anywhere St.\r\nPhiladelphia, PA 19000";
+            //ent.Phone = "215-456-7890";
+            //ent.Email = "jane.doe@def.org";
+            //ent.CreatedTime = System.DateTime.Now;
+            //context.Entitys.Add(ent);
+            //context.SaveChanges();
 
             // Initialize one row of Franchise table
 
@@ -224,62 +225,321 @@ namespace Portal11.Models
             GLCode gl = new GLCode();
             gl.FranchiseKey = Franchise.LocalFranchiseKey;
             gl.Inactive = false;
-            gl.Code = "42100 - Foundation"; gl.ExpCode = true; gl.DepCode = false;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.ExpCode = false; gl.DepCode = true; gl.CreatedTime = System.DateTime.Now;
 
-            gl.Code = "42300 - Individual Donation"; gl.ExpCode = true; gl.DepCode = false;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.Code = "41000 — RESTRICTED REVENUE";
+            context.GLCodes.Add(gl); context.SaveChanges();
 
-            gl.Code = "44015 - Space/Equipment Rental"; gl.ExpCode = true; gl.DepCode = false;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.Code = "41100 — Govt / Local";
+            context.GLCodes.Add(gl); context.SaveChanges();
 
-            gl.Code = "45011 - Donated Materials"; gl.ExpCode = true; gl.DepCode = false;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.Code = "41200 — State";
+            context.GLCodes.Add(gl); context.SaveChanges();
 
-            gl.Code = "62010 - Artistic & Curatorial Fees"; gl.ExpCode = true; gl.DepCode = false;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.Code = "41300 — Federal";
+            context.GLCodes.Add(gl); context.SaveChanges();
 
-            gl.Code = "62021 - Teaching"; gl.ExpCode = true; gl.DepCode = false;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.Code = "42000 — CONTRIBUTED REVENUE";
+            context.GLCodes.Add(gl); context.SaveChanges();
 
-            gl.Code = "63010 - CW Coworking Membership"; gl.ExpCode = true; gl.DepCode = false;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.Code = "42100 — Foundation";
+            context.GLCodes.Add(gl); context.SaveChanges();
 
-            gl.Code = "63020 - Office Supplies & Expendables"; gl.ExpCode = true; gl.DepCode = false;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.Code = "42200 — Government";
+            context.GLCodes.Add(gl); context.SaveChanges();
 
-            gl.Code = "12345 - Deposit Code 1"; gl.ExpCode = false; gl.DepCode = true;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.Code = "42210 — Federal";
+            context.GLCodes.Add(gl); context.SaveChanges();
 
-            gl.Code = "54321 - Deposit Code 2"; gl.ExpCode = false; gl.DepCode = true;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.Code = "42220 — State";
+            context.GLCodes.Add(gl); context.SaveChanges();
 
-            gl.FranchiseKey = "Wrong";
-            gl.Inactive = false;
-            gl.Code = "Wrong Franchise"; gl.ExpCode = true; gl.DepCode = false;
-            gl.CreatedTime = System.DateTime.Now;
-            context.GLCodes.Add(gl);
-            context.SaveChanges();
+            gl.Code = "42230 — Local";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "42300 — Individual";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "42400 — Corporate";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44000 — EARNED REVENUE";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44010 — Admissions";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44012 — Merchandise";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44013 — Professional Fees";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44014 — Licensing / Royalty Fees";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44015 — Space / Equipment Rental";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44016 — Investments";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44017 — Advertising";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44018 — Sponsorship";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44019 — CoProducing";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44020 — Submission Fees";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44021 — Materials";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44022 — Memberships";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "44023 — Vendor Fees";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "45000 — IN - KIND";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "45010 — Donated Services";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "45011 — Donated Materials";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "45012 — Donated Equipment/ Goods";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "45013 — Donated Space";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "45014 — Volunteer Time";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "46000 — MISCELLANEOUS";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.ExpCode = true; gl.DepCode = false; gl.CreatedTime = System.DateTime.Now;
+
+            gl.Code = "60000 — SALARIES(W - 2 Employee)";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "61000 — FRINGE";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "61010 — Payroll Taxes";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "61012 — Health Benefits";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "61013 — Retirement";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "61014 — Professional Develop/ Edu";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "61015 — Merrit Based Compensation";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62000 — PROFESSIONAL FEES (1099)";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62010 — Artistic & Curatorial Fees";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62011 — Design Fees";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62012 — Fundraising";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62013 — Marketing / PR";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62014 — Legal";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62015 — Documentation";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62016 — Production";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62017 — Research / Evaluation";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62018 — Accounting / Finance";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62019 — Fabrication";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62020 — General Consulting";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62021 — Teaching";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62022 — Administration";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62023 — Development";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "62024 — Prize Money";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63000 — PROGRAM / GENERAL ADMIN";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63010 — CW Coworking Membership";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63011 — Common Pool Management Fees";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63012 — Licenses, Permits, Visas";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63014 — Rights & Reproductions";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63015 — Venue Fees(Rent / Lease)";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63016 — Project Materials";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63017 — Merchandise Production";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63018 — Postage & Shipping";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63000 — PROGRAM / GENERAL ADMIN: 63019 — Printing & Publications";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63020 — Office Supplies & Expendables";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63021 — Software Purchase & Licensing";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63022 — Telephone";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63023 — Internet & IT";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63024 — Advertising(ad purchasing)";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63025 — Dues & Subscriptions";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63026 — Bank & Merchant Service Fees";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63027 — Sales Tax";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63028 — Fees";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63029 — Compliance";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63030 — Admission Fees";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63031 — Special Insurances";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63032 — Equipment Rental";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63033 — Professional Development";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63034 — Contributions";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "63035 — Utilities";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "64000 — TRAVEL & MEETING EXPENSES";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "64010 — Transportation";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "64011 — Accommodations";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "64012 — Meals / Food / Catering";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "64013 — Gift Cards / Cash Box / PEX";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "65000 — OWNED FACILITY COSTS";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "65010 — Mortgage";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "65011 — Utilities";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "65012 — Maintenance";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "65013 — Property Taxes";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "66000 — CAPITAL COSTS";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "66010 — Working Capital";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "66012 — Endowment";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "66013 — Leasehold Improvements";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "66014 — Equipment";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "67000 — IN - KIND(expense)";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "67010 — Donated Services";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "67011 — Donated Materials";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "67012 — Donated Equipment & Goods";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "67013 — Donated Space";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "67014 — Volunteer Time";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
+            gl.Code = "68000 — REGRANTING ACTIVITY";
+            context.GLCodes.Add(gl); context.SaveChanges();
 
             // Initialize rows of Grant Maker table
 
@@ -410,66 +670,66 @@ namespace Portal11.Models
 
             // Initialize one row of the Project table to get it created.
 
-            Project proj = new Project();
-            proj.FranchiseKey = Franchise.LocalFranchiseKey;
-            proj.Inactive = false;
-            proj.Name = "Manhattan Project";
-            proj.Description = "A sample project for testing purposes. It is really a really, really important, but not well respected, project.";
-            proj.CreatedTime = System.DateTime.Now;  proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
-            context.Projects.Add(proj);
-            context.SaveChanges();
-            ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
+            //Project proj = new Project();
+            //proj.FranchiseKey = Franchise.LocalFranchiseKey;
+            //proj.Inactive = false;
+            //proj.Name = "Manhattan Project";
+            //proj.Description = "A sample project for testing purposes. It is really a really, really important, but not well respected, project.";
+            //proj.CreatedTime = System.DateTime.Now;  proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
+            //context.Projects.Add(proj);
+            //context.SaveChanges();
+            //ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
 
-            proj.Name = "AAA Project";
-            proj.Description = "A sample project for testing purposes. It is really a really important, but not well respected, project.";
-            proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
-            context.Projects.Add(proj);
-            context.SaveChanges();
-            ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
+            //proj.Name = "AAA Project";
+            //proj.Description = "A sample project for testing purposes. It is really a really important, but not well respected, project.";
+            //proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
+            //context.Projects.Add(proj);
+            //context.SaveChanges();
+            //ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
 
-            proj.Name = "The Head & the Hand Workshop";
-            proj.Description = "A sample project for testing purposes. It is really an important, and the epitome of well respected, project.";
-            proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
-            context.Projects.Add(proj);
-            context.SaveChanges();
-            ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
+            //proj.Name = "The Head & the Hand Workshop";
+            //proj.Description = "A sample project for testing purposes. It is really an important, and the epitome of well respected, project.";
+            //proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
+            //context.Projects.Add(proj);
+            //context.SaveChanges();
+            //ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
 
-            proj.Name = "Philadelphia Choral Collective";
-            proj.Description = "A sample project for testing purposes. It is really an important, and the epitome of well respected, project.";
-            proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
-            context.Projects.Add(proj);
-            context.SaveChanges();
-            ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
+            //proj.Name = "Philadelphia Choral Collective";
+            //proj.Description = "A sample project for testing purposes. It is really an important, and the epitome of well respected, project.";
+            //proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
+            //context.Projects.Add(proj);
+            //context.SaveChanges();
+            //ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
             
-            proj.Name = "Calm Clarity";
-            proj.Description = "A sample project for testing purposes. It is really an important, and the epitome of well respected, project.";
-            proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
-            context.Projects.Add(proj);
-            context.SaveChanges();
-            ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
+            //proj.Name = "Calm Clarity";
+            //proj.Description = "A sample project for testing purposes. It is really an important, and the epitome of well respected, project.";
+            //proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
+            //context.Projects.Add(proj);
+            //context.SaveChanges();
+            //ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
             
-            proj.Name = "215 Festival";
-            proj.Description = "A sample project for testing purposes. It is really an important, and the epitome of well respected, project.";
-            proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
-            context.Projects.Add(proj);
-            context.SaveChanges();
-            ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
+            //proj.Name = "215 Festival";
+            //proj.Description = "A sample project for testing purposes. It is really an important, and the epitome of well respected, project.";
+            //proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
+            //context.Projects.Add(proj);
+            //context.SaveChanges();
+            //ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
             
-            proj.Name = "III Project";
-            proj.Description = "A sample project for testing purposes. It is just a project.";
-            proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
-            context.Projects.Add(proj);
-            context.SaveChanges();
-            ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
+            //proj.Name = "III Project";
+            //proj.Description = "A sample project for testing purposes. It is just a project.";
+            //proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
+            //context.Projects.Add(proj);
+            //context.SaveChanges();
+            //ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
 
-            proj.FranchiseKey = "Wrong";
-            proj.Inactive = false;
-            proj.Name = "Wrong Franchise";
-            proj.Description = "Should never appear";
-            proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
-            context.Projects.Add(proj);
-            context.SaveChanges();
-            ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
+            //proj.FranchiseKey = "Wrong";
+            //proj.Inactive = false;
+            //proj.Name = "Wrong Franchise";
+            //proj.Description = "Should never appear";
+            //proj.CreatedTime = System.DateTime.Now; proj.BalanceDate = System.DateTime.Now; proj.CurrentFunds = 123.45M; // proj.RestrictedGrants = 543.21M;
+            //context.Projects.Add(proj);
+            //context.SaveChanges();
+            //ProjectClassActions.AddMasterProjectClasses(proj.ProjectID);        // Create Project Class rows from Master Project Class table
 
             // Initialize a few rows of the Vendor table to get it created.
 

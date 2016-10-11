@@ -43,7 +43,7 @@ namespace Portal11.Logic
                     if (!roleMgr.RoleExists(UserRole.Administrator.ToString())) // If not role does not currently exist
                     {
                         IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.Administrator.ToString() }); // Add the role (just once)
-                        IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.Coordinator.ToString() }); // Add the role (just once)
+                        IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.InternalCoordinator.ToString() }); // Add the role (just once)
                         IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.FinanceDirector.ToString() }); // Add the role (just once)
                         IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.TrustDirector.ToString() }); // Add the role (just once)
                         IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.TrustExecutive.ToString() }); // Add the role (just once)

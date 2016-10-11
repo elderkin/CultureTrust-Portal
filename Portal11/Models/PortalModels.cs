@@ -30,6 +30,22 @@ namespace Portal11.Models
         public string ReturnNote { get; set; }
     }
 
+    // One row of the GridView named AllPortalUsers, used by ListPortalUsers
+
+    public class AllPortalUsersRow
+    {
+        public string UserID { get; set; }
+        public const int RowIDCell = 0;
+        public string FullName { get; set; }
+        public string Email { get; set; }
+        public string UserRoleDesc { get; set; }
+        public string Administrator { get; set; }
+        public int LoginCount { get; set; }
+        public DateTime LastLogin { get; set; }
+        public string Inactive { get; set; }
+        public const int InactiveColumn = 6;
+    }
+
     // One row of the GridView named AllAppView, used by ProjectDashboard
 
     public class ProjectAppViewRow
@@ -44,6 +60,7 @@ namespace Portal11.Models
         public string CurrentStateDesc { get; set; }
         public const int CurrentStateDescRow = 5;
         public string ReturnNote { get; set; }
+        public bool Archived { get; set; }
     }
 
     // One row of the GridView named AllDepView, used by ProjectDashboard
@@ -62,6 +79,7 @@ namespace Portal11.Models
         public string CurrentStateDesc { get; set; }
         public const int CurrentStateDescRow = 7;
         public string ReturnNote { get; set; }
+        public bool Archived { get; set; }
     }
 
     // One row of the GridView named AllExpView, used by ProjectDashboard
@@ -79,6 +97,28 @@ namespace Portal11.Models
         public string CurrentStateDesc { get; set; }
         public const int CurrentStateDescRow = 7;
         public string ReturnNote { get; set; }
+        public bool Archived { get; set; }
+    }
+
+    // One row of the GridViews named AllProjectView, used by SelectProject
+
+    public class SelectProjectAllViewRow
+    {
+        public string ProjectID { get; set; }
+        public string Inactive { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public int Count { get; set; }
+        public const int InactiveColumn = 4;
+    }
+
+    public class SelectProjectUserViewRow
+    {
+        public string ProjectID { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string ProjectRole { get; set; }
+        public int Count { get; set; }
     }
 
     // One row of the GridView named StaffDepView, used by StaffDashboard
@@ -98,6 +138,7 @@ namespace Portal11.Models
         public const int OwnerRow = 7;
         public string Description { get; set; }
         public string ReturnNote { get; set; }
+        public bool Archived { get; set; }
     }
 
     public class StaffDepViewRow
@@ -115,6 +156,7 @@ namespace Portal11.Models
         public const int OwnerRow = 7;
         public string Description { get; set; }
         public string ReturnNote { get; set; }
+        public bool Archived { get; set; }
     }
     // One row of the GridView named StaffExpView, used by StaffDashboard
 
@@ -128,12 +170,13 @@ namespace Portal11.Models
         public decimal Amount { get; set; }
         public ExpState CurrentState { get; set; }
         public const int CurrentStateCell = 5;
-        public string StateDesc { get; set; }
+        public string CurrentStateDesc { get; set; }
         public string Owner { get; set; }
         public const int OwnerRow = 7;
         public string Target { get; set; }
         public string Summary { get; set; }
         public string ReturnNote { get; set; }
+        public bool Archived { get; set; }
     }
 
     // One row of the GridView named UserProjectView, used by AssignUserToProject
@@ -173,6 +216,7 @@ namespace Portal11.Models
     {
         public int AppID { get; set; }
         public bool Inactive { get; set; }
+        public bool Archived { get; set; }
         public AppType AppType { get; set; }                // Will grow to include many types
         [Required]
         public int? ProjectID { get; set; }
@@ -224,8 +268,8 @@ namespace Portal11.Models
 
     public enum AppState
     {
-        [Description("Unsubmitted (C)")]
-        UnsubmittedByCoordinator = 1,
+        [Description("Unsubmitted (IC)")]
+        UnsubmittedByInternalCoordinator = 1,
         [Description("Unsubmitted (PS)")]
         UnsubmittedByProjectStaff,
         [Description("Unsubmitted (PD)")]
@@ -238,8 +282,8 @@ namespace Portal11.Models
         AwaitingFinanceDirector,
         [Description("Awaiting Trust Executive")]
         AwaitingTrustExecutive,
-        [Description("Awaiting Coordinator")]
-        AwaitingCoordinator,
+        [Description("Awaiting Internal Coordinator")]
+        AwaitingInternalCoordinator,
         [Description("Approved")]
         Approved,
         [Description("Returned")]
@@ -286,6 +330,7 @@ namespace Portal11.Models
     {
         public int DepID { get; set; }
         public bool Inactive { get; set; }
+        public bool Archived { get; set; }
         public DepType DepType { get; set; }
         [Required]
         public int? ProjectID { get; set; }
@@ -364,8 +409,8 @@ namespace Portal11.Models
 
     public enum DepState
     {
-        [Description("Unsubmitted (C)")]
-        UnsubmittedByCoordinator = 1,
+        [Description("Unsubmitted (IC)")]
+        UnsubmittedByInternalCoordinator = 1,
         [Description("Awaiting Project Director")]
         AwaitingProjectDirector,
         [Description("Awaiting Trust Director")]
@@ -460,6 +505,7 @@ namespace Portal11.Models
     {
         public int ExpID { get; set; }
         public bool Inactive { get; set; }
+        public bool Archived { get; set; }
 
         public decimal Amount { get; set; }                 // Total funds in this Request. For Paycheck, this is Gross Pay
 
@@ -566,8 +612,8 @@ namespace Portal11.Models
 
     public enum ExpState
     {
-        [Description("Unsubmitted (C)")]
-        UnsubmittedByCoordinator = 1,
+        [Description("Unsubmitted (IC)")]
+        UnsubmittedByInternalCoordinator = 1,
         [Description("Unsubmitted (PS)")]
         UnsubmittedByProjectStaff,
         [Description("Unsubmitted (PD)")]
@@ -580,7 +626,7 @@ namespace Portal11.Models
         AwaitingFinanceDirector,
         [Description("Awaiting Trust Executive")]
         AwaitingTrustExecutive,
-        [Description("Approved")]
+        [Description("Approved/Ready to Pay")]
         Approved,
         [Description("Payment Sent")]
         PaymentSent,
@@ -832,8 +878,8 @@ namespace Portal11.Models
 
     public enum ProjectRole
     {
-        [Description("Coordinator")]
-        Coordinator = 1,
+        [Description("Internal Coordinator")]
+        InternalCoordinator = 1,
         [Description("Project Director")]
         ProjectDirector,
         [Description("Project Staff")]
@@ -957,8 +1003,8 @@ namespace Portal11.Models
         Administrator = 1,
         [Description("Auditor")]
         Auditor,
-        [Description("Coordinator")]
-        Coordinator,
+        [Description("Internal Coordinator")]
+        InternalCoordinator,
         [Description("Finance Director")]
         FinanceDirector,
         [Description("Project Member")]
@@ -1063,14 +1109,15 @@ namespace Portal11.Models
             CUserFullName = "UserFullName",
             CUserID = "UserID",
             CUserTypeAdmin = "Admin",
-            CUserTypeCoordinator = "Coordinator",
+            CUserTypeInternalCoordinator = "Internal Coordinator",
             CUserTypeProject = "Project",
             CUserTypeStaff = "Staff",
             CUserRole = "Role",
             CUserRoleDescription = "RoleDescription",
             CUserProjectSelector = "ProjectSelector",
             CUserProjectAll = "All",
-            CUserProjectUser = "User";
+            CUserProjectUser = "User",
+            CUserGridViewRows = "GridViewRows";
         
 
         // ProjectInfoCookie stores information about the project that the user has selected to work on.
@@ -1086,16 +1133,28 @@ namespace Portal11.Models
 
         public const string
             CProjectCheckboxes = "ProjectCheckboxesCookie",
+
+            CProjectCkSearchVisible = "ProjectSearchVisible",
             CProjectCkRAwaitingProjectStaff = "CkRAwaitingProjectStaff",
             CProjectCkRAwaitingCWStaff = "CkRAwaitingCWStaff",
             CProjectCkRApproved = "CkRApproved",
             CProjectCkRReturned = "CkRReturned",
+            CProjectCkRActive = "CkRActive",
+            CProjectCkRArchived = "CkRArchived",
+            CProjectFromDate = "CProjectFromDate",
+            CProjectToDate = "CProjectToDate",
+
+            CProjectDdlEntityID = "CProjectDdlEntityID",
+            CProjectDdlPersonID = "CProjectDdlPersonID",
+
             CProjectAppVisible = "ProjectAppVisible",
+            
             CProjectDepVisible = "ProjectDepVisible",
             CProjectCkDAwaitingProjectStaff = "CkDAwaitingProjectStaff",
             CProjectCkDAwaitingCWStaff = "CkDAwaitingCWStaff",
             CProjectCkDDepositComplete = "CkDDepositComplete",
             CProjectCkDReturned = "CkDReturned",
+            
             CProjectExpVisible = "ProjectExpVisible",
             CProjectCkEAwaitingProjectStaff = "CkEAwaitingProjectStaff",
             CProjectCkEAwaitingCWStaff = "CkEAwaitingCWStaff",
@@ -1108,7 +1167,9 @@ namespace Portal11.Models
         public const string
             CStaffCheckboxes = "StaffCheckboxesCookie",
 
-            CStaffCkRCoordinator = "CkRCoordinator",
+            CStaffCkSearchVisible = "StaffSearchVisible",
+
+            CStaffCkRInternalCoordinator = "CkRInternalCoordinator",
             CStaffCkRFinanceDirector = "CkRFinanceDirector",
             CStaffCkRProjectMember = "CkRProjectMember",
             CStaffCkRTrustDirector = "CkRTrustDirector",
@@ -1116,6 +1177,14 @@ namespace Portal11.Models
 
             CStaffFromDate = "CStaffFromDate",
             CStaffToDate = "CStaffToDate",
+
+            CStaffDdlEntityID = "CStaffDdlEntityID",
+            CStaffDdlGLCodeID = "CStaffDdlGLCodeID",
+            CStaffDdlPersonID = "CStaffDdlPersonID",
+            CStaffDdlProjectID = "CStaffDdlProjectID",
+
+            CStaffCkRActive = "CStaffCkRActive",
+            CStaffCkRArchived = "CStaffCkRArchived",
 
             CStaffApprovalsVisible = "StaffApprovalsVisible",
             CStaffCkAExpress = "CkAExpress",
@@ -1182,6 +1251,8 @@ namespace Portal11.Models
             URLEditProjectClass = "~/Proj/EditProjectClass",
             URLEditRegistration = "~/Account/EditRegistration",
             URLEditVendor = "~/Admin/EditVendor",
+            URLErrorDatabase = "~/ErrorLog/DatabaseError.aspx",
+            URLErrorFatal = "~/ErrorLog/FatalError.aspx",
             URLLogin = "~/Account/Login",
             URLLoginDispatch = "~/Account/LoginDispatch",
             URLProjectDashboard = "~/Proj/ProjectDashboard",

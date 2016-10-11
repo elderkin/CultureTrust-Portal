@@ -53,6 +53,8 @@ namespace Portal11.Account
                     txtFullName.Text = existingUser.FullName;
                     txtAddress.Text = existingUser.Address;
                     txtPhoneNumber.Text = existingUser.PhoneNumber;
+                    if (existingUser.GridViewRows != 0)                     // If value actually exists
+                        txtGridViewRows.Text = existingUser.GridViewRows.ToString(); // Display current value
 
                     // Load current options into check boxes
 
@@ -78,6 +80,8 @@ namespace Portal11.Account
                             }
                         }
                     }
+                    txtLoginCount.Text = existingUser.LoginCount.ToString();
+                    txtLastLogin.Text = existingUser.LastLogin.ToString();
 
                     litSavedUserID.Text = userID;                           // Save values for use as form processing finishes
                     litSavedEmail.Text = existingUser.Email;
@@ -126,8 +130,14 @@ namespace Portal11.Account
                     existingUser.FullName = txtFullName.Text;
                     existingUser.Address = txtAddress.Text;
                     existingUser.PhoneNumber = txtPhoneNumber.Text;
-                    existingUser.UserRole = UserRole.Project;               // Assume they are a "vanilla" Project User, e.g., Project Director or Project Staff
-                    // This may get overwritten in the next section
+                    existingUser.UserName = txtEmail.Text;                  // Note username must be identical to email
+                                                                            // This may get overwritten in the next section
+
+                    // Process GridViewRows. A value of zero is legal; it means accept the default value
+
+                    existingUser.GridViewRows = 0;                          // Supply default
+                    if (txtGridViewRows.Text != "")                         // If != there is a value available
+                        existingUser.GridViewRows = Convert.ToInt32(txtGridViewRows.Text); // Convert value user supplied
 
                     // Unload current options from check boxes
 
@@ -150,6 +160,7 @@ namespace Portal11.Account
 
                     // Update database with Roles from check boxes
 
+                    existingUser.UserRole = UserRole.Project;               // Assume they are a "vanilla" Project User, e.g., Project Director or Project Staff
                     foreach (ListItem item in rblRole.Items)
                     {
                         if (item.Value != "")                               // If != this item has a value (cooresponding to a role)

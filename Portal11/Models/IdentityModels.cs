@@ -34,6 +34,10 @@ namespace Portal11.Models
         public UserRole UserRole { get; set; }
         public int GridViewRows { get; set; }                           // Number of rows in each GridView
         public const int GridViewRowsDefault = 10;                      // Default value
+        public const int GridViewRowsMinimum = 5;                       // Can't go smaller than this
+        public const int GridViewRowsMaximum = 100;                     // Can't go bigger than this
+        public int LoginCount { get; set; }                             // Number of successful logins
+        public DateTime LastLogin { get; set; }                         // Time of last successful login
 
         // End of new fields
         //// Define names of user roles

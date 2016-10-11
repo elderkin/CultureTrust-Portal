@@ -180,17 +180,21 @@
                 <div class="panel-body">
                     <ul class="list-group">
                         <li class="list-group-item">
-                            <a runat="server" href="~/Account/Register.aspx" title="Create a new User with Email and Password" >New Portal User</a>
+                            <a runat="server" href="~/Account/Register.aspx" title="Create a new Portal User with Email and Password" >New Portal User</a>
                         </li>
                         <li class="list-group-item">
-                            <a runat="server" href="~/Select/SelectUser.aspx?Command=Edit" title="Choose an existing User and change its description - except for password">Edit Portal User</a>
+                            <a runat="server" href="~/Select/SelectUser.aspx?Command=Edit" title="Choose an existing Portal User and change its description - except for password">Edit Portal User</a>
                         </li>
                         <li class="list-group-item">
-                            <a runat="server" href="~/Select/SelectUser.aspx?Command=ChangePassword" title="Choose an existing User and change its password">Change Portal User Password</a>
+                            <a runat="server" href="~/Select/SelectUser.aspx?Command=ChangePassword" title="Choose an existing Portal User and change its password">Change Portal User Password</a>
                         </li>
                         <li class="list-group-item">
                             <a runat="server" href="~/Select/SelectUser.aspx?Command=Assign" 
                                 title="Choose a User and change their role (Project Director or Project Staff) on existing Projects">Assign Portal User to Project</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a runat="server" href="~/Lists/ListPortalUsers.aspx" 
+                                title="List all the Portal Users in a printable format">List Portal Users</a>
                         </li>
                     </ul>
                 </div>

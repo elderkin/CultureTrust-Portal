@@ -69,5 +69,26 @@ namespace Portal11.Logic
             }
             return (DateTime)SqlDateTime.MinValue;                          // Return a placebo value
         }
+
+        // Validate a typed-in date value from a text box
+        public static void ValidateDateInput(TextBox txt, string source, Literal lit)
+        {
+            if (txt.Text != "")                                                 // If != there is a value in the text box
+            {
+                try
+                {
+                    DateTime temp;
+                    temp = Convert.ToDateTime(txt.Text);                        // Attempt to convert string to date
+                    txt.Text = temp.ToShortDateString();                        // If it worked, put it back in text box in pretty format
+                    lit.Text = "";                                              // Erase prior error message
+                }
+                catch (FormatException)                                         // A date conversion error
+                {
+                    txt.Text = "";                                              // For now, just clear the bad date
+                    lit.Text = "Invalid '" + source + "' value. Format is mm/dd/yyyy"; // Report the error
+                }
+            }
+            return;
+        }
     }
 }
