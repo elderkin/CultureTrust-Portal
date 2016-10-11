@@ -31,6 +31,33 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Literal litDangerMessage;
         
         /// <summary>
+        /// btnSearchCollapse control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btnSearchCollapse;
+        
+        /// <summary>
+        /// btnSearchExpand control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btnSearchExpand;
+        
+        /// <summary>
+        /// pnlSearch control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlSearch;
+        
+        /// <summary>
         /// ddlProjectName control.
         /// </summary>
         /// <remarks>
@@ -49,13 +76,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Panel pnlNextReviewer;
         
         /// <summary>
-        /// ckRCoordinator control.
+        /// ckRInternalCoordinator control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckRCoordinator;
+        protected global::System.Web.UI.WebControls.CheckBox ckRInternalCoordinator;
         
         /// <summary>
         /// ckRFinanceDirector control.
@@ -146,6 +173,51 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Calendar calEndingDate;
+        
+        /// <summary>
+        /// ddlEntityName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlEntityName;
+        
+        /// <summary>
+        /// ddlPersonName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlPersonName;
+        
+        /// <summary>
+        /// ddlGLCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlGLCode;
+        
+        /// <summary>
+        /// ckRActive control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckRActive;
+        
+        /// <summary>
+        /// ckRArchived control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckRArchived;
         
         /// <summary>
         /// btnAppCollapse control.

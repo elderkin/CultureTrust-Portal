@@ -67,6 +67,15 @@ namespace Portal11.Account {
         protected global::System.Web.UI.WebControls.TextBox txtPhoneNumber;
         
         /// <summary>
+        /// txtGridViewRows control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtGridViewRows;
+        
+        /// <summary>
         /// cblOptions control.
         /// </summary>
         /// <remarks>
@@ -83,6 +92,24 @@ namespace Portal11.Account {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButtonList rblRole;
+        
+        /// <summary>
+        /// txtLoginCount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtLoginCount;
+        
+        /// <summary>
+        /// txtLastLogin control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtLastLogin;
         
         /// <summary>
         /// btnCancel control.

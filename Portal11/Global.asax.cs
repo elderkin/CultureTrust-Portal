@@ -18,36 +18,64 @@ namespace Portal11
     {
         void Application_Start(object sender, EventArgs e)
         {
+
+            // Log a note in Elmah error log saying that we have started
+
+            LogError.LogApplicationStart();
+
             // Code that runs on application startup
+
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            // Create an initial set of tables
-//  fails          Database.SetInitializer(new PortalDatabaseInitializer());
-//  works, but doesn't DropCreate          Database.SetInitializer<ApplicationDbContext>(null);
-//  fails            Database.SetInitializer(new System.Data.Entity.DropCreateDatabaseIfModelChanges<ApplicationDbContext>());
-            Database.SetInitializer<ApplicationDbContext>(new PortalDatabaseInitializer());
+            // Create an initial set of tables, if new database
+
+            // This has been quite a struggle! For starters, set the Initializer to CreateDatabaseIfNotExists, which will see if the tables
+            // already exist and if not, will create them and invoke the Seed method to fill the usual suspects.
+
+            //            Database.SetInitializer(new CreateDatabaseIfNotExists<ApplicationDbContext>()); // The default - create the tables if they're not there already
+
+            // A debugging option: Always toss the existing database and re-create it
+
+            Database.SetInitializer(new PortalDatabaseInitializer()); // One-shot to fill empty database with tables
+
+            // The "production" option. Use the Initializer to execute migrations if the model has changed.
+
+//            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Portal11.Migrations.Configuration>());
 
             // Create custom user roles if they don't already exist
+
             RoleActions roleActions = new RoleActions();
             roleActions.AddRoles();
         }
 
+        // Applicaztion-level error handler. We come here after a try-catch block and a page-level error handler have failed to resolve the error.
+        // Try to determine the type of error and react accordingly.
+
         protected void Application_Error(object sender, EventArgs e)
         {
-            var ex = Server.GetLastError();
-            var httpException = ex as HttpException ?? ex.InnerException as HttpException;
-            if (httpException != null)
+            var ex = Server.GetLastError();                                 // Fetch the most recent exception
+
+            if (ex != null)                                                 // If != there is an exception her to look at
             {
-                if (httpException.WebEventCode == WebEventCodes.RuntimeErrorPostTooLarge)
+                HttpException rootProblem = ex.GetBaseException() as HttpException; // See if the root problem is an HTTP exception
+                if (rootProblem != null)                                           // If != the exception was indeed an HTTP exception
                 {
-                    Server.ClearError();
-                    Server.Transfer("UploadError.aspx");
+
+                    // Handle an attempt to upload a file that is too big for us
+
+                    if (rootProblem.WebEventCode == WebEventCodes.RuntimeErrorPostTooLarge)
+                    {
+                        Server.ClearError();
+                        Server.Transfer("UploadError.aspx");
+                    }
                 }
             }
-            if (ex is HttpUnhandledException)                               // If is this is an exception that we can report
-                LogError.LogInternalException(ex);                          // Fatal error
+//            LogError.LogInternalException(ex);                                      // Report and record Fatal error, no matter what it is
+
+            // Now fall through to invoke the FatalError.aspx page and report to user
 
         }
+ 
     }
 }

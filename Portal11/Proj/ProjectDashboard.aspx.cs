@@ -75,7 +75,7 @@ namespace Portal11.Proj
 
                 // If the User is a Coordinator, they can create a new Deposit.
 
-                if (litSavedProjectRole.Text == ProjectRole.Coordinator.ToString()) // If == User is a Coordinator. Powerful
+                if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a InternalCoordinator. Powerful
                     btnDepNew.Enabled = true;                           // Allow them to create a new Deposit
 
                 RestoreCheckboxes();                                    // Restore more recent checkbox settings from a cookie
@@ -86,10 +86,134 @@ namespace Portal11.Proj
             return;
         }
 
-// Start of APPROVAL section
+        // Expand and Collapse the panel of search filters
+
+        protected void btnSearchCollapse_Click(object sender, EventArgs e)
+        {
+            CollapseSearchPanel();                                          // Do the heavy lifting
+            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            return;
+        }
+
+        void CollapseSearchPanel()
+        {
+            pnlSearch.Visible = false;
+            btnSearchCollapse.Visible = false;
+            btnSearchExpand.Visible = true;
+            return;
+        }
+
+        protected void btnSearchExpand_Click(object sender, EventArgs e)
+        {
+            ExpandSearchPanel();
+            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            return;
+        }
+
+        void ExpandSearchPanel()
+        {
+            pnlSearch.Visible = true;
+            btnSearchCollapse.Visible = true;
+            btnSearchExpand.Visible = false;
+            return;
+        }
+
+        // Toggle the visibility of a calendar. If becoming visible, load with date from text box, if any
+
+        protected void btnBeginningDate_Click(object sender, EventArgs e)
+        {
+            calClick(txtBeginningDate, calBeginningDate);                       // Do the heavy lifting in common code
+            return;
+        }
+
+        protected void btnEndingDate_Click(object sender, EventArgs e)
+        {
+            calClick(txtEndingDate, calEndingDate);                             // Do the heavy lifting in common code
+            return;
+        }
+
+        void calClick(TextBox txt, System.Web.UI.WebControls.Calendar cal)
+        {
+            if (cal.Visible)                                                    // If true the calendar control is currently visible
+                cal.Visible = false;                                            // Hide it
+            else
+            {
+                cal.Visible = true;                                             // Make the calendar control visible
+                DateActions.LoadTxtIntoCal(txt, cal);                           // Pull date from text box, store it in calendar
+            }
+            return;
+        }
+
+        // The user has clicked on a date or range in a calendar. Let's see what's up! Suck out the selected date and hide the calendar.
+        // BeginningDate and EndingDate are conjoined. Selecting a date or range in BeginningDate primes the date in EndingDate.
+
+        protected void calBeginningDate_SelectionChanged(object sender, EventArgs e)
+        {
+            DateTime start = calBeginningDate.SelectedDate;
+            txtBeginningDate.Text = DateActions.LoadDateIntoTxt(start);         // Convert date to text 
+            DateTime last = start;
+            foreach (DateTime day in calBeginningDate.SelectedDates)
+            {
+                last = day;                                                     // This will end up being the last date in the range
+            }
+            txtEndingDate.Text = DateActions.LoadDateIntoTxt(last);             // Place the last selected date into the "To" text box
+            calEndingDate.SelectedDate = last;                                  // Also place the date into the "To" calendar
+            calEndingDate.VisibleDate = last;                                   // And position "To" calendar to that date
+            calBeginningDate.Visible = false;                                   // One click and the calendar is gone
+            SearchCriteriaChanged(sender, e);                                   // Refresh the grids
+            return;
+        }
+
+        protected void calEndingDate_SelectionChanged(object sender, EventArgs e)
+        {
+            calSelectionChanged(txtEndingDate, calEndingDate);                  // Do the heavy lifting
+            SearchCriteriaChanged(sender, e);                                   // Refresh the grids
+            return;
+        }
+
+        void calSelectionChanged(TextBox txt, System.Web.UI.WebControls.Calendar cal)
+        {
+            txt.Text = DateActions.LoadDateIntoTxt(cal.SelectedDate);           // Convert date to text
+            cal.Visible = false;                                                // One click and the calendar is gone
+            return;
+        }
+
+        // A From date or a To date is complete. Carefully validate the text value and report an error if there's trouble.
+        // Then redo the grid using the value that was entered, even if it was blank.
+
+        protected void txtBeginningDate_TextChanged(object sender, EventArgs e)
+        {
+            DateActions.ValidateDateInput(txtBeginningDate, "From Date", litDangerMessage); // Do the heavy lifting
+            SearchCriteriaChanged(sender, e);                                   // Refresh the grids
+            return;
+        }
+
+        protected void txtEndingDate_TextChanged(object sender, EventArgs e)
+        {
+            DateActions.ValidateDateInput(txtEndingDate, "To Date", litDangerMessage); // Do the heavy lifting
+            SearchCriteriaChanged(sender, e);                                   // Refresh the grids
+            return;
+        }
+
+        // The user changed one of the Filter selections check boxes. Recreate the grid views with new Filter criteria.
+
+        protected void SearchCriteriaChanged(object sender, EventArgs e)
+        {
+            LoadAllApps();                                              // Reload the GridView using new criteria
+            ResetAppContext();                                          // No selected row, no live buttons
+
+            LoadAllDeps();                                              // Reload the GridView using new criteria
+            ResetDepContext();                                          // No selected row, no live buttons
+
+            LoadAllExps();                                              // Reload the GridView using new criteria
+            ResetExpContext();                                          // No selected row, no live buttons
+
+            SaveCheckboxes();                                           // Save current checkbox settings in a cookie
+            return;
+        }
 
         // Collapse/Expand the panels of Approvals
-        
+
         protected void btnAppCollapse_Click(object sender, EventArgs e)
         {
             CollapseAppPanel();
@@ -121,25 +245,98 @@ namespace Portal11.Proj
             return;
         }
 
-        // The user clicked or unclicked one of the check boxes. Recreate the grid view with new Filter criteria.
+        // Expand/Collapse panel of Deposits
 
-        protected void ckAFilters_CheckedChanged(object sender, EventArgs e)
+        protected void btnDepCollapse_Click(object sender, EventArgs e)
         {
-            AllAppView.PageIndex = 0;                                       // Go back to the first page
-            LoadAllApps();                                                  // Reload the GridView using new criteria
-            ResetAppContext();                                              // No selected row, no live buttons
+            CollapseDepPanel();                                             // Do the heavy lifting
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            return;
+        }
+
+        void CollapseDepPanel()
+        {
+            pnlDep.Visible = false;
+            btnDepCollapse.Visible = false;
+            btnDepExpand.Visible = true;
+            return;
+        }
+
+        protected void btnDepExpand_Click(object sender, EventArgs e)
+        {
+            ExpandDepPanel();
+            LoadAllDeps();
+            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            return;
+        }
+
+        void ExpandDepPanel()
+        {
+            pnlDep.Visible = true;
+            btnDepCollapse.Visible = true;
+            btnDepExpand.Visible = false;
+            return;
+        }
+
+        // Collapse/Expand the panels of Expenses
+
+        protected void btnExpCollapse_Click(object sender, EventArgs e)
+        {
+            CollapseExpPanel();
+            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            return;
+        }
+
+        void CollapseExpPanel()
+        {
+            pnlExp.Visible = false;                                     // The panel body becomes invisible
+            btnExpCollapse.Visible = false;                             // The collapse button becomes invisible
+            btnExpExpand.Visible = true;                                // The expand button becomes visible
+            return;
+        }
+
+        protected void btnExpExpand_Click(object sender, EventArgs e)
+        {
+            ExpandExpPanel();
+            LoadAllExps();                                              // Refresh the contents of the gridview
+            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            return;
+        }
+
+        void ExpandExpPanel()
+        {
+            pnlExp.Visible = true;                                      // The panel body becomes visible
+            btnExpCollapse.Visible = true;                              // The collapse button becomes visible
+            btnExpExpand.Visible = false;                               // The expand button becomes invisible
             return;
         }
 
         // The user changed selection in the Since drop down list. Recreate the grid view with new Since criteria.
 
-        protected void ddlASince_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ckAFilters_CheckedChanged(sender, e);                           // Exactly the same action as Filter checkbox change
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
+        //protected void ddlASince_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    SearchCriteriaChanged(sender, e);                               // Exactly the same action as Filter checkbox change
+        //    SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+        //    return;
+        //}
+
+        // The user changed selection in the Since drop down list. Recreate the grid view with new Since criteria.
+
+        //protected void ddlDSince_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    SearchCriteriaChanged(sender, e);                           // Exactly the same action as Filter checkbox change
+        //    SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+        //    return;
+        //}
+
+        // The user changed selection in the Since drop down list. Recreate the grid view with new Since criteria.
+
+        //protected void ddlESince_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    SearchCriteriaChanged(sender, e);                        // Exactly the same action as Filter checkbox change
+        //    SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+        //    return;
+        //}
 
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button. Also, bold the Status cell if this user can operate on the row.
@@ -160,9 +357,9 @@ namespace Portal11.Proj
                 AppState state = EnumActions.ConvertTextToAppState(label.Text); // Carefully convert back into enumeration type
 
                 bool bling = false;                                         // Assume row will not be bolded
-                if (litSavedProjectRole.Text == ProjectRole.Coordinator.ToString()) // If == User is a Coordinator
+                if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a Coordinator
                 {
-                    if ((state == AppState.UnsubmittedByCoordinator) || (state == AppState.AwaitingCoordinator)) // If == Coordinator is working on Request
+                    if ((state == AppState.UnsubmittedByInternalCoordinator) || (state == AppState.AwaitingInternalCoordinator)) // If == Coordinator is working on Request
                         bling = true;                                       // Bold the bling
                 }
                 else if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If != User is not the Project Director
@@ -177,18 +374,113 @@ namespace Portal11.Proj
                 }
                 if (bling)                                                      // If true User can operate on Request.
                     e.Row.Cells[ProjectAppViewRow.CurrentStateDescRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+
+                // See if the row is Archived
+
+                label = (Label)e.Row.FindControl("lblArchived");                // Find the label control that contains Archived in this row
+                if (label.Text == "True")                                       // If == this record is Archived
+                    e.Row.Font.Italic = true;                                   // Use italics to indicate Archived status
+
+            }
+            return;
+        }
+
+        // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
+        // thereby letting us select the row without a Select button. Also, bold the Status cell if this user can operate on the row.
+
+        protected void AllDepView_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)            // If == this is indeed a row of our GridView control
+            {
+                e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
+                e.Row.ToolTip = "Click to select this Deposit";         // Establish tool tip during flyover
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AllDepView, "Select$" + e.Row.RowIndex);
+                // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
+
+                // See if the Request awaits action by the User. Find the right cell by its ID. The cell contains the text of the DepState enum value.
+                // For Deposits, the only such situation is for a Project Director and a Deposit Request in "Awaiting Project Director" or "Returned" state.
+
+                Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
+                DepState state = EnumActions.ConvertTextToDepState(label.Text); // Carefully convert back into enumeration type
+
+                bool bling = false;                                         // Assume row will not be bolded
+                if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a Coordinator
+                {
+                    if ((state == DepState.UnsubmittedByInternalCoordinator) || (state == DepState.Returned)) // If == InternalCoordinator is working on Request
+                        bling = true;                                       // Bold the row
+                }
+                else if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If != User is not the Project Director
+                {
+                    if ((state == DepState.AwaitingProjectDirector))        // If true Request is in interesting state for Project Director
+                        bling = true;                                       // Bold the row
+                }
+                if (bling)                                                  // If true User can operate on Request.
+                    e.Row.Cells[ProjectDepViewRow.CurrentStateDescRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+
+                // See if the row is Archived
+
+                label = (Label)e.Row.FindControl("lblArchived");            // Find the label control that contains Archived in this row
+                if (label.Text == "True")                                   // If == this record is Archived
+                    e.Row.Font.Italic = true;                               // Use italics to indicate Archived status
+            }
+            return;
+        }
+
+        // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
+        // thereby letting us select the row without a Select button
+
+        protected void AllExpView_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)            // If == this is indeed a row of our GridView control
+            {
+                e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
+                //                e.Row.Attributes["onmouseout"] = "this.style.textDecoration='none';"; // No need to highlight anything this way
+                e.Row.ToolTip = "Click to select this Expense";         // Establish tool tip during flyover
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AllExpView, "Select$" + e.Row.RowIndex);
+                // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
+                // See if the Request awaits action by the User. Find the right cell by its ID. The cell contains the text of the DepState enum value.
+                // For Deposits, the only such situation is for a Project Director and a Deposit Request in "Awaiting Project Director" or "Returned" state.
+
+                Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
+                ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Carefully convert back into enumeration type
+
+                bool bling = false;                                         // Assume row will not be bolded
+                if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a InternalCoordinator
+                {
+                    if (state == ExpState.UnsubmittedByInternalCoordinator)         // If == InternalCoordinator is working on Request
+                        bling = true;                                       // Bold the bling
+                }
+                else if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If != User is not the Project Director
+                {
+                    if ((state == ExpState.UnsubmittedByProjectDirector) || (state == ExpState.AwaitingProjectDirector) || (state == ExpState.Returned))
+                        bling = true;                                       // If true Request is in interesting state for PD
+                }
+                else if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If != User is not the Project Staff
+                {
+                    if (state == ExpState.UnsubmittedByProjectStaff)
+                        bling = true;                                       // If true Request is in interesting state for PS
+                }
+                if (bling)                                                  // If true User can operate on Request.
+                    e.Row.Cells[ProjectExpViewRow.CurrentStateDescRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+
+                // See if the row is Archived
+
+                label = (Label)e.Row.FindControl("lblArchived");            // Find the label control that contains Archived in this row
+                if (label.Text == "True")                                   // If == this record is Archived
+                    e.Row.Font.Italic = true;                               // Use italics to indicate Archived status
             }
             return;
         }
 
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected. This code assumes that
-        // Cells[4] contains the enum value (not enum desription) of CurrentState. It also assumes that only the New and View buttons are
+        // the row contains the enum value (not enum desription) of CurrentState. It also assumes that only the New and View buttons are
         // enabled all the time.
 
         protected void AllAppView_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Label label = (Label)AllAppView.SelectedRow.Cells[4].FindControl("lblCurrentState"); // Find the label control that contains Current State
+            Label label = (Label)AllAppView.SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
             AppState state = EnumActions.ConvertTextToAppState(label.Text); // Convert back into enumeration type
+            btnAppArchive.Enabled = false;                              // Assume User cannot Archive Request
             btnAppCopy.Enabled = true;                                  // If any Request is selected, the user can always copy it
             btnAppDelete.Enabled = false;                               // Assume User cannot Delete Request
             btnAppEdit.Enabled = false;                                 // Assume User cannot Edit Request
@@ -197,9 +489,9 @@ namespace Portal11.Proj
 
             switch (state)
             {
-                case AppState.UnsubmittedByCoordinator:
+                case AppState.UnsubmittedByInternalCoordinator:
                     {
-                        if (litSavedProjectRole.Text == ProjectRole.Coordinator.ToString()) // If == the user is a coordinator
+                        if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == the user is a coordinator
                         {
                             btnAppDelete.Enabled = true;
                             btnAppEdit.Enabled = true;
@@ -230,24 +522,158 @@ namespace Portal11.Proj
                             btnAppReview.Enabled = true;
                         break;
                     }
-                case AppState.AwaitingCoordinator:
+                case AppState.AwaitingInternalCoordinator:
                     {
-                        if (litSavedProjectRole.Text == ProjectRole.Coordinator.ToString()) // If == the user is a coordinator
+                        if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == the user is a coordinator
                         {
                             btnAppReview.Enabled = true;
+                        }
+                        break;
+                    }
+                case AppState.Approved:                             // Maybe Returned too?
+                    {
+                        if ((litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString())
+                            || litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == the user can Archive
+                        {
+                            Label archivedLabel = (Label)AllAppView.SelectedRow.FindControl("lblArchived"); // Find the label control that contains Archived
+                            if (archivedLabel.Text == "False")      // If == not currently archived.
+                                btnAppArchive.Enabled = true;       // Light Archive button. Can't archive if already archived
                         }
                         break;
                     }
                 case AppState.AwaitingTrustDirector:
                 case AppState.AwaitingFinanceDirector:
                 case AppState.AwaitingTrustExecutive:
-                case AppState.Approved:
                 case AppState.Returned:
                     {
                         break;                                      // The button setup is just fine. No editing or deleting here
                     }
                 default:
                     LogError.LogInternalError("ProjectDashboard", string.Format("Invalid AppState '{0}' from database",
+                        state)); // Fatal error
+                    break;
+            }
+            return;
+        }
+
+        // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected. This code assumes that only the View buttons are
+        // enabled all the time. Every other button is nuanced based on role. We don't mess with the New button. It works independently of
+        // which Request is selected.
+
+        protected void AllDepView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Label label = (Label)AllDepView.SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
+            DepState state = EnumActions.ConvertTextToDepState(label.Text); // Carefully convert back into enumeration type
+            btnDepArchive.Enabled = false;
+            btnDepCopy.Enabled = false;                                 // Assume a powerless user
+            btnDepDelete.Enabled = false;                               // and turn off all buttons
+            btnDepEdit.Enabled = false;
+            // Leave the New button in its former state
+            btnDepReview.Enabled = false;
+            btnDepView.Enabled = true;                                  // Everybody can View any Request
+
+            if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If == User is a Project Staff. Powerless.
+                return;
+
+            if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == User is a Project Director
+            {
+                btnDepCopy.Enabled = true;                              // No match what state, we can copy the request
+                if (state == DepState.AwaitingProjectDirector)          // If == the Request is waiting our action
+                    btnDepReview.Enabled = true;                        // A Project Director can review this Request
+                return;                                                 // Otherwise, Project Director is powerless
+            }
+
+            if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a Project InternalCoordinator. Powerful
+            {
+                btnDepCopy.Enabled = true;                              // No match what state, we can copy the request
+                if (state == DepState.UnsubmittedByInternalCoordinator)         // If == the Request is under construction by us
+                {
+                    btnDepDelete.Enabled = true;                        // Turn on other buttons
+                    btnDepEdit.Enabled = true;                          // that make sense in this state
+
+                }
+                else if (state == DepState.DepositComplete)             // If == the Request is complete; could be archived
+                {
+                    Label archivedLabel = (Label)AllDepView.SelectedRow.FindControl("lblArchived"); // Find the label control that contains Archived
+                    if (archivedLabel.Text == "False")                  // If == not currently archived.
+                        btnDepArchive.Enabled = true;                   // Light Archive button. Can't archive if already archived
+                }
+            }
+            return;
+        }
+
+        // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected. This code assumes that
+        // the Row contains the enum value (not enum desription) of CurrentState. It also assumes that only the New and View buttons are
+        // enabled all the time.
+
+        protected void AllExpView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Label label = (Label)AllExpView.SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
+            ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Convert back into enumeration type
+            btnExpArchive.Enabled = false;
+            btnExpCopy.Enabled = true;                                  // If any Request is selected, the user can always copy it
+            btnExpDelete.Enabled = false;                               // Assume User cannot Delete Request
+            btnExpEdit.Enabled = false;                                 // Assume User cannot Edit Request
+            btnExpReview.Enabled = false;                               // Assume User cannot Review Request
+            btnExpView.Enabled = true;                                  // If any Request is selected, the user can always view it
+
+            switch (state)
+            {
+                case ExpState.UnsubmittedByInternalCoordinator:
+                    {
+                        if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == the user is a coordinator
+                        {
+                            btnExpDelete.Enabled = true;
+                            btnExpEdit.Enabled = true;
+                        }
+                        break;
+                    }
+                case ExpState.UnsubmittedByProjectDirector:
+                    {
+                        if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == the user is a PD
+                        {
+                            btnExpDelete.Enabled = true;
+                            btnExpEdit.Enabled = true;
+                        }
+                        break;
+                    }
+                case ExpState.UnsubmittedByProjectStaff:
+                    {
+                        if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If == the user is a PS
+                        {
+                            btnExpDelete.Enabled = true;
+                            btnExpEdit.Enabled = true;
+                        }
+                        break;
+                    }
+                case ExpState.AwaitingProjectDirector:
+                    {
+                        if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == user is a Project Director, can Review
+                            btnExpReview.Enabled = true;
+                        break;
+                    }
+                case ExpState.Paid:
+                    {
+                        if ((litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString())
+                            || litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == the user can Archive
+                        {
+                            Label archivedLabel = (Label)AllExpView.SelectedRow.FindControl("lblArchived"); // Find the label control that contains Archived
+                            if (archivedLabel.Text == "False")      // If == not currently archived.
+                                btnExpArchive.Enabled = true;       // Light Archive button. Can't archive if already archived
+                        }
+                        break;
+                    }
+                case ExpState.AwaitingTrustDirector:
+                case ExpState.AwaitingFinanceDirector:
+                case ExpState.AwaitingTrustExecutive:
+                case ExpState.Approved:
+                case ExpState.PaymentSent:
+                case ExpState.Returned:
+                    {
+                        break;                                      // The button setup is just fine. No editing or deleting here
+                    }
+                default:
+                    LogError.LogInternalError("ProjectDashboard", string.Format("Invalid ExpState '{0}' from database",
                         state)); // Fatal error
                     break;
             }
@@ -265,7 +691,67 @@ namespace Portal11.Proj
                 ResetAppContext();                                      // No selected row, no live buttons after a page flip
             }
             return;
+        }
 
+        // Flip a page of the grid view control
+
+        protected void AllDepView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
+            {
+                AllDepView.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
+                LoadAllDeps();                                          // Reload the grid view control
+                ResetDepContext();                                      // No selected row, no live buttons after a page flip
+            }
+            return;
+        }
+
+        // Flip a page of the grid view control
+
+        protected void AllExpView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
+            {
+                AllExpView.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
+                LoadAllExps();                                          // Reload the grid view control
+                ResetExpContext();                                      // No selected row, no live buttons after a page flip
+            }
+            return;
+        }
+
+        // APPROVAL functions
+
+        // Archive button pressed. Just flip on the Archived flag
+
+        protected void btnAppArchive_Click(object sender, EventArgs e)
+        {
+            int appID = QueryStringActions.ConvertID(FetchSelectedRowLabel(AllAppView)).Int; // Get ready for action with an int version of the App ID
+
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                try
+                {
+                    App toUpdate = context.Apps.Find(appID);            // Fetch App row by its key
+                    if (toUpdate == null)
+                        LogError.LogInternalError("ProjectDashboard", $"Unable to locate ApprovalID {appID.ToString()} in database");
+                    // Log fatal error
+
+                    toUpdate.Archived = true;                           // Mark request as Archived
+                    AppHistory hist = new AppHistory();                 // Get a place to build a new AppHistory row
+                    StateActions.CopyPreviousState(toUpdate, hist, "Archived"); // Create a AppHistory log row from "old" version of Approval
+                    StateActions.SetNewAppState(toUpdate, hist.PriorAppState, litSavedUserID.Text, hist);
+                    // Write down our current State (which doesn't change here) and authorship
+                    context.AppHistorys.Add(hist);                      // Save new AppHistory row
+                    context.SaveChanges();                              // Commit the Add or Modify
+                }
+                catch (Exception ex)
+                {
+                    LogError.LogDatabaseError(ex, "ProjectDashboard",
+                        "Error updating App and AppHistory rows");      // Fatal error
+                }
+                SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
+                litSuccessMessage.Text = "Approval Request successfully Archived";    // Let user know we're good
+            }
         }
 
         // Copy button pressed. Simple dispatch to EditApproval.
@@ -310,7 +796,7 @@ namespace Portal11.Proj
                     LogError.LogDatabaseError(ex, "ProjectDashboard",
                         "Error deleting App, SupportingDoc and AppHistory rows or deleting Supporting Document"); // Fatal error
                 }
-                ckAFilters_CheckedChanged(sender, e);                   // Update the grid view and buttons for display
+                SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
                 litSuccessMessage.Text = "Approval deleted";            // Report success to our user
             }
         }
@@ -358,329 +844,42 @@ namespace Portal11.Proj
                                             + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView); // Start with existing request
         }
 
-
-        // Fetch all of the Requests for this project, subject to further search constraints. Display in a GridView.
-        // Find current project ID in listSavedProjectID
-
-        void LoadAllApps()
-        {
-            int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
-            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-            {
-                var pred = PredicateBuilder.True<App>();               // Initialize predicate to select from App table
-                pred = pred.And(r => r.ProjectID == projectID && !r.Inactive); // Only active Apps from current project
-
-                // Process check boxes for Deposit State. Combining checks is a little tricky because some of the checks overlap.
-
-                int filters = 0;
-                if (ckAAwaitingProjectStaff.Checked) filters = filters | 1;
-                if (ckAAwaitingCWStaff.Checked) filters = filters | 2;
-                if (ckAApproved.Checked) filters = filters | 4;
-                if (ckAReturned.Checked) filters = filters | 8;
-
-                switch (filters)
-                {
-                    case 0:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.ReservedForFutureUse); // Doesn't ever match
-                            break;
-                        }
-                    case 1:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByCoordinator
-                                              || r.CurrentState == AppState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == AppState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == AppState.AwaitingProjectDirector
-                                              || r.CurrentState == AppState.Returned);
-                            break;
-                        }
-                    case 2:
-                    case 10:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
-                                              || r.CurrentState == AppState.AwaitingFinanceDirector
-                                              || r.CurrentState == AppState.AwaitingCoordinator
-                                              || r.CurrentState == AppState.Approved);
-                            break;
-                        }
-                    case 3:
-                    case 11:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByCoordinator
-                                              || r.CurrentState == AppState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == AppState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == AppState.AwaitingProjectDirector
-                                              || r.CurrentState == AppState.AwaitingTrustDirector
-                                              || r.CurrentState == AppState.AwaitingFinanceDirector
-                                              || r.CurrentState == AppState.AwaitingCoordinator
-                                              || r.CurrentState == AppState.Approved
-                                              || r.CurrentState == AppState.Returned);
-                            break;
-                        }
-                    case 4:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.Approved);
-                            break;
-                        }
-                    case 5:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByCoordinator
-                                              || r.CurrentState == AppState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == AppState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == AppState.AwaitingProjectDirector
-                                              || r.CurrentState == AppState.Approved);
-                            break;
-                        }
-                    case 6:
-                    case 14:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
-                                              || r.CurrentState == AppState.AwaitingFinanceDirector
-                                              || r.CurrentState == AppState.AwaitingCoordinator
-                                              || r.CurrentState == AppState.Approved
-                                              || r.CurrentState == AppState.Returned);
-                            break;
-                        }
-                    case 8:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.Returned);
-                            break;
-                        }
-                    case 9:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByCoordinator
-                                              || r.CurrentState == AppState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == AppState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == AppState.AwaitingProjectDirector
-                                              || r.CurrentState == AppState.Returned);
-                            break;
-                        }
-                    case 12:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.Approved
-                                              || r.CurrentState == AppState.Returned);
-                            break;
-                        }
-                    case 13:
-                        {
-                            pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByCoordinator
-                                              || r.CurrentState == AppState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == AppState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == AppState.AwaitingProjectDirector
-                                              || r.CurrentState == AppState.Approved
-                                              || r.CurrentState == AppState.Returned);
-                            break;
-                        }
-                    default:    // Includes case 7 and case 15 - all checked. Don't need a predicate to get all the rows
-                        break;
-                }
-
-                // Process Since options
-
-                string since = ddlASince.SelectedValue;                 // Figure out which one was selected
-                if (since != "ProjectCreation")                         // If != a specific Since option was selected. Need predicate.
-                {
-                    DateTime sinceDate = new DateTime();
-                    switch (since)                                      // Break out by the selected item from the drop down list
-                    {
-                        case "BalanceDate":
-                            {
-                                sinceDate = Convert.ToDateTime(litBalance.Text); // Fetch the Balance Date (from earlier) and convert to binary
-                                break;
-                            }
-                        case "Last30":
-                            {
-                                sinceDate = DateTime.Today.AddDays(-30); // Compute date 30 days ago
-                                break;
-                            }
-                        case "Last90":
-                            {
-                                sinceDate = DateTime.Today.AddDays(-90); // Compute date 90 days ago
-                                break;
-                            }
-                        case "Last12":
-                            {
-                                sinceDate = DateTime.Today.AddMonths(-12); // Compute date 12 months ago
-                                break;
-                            }
-                        default:
-                            LogError.LogInternalError("ProjectDashboard", string.Format("Invalid value '{0}' from Since DDL",
-                                since)); // Fatal error
-                            break;
-                    }
-                    pred = pred.And(r => r.CurrentTime >= sinceDate);   // Add date selector to the Where predicate
-                }
-                List<App> apps = context.Apps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
-                // Do the query using the constructed predicate, sort the result, and create a list of App rows
-
-                // From this list of Apps, build a list of rows for the AllAppView GridView
-
-                List<ProjectAppViewRow> rows = new List<ProjectAppViewRow>(); // Create an empty list for the GridView control
-                foreach (var r in apps)                                 // Fill the list row-by-row
-                {
-                    ProjectAppViewRow row = new ProjectAppViewRow()     // Empty row all ready to fill
-                    {
-                        RowID = r.AppID.ToString(),                     // Convert ID from int to string for easier retrieval later
-                        CurrentTime = r.CurrentTime,                    // When request was last updated
-                        AppTypeDesc = EnumActions.GetEnumDescription(r.AppType), // Convert enum version to English version for display
-                        Description = r.Description,                    // Free text description of deposit
-                        CurrentState = r.CurrentState,                  // Load enum version for use when row is selected. But not visible
-                        CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState) // Convert enum version to English version for display
-
-                    };
-                    rows.Add(row);                                      // Add the filled-in row to the list of rows
-                }
-                AllAppView.DataSource = rows;                           // Give it to the GridView control
-                AllAppView.DataBind();                                  // And get it in gear
-
-                NavigationActions.EnableGridViewNavButtons(AllAppView); // Enable appropriate nav buttons based on page count
-            }
-            return;
-        }
-
         // Start of DEPOSIT section
 
+        // Archive button pressed. Just flip on the Archived flag
 
-        // Expand/Collapse panel of Deposits
-
-        protected void btnDepCollapse_Click(object sender, EventArgs e)
+        protected void btnDepArchive_Click(object sender, EventArgs e)
         {
-            CollapseDepPanel();                                             // Do the heavy lifting
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
+            int depID = QueryStringActions.ConvertID(FetchSelectedRowLabel(AllDepView)).Int; // Get ready for action with an int version of the Dep ID
 
-        void CollapseDepPanel()
-        {
-            pnlDep.Visible = false;
-            btnDepCollapse.Visible = false;
-            btnDepExpand.Visible = true;
-            return;
-        }
-
-        protected void btnDepExpand_Click(object sender, EventArgs e)
-        {
-            ExpandDepPanel();
-            LoadAllDeps();
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
-
-        void ExpandDepPanel()
-        {
-            pnlDep.Visible = true;
-            btnDepCollapse.Visible = true;
-            btnDepExpand.Visible = false;
-            return;
-        }
-
-        // The user changed selection in the Since drop down list. Recreate the grid view with new Since criteria.
-
-        protected void ddlDSince_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ckDFilters_CheckedChanged(sender, e);                           // Exactly the same action as Filter checkbox change
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
-
-        // The user clicked or unclicked one of the check boxes. Recreate the grid view with new Filter criteria.
-
-        protected void ckDFilters_CheckedChanged(object sender, EventArgs e)
-        {
-            AllDepView.PageIndex = 0;                                       // Go back to the first page
-            LoadAllDeps();                                                  // Reload the GridView using new criteria
-            ResetDepContext();                                              // No selected row, no live buttons
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
-
-        // Flip a page of the grid view control
-
-        protected void AllDepView_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        {
-            if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
-                AllDepView.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
-                LoadAllDeps();                                          // Reload the grid view control
-                ResetDepContext();                                      // No selected row, no live buttons after a page flip
-            }
-            return;
-        }
-
-        // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
-        // thereby letting us select the row without a Select button. Also, bold the Status cell if this user can operate on the row.
-
-        protected void AllDepView_RowDataBound(object sender, GridViewRowEventArgs e)
-        {
-            if (e.Row.RowType == DataControlRowType.DataRow)            // If == this is indeed a row of our GridView control
-            {
-                e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
-                e.Row.ToolTip = "Click to select this Deposit";         // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AllDepView, "Select$" + e.Row.RowIndex);
-                // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
-
-                // See if the Request awaits action by the User. Find the right cell by its ID. The cell contains the text of the DepState enum value.
-                // For Deposits, the only such situation is for a Project Director and a Deposit Request in "Awaiting Project Director" or "Returned" state.
-
-                Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
-                DepState state = EnumActions.ConvertTextToDepState(label.Text); // Carefully convert back into enumeration type
-
-                bool bling = false;                                         // Assume row will not be bolded
-                if (litSavedProjectRole.Text == ProjectRole.Coordinator.ToString()) // If == User is a Coordinator
+                try
                 {
-                    if ((state == DepState.UnsubmittedByCoordinator) || (state == DepState.Returned)) // If == Coordinator is working on Request
-                        bling = true;                                       // Bold the row
+                    Dep toUpdate = context.Deps.Find(depID);            // Fetch Dep row by its key
+                    if (toUpdate == null)
+                        LogError.LogInternalError("ProjectDashboard", $"Unable to locate DepositID {depID.ToString()} in database");
+                    // Log fatal error
+
+                    toUpdate.Archived = true;                           // Mark request as Archived
+                    DepHistory hist = new DepHistory();                 // Get a place to build a new DepHistory row
+                    StateActions.CopyPreviousState(toUpdate, hist, "Archived"); // Create a DepHistory log row from "old" version of Deposit
+                    StateActions.SetNewDepState(toUpdate, hist.PriorDepState, litSavedUserID.Text, hist);
+                    // Write down our current State (which doesn't change here) and authorship
+                    context.DepHistorys.Add(hist);                      // Save new DepHistory row
+                    context.SaveChanges();                              // Commit the Add or Modify
                 }
-                else if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If != User is not the Project Director
+                catch (Exception ex)
                 {
-                    if ((state == DepState.AwaitingProjectDirector))        // If true Request is in interesting state for Project Director
-                        bling = true;                                       // Bold the row
-                }                                                      
-                if (bling)                                                  // If true User can operate on Request.
-                    e.Row.Cells[ProjectDepViewRow.CurrentStateDescRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
-            }
-            return;
-        }
-
-        // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected. This code assumes that only the View buttons are
-        // enabled all the time. Every other button is nuanced based on role. We don't mess with the New button. It works independently of
-        // which Request is selected.
-
-        protected void AllDepView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Label label = (Label)AllDepView.SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
-            DepState state = EnumActions.ConvertTextToDepState(label.Text); // Carefully convert back into enumeration type
-
-            btnDepCopy.Enabled = false;                                 // Assume a powerless user
-            btnDepDelete.Enabled = false;                               // and turn off all buttons
-            btnDepEdit.Enabled = false;
-                                                                        // Leave the New button in its former state
-            btnDepReview.Enabled = false;
-            btnDepView.Enabled = true;                                  // Everybody can View any Request
-
-            if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If == User is a Project Staff. Powerless.
-                return;
-
-            if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == User is a Project Director
-            {
-                btnDepCopy.Enabled = true;                              // No match what state, we can copy the request
-                if (state == DepState.AwaitingProjectDirector)          // If == the Request is waiting our action
-                    btnDepReview.Enabled = true;                        // A Project Director can review this Request
-                return;                                                 // Otherwise, Project Director is powerless
-            }
-
-            if (litSavedProjectRole.Text == ProjectRole.Coordinator.ToString()) // If == User is a Project Coordinator. Powerful
-            {
-                btnDepCopy.Enabled = true;                              // No match what state, we can copy the request
-                if (state == DepState.UnsubmittedByCoordinator)         // If == the Request is under construction by us
-                {
-                    btnDepDelete.Enabled = true;                        // Turn on other buttons
-                    btnDepEdit.Enabled = true;                          // that make sense in this state
+                    LogError.LogDatabaseError(ex, "ProjectDashboard",
+                        "Error updating Dep and DepHistory rows");      // Fatal error
                 }
+                SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
+                litSuccessMessage.Text = "Deposit Request successfully Archived";    // Let user know we're good
             }
-            return;
         }
 
+        // Copy button pushed. Just dispatch
         protected void btnDepCopy_Click(object sender, EventArgs e)
         {
             string depID = FetchSelectedRowLabel(AllDepView);               // Extract the text of the control, which is ExpID
@@ -720,9 +919,8 @@ namespace Portal11.Proj
                     LogError.LogDatabaseError(ex, "ProjectDashboard",
                         "Error deleting Deposit, SupportingDoc and DepHistory rows or deleting Supporting Document"); // Fatal error
                 }
-                ckDFilters_CheckedChanged(sender, e);                   // Update the grid view and buttons for display
+                SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
                 litSuccessMessage.Text = "Deposit deleted";             // Report success to our user
-                //TODO: Update display?
             }
             return;
         }
@@ -773,375 +971,37 @@ namespace Portal11.Proj
                                             + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView); // Start with existing request
         }
 
-        void LoadAllDeps()
+        // Archive button pressed. Just flip on the Archived flag
+
+        protected void btnExpArchive_Click(object sender, EventArgs e)
         {
-            int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
+            int expID = QueryStringActions.ConvertID(FetchSelectedRowLabel(AllExpView)).Int; // Get ready for action with an int version of the Exp ID
+
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
-                var pred = PredicateBuilder.True<Dep>();               // Initialize predicate to select from Dep table
-                pred = pred.And(r => r.ProjectID == projectID && !r.Inactive); // Only active Deps from current project
-
-                // Process check boxes for Deposit State. Combining checks is a little tricky because some of the checks overlap.
-
-                int filters = 0;
-                if (ckDAwaitingProjectStaff.Checked) filters = filters | 1;
-                if (ckDAwaitingCWStaff.Checked) filters = filters | 2;
-                if (ckDDepositComplete.Checked) filters = filters | 4;
-                if (ckDReturned.Checked) filters = filters | 8;
-
-                switch (filters)
+                try
                 {
-                    case 0:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.ReservedForFutureUse); // Doesn't ever match
-                            break;
-                        }
-                    case 1:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByCoordinator
-                                              || r.CurrentState == DepState.AwaitingProjectDirector
-                                              || r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    case 2:
-                    case 10:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
-                                              || r.CurrentState == DepState.AwaitingFinanceDirector
-                                              || r.CurrentState == DepState.ApprovedReadyToDeposit);
-                            break;
-                        }
-                    case 3:
-                    case 11:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByCoordinator
-                                              || r.CurrentState == DepState.AwaitingProjectDirector
-                                              || r.CurrentState == DepState.AwaitingTrustDirector
-                                              || r.CurrentState == DepState.AwaitingFinanceDirector
-                                              || r.CurrentState == DepState.ApprovedReadyToDeposit
-                                              || r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    case 4:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.DepositComplete);
-                            break;
-                        }
-                    case 5:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByCoordinator
-                                              || r.CurrentState == DepState.AwaitingProjectDirector
-                                              || r.CurrentState == DepState.DepositComplete);
-                            break;
-                        }
-                    case 6:
-                    case 14:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
-                                              || r.CurrentState == DepState.AwaitingFinanceDirector
-                                              || r.CurrentState == DepState.ApprovedReadyToDeposit
-                                              || r.CurrentState == DepState.Returned
-                                              || r.CurrentState == DepState.DepositComplete);
-                            break;
-                        }
-                    case 8:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    case 9:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByCoordinator
-                                              || r.CurrentState == DepState.AwaitingProjectDirector
-                                              || r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    case 12:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.DepositComplete
-                                              || r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    case 13:
-                        {
-                            pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByCoordinator
-                                              || r.CurrentState == DepState.AwaitingProjectDirector
-                                              || r.CurrentState == DepState.DepositComplete
-                                              || r.CurrentState == DepState.Returned);
-                            break;
-                        }
-                    default:    // Includes case 7 and case 15 - all checked. Don't need a predicate to get all the rows
-                        break;
+                    Exp toUpdate = context.Exps.Find(expID);            // Fetch Exp row by its key
+                    if (toUpdate == null)
+                        LogError.LogInternalError("ProjectDashboard", $"Unable to locate ExpenseID {expID.ToString()} in database");
+                    // Log fatal error
+
+                    toUpdate.Archived = true;                           // Mark request as Archived
+                    ExpHistory hist = new ExpHistory();                 // Get a place to build a new ExpHistory row
+                    StateActions.CopyPreviousState(toUpdate, hist, "Archived"); // Create a ExpHistory log row from "old" version of Expense
+                    StateActions.SetNewExpState(toUpdate, hist.PriorExpState, litSavedUserID.Text, hist);
+                    // Write down our current State (which doesn't change here) and authorship
+                    context.ExpHistorys.Add(hist);                      // Save new ExpHistory row
+                    context.SaveChanges();                              // Commit the Add or Modify
                 }
-
-                // Process Since options
-
-                string since = ddlDSince.SelectedValue;                 // Figure out which one was selected
-                if (since != "ProjectCreation")                         // If != a specific Since option was selected. Need predicate.
+                catch (Exception ex)
                 {
-                    DateTime sinceDate = new DateTime();
-                    switch (since)                                      // Break out by the selected item from the drop down list
-                    {
-                        case "BalanceDate":
-                            {
-                                sinceDate = Convert.ToDateTime(litBalance.Text); // Fetch the Balance Date (from earlier) and convert to binary
-                                break;
-                            }
-                        case "Last30":
-                            {
-                                sinceDate = DateTime.Today.AddDays(-30); // Compute date 30 days ago
-                                break;
-                            }
-                        case "Last90":
-                            {
-                                sinceDate = DateTime.Today.AddDays(-90); // Compute date 90 days ago
-                                break;
-                            }
-                        case "Last12":
-                            {
-                                sinceDate = DateTime.Today.AddMonths(-12); // Compute date 12 months ago
-                                break;
-                            }
-                        default:
-                            LogError.LogInternalError("ProjectDashboard", string.Format("Invalid value '{0}' from Since DDL",
-                                since)); // Fatal error
-                            break;
-                    }
-                    pred = pred.And(r => r.CurrentTime >= sinceDate);   // Add date selector to the Where predicate
+                    LogError.LogDatabaseError(ex, "ProjectDashboard",
+                        "Error updating Exp and ExpHistory rows");      // Fatal error
                 }
-                List<Dep> deps = context.Deps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
-                    // Do the query using the constructed predicate, sort the result, and create a list of Dep rows
-
-                // From this list of Deps, build a list of rows for the AllExpView GridView
-
-                List<ProjectDepViewRow> rows = new List<ProjectDepViewRow>(); // Create an empty list for the GridView control
-                foreach (var r in deps)                                 // Fill the list row-by-row
-                {
-                    ProjectDepViewRow row = new ProjectDepViewRow()     // Empty row all ready to fill
-                    {
-                        RowID = r.DepID.ToString(),                     // Convert ID from int to string for easier retrieval later
-                        CurrentTime = r.CurrentTime,                    // When request was last updated
-                        DepTypeDesc = EnumActions.GetEnumDescription(r.DepType), // Convert enum version to English version for display
-                        Description = r.Description,                    // Free text description of deposit
-                                                                        // Source Of Funds is trickier, so done below
-                        Amount = ExtensionActions.LoadDecimalIntoTxt(r.Amount), // Carefully load decimal amount into text field
-                        CurrentState = r.CurrentState,                  // Load enum version for use when row is selected. But not visible
-                        CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState) // Convert enum version to English version for display
-                        
-                    };
-
-                    // Produce an elaborate Source Of Funds description
-                    switch (r.SourceOfFunds)
-                    {
-                        case SourceOfDepFunds.NA:
-                            {
-                                row.SourceOfFunds = EnumActions.GetEnumDescription(SourceOfDepFunds.NA);
-                                break;
-                            }
-                        case SourceOfDepFunds.Entity:
-                            {
-                                if (r.EntityID != null)                     // If != ID of Entity is available, show it off
-                                    row.SourceOfFunds = EnumActions.GetEnumDescription(SourceOfDepFunds.Entity) + ": " + r.Entity.Name;
-                                else
-                                    row.SourceOfFunds = EnumActions.GetEnumDescription(SourceOfDepFunds.Entity);
-                                break;
-                            }
-                        case SourceOfDepFunds.Individual:
-                            {
-                                if (r.PersonID != null)                     // If != ID of Person is available, show it off
-                                    row.SourceOfFunds = EnumActions.GetEnumDescription(SourceOfDepFunds.Individual) + ": " + r.Person.Name;
-                                else
-                                    row.SourceOfFunds = EnumActions.GetEnumDescription(SourceOfDepFunds.Individual);
-                                break;
-                            }
-                        default:
-                            {
-                                LogError.LogInternalError("ProjectDashboard", string.Format("Invalid SourceOfDepFunds value '{0}' found in database",
-                                    r.SourceOfFunds.ToString())); // Fatal error
-                                break;
-                            }
-                    }
-                    rows.Add(row);                                      // Add the filled-in row to the list of rows
-                }
-                AllDepView.DataSource = rows;                           // Give it to the GridView control
-                AllDepView.DataBind();                                  // And get it in gear
-
-                NavigationActions.EnableGridViewNavButtons(AllDepView); // Enable appropriate nav buttons based on page count
+                SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
+                litSuccessMessage.Text = "Expense Request successfully Archived";    // Let user know we're good
             }
-            return;
-        }
-
-        // Collapse/Expand the panels of Expenses
-
-        protected void btnExpCollapse_Click(object sender, EventArgs e)
-        {
-            CollapseExpPanel();
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
-
-        void CollapseExpPanel()
-        {
-            pnlExp.Visible = false;                                     // The panel body becomes invisible
-            btnExpCollapse.Visible = false;                             // The collapse button becomes invisible
-            btnExpExpand.Visible = true;                                // The expand button becomes visible
-            return;
-        }
-
-        protected void btnExpExpand_Click(object sender, EventArgs e)
-        {
-            ExpandExpPanel();
-            LoadAllExps();                                              // Refresh the contents of the gridview
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
-
-        void ExpandExpPanel()
-        {
-            pnlExp.Visible = true;                                      // The panel body becomes visible
-            btnExpCollapse.Visible = true;                              // The collapse button becomes visible
-            btnExpExpand.Visible = false;                               // The expand button becomes invisible
-            return;
-        }
-
-        // The user changed selection in the Since drop down list. Recreate the grid view with new Since criteria.
-
-        protected void ddlESince_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ckEFilters_CheckedChanged(sender, e);                        // Exactly the same action as Filter checkbox change
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
-
-        // The user clicked or unclicked one of the check boxes. Recreate the grid view with new Filter criteria.
-
-        protected void ckEFilters_CheckedChanged(object sender, EventArgs e)
-        {
-            LoadAllExps();                                              // Reload the GridView using new criteria
-            AllExpView.PageIndex = 0;                                   // Go back to the first page
-            ResetExpContext();                                          // No selected row, no live buttons after a page flip
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
-
-        // Flip a page of the grid view control
-
-        protected void AllExpView_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        {
-            if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
-            {
-                AllExpView.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
-                LoadAllExps();                                          // Reload the grid view control
-                ResetExpContext();                                      // No selected row, no live buttons after a page flip
-            }
-            return;
-        }
-
-        // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
-        // thereby letting us select the row without a Select button
-
-        protected void AllExpView_RowDataBound(object sender, GridViewRowEventArgs e)
-        {
-            if (e.Row.RowType == DataControlRowType.DataRow)            // If == this is indeed a row of our GridView control
-            {
-                e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
-                //                e.Row.Attributes["onmouseout"] = "this.style.textDecoration='none';"; // No need to highlight anything this way
-                e.Row.ToolTip = "Click to select this Expense";         // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AllExpView, "Select$" + e.Row.RowIndex);
-                // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
-                // See if the Request awaits action by the User. Find the right cell by its ID. The cell contains the text of the DepState enum value.
-                // For Deposits, the only such situation is for a Project Director and a Deposit Request in "Awaiting Project Director" or "Returned" state.
-
-                Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
-                ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Carefully convert back into enumeration type
-
-                bool bling = false;                                         // Assume row will not be bolded
-                if (litSavedProjectRole.Text == ProjectRole.Coordinator.ToString()) // If == User is a Coordinator
-                {
-                    if (state == ExpState.UnsubmittedByCoordinator)         // If == Coordinator is working on Request
-                        bling = true;                                       // Bold the bling
-                }
-                else if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If != User is not the Project Director
-                {
-                    if ((state == ExpState.UnsubmittedByProjectDirector) || (state == ExpState.AwaitingProjectDirector) || (state == ExpState.Returned))
-                        bling = true;                                          // If true Request is in interesting state for PD
-                }
-                else if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If != User is not the Project Staff
-                {
-                    if (state == ExpState.UnsubmittedByProjectStaff)
-                        bling = true;                                          // If true Request is in interesting state for PS
-                }
-                if (bling)                                                      // If true User can operate on Request.
-                    e.Row.Cells[ProjectExpViewRow.CurrentStateDescRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
-            }
-            return;
-        }
-
-        // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected. This code assumes that
-        // Cells[4] contains the enum value (not enum desription) of CurrentState. It also assumes that only the New and View buttons are
-        // enabled all the time.
-
-        protected void AllExpView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Label label = (Label)AllExpView.SelectedRow.Cells[4].FindControl("lblCurrentState"); // Find the label control that contains Current State
-            ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Convert back into enumeration type
-            btnExpCopy.Enabled = true;                                  // If any Request is selected, the user can always copy it
-            btnExpDelete.Enabled = false;                               // Assume User cannot Delete Request
-            btnExpEdit.Enabled = false;                                 // Assume User cannot Edit Request
-            btnExpReview.Enabled = false;                               // Assume User cannot Review Request
-            btnExpView.Enabled = true;                                  // If any Request is selected, the user can always view it
-
-            switch (state)
-            {
-                case ExpState.UnsubmittedByCoordinator:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.Coordinator.ToString()) // If == the user is a coordinator
-                        {
-                            btnExpDelete.Enabled = true;
-                            btnExpEdit.Enabled = true;
-                        }
-                        break;
-                    }
-                case ExpState.UnsubmittedByProjectDirector:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == the user is a PD
-                        {
-                            btnExpDelete.Enabled = true;
-                            btnExpEdit.Enabled = true;
-                        }
-                        break;
-                    }
-                case ExpState.UnsubmittedByProjectStaff:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If == the user is a PS
-                        {
-                            btnExpDelete.Enabled = true;
-                            btnExpEdit.Enabled = true;
-                        }
-                        break;
-                    }
-                case ExpState.AwaitingProjectDirector:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == user is a Project Director, can Review
-                            btnExpReview.Enabled = true;
-                        break;
-                    }
-                case ExpState.AwaitingTrustDirector:
-                case ExpState.AwaitingFinanceDirector:
-                case ExpState.AwaitingTrustExecutive:
-                case ExpState.Approved:
-                case ExpState.PaymentSent:
-                case ExpState.Paid:
-                case ExpState.Returned:
-                    {
-                        break;                                      // The button setup is just fine. No editing or deleting here
-                    }
-                default:
-                    LogError.LogInternalError("ProjectDashboard", string.Format("Invalid ExpState '{0}' from database",
-                        state)); // Fatal error
-                    break;
-            }
-            return;
         }
 
         // Copy button clicked. Conclude what we've been working on, then hit the road.
@@ -1186,9 +1046,8 @@ namespace Portal11.Proj
                     LogError.LogDatabaseError(ex, "ProjectDashboard", 
                         "Error deleting Exp, SupportingDoc and ExpHistory rows or deleting Supporting Document"); // Fatal error
                 }
-                ckEFilters_CheckedChanged(sender, e);                   // Update the grid view and buttons for display
+                SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
                 litSuccessMessage.Text = "Expense deleted";             // Report success to our user
-                //TODO: Updaet the display
             }
        }
 
@@ -1245,21 +1104,403 @@ namespace Portal11.Proj
         // Fetch all of the Requests for this project, subject to further search constraints. Display in a GridView.
         // Find current project ID in listSavedProjectID
 
+        void LoadAllApps()
+        {
+            if (!pnlApp.Visible)                                    // If ! the panel is hidden, no need to refresh
+                return;
+
+            int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                var pred = PredicateBuilder.True<App>();                // Initialize predicate to select from App table
+                pred = pred.And(r => r.ProjectID == projectID && !r.Inactive);  // Select requests for this project only and not Inactive
+
+                // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
+
+                if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
+                    ;                                                   // Don't ignore anything
+                else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
+                    pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
+                else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
+                    pred = pred.And(r => r.Archived);                   // Ignore Active requests
+                else                                                    // Both boxes are unchecked
+                    pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
+
+                // Process check boxes for Deposit State. Combining checks is a little tricky because some of the checks overlap.
+
+                int filters = 0;
+                if (ckRAwaitingProjectStaff.Checked) filters = filters | 1; // Implies Approved and Returned
+                if (ckRAwaitingCWStaff.Checked) filters = filters | 2;
+                if (ckRApproved.Checked) filters = filters | 4;
+                if (ckRReturned.Checked) filters = filters | 8;
+
+                switch (filters)
+                {
+                    case 0:
+                        {
+                            pred = pred.And(r => r.CurrentState == AppState.ReservedForFutureUse); // Doesn't ever match
+                            break;
+                        }
+                    case 1:                                             // Awaiting Project Staff
+                    case 5:                                             // Awaiting Project Staff and Approved
+                    case 9:                                             // Awaiting Project Staff and Returned
+                    case 13:                                            // Awaiting Project Staff, Approved and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == AppState.UnsubmittedByInternalCoordinator
+                                              || r.CurrentState == AppState.UnsubmittedByProjectDirector
+                                              || r.CurrentState == AppState.UnsubmittedByProjectStaff
+                                              || r.CurrentState == AppState.AwaitingProjectDirector
+                                              || r.CurrentState == AppState.Approved
+                                              || r.CurrentState == AppState.Returned);
+                            break;
+                        }
+                    case 2:                                             // Awaiting CW Staff
+                        {
+                            pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
+                                              || r.CurrentState == AppState.AwaitingFinanceDirector
+                                              || r.CurrentState == AppState.AwaitingTrustExecutive
+                                              || r.CurrentState == AppState.AwaitingInternalCoordinator);
+                            break;
+                        }
+                    case 4:                                             // Just Approved
+                        {
+                            pred = pred.And(r => r.CurrentState == AppState.Approved);
+                            break;
+                        }
+                    case 6:                                             // Awaiting CW Staff and Approved
+                        {
+                            pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
+                                              || r.CurrentState == AppState.AwaitingFinanceDirector
+                                              || r.CurrentState == AppState.AwaitingTrustExecutive
+                                              || r.CurrentState == AppState.AwaitingInternalCoordinator
+                                              || r.CurrentState == AppState.Approved);
+                            break;
+                        }
+                    case 8:                                             // Just Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == AppState.Returned);
+                            break;
+                        }
+                    case 10:                                            // Awaiting CW Staff and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
+                                              || r.CurrentState == AppState.AwaitingFinanceDirector
+                                              || r.CurrentState == AppState.AwaitingTrustExecutive
+                                              || r.CurrentState == AppState.AwaitingInternalCoordinator
+                                              || r.CurrentState == AppState.Returned);
+                            break;
+                        }
+                    case 12:                                            // Approved and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == AppState.Approved
+                                              || r.CurrentState == AppState.Returned);
+                            break;
+                        }
+                    case 14:                                            // Awaiting CW Staff, Approved and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == AppState.AwaitingTrustDirector
+                                              || r.CurrentState == AppState.AwaitingFinanceDirector
+                                              || r.CurrentState == AppState.AwaitingTrustExecutive
+                                              || r.CurrentState == AppState.AwaitingInternalCoordinator
+                                              || r.CurrentState == AppState.Approved
+                                              || r.CurrentState == AppState.Returned);
+                            break;
+                        }
+                    case 3:                                             // Awaiting Project Staff, Awaiting CW Staff
+                    case 7:                                             // Awaiting Project Staff, Awaiting CW Staff and Approved
+                    case 11:                                            // Awaiting Project Staff, Awaiting CW Staff and Returned
+                    case 15:                                            // Awaiting Project Staff, Awaiting CW Staff, Approved and Returned 
+                    default:                                            // Don't need a predicate, just get all the rows
+                        break;
+                }
+
+                // Deal with date range filter. Remember that we've already validated the date strings, so we ca just use them.
+
+                if (txtBeginningDate.Text != "")
+                {
+                    DateTime date = Convert.ToDateTime(txtBeginningDate.Text);  // Convert to a date value
+                    pred = pred.And(r => (r.CurrentTime >= date));
+                }
+
+                if (txtEndingDate.Text != "")
+                {
+                    DateTime date = Convert.ToDateTime(txtEndingDate.Text);     // Convert to a date value
+                    TimeSpan day = new TimeSpan(23, 59, 59);                    // Figure out the length of a day
+                    DateTime endOfDay = date.Add(day);                          // Set query to END of the specified day
+                    pred = pred.And(r => (r.CurrentTime <= endOfDay));          // Query to end END of the specified day
+                }
+
+                List<App> apps = context.Apps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
+                // Do the query using the constructed predicate, sort the result, and create a list of App rows
+
+                // From this list of Apps, build a list of rows for the AllAppView GridView
+
+                List<ProjectAppViewRow> rows = new List<ProjectAppViewRow>(); // Create an empty list for the GridView control
+                foreach (var r in apps)                                 // Fill the list row-by-row
+                {
+                    ProjectAppViewRow row = new ProjectAppViewRow()     // Empty row all ready to fill
+                    {
+                        RowID = r.AppID.ToString(),                     // Convert ID from int to string for easier retrieval later
+                        CurrentTime = r.CurrentTime,                    // When request was last updated
+                        AppTypeDesc = EnumActions.GetEnumDescription(r.AppType), // Convert enum version to English version for display
+                        Description = r.Description,                    // Free text description of deposit
+                        CurrentState = r.CurrentState,                  // Load enum version for use when row is selected. But not visible
+                        CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
+                        Archived = r.Archived                           // Load archived state
+
+                    };
+                    if (r.Archived)                                     // If true row is Archived
+                        row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
+
+                    rows.Add(row);                                      // Add the filled-in row to the list of rows
+                }
+                AllAppView.DataSource = rows;                           // Give it to the GridView control
+                AllAppView.DataBind();                                  // And get it in gear
+
+                NavigationActions.EnableGridViewNavButtons(AllAppView); // Enable appropriate nav buttons based on page count
+                AllAppView.PageIndex = 0;                               // Go back to the first page
+                AllAppView.SelectedIndex = -1;                          // No selected row any more
+            }
+            return;
+        }
+
+        void LoadAllDeps()
+        {
+            if (!pnlDep.Visible)                                    // If ! the panel is hidden, no need to refresh
+                return;
+
+            int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                var pred = PredicateBuilder.True<Dep>();               // Initialize predicate to select from Dep table
+                pred = pred.And(r => r.ProjectID == projectID && !r.Inactive);  // Select requests for this project only and not Inactive
+
+                // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
+
+                if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
+                    ;                                                   // Don't ignore anything
+                else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
+                    pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
+                else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
+                    pred = pred.And(r => r.Archived);                   // Ignore Active requests
+                else                                                    // Both boxes are unchecked
+                    pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
+
+                // Process check boxes for Deposit State. Combining checks is a little tricky because some of the checks overlap.
+
+                int filters = 0;
+                if (ckRAwaitingProjectStaff.Checked) filters = filters | 1;
+                if (ckRAwaitingCWStaff.Checked) filters = filters | 2;
+                if (ckRApproved.Checked) filters = filters | 4;
+                if (ckRReturned.Checked) filters = filters | 8;
+
+                switch (filters)
+                {
+                    case 0:
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.ReservedForFutureUse); // Doesn't ever match
+                            break;
+                        }
+                    case 1:                                         // Awaiting Project Staff (includes DepositComplete and Returned)
+                    case 5:                                         // Awaiting Project Staff and DepositComplete
+                    case 9:                                         // Awaiting Project Staff and Returned
+                    case 13:                                        // Awaiting Project Staff, DepositComplete and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.UnsubmittedByInternalCoordinator
+                                              || r.CurrentState == DepState.AwaitingProjectDirector
+                                              || r.CurrentState == DepState.DepositComplete
+                                              || r.CurrentState == DepState.Returned);
+                            break;
+                        }
+                    case 2:                                         // Awaiting CW Staff
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
+                                              || r.CurrentState == DepState.AwaitingFinanceDirector
+                                              || r.CurrentState == DepState.ApprovedReadyToDeposit);
+                            break;
+                        }
+                    case 4:                                         // DepositComplete
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.DepositComplete);
+                            break;
+                        }
+                    case 6:                                         // Awaiting CW Staff and DepositComplete
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
+                                              || r.CurrentState == DepState.AwaitingFinanceDirector
+                                              || r.CurrentState == DepState.ApprovedReadyToDeposit
+                                              || r.CurrentState == DepState.DepositComplete);
+                            break;
+                        }
+                    case 8:                                         // Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.Returned);
+                            break;
+                        }
+                    case 10:                                        // Awaiting CW Staff and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
+                                              || r.CurrentState == DepState.AwaitingFinanceDirector
+                                              || r.CurrentState == DepState.ApprovedReadyToDeposit
+                                              || r.CurrentState == DepState.Returned);
+                            break;
+                        }
+                    case 12:                                        // DepositComplete and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.DepositComplete
+                                              || r.CurrentState == DepState.Returned);
+                            break;
+                        }
+                    case 14:                                        // Awaiting CW Staff, DepositComplete and Returned
+                        {
+                            pred = pred.And(r => r.CurrentState == DepState.AwaitingTrustDirector
+                                              || r.CurrentState == DepState.AwaitingFinanceDirector
+                                              || r.CurrentState == DepState.ApprovedReadyToDeposit
+                                              || r.CurrentState == DepState.DepositComplete
+                                              || r.CurrentState == DepState.Returned);
+                            break;
+                        }
+                    case 3:                                             // Awaiting Project Staff, Awaiting CW Staff
+                    case 7:                                             // Awaiting Project Staff, Awaiting CW Staff, Deposit Complete
+                    case 11:                                            // Awaiting Project Staff, Awaiting CW Staff, Returned
+                    case 15:                                            // Awaiting Project Staff, Awaiting CW Staff, Deposit Complete, Returned
+                    default:                                            // Don't need a predicate to get all the rows
+                        break;
+                }
+
+                // Deal with date range filter. Remember that we've already validated the date strings, so we ca just use them.
+
+                if (txtBeginningDate.Text != "")
+                {
+                    DateTime date = Convert.ToDateTime(txtBeginningDate.Text);  // Convert to a date value
+                    pred = pred.And(r => (r.CurrentTime >= date));
+                }
+
+                if (txtEndingDate.Text != "")
+                {
+                    DateTime date = Convert.ToDateTime(txtEndingDate.Text);     // Convert to a date value
+                    TimeSpan day = new TimeSpan(23, 59, 59);                    // Figure out the length of a day
+                    DateTime endOfDay = date.Add(day);                          // Set query to END of the specified day
+                    pred = pred.And(r => (r.CurrentTime <= endOfDay));          // Query to end END of the specified day
+                }
+
+                // If a specific Entity is selected, only select requests for that Entity
+
+                if (ddlEntityName.SelectedIndex > 0)                       // If > Entity is selected. Fetch rqsts only for that Entity
+                {
+                    int id = Convert.ToInt32(ddlEntityName.SelectedValue);  // Convert ID of selected Entity
+                    pred = pred.And(r => r.EntityID == id);                 // Only requests from selected Entity
+                }
+
+                // If a specific Person is selected, only select requests from that Person
+
+                if (ddlPersonName.SelectedIndex > 0)                        // If > Person is selected. Fetch rqsts only for that Person
+                {
+                    int id = Convert.ToInt32(ddlPersonName.SelectedValue);  // Convert ID of selected Person
+                    pred = pred.And(r => r.PersonID == id);                 // Only requests from selected Person
+                }
+
+                List<Dep> deps = context.Deps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
+                // Do the query using the constructed predicate, sort the result, and create a list of Dep rows
+
+                // From this list of Deps, build a list of rows for the AllExpView GridView
+
+                List<ProjectDepViewRow> rows = new List<ProjectDepViewRow>(); // Create an empty list for the GridView control
+                foreach (var r in deps)                                 // Fill the list row-by-row
+                {
+                    ProjectDepViewRow row = new ProjectDepViewRow()     // Empty row all ready to fill
+                    {
+                        RowID = r.DepID.ToString(),                     // Convert ID from int to string for easier retrieval later
+                        CurrentTime = r.CurrentTime,                    // When request was last updated
+                        DepTypeDesc = EnumActions.GetEnumDescription(r.DepType), // Convert enum version to English version for display
+                        Description = r.Description,                    // Free text description of deposit
+                                                                        // Source Of Funds is trickier, so done below
+                        Amount = ExtensionActions.LoadDecimalIntoTxt(r.Amount), // Carefully load decimal amount into text field
+                        CurrentState = r.CurrentState,                  // Load enum version for use when row is selected. But not visible
+                        CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
+                        Archived = r.Archived                           // Load archived state
+
+                    };
+
+                    // Produce an elaborate Source Of Funds description
+
+                    switch (r.SourceOfFunds)
+                    {
+                        case SourceOfDepFunds.NA:
+                            {
+                                row.SourceOfFunds = EnumActions.GetEnumDescription(SourceOfDepFunds.NA);
+                                break;
+                            }
+                        case SourceOfDepFunds.Entity:
+                            {
+                                if (r.EntityID != null)                     // If != ID of Entity is available, show it off
+                                    row.SourceOfFunds = EnumActions.GetEnumDescription(SourceOfDepFunds.Entity) + ": " + r.Entity.Name;
+                                else
+                                    row.SourceOfFunds = EnumActions.GetEnumDescription(SourceOfDepFunds.Entity);
+                                break;
+                            }
+                        case SourceOfDepFunds.Individual:
+                            {
+                                if (r.PersonID != null)                     // If != ID of Person is available, show it off
+                                    row.SourceOfFunds = EnumActions.GetEnumDescription(SourceOfDepFunds.Individual) + ": " + r.Person.Name;
+                                else
+                                    row.SourceOfFunds = EnumActions.GetEnumDescription(SourceOfDepFunds.Individual);
+                                break;
+                            }
+                        default:
+                            {
+                                LogError.LogInternalError("ProjectDashboard", string.Format("Invalid SourceOfDepFunds value '{0}' found in database",
+                                    r.SourceOfFunds.ToString())); // Fatal error
+                                break;
+                            }
+                    }
+                    if (r.Archived)                                     // If true row is Archived
+                        row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
+
+                    rows.Add(row);                                      // Add the filled-in row to the list of rows
+                }
+                AllDepView.DataSource = rows;                           // Give it to the GridView control
+                AllDepView.DataBind();                                  // And get it in gear
+
+                NavigationActions.EnableGridViewNavButtons(AllDepView); // Enable appropriate nav buttons based on page count
+                AllDepView.PageIndex = 0;                               // Go back to the first page
+                AllDepView.SelectedIndex = -1;                          // No selected row any more
+            }
+            return;
+        }
+
+        // Fetch all of the Requests for this project, subject to further search constraints. Display in a GridView.
+        // Find current project ID in listSavedProjectID
+
         void LoadAllExps()
         {
+            if (!pnlExp.Visible)                                    // If ! the panel is hidden, no need to refresh
+                return;
+
             int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var pred = PredicateBuilder.True<Exp>();               // Initialize predicate to select from Exp table
-                pred = pred.And(r => r.ProjectID == projectID && !r.Inactive); // Only active Exps from current project
+                pred = pred.And(r => r.ProjectID == projectID && !r.Inactive);  // Select requests for this project only and not Inactive
+
+                // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
+
+                if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
+                    ;                                                   // Don't ignore anything
+                else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
+                    pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
+                else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
+                    pred = pred.And(r => r.Archived);                   // Ignore Active requests
+                else                                                    // Both boxes are unchecked
+                    pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
 
                 // Process check boxes for Expense State. Combining checks is a little tricky because some of the checks overlap.
 
                 int filters = 0;
-                if (ckEAwaitingProjectStaff.Checked) filters = filters | 1;
-                if (ckEAwaitingCWStaff.Checked) filters = filters | 2;
-                if (ckEPaid.Checked) filters = filters | 4;
-                if (ckEReturned.Checked) filters = filters | 8;
+                if (ckRAwaitingProjectStaff.Checked) filters = filters | 1; // Awaiting Project Staff
+                if (ckRAwaitingCWStaff.Checked) filters = filters | 2;      // Awaiting CW Staff
+                if (ckRApproved.Checked) filters = filters | 4;             // Paid
+                if (ckRReturned.Checked) filters = filters | 8;             // Returned
 
                 switch (filters)
                 {
@@ -1268,17 +1509,20 @@ namespace Portal11.Proj
                             pred = pred.And(r => r.CurrentState == ExpState.ReservedForFutureUse); // Doesn't ever match
                             break;
                         }
-                    case 1:
+                    case 1:                                             // Awaiting Project Staff (includes Paid and Returned)
+                    case 5:                                             // Awaiting Project Staff and Paid
+                    case 9:                                             // Awaiting Project Staff and Returned
+                    case 13:                                            // Awaiting Project Staff, Paid and Returned
                         {
-                            pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByCoordinator
+                            pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByInternalCoordinator
                                               || r.CurrentState == ExpState.UnsubmittedByProjectDirector
                                               || r.CurrentState == ExpState.UnsubmittedByProjectStaff
                                               || r.CurrentState == ExpState.AwaitingProjectDirector
+                                              || r.CurrentState == ExpState.Paid
                                               || r.CurrentState == ExpState.Returned);
                             break;
                         }
-                    case 2:
-                    case 10:
+                    case 2:                                             // Awaiting CW Staff
                         {
                             pred = pred.And(r => r.CurrentState == ExpState.AwaitingTrustDirector
                                               || r.CurrentState == ExpState.AwaitingFinanceDirector
@@ -1287,116 +1531,93 @@ namespace Portal11.Proj
                                               || r.CurrentState == ExpState.PaymentSent);
                             break;
                         }
-                    case 3:
-                    case 11:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByCoordinator
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == ExpState.AwaitingProjectDirector
-                                              || r.CurrentState == ExpState.AwaitingTrustDirector
-                                              || r.CurrentState == ExpState.AwaitingFinanceDirector
-                                              || r.CurrentState == ExpState.AwaitingTrustExecutive
-                                              || r.CurrentState == ExpState.Approved
-                                              || r.CurrentState == ExpState.PaymentSent
-                                              || r.CurrentState == ExpState.Returned);
-                            break;
-                        }
-                    case 4:
+                    case 4:                                             // Paid
                         {
                             pred = pred.And(r => r.CurrentState == ExpState.Paid);
                             break;
                         }
-                    case 5:
-                        {
-                            pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByCoordinator
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == ExpState.AwaitingProjectDirector
-                                              || r.CurrentState == ExpState.Paid);
-                            break;
-                        }
-                    case 6:
-                    case 14:
+                    case 6:                                             // Awaiting CW Staff and Paid
                         {
                             pred = pred.And(r => r.CurrentState == ExpState.AwaitingTrustDirector
                                               || r.CurrentState == ExpState.AwaitingFinanceDirector
                                               || r.CurrentState == ExpState.AwaitingTrustExecutive
                                               || r.CurrentState == ExpState.Approved
                                               || r.CurrentState == ExpState.PaymentSent
-                                              || r.CurrentState == ExpState.Returned
                                               || r.CurrentState == ExpState.Paid);
                             break;
                         }
-                    case 8:
+                    case 8:                                             // Returned
                         {
                             pred = pred.And(r => r.CurrentState == ExpState.Returned);
                             break;
                         }
-                    case 9:
+                    case 10:                                            // Awaiting CW Staff and Returned
                         {
-                            pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByCoordinator
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == ExpState.AwaitingProjectDirector
+                            pred = pred.And(r => r.CurrentState == ExpState.AwaitingTrustDirector
+                                              || r.CurrentState == ExpState.AwaitingFinanceDirector
+                                              || r.CurrentState == ExpState.AwaitingTrustExecutive
+                                              || r.CurrentState == ExpState.Approved
+                                              || r.CurrentState == ExpState.PaymentSent
                                               || r.CurrentState == ExpState.Returned);
                             break;
                         }
-                    case 12:
+                    case 12:                                            // Paid and Returned
                         {
                             pred = pred.And(r => r.CurrentState == ExpState.Paid
                                               || r.CurrentState == ExpState.Returned);
                             break;
                         }
-                    case 13:
+                    case 14:                                            // Awaiting CW Staff, Paid and Returned
                         {
-                            pred = pred.And(r => r.CurrentState == ExpState.UnsubmittedByCoordinator
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectDirector
-                                              || r.CurrentState == ExpState.UnsubmittedByProjectStaff
-                                              || r.CurrentState == ExpState.AwaitingProjectDirector
+                            pred = pred.And(r => r.CurrentState == ExpState.AwaitingTrustDirector
+                                              || r.CurrentState == ExpState.AwaitingFinanceDirector
+                                              || r.CurrentState == ExpState.AwaitingTrustExecutive
+                                              || r.CurrentState == ExpState.Approved
+                                              || r.CurrentState == ExpState.PaymentSent
                                               || r.CurrentState == ExpState.Paid
                                               || r.CurrentState == ExpState.Returned);
                             break;
                         }
-                    default:    // Includes case 7 and case 15 - all checked. Don't need a predicate to get all the rows
+                    case 3:                                             // Awaiting Project Staff and Awaiting CW Staff
+                    case 7:                                             // Awaiting Project Staff, Awaiting CW Staff and Paid
+                    case 11:                                            // Awaiting Project Staff, Awaiting CW Staff and Returned
+                    case 15:                                            // Awaiting Project Staff, Awaiting CW Staff, Paid and Returned
+                    default:                                            // Don't need a predicate to get all the rows
                         break;
                 }
 
-                // Process Since options
+                // Deal with date range filter. Remember that we've already validated the date strings, so we ca just use them.
 
-                string since = ddlESince.SelectedValue;                 // Figure out which one was selected
-                if (since != "ProjectCreation")                         // If != a specific Since option was selected. Need predicate.
+                if (txtBeginningDate.Text != "")
                 {
-                    DateTime sinceDate = new DateTime();
-                    switch (since)                                      // Break out by the selected item from the drop down list
-                    {
-                        case "BalanceDate":
-                            {
-                                sinceDate = Convert.ToDateTime(litBalance.Text); // Fetch the Balance Date (from earlier) and convert to binary
-                                break;
-                            }
-                        case "Last30":
-                            {
-                                sinceDate = DateTime.Today.AddDays(-30); // Compute date 30 days ago
-                                break;
-                            }
-                        case "Last90":
-                            {
-                                sinceDate = DateTime.Today.AddDays(-90); // Compute date 90 days ago
-                                break;
-                            }
-                        case "Last12":
-                            {
-                                sinceDate = DateTime.Today.AddMonths(-12); // Compute date 12 months ago
-                                break;
-                            }
-                        default:
-                            LogError.LogInternalError("ProjectDashboard", string.Format("Invalid value '{0}' from Since DDL", 
-                                since)); // Fatal error
-                            break;
-                    }
-                    pred = pred.And(r => r.CurrentTime >= sinceDate);   // Add date selector to the Where predicate
+                    DateTime date = Convert.ToDateTime(txtBeginningDate.Text);  // Convert to a date value
+                    pred = pred.And(r => (r.CurrentTime >= date));
                 }
+
+                if (txtEndingDate.Text != "")
+                {
+                    DateTime date = Convert.ToDateTime(txtEndingDate.Text);     // Convert to a date value
+                    TimeSpan day = new TimeSpan(23, 59, 59);                    // Figure out the length of a day
+                    DateTime endOfDay = date.Add(day);                          // Set query to END of the specified day
+                    pred = pred.And(r => (r.CurrentTime <= endOfDay));          // Query to end END of the specified day
+                }
+
+                // If a specific Entity is selected, only select requests for that Entity
+
+                if (ddlEntityName.SelectedIndex > 0)                       // If > Entity is selected. Fetch rqsts only for that Entity
+                {
+                    int id = Convert.ToInt32(ddlEntityName.SelectedValue);  // Convert ID of selected Entity
+                    pred = pred.And(r => r.EntityID == id);                 // Only requests from selected Entity
+                }
+
+                // If a specific Person is selected, only select requests from that Person
+
+                if (ddlPersonName.SelectedIndex > 0)                        // If > Person is selected. Fetch rqsts only for that Person
+                {
+                    int id = Convert.ToInt32(ddlPersonName.SelectedValue);  // Convert ID of selected Person
+                    pred = pred.And(r => r.PersonID == id);                 // Only requests from selected Person
+                }
+
                 List<Exp> exps = context.Exps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList(); 
                 // Do the query using the constructed predicate, sort the result, and create a list of Exp rows
 
@@ -1412,7 +1633,8 @@ namespace Portal11.Proj
                         ExpTypeDesc = EnumActions.GetEnumDescription(r.ExpType), // Convert enum version to English version for display
                         Amount = ExtensionActions.LoadDecimalIntoTxt(r.Amount), // Carefully load decimal amount into text field
                         CurrentState = r.CurrentState,                  // Load enum version for use when row is selected
-                        CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState) // Convert enum version to English version for display
+                        CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
+                        Archived = r.Archived                           // Whether the request is archived
                     };
 
                     // Fill "Target" with Vendor Name or Person Name. Only one will be present, depending on ExpType.
@@ -1428,12 +1650,18 @@ namespace Portal11.Proj
                             row.Target = r.Person.Name;
                     }
                     row.Description = r.Description.TrimString(40);     // Load the description, but don't let it get too long
+
+                    if (r.Archived)                                     // If true row is Archived
+                        row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
+
                     rows.Add(row);                                      // Add the filled-in row to the list of rows
                 }
                 AllExpView.DataSource = rows;                           // Give it to the GridView control
                 AllExpView.DataBind();                                  // And get it in gear
 
                 NavigationActions.EnableGridViewNavButtons(AllExpView); // Enable appropriate nav buttons based on page count
+                AllExpView.PageIndex = 0;                               // Go back to the first page
+                AllExpView.SelectedIndex = -1;                          // No selected row any more
             }
         }
 
@@ -1441,7 +1669,7 @@ namespace Portal11.Proj
 
         void ResetAppContext()
         {
-            AllAppView.SelectedIndex = -1;                              // No selected row any more
+            btnAppArchive.Enabled = false;
             btnAppCopy.Enabled = false;
             btnAppDelete.Enabled = false;
             btnAppEdit.Enabled = false;                                 // Therefore, the buttons don't work
@@ -1452,7 +1680,7 @@ namespace Portal11.Proj
 
         void ResetDepContext()
         {
-            AllDepView.SelectedIndex = -1;                              // No selected row any more
+            btnDepArchive.Enabled = false;
             btnDepCopy.Enabled = false;
             btnDepDelete.Enabled = false;
             btnDepEdit.Enabled = false;                                 // Therefore, the buttons don't work
@@ -1463,7 +1691,7 @@ namespace Portal11.Proj
 
         void ResetExpContext()
         {
-            AllExpView.SelectedIndex = -1;                              // No selected row any more
+            btnExpArchive.Enabled = false;
             btnExpCopy.Enabled = false;
             btnExpDelete.Enabled = false;
             btnExpEdit.Enabled = false;                                 // Therefore, the buttons don't work
@@ -1471,16 +1699,78 @@ namespace Portal11.Proj
             btnExpView.Enabled = false;
         }
 
-        // A little common fragment that pulls the expID from the selected row of the GridView control and makes sure it's not blank.
+        // A little common fragment that pulls the request ID from the selected row of the GridView control and makes sure it's not blank.
 
         string FetchSelectedRowLabel(GridView allview)
         {
-            Label label = (Label)allview.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains DepID or ExpID
+            Label label = (Label)allview.SelectedRow.FindControl("lblRowID"); // Find the label control that contains DepID or ExpID
             string ID = label.Text;                                     // Extract the text of the control, which is ExpID
             if (ID == "")
                 LogError.LogInternalError("ProjectDashboard", string.Format(
                     "Unable to find Deposit/Expense ID '{0}' from selected GridView row in database", ID)); // Fatal error
             return ID;
+        }
+
+        // Fill a Drop Down List with available Entity Names
+
+        void FillEntityDDL(int? entityID)
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                int projID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int; // Find ID of current project
+
+                var query = (from pe in context.ProjectEntitys
+                            where pe.ProjectID == projID            // This project only, all roles
+                            select new { EntityID = pe.EntityID, Name = pe.Entity.Name }
+                            ).Distinct().OrderBy(x => x.Name);      // Find all Entitys that are assigned to this project
+
+                DataTable rows = new DataTable();
+                rows.Columns.Add(PortalConstants.DdlID);
+                rows.Columns.Add(PortalConstants.DdlName);
+
+                foreach (var row in query)
+                {
+                    DataRow dr = rows.NewRow();                      // Build a row from the next query output
+                    dr[PortalConstants.DdlID] = row.EntityID;
+                    dr[PortalConstants.DdlName] = row.Name;
+                    rows.Rows.Add(dr);                               // Add the new row to the data table
+                }
+
+                StateActions.LoadDdl(ddlEntityName, entityID, rows,
+                    "", "-- All Project Entities --", alwaysDisplayLeader: true); // Put the cherry on top
+            }
+            return;
+        }
+
+        // Fill a Drop Down List with available Person Names
+
+        void FillPersonDDL(int? personID)
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                int projID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int; // Find ID of current project
+
+                var query = (from pp in context.ProjectPersons
+                            where pp.ProjectID == projID            // This project only
+                            select new { PersonID = pp.PersonID, Name = pp.Person.Name }
+                            ).Distinct().OrderBy(x => x.Name);      // Find all Persons in all roles
+
+                DataTable rows = new DataTable();
+                rows.Columns.Add(PortalConstants.DdlID);
+                rows.Columns.Add(PortalConstants.DdlName);
+
+                foreach (var row in query)
+                {
+                    DataRow dr = rows.NewRow();                      // Build a row from the next query output
+                    dr[PortalConstants.DdlID] = row.PersonID;
+                    dr[PortalConstants.DdlName] = row.Name;
+                    rows.Rows.Add(dr);                               // Add the new row to the data table
+                }
+
+                StateActions.LoadDdl(ddlPersonName, personID, rows,
+                    "", "-- All Project Persons --", alwaysDisplayLeader: true); // Put the cherry on top
+            }
+            return;
         }
 
         // Save the current settings of the checkboxes in a (big) cookie
@@ -1489,23 +1779,29 @@ namespace Portal11.Proj
         {
             HttpCookie projectCheckboxesCookie = new HttpCookie(PortalConstants.CProjectCheckboxes);
 
+            projectCheckboxesCookie[PortalConstants.CProjectCkSearchVisible] = pnlSearch.Visible.ToString();
+
+            projectCheckboxesCookie[PortalConstants.CProjectCkRAwaitingProjectStaff] = ckRAwaitingProjectStaff.Checked.ToString();
+            projectCheckboxesCookie[PortalConstants.CProjectCkRAwaitingCWStaff] = ckRAwaitingCWStaff.Checked.ToString();
+            projectCheckboxesCookie[PortalConstants.CProjectCkRApproved] = ckRApproved.Checked.ToString();
+            projectCheckboxesCookie[PortalConstants.CProjectCkRReturned] = ckRReturned.Checked.ToString();
+
+            projectCheckboxesCookie[PortalConstants.CProjectFromDate] = txtBeginningDate.Text;
+            projectCheckboxesCookie[PortalConstants.CProjectToDate] = txtEndingDate.Text;
+
+            projectCheckboxesCookie[PortalConstants.CProjectCkRActive] = ckRActive.Checked.ToString();
+            projectCheckboxesCookie[PortalConstants.CProjectCkRArchived] = ckRArchived.Checked.ToString();
+
+            int? selection = StateActions.UnloadDdl(ddlEntityName);
+            if (selection != null)                                      // If != something is selected
+                projectCheckboxesCookie[PortalConstants.CProjectDdlEntityID] = selection.ToString();
+            selection = StateActions.UnloadDdl(ddlPersonName);
+            if (selection != null)                                      // If != something is selected
+                projectCheckboxesCookie[PortalConstants.CProjectDdlPersonID] = selection.ToString();
+
             projectCheckboxesCookie[PortalConstants.CProjectAppVisible] = pnlApp.Visible.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkAAwaitingProjectStaff] = ckAAwaitingProjectStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkAAwaitingCWStaff] = ckAAwaitingCWStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkAApproved] = ckAApproved.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkAReturned] = ckAReturned.Checked.ToString();
-
             projectCheckboxesCookie[PortalConstants.CProjectDepVisible] = pnlDep.Visible.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkDAwaitingProjectStaff] = ckDAwaitingProjectStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkDAwaitingCWStaff] = ckDAwaitingCWStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkDDepositComplete] = ckDDepositComplete.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkDReturned] = ckDReturned.Checked.ToString();
-
             projectCheckboxesCookie[PortalConstants.CProjectExpVisible] = pnlExp.Visible.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkEAwaitingProjectStaff] = ckEAwaitingProjectStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkEAwaitingCWStaff] = ckEAwaitingCWStaff.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkEPaid] = ckEPaid.Checked.ToString();
-            projectCheckboxesCookie[PortalConstants.CProjectCkEReturned] = ckEReturned.Checked.ToString();
 
             Response.Cookies.Add(projectCheckboxesCookie);                    // Store a new cookie
         }
@@ -1517,43 +1813,86 @@ namespace Portal11.Proj
             HttpCookie projectCheckboxesCookie = Request.Cookies[PortalConstants.CProjectCheckboxes]; // Ask for the Staff Checkbox cookie
             if (projectCheckboxesCookie != null)                              // If != the cookie is present
             {
+
+                // Search panel
+
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkSearchVisible] == "True")
+                    ExpandSearchPanel();
+                else
+                    CollapseSearchPanel();
+
+                // Filter Panel
+
+                ckRAwaitingProjectStaff.Checked = false;                        // Assume box should be unchecked
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkRAwaitingProjectStaff] == "True") ckRAwaitingProjectStaff.Checked = true;
+
+                ckRAwaitingCWStaff.Checked = false;                             // Assume box should be unchecked
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkRAwaitingCWStaff] == "True") ckRAwaitingCWStaff.Checked = true;
+
+                ckRApproved.Checked = false;                                // Assume box should be unchecked
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkRApproved] == "True") ckRApproved.Checked = true;
+
+                ckRReturned.Checked = false;                                    // Assume box should be unchecked
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkRReturned] == "True") ckRReturned.Checked = true;
+
+                ckRActive.Checked = false;                                    // Assume box should be unchecked
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkRActive] == "True") ckRActive.Checked = true;
+
+                ckRArchived.Checked = false;                                    // Assume box should be unchecked
+                if (projectCheckboxesCookie[PortalConstants.CProjectCkRArchived] == "True") ckRArchived.Checked = true;
+
+                // Date Range
+
+                txtBeginningDate.Text = projectCheckboxesCookie[PortalConstants.CProjectFromDate];
+                txtEndingDate.Text = projectCheckboxesCookie[PortalConstants.CProjectToDate];
+
+                // Dropdown Lists
+
+                string entityID = projectCheckboxesCookie[PortalConstants.CProjectDdlEntityID];
+                if (entityID == null)                                       // If = cookie doesn't contain an Entity ID; no selection
+                    FillEntityDDL(null);                                    // Fill the list, no selection
+                else
+                    FillEntityDDL(Convert.ToInt32(entityID));               // Fill the list, highlight selection
+
+                string personID = projectCheckboxesCookie[PortalConstants.CProjectDdlPersonID];
+                if (personID == null)                                       // If = cookie doesn't contain an Entity ID; no selection
+                    FillPersonDDL(null);                                    // Fill the list, no selection
+                else
+                    FillPersonDDL(Convert.ToInt32(personID));               // Fill the list, highlight selection
+
+                // Archive check boxes
+
+                string active = projectCheckboxesCookie[PortalConstants.CProjectCkRActive];
+                if (active != null)                             // If != value is present
+                {
+                    if (active == "True")                       // If == checkbox was checked
+                        ckRActive.Checked = true;
+                    else
+                        ckRActive.Checked = false;
+                }
+
+                string archive = projectCheckboxesCookie[PortalConstants.CProjectCkRArchived];
+                if (archive != null)                            // If != value is present
+                {
+                    if (archive == "True")                      // If == checkbox was checked
+                        ckRArchived.Checked = true;
+                    else
+                        ckRArchived.Checked = false;
+                }
+
+                // Approvel Panel
+
                 if (projectCheckboxesCookie[PortalConstants.CProjectAppVisible] == "True")
                     ExpandAppPanel();                                           // Expand, but don't fill Approval panel
                 else
                     CollapseAppPanel();                                         // Start with Approval panel collapsed
 
-                // Approvel Panel
-
-                ckAAwaitingProjectStaff.Checked = false;                        // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkAAwaitingProjectStaff] == "True") ckAAwaitingProjectStaff.Checked = true;
-
-                ckAAwaitingCWStaff.Checked = false;                             // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkAAwaitingCWStaff] == "True") ckAAwaitingCWStaff.Checked = true;
-
-                ckAApproved.Checked = false;                                // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkAApproved] == "True") ckAApproved.Checked = true;
-
-                ckDReturned.Checked = false;                                    // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkAReturned] == "True") ckAReturned.Checked = true;
+                // Deposit Panel
 
                 if (projectCheckboxesCookie[PortalConstants.CProjectDepVisible] == "True")
                     ExpandDepPanel();                                           // Expand, but don't fill Deposits panel
                 else
                     CollapseDepPanel();                                         // Start with Deposits panel collapsed
-
-                // Deposit Panel
-
-                ckDAwaitingProjectStaff.Checked = false;                        // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkDAwaitingProjectStaff] == "True") ckDAwaitingProjectStaff.Checked = true;
-
-                ckDAwaitingCWStaff.Checked = false;                             // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkDAwaitingCWStaff] == "True") ckDAwaitingCWStaff.Checked = true;
-
-                ckDDepositComplete.Checked = false;                             // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkDDepositComplete] == "True") ckDDepositComplete.Checked = true;
-
-                ckDReturned.Checked = false;                                    // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkDReturned] == "True") ckDReturned.Checked = true;
 
                 // Expense Panel
 
@@ -1561,18 +1900,11 @@ namespace Portal11.Proj
                     ExpandExpPanel();                                           // Expand, but don't fill Requests panel
                 else
                     CollapseExpPanel();                                         // Start with Requests panel collapsed
-
-                ckEAwaitingProjectStaff.Checked = false;                        // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkEAwaitingProjectStaff] == "True") ckEAwaitingProjectStaff.Checked = true;
-
-                ckEAwaitingCWStaff.Checked = false;                             // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkEAwaitingCWStaff] == "True") ckEAwaitingCWStaff.Checked = true;
-
-                ckEPaid.Checked = false;                                        // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkEPaid] == "True") ckEPaid.Checked = true;
-
-                ckEReturned.Checked = false;                                    // Assume box should be unchecked
-                if (projectCheckboxesCookie[PortalConstants.CProjectCkEReturned] == "True") ckEReturned.Checked = true;
+            }
+            else                                                        // Cookie doesn't exist
+            {
+                FillEntityDDL(null);                                    // Fill the list, no selection
+                FillPersonDDL(null);
             }
         }
     }

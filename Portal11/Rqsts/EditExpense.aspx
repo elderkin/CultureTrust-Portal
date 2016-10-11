@@ -80,7 +80,8 @@
                     <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="input-group">
 
-                            <asp:TextBox runat="server" ID="txtBeginningDate" CssClass="form-control has-success"></asp:TextBox>
+                            <asp:TextBox runat="server" ID="txtBeginningDate" CssClass="form-control has-success"
+                                OnTextChanged="txtBeginningDate_TextChanged" AutoPostBack="true"></asp:TextBox>
                             <span class="input-group-addon">
                                 <asp:LinkButton runat="server" ID="btnBeginningDate" CssClass="btn-xs btn-default"
                                     OnClick="btnBeginningDate_Click" CausesValidation="false">
@@ -130,7 +131,8 @@
                     <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
 
                         <div class="input-group">
-                            <asp:TextBox runat="server" ID="txtEndingDate" CssClass="form-control has-success"></asp:TextBox>
+                            <asp:TextBox runat="server" ID="txtEndingDate" CssClass="form-control has-success"
+                                OnTextChanged="txtEndingDate_TextChanged" AutoPostBack="true"></asp:TextBox>
                             <span class="input-group-addon">
                                 <asp:LinkButton runat="server" ID="btnEndingDate" CssClass="btn-xs btn-default"
                                     OnClick="btnEndingDate_Click" CausesValidation="false">
@@ -183,7 +185,8 @@
                     <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="input-group">
 
-                            <asp:TextBox runat="server" ID="txtDateNeeded" CssClass="form-control has-success"></asp:TextBox>
+                            <asp:TextBox runat="server" ID="txtDateNeeded" CssClass="form-control has-success"
+                                OnTextChanged="txtDateNeeded_TextChanged" AutoPostBack="true" ></asp:TextBox>
                             <span class="input-group-addon">
                                 <asp:LinkButton runat="server" ID="btnDateNeeded" CssClass="btn-xs btn-default"
                                     OnClick="btnDateNeeded_Click" CausesValidation="false">
@@ -335,7 +338,8 @@
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Date of Invoice</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="input-group">
-                            <asp:TextBox runat="server" ID="txtDateOfInvoice" CssClass="form-control has-success" ></asp:TextBox>
+                            <asp:TextBox runat="server" ID="txtDateOfInvoice" CssClass="form-control has-success" 
+                                OnTextChanged="txtDateOfInvoice_TextChanged" AutoPostBack="true"></asp:TextBox>
                             <span class="input-group-addon">
                                 <asp:LinkButton runat="server" ID="btnDateOfInvoice" CssClass="btn-xs btn-default"
                                     OnClick="btnDateOfInvoice_Click" CausesValidation="false">

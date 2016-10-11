@@ -13,43 +13,66 @@
     </p>
     <div class="form-horizontal">
 
-        <%--Filters that affect all request types --%>
+        <%--A panel for Search Criteria--%>
 
-        <!-- Project Name -->
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <asp:LinkButton ID="btnSearchCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnSearchCollapse_Click" Visible="false"
+                    Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
+                </asp:LinkButton>
+                <asp:LinkButton ID="btnSearchExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnSearchExpand_Click">
+                    <span class="glyphicon glyphicon-chevron-down"></span>
+                </asp:LinkButton>
+                <strong>Search Filters</strong>
+            </div>
+            <asp:Panel ID="pnlSearch" runat="server" Visible="false">
+                <br />
 
-        <div class="row">
+            <div class="row">
+            <div class="col-xs-12">
+
+        <%--Filters that affect all request types. Pack them in row by row --%>
+
+            <%-- Project Name --%>
             <div class="panel panel-default col-md-3 col-xs-6">
                 <h4>Filter: Project Name</h4>
-                <div class="panel-body">
+                <div class="panel-body" style="min-height: 108px; max-height: 108px;">
                     <div class="col-xs-12">
                         <!-- Fill this control from code-behind -->
                         <asp:DropDownList runat="server" ID="ddlProjectName" CssClass="form-control"
-                            OnSelectedIndexChanged="ddlProjectName_SelectedIndexChanged" AutoPostBack="true">
+                            OnSelectedIndexChanged="SearchCriteriaChanged" AutoPostBack="true">
                         </asp:DropDownList>
                     </div>
                 </div>
             </div>
 
+            <%-- Next Reviewer --%>
             <asp:Panel ID="pnlNextReviewer" runat="server" Visible="true">
-            <div class="panel panel-default col-md-offset-1 col-md-4 col-xs-6">
+            <div class="panel panel-default col-lg-offset-1 col-lg-4 col-xs-6">
                         <h4>Filter: Next Reviewer</h4>
+                <div class="panel-body" style="min-height: 108px; max-height: 108px;">
                     <div class="checkbox">
-                        <asp:CheckBox ID="ckRCoordinator" runat="server" Text="Coordinator" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckRInternalCoordinator" runat="server" Text="Internal Coordinator" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckRFinanceDirector" runat="server" Text="Finance Director" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckRProjectMember" runat="server" Text="Project Member" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckRTrustDirector" runat="server" Text="Trust Director" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckRTrustExecutive" runat="server" Text="Trust Executive" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                     </div>
+                </div>
             </div>
             </asp:Panel>
 
-            <div class="panel panel-default col-md-offset-1 col-md-3 col-xs-6">
+            <%-- Date Range --%>
+            <div class="panel panel-default col-lg-offset-1 col-md-3 col-xs-6">
                         <h4>Filter: Date Range</h4>
+
+             <div class="panel-body" style="min-height: 108px; max-height: 108px;">
+                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtBeginningDate" 
                         CssClass="col-xs-2 control-label">From</asp:Label>
                     <div class="col-xs-10">
@@ -88,14 +111,6 @@
                             SelectWeekText="week"
                             SelectMonthText="month" />
                     </div>
-<%--                    <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtBeginningDate"
-                            CssClass="text-danger" ErrorMessage="Please supply a Beginning Date of the Date Range." />
-                        <asp:RegularExpressionValidator ID="valBeginningDate" runat="server" ControlToValidate="txtBeginningDate"
-                            CssClass="text-danger" ErrorMessage="Date format is dd/mm/yyyy"
-                            ValidationExpression="^([0-9]{1,2})[./-]+([0-9]{1,2})[./-]+([0-9]{2}|[0-9]{4})$">
-                        </asp:RegularExpressionValidator>
-                    </div>--%>
 
                     <asp:Label runat="server" AssociatedControlID="txtEndingDate" 
                         CssClass="col-xs-2 control-label">To</asp:Label>
@@ -132,20 +147,68 @@
                             SelectorStyle-BackColor="#3498db"
                             SelectorStyle-ForeColor="white"
                             SelectorStyle-Font-Size="10px"
-                            SelectWeekText="week"
+                            SelectWeekText="week" 
                             SelectMonthText="month" />
                     </div>
-<%--                    <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEndingDate"
-                            CssClass="text-danger" ErrorMessage="Please supply an Ending Date of the new Request." />
-                        <asp:RegularExpressionValidator ID="valEndingDate" runat="server" ControlToValidate="txtEndingDate"
-                            CssClass="text-danger" ErrorMessage="Date format is dd/mm/yyyy"
-                            ValidationExpression="^([0-9]{1,2})[./-]+([0-9]{1,2})[./-]+([0-9]{2}|[0-9]{4})$">
-                        </asp:RegularExpressionValidator>
-                    </div>--%>
+                    </div>
+                </div>
                 </div>
 
+            <%-- Entity (Deposit Entity, Expense Vendor) --%>
+            <div class="panel panel-default col-md-3 col-xs-6">
+                <h4>Filter: Entity Name</h4>
+                <div class="panel-body" style="min-height: 108px; max-height: 108px;">
+                    <div class="col-xs-12" title="abcdef">
+                        <!-- Fill this control from code-behind -->
+                        <asp:DropDownList runat="server" ID="ddlEntityName" CssClass="form-control"
+                            OnSelectedIndexChanged="SearchCriteriaChanged" AutoPostBack="true">
+                        </asp:DropDownList>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default col-md-offset-1 col-md-3 col-xs-6">
+                <h4>Filter: Person Name</h4>
+                <div class="panel-body" style="min-height: 108px; max-height: 108px;">
+                    <div class="col-xs-12">
+                        <!-- Fill this control from code-behind -->
+                        <asp:DropDownList runat="server" ID="ddlPersonName" CssClass="form-control"
+                            OnSelectedIndexChanged="SearchCriteriaChanged" AutoPostBack="true">
+                        </asp:DropDownList>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default col-md-offset-1 col-md-3 col-xs-6">
+                <h4>Filter: General Ledger Code</h4>
+                <div class="panel-body" style="min-height: 108px; max-height: 108px;">
+                    <div class="col-xs-12">
+                        <!-- Fill this control from code-behind -->
+                        <asp:DropDownList runat="server" ID="ddlGLCode" CssClass="form-control"
+                            OnSelectedIndexChanged="SearchCriteriaChanged" AutoPostBack="true">
+                        </asp:DropDownList>
+                    </div>
+                </div>
+            </div>
+
+        <%-- Archived --%>
+            <div class="panel panel-default col-md-4 col-xs-6">
+                <h4>Filter: Archive Status</h4>
+                <div class="panel-body" style="min-height: 108px; max-height: 108px;">
+                <div class="checkbox">
+                    <asp:CheckBox ID="ckRActive" runat="server" Text="Show Active Requests" CssClass="col-xs-6" Checked="true"
+                        OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                    <asp:CheckBox ID="ckRArchived" runat="server" Text="Show Archived Requests" CssClass="col-xs-6" Checked="false"
+                        OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                </div>
+                </div>
+            </div>
+
+            </div>
+            </div>
+            </asp:Panel>
         </div>
+        <%--End of panel--%>
 
         <%--And now a panel for Approvals--%>
 
@@ -167,9 +230,9 @@
                         Approval Type
                     <div class="checkbox">
                         <asp:CheckBox ID="ckAExpress" runat="server" Text="Express" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckAFull" runat="server" Text="Full Review" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                     </div>
                     </div>
 
@@ -249,6 +312,11 @@
                                 <asp:BoundField DataField="CurrentStateDesc" HeaderText="Status" />
                                 <asp:BoundField DataField="Owner" HeaderText="Next Reviewer" />
                                 <asp:BoundField DataField="Description" HeaderText="Description" />
+                                <asp:TemplateField HeaderText="Archived" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
                             </Columns>
                         </asp:GridView>
 
@@ -288,15 +356,15 @@
                         Deposit Type
                     <div class="checkbox">
                         <asp:CheckBox ID="ckDCheck" runat="server" Text="Check" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckDEFT" runat="server" Text="EFT" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckDCash" runat="server" Text="Cash" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckDInKind" runat="server" Text="In Kind" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckDPledge" runat="server" Text="Pledge/Contract" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                     </div>
                     </div>
 
@@ -373,6 +441,11 @@
                                 <asp:BoundField DataField="CurrentStateDesc" HeaderText="Status" />
                                 <asp:BoundField DataField="Owner" HeaderText="Next Reviewer" />
                                 <asp:BoundField DataField="Description" HeaderText="Description" />
+                                <asp:TemplateField HeaderText="Archived" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
                             </Columns>
                         </asp:GridView>
 
@@ -410,17 +483,17 @@
                         Expense Type
                     <div class="checkbox">
                         <asp:CheckBox ID="ckEPaycheck" runat="server" Text="Paycheck" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckEVendorInvoice" runat="server" Text="Vendor Invoice" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckEContractorInvoice" runat="server" Text="Contractor Invoice" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckEPurchaseOrder" runat="server" Text="Purchase Order" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckEReimbursement" runat="server" Text="Reimbursement" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckEGiftCard" runat="server" Text="Gift Card" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="ckRReviewer_CheckedChanged" AutoPostBack="true" />
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                     </div>
                     </div>
 
@@ -497,9 +570,14 @@
                                         <asp:Label ID="lblCurrentState" runat="server" Text='<%# Bind("CurrentState") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:BoundField DataField="StateDesc" HeaderText="Status" />
+                                <asp:BoundField DataField="CurrentStateDesc" HeaderText="Status" />
                                 <asp:BoundField DataField="Owner" HeaderText="Next Reviewer" />
                                 <asp:BoundField DataField="Target" HeaderText="Destination" />
+                                <asp:TemplateField HeaderText="Archived" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
                             </Columns>
                         </asp:GridView>
 

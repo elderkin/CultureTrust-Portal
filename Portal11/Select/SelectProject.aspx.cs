@@ -96,63 +96,18 @@ namespace Portal11.Staff
                 e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AllProjectView, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
 
-                Label rowID = (Label)e.Row.FindControl("lblRowID");         // Find the ProjectID
-                int projectID = Convert.ToInt32(rowID.Text);                // Convert string to number
-                UserRole role = EnumActions.ConvertTextToUserRole(litSavedRole.Text); // Get UserRole into numeric form
+                //Label rowIDLabel = (Label)e.Row.FindControl("lblRowID");    // Find the ProjectID
+                //int projectID = Convert.ToInt32(rowIDLabel.Text);           // Convert string to number
 
-                bool bingo = false;                                         // To bold or not to bold
-                if (role == UserRole.Coordinator)                           // If == user is a Coordinator; let's go
+                Label countLabel = (Label)e.Row.FindControl("lblCount");    // Find the Count
+                int count = Convert.ToInt32(countLabel.Text);               // Convert string to number
+                if (count > 0)                                              // If >0 there is work to do on this project
                 {
-                    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-                    {
-
-                        // Look in each type of Request for something in a State that needs our attention
-
-                        while (true)                                        // Enable "break" logic to make flow simpler
-                        {
-                            var query = (from app in context.Apps
-                                         where app.ProjectID == projectID
-                                             && !app.Inactive
-                                             && ((app.CurrentState == AppState.UnsubmittedByCoordinator)
-                                             || (app.CurrentState == AppState.AwaitingCoordinator))
-                                         select app).Count();
-                            if (query > 0)                                  // If > the query found a relevant request. Bingo.
-                            {
-                                bingo = true;                               // Remember that we found something
-                                break;                                      // No need to look for other request types
-                            }
-
-                            query = (from dep in context.Deps
-                                     where dep.ProjectID == projectID
-                                         && !dep.Inactive
-                                         && (dep.CurrentState == DepState.UnsubmittedByCoordinator)
-                                     select dep).Count();
-                            if (query > 0)                                  // If > the query found a relevant request. Bingo.
-                            {
-                                bingo = true;                               // Remember that we found something
-                                break;                                      // No need to look for other request types
-                            }
-
-                            query = (from exp in context.Exps
-                                     where exp.ProjectID == projectID
-                                         && !exp.Inactive
-                                         && (exp.CurrentState == ExpState.UnsubmittedByCoordinator)
-                                     select exp).Count();
-                            if (query > 0)                                  // If > the query found a relevant request. Bingo.
-                            {
-                                bingo = true;                               // Remember that we found something
-                                break;                                      // No need to look for other request types
-                            }
-
-                            break;                                          // Break out of the while loop
-                        }
-                    }
-                    if (bingo)                                              // If true one of the queries turned up something relevant
-                    {
-                        e.Row.Font.Bold = true;                             // If we get here, User can act on the row. Bold the row.
-//                        e.Row.ForeColor = System.Drawing.ColorTranslator.FromHtml(PortalConstants.ForeColor); // And make it green
-                    }
+                    e.Row.Font.Bold = true;                                 // If we get here, User can act on the row. Bold the row.
                 }
+
+                Label inactiveLabel = (Label)e.Row.FindControl("lblInactive");
+                inactiveLabel.Visible = true;                               // Make sure the Inactive column appears if hidden earlier
             }
             return;
         }
@@ -169,72 +124,11 @@ namespace Portal11.Staff
                 e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.UserProjectView, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
 
-                Label rowID = (Label)e.Row.FindControl("lblRowID");         // Find the ProjectID
-                int projectID = Convert.ToInt32(rowID.Text);                // Convert string to number
-                UserRole role = EnumActions.ConvertTextToUserRole(litSavedRole.Text); // Get UserRole into numeric form
-
-                bool bingo = false;                                         // To bold or not to bold
-                if (role == UserRole.Project)                               // If == user is on a Project
+                Label countLabel = (Label)e.Row.FindControl("lblCount");    // Find the Count
+                int count = Convert.ToInt32(countLabel.Text);               // Convert string to number
+                if (count > 0)                                              // If >0 there is work to do on this project
                 {
-                    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-                    {
-
-                        // Look in each type of Request for something in a State that needs attention of a Project Director or Project Staff
-                        // We don't know which because the User may have a different role on each project. So cast a broad net at this stage.
-
-                        while (true)                                        // Enable "break" logic to make flow simpler
-                        {
-                            var query = (from app in context.Apps
-                                         where app.ProjectID == projectID
-                                             && !app.Inactive
-                                             && ((app.CurrentState == AppState.Approved)
-                                             || (app.CurrentState == AppState.AwaitingProjectDirector)
-                                             || (app.CurrentState == AppState.Returned)
-                                             || (app.CurrentState == AppState.UnsubmittedByProjectDirector)
-                                             || (app.CurrentState == AppState.UnsubmittedByProjectStaff))
-                                         select app).Count();
-                            if (query > 0)                                  // If > the query found a relevant request. Bingo.
-                            {
-                                bingo = true;                               // Remember that we found something
-                                break;                                      // No need to look for other request types
-                            }
-
-                            query = (from dep in context.Deps
-                                     where dep.ProjectID == projectID
-                                         && !dep.Inactive
-                                         && ((dep.CurrentState == DepState.AwaitingProjectDirector)
-                                         || (dep.CurrentState == DepState.DepositComplete)
-                                         || (dep.CurrentState == DepState.Returned))
-                                     select dep).Count();
-                            if (query > 0)                                  // If > the query found a relevant request. Bingo.
-                            {
-                                bingo = true;                               // Remember that we found something
-                                break;                                      // No need to look for other request types
-                            }
-
-                            query = (from exp in context.Exps
-                                     where exp.ProjectID == projectID
-                                         && !exp.Inactive
-                                         && ((exp.CurrentState == ExpState.Approved)
-                                         || (exp.CurrentState == ExpState.AwaitingProjectDirector)
-                                         || (exp.CurrentState == ExpState.Returned)
-                                         || (exp.CurrentState == ExpState.UnsubmittedByProjectDirector)
-                                         || (exp.CurrentState == ExpState.UnsubmittedByProjectStaff))
-                                     select exp).Count();
-                            if (query > 0)                                  // If > the query found a relevant request. Bingo.
-                            {
-                                bingo = true;                               // Remember that we found something
-                                break;                                      // No need to look for other request types
-                            }
-
-                            break;                                          // Break out of the while loop
-                        }
-                    }
-                    if (bingo)                                              // If true one of the queries turned up something relevant
-                    {
-                        e.Row.Font.Bold = true;                             // If we get here, User can act on the row. Bold the row.
-//                        e.Row.ForeColor = System.Drawing.ColorTranslator.FromHtml(PortalConstants.ForeColor); // And make it green
-                    }
+                    e.Row.Font.Bold = true;                                 // If we get here, User can act on the row. Bold the row.
                 }
 
             }
@@ -420,8 +314,59 @@ namespace Portal11.Staff
                         pred = pred.And(p => p.Name.Contains(search));      // Only Projects whose name match our search criteria
 
                     List<Project> projs = context.Projects.AsExpandable().Where(pred).OrderBy(p => p.Name).ToList(); // Query, sort and make list
-                    AllProjectView.DataSource = projs;                      // Give it to the GridView control
+
+                    // Go through the list of all projects and determine how many pending requests the current user has.
+                    // This depends on the role of the user on each project, so we have some work to do to find that number.
+                    // Include that number in the grid.
+
+                    UserRole role = EnumActions.ConvertTextToUserRole(litSavedRole.Text); // Get UserRole into numeric form
+                    List<SelectProjectAllViewRow> rows = new List<SelectProjectAllViewRow>(); // Create an empty list for the GridView control
+                    foreach (var p in projs)                                // Process the list of projects row-by-row
+                    {
+                        SelectProjectAllViewRow row = new SelectProjectAllViewRow();    // Instantiate empty row all ready to fill
+                        row.ProjectID = p.ProjectID.ToString();             // Fill the part of the row that's always there
+                        row.Name = p.Name;
+                        row.Description = p.Description;
+                        row.Inactive = p.Inactive.ToString();
+                        row.Count = 0;                                      // Initialize count of requests needing attention
+
+                        if (role == UserRole.InternalCoordinator)                   // If == user is a Coordinator; let's go
+                        {
+
+                            // Look in each type of Request for something in a State that needs our attention
+
+                            var query = (from app in context.Apps
+                                        where app.ProjectID == p.ProjectID
+                                            && !app.Archived
+                                            && ((app.CurrentState == AppState.UnsubmittedByInternalCoordinator)
+                                            || (app.CurrentState == AppState.AwaitingInternalCoordinator))
+                                        select app).Count();
+                            row.Count = row.Count + query;                  // Accumulate number of interesting requests
+
+                            query = (from dep in context.Deps
+                                        where dep.ProjectID == p.ProjectID
+                                            && !dep.Archived
+                                            && (dep.CurrentState == DepState.UnsubmittedByInternalCoordinator)
+                                        select dep).Count();
+                            row.Count = row.Count + query;                  // Accumulate number of interesting requests
+
+                            query = (from exp in context.Exps
+                                        where exp.ProjectID == p.ProjectID
+                                            && !exp.Archived
+                                            && (exp.CurrentState == ExpState.UnsubmittedByInternalCoordinator)
+                                        select exp).Count();
+                            row.Count = row.Count + query;                  // Accumulate number of interesting request
+                        }
+
+                        rows.Add(row);                                      // Add the filled-in row to the list of rows
+                    }
+
+                    AllProjectView.DataSource = rows;                       // Give it to the GridView control
                     AllProjectView.DataBind();                              // And display it
+
+                    // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
+
+                    AllProjectView.Columns[SelectProjectAllViewRow.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
 
                     NavigationActions.EnableGridViewNavButtons(AllProjectView); // Enable appropriate nav buttons based on page count
                 }
@@ -434,7 +379,65 @@ namespace Portal11.Staff
                         pred = pred.And(up => up.Project.Name.Contains(search)); // Only Projects whose name match our search criteria
 
                     List<UserProject> projs = context.UserProjects.AsExpandable().Where(pred).OrderBy(up => up.Project.Name).ToList(); // Query, sort and make list
-                    UserProjectView.DataSource = projs;                     // Give it to the GridView cnorol
+
+                    // Go through the list of all projects and determine how many pending requests the current user has.
+                    // This depends on the role of the user on each project, so we have some work to do to find that number.
+                    // Include that number in the grid.
+
+                    UserRole role = EnumActions.ConvertTextToUserRole(litSavedRole.Text); // Get UserRole into numeric form
+
+                    List<SelectProjectUserViewRow> rows = new List<SelectProjectUserViewRow>(); // Create an empty list for the GridView control
+                    foreach (var p in projs)                                // Process the list of projects row-by-row
+                    {
+                        SelectProjectUserViewRow row = new SelectProjectUserViewRow(); // Instantiate empty row all ready to fill
+                        row.ProjectID = p.ProjectID.ToString();             // Fill the part of the row that's always there
+                        row.Name = p.Project.Name;
+                        row.Description = p.Project.Description;
+                        row.ProjectRole = EnumActions.GetEnumDescription(p.ProjectRole);
+                        row.Count = 0;                                      // Initialize count of requests needing attention
+
+                        if (role == UserRole.Project)                               // If == user is on a Project
+                        {
+
+                            // Look in each type of Request for something in a State that needs attention of a Project Director or Project Staff
+                            // We don't know which because the User may have a different role on each project. So cast a broad net at this stage.
+
+                            var query = (from app in context.Apps
+                                         where app.ProjectID == p.ProjectID
+                                             && !app.Archived
+                                             && ((app.CurrentState == AppState.Approved)
+                                             || (app.CurrentState == AppState.AwaitingProjectDirector)
+                                             || (app.CurrentState == AppState.Returned)
+                                             || (app.CurrentState == AppState.UnsubmittedByProjectDirector)
+                                             || (app.CurrentState == AppState.UnsubmittedByProjectStaff))
+                                         select app).Count();
+                            row.Count = row.Count + query;                  // Accumulate number of interesting request
+
+                            query = (from dep in context.Deps
+                                     where dep.ProjectID == p.ProjectID
+                                         && !dep.Archived
+                                         && ((dep.CurrentState == DepState.AwaitingProjectDirector)
+                                         || (dep.CurrentState == DepState.DepositComplete)
+                                         || (dep.CurrentState == DepState.Returned))
+                                     select dep).Count();
+                            row.Count = row.Count + query;                  // Accumulate number of interesting request
+
+                            query = (from exp in context.Exps
+                                     where exp.ProjectID == p.ProjectID
+                                         && !exp.Archived
+                                         && ((exp.CurrentState == ExpState.Approved)
+                                         || (exp.CurrentState == ExpState.AwaitingProjectDirector)
+                                         || (exp.CurrentState == ExpState.Returned)
+                                         || (exp.CurrentState == ExpState.UnsubmittedByProjectDirector)
+                                         || (exp.CurrentState == ExpState.UnsubmittedByProjectStaff))
+                                     select exp).Count();
+                            row.Count = row.Count + query;                  // Accumulate number of interesting request
+
+                            rows.Add(row);                                      // Add the filled-in row to the list of rows
+                        }
+                    }
+
+                    UserProjectView.DataSource = rows;                      // Give it to the GridView cnorol
                     UserProjectView.DataBind();                             // And display it
 
                     NavigationActions.EnableGridViewNavButtons(UserProjectView); // Enable appropriate nav buttons based on page count

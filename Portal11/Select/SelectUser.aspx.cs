@@ -154,6 +154,11 @@ namespace Portal11.Admin
                 if (search != "")                                       // If != the search string is not blank, use a Contains clause
                     pred = pred.And(p => p.FullName.Contains(search));  // Only Users whose name match our search criteria
 
+                // If we are working for an Assign command, we are only interested in Project users
+
+                if (litSavedCommand.Text == PortalConstants.QSCommandAssign) // If == this is an Assign command
+                    pred = pred.And(p => p.UserRole == UserRole.Project); // Select only Project users
+
                 List<ApplicationUser> users = context.Users.AsExpandable().Where(pred).OrderBy(p => p.FullName).ToList(); // Query, sort and make list
                 UserView.DataSource = users;                            // Give it to the GridView control
                 UserView.DataBind();                                    // And display it

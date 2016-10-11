@@ -23,6 +23,9 @@ namespace Portal11.Rqsts
         {
             if (!Page.IsPostBack)
             {
+//                LogError.LogInternalError("StaffDashboard", $"Invalid AppType in ApprovalID "); // Log fatal error
+                //int badone = 1, badzero = 0;
+                //int badquotient = badone / badzero;
 
                 // If the page before us has left a Query String with a status message, find it and display it
 
@@ -35,11 +38,10 @@ namespace Portal11.Rqsts
 
                 if (litSavedUserRole.Text == UserRole.Auditor.ToString())   // If == this is an Auditor
                 {
-                    pnlNextReviewer.Visible = false;                        // Next Review is irrelevant, so hide the check boxes
+                    pnlNextReviewer.Enabled = false;                        // Next Review is irrelevant, so dim the check boxes
                 }
 
-                RestoreCheckboxes();                                        // Read cookie, restore checkbox settings
-                LoadProjectDDL();                                           // Load the list of projects
+                RestoreCheckboxes();                                        // Read cookie, restore checkbox settings, fill DDLs
                 LoadAllApps();                                              // Load the grid view of Approvals
                 LoadAllDeps();                                              // Load the grid view of Deposits
                 LoadAllExps();                                              // Load the grid view of Expenses
@@ -47,26 +49,45 @@ namespace Portal11.Rqsts
             return;
         }
 
-        // A Project has been selected from the drop down list. Refresh the lists of requests
+        // Expand and Collapse the panel of search filters
 
-        protected void ddlProjectName_SelectedIndexChanged(object sender, EventArgs e)
+        protected void btnSearchCollapse_Click(object sender, EventArgs e)
         {
-            LoadAllApps();                                                  // Load the grid view of Approvals
-            LoadAllDeps();                                                  // Load the grid view of Deposits
-            LoadAllExps();                                                  // Load the grid view of Expenses
+            CollapseSearchPanel();                                          // Do the heavy lifting
+            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             return;
         }
 
-        // The user clicked or unclicked one of the "Next Reviewer" check boxes for Request. Recreate the grid view with new Filter criteria.
+        void CollapseSearchPanel()
+        {
+            pnlSearch.Visible = false;
+            btnSearchCollapse.Visible = false;
+            btnSearchExpand.Visible = true;
+            return;
+        }
 
-        protected void ckRReviewer_CheckedChanged(object sender, EventArgs e)
+    protected void btnSearchExpand_Click(object sender, EventArgs e)
+        {
+            ExpandSearchPanel();
+            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            return;
+        }
+
+        void ExpandSearchPanel()
+        {
+            pnlSearch.Visible = true;
+            btnSearchCollapse.Visible = true;
+            btnSearchExpand.Visible = false;
+            return;
+        }
+
+        // A search criteria has changed. Refresh the lists of requests
+
+        protected void SearchCriteriaChanged(object sender, EventArgs e)
         {
             LoadAllApps();                                                  // Recreate the grid view
-            StaffAppView.SelectedIndex = -1;                                // No selected row any more
             LoadAllDeps();                                                  // Load the grid view of Deposits
-            StaffDepView.SelectedIndex = -1;                                // No selected row any more
             LoadAllExps();                                                  // Load the grid view of Expenses
-            StaffExpView.SelectedIndex = -1;                                // No selected row any more
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             return;
         }
@@ -113,12 +134,14 @@ namespace Portal11.Rqsts
             calEndingDate.SelectedDate = last;                                  // Also place the date into the "To" calendar
             calEndingDate.VisibleDate = last;                                   // And position "To" calendar to that date
             calBeginningDate.Visible = false;                                   // One click and the calendar is gone
+            SearchCriteriaChanged(sender, e);                                   // Refresh the grids
             return;
         }
 
         protected void calEndingDate_SelectionChanged(object sender, EventArgs e)
         {
             calSelectionChanged(txtEndingDate, calEndingDate);                  // Do the heavy lifting
+            SearchCriteriaChanged(sender, e);                                   // Refresh the grids
             return;
         }
 
@@ -134,35 +157,15 @@ namespace Portal11.Rqsts
 
         protected void txtBeginningDate_TextChanged(object sender, EventArgs e)
         {
-            txtSelectionChanged(txtBeginningDate, "From");                      // Do the heavy lifting
-            ckRReviewer_CheckedChanged(sender, e);                              // Refresh the grids
+            DateActions.ValidateDateInput(txtBeginningDate, "From Date", litDangerMessage); // Do the heavy lifting
+            SearchCriteriaChanged(sender, e);                                   // Refresh the grids
             return;
         }
 
         protected void txtEndingDate_TextChanged(object sender, EventArgs e)
         {
-            txtSelectionChanged(txtEndingDate, "To");                           // Do the heavy lifting
-            ckRReviewer_CheckedChanged(sender, e);                              // Refresh the grids
-            return;
-        }
-
-        void txtSelectionChanged(TextBox txt, string source)
-        {
-            if (txt.Text != "")                                                 // If != there is a value in the text box
-            {
-                try
-                {
-                    DateTime temp;
-                    temp = Convert.ToDateTime(txt.Text);                        // Attempt to convert string to date
-                                                                                // If it worked, leave it right in the text box for later
-                    litDangerMessage.Text = "";                                 // Erase prior error message
-                }
-                catch (FormatException)                                         // A date conversion error
-                {
-                    txt.Text = "";                                              // For now, just clear the bad date
-                    litDangerMessage.Text = "Invalid '" + source + "' date value. Format is mm/dd/yyyy";
-                }
-            }
+            DateActions.ValidateDateInput(txtEndingDate, "To Date", litDangerMessage); // Do the heavy lifting
+            SearchCriteriaChanged(sender, e);                                   // Refresh the grids
             return;
         }
 
@@ -331,6 +334,12 @@ namespace Portal11.Rqsts
                 }
                 if (bingo)
                     e.Row.Cells[StaffAppViewRow.OwnerRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+
+                // See if the row is Archived
+
+                label = (Label)e.Row.FindControl("lblArchived");                // Find the label control that contains Archived in this row
+                if (label.Text == "True")                                       // If == this record is Archived
+                    e.Row.Font.Italic = true;                                   // Use italics to indicate Archived status
             }
             return;
         }
@@ -362,6 +371,12 @@ namespace Portal11.Rqsts
                 }
                 if (bingo)
                     e.Row.Cells[StaffDepViewRow.OwnerRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+
+                // See if the row is Archived
+
+                label = (Label)e.Row.FindControl("lblArchived");                // Find the label control that contains Archived in this row
+                if (label.Text == "True")                                       // If == this record is Archived
+                    e.Row.Font.Italic = true;                                   // Use italics to indicate Archived status
             }
             return;
         }
@@ -398,6 +413,12 @@ namespace Portal11.Rqsts
                 }
                 if (bingo)
                     e.Row.Cells[StaffExpViewRow.OwnerRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+
+                // See if the row is Archived
+
+                label = (Label)e.Row.FindControl("lblArchived");                // Find the label control that contains Archived in this row
+                if (label.Text == "True")                                       // If == this record is Archived
+                    e.Row.Font.Italic = true;                                   // Use italics to indicate Archived status
             }
             return;
         }
@@ -433,7 +454,7 @@ namespace Portal11.Rqsts
             Label label = (Label)StaffExpView.SelectedRow.Cells[StaffExpViewRow.CurrentStateCell].FindControl("lblCurrentState"); // Find the label control that contains Current State
             ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Convert back into enumeration type
 
-            if (!(state == ExpState.UnsubmittedByCoordinator || state == ExpState.Returned)) // If ! Request is editable by staff
+            if (!(state == ExpState.UnsubmittedByInternalCoordinator || state == ExpState.Returned)) // If ! Request is editable by staff
             {
                 btnExpReview.Enabled = true;
             }
@@ -451,6 +472,10 @@ namespace Portal11.Rqsts
 
             // Unconditionally send Rqst to ReviewApproval. It is possible that the user does not have the authority to review the rqst in
             // its current state. But we'll let Review display all the detail for the Rqst and then deny editing.
+
+            Response.Redirect("zzz" + "?" + PortalConstants.QSRequestID + "=" + rqstID + "&" // Start with an existing request
+                                              + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview + "&" // Review it
+                                              + PortalConstants.QSReturn + "=" + PortalConstants.URLStaffDashboard); // Return to this page when done
 
             Response.Redirect(PortalConstants.URLReviewApproval + "?" + PortalConstants.QSRequestID + "=" + rqstID + "&" // Start with an existing request
                                               + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview + "&" // Review it
@@ -502,6 +527,17 @@ namespace Portal11.Rqsts
                 var pred = PredicateBuilder.True<App>();                    // Initialize predicate to select from App table
                 pred = pred.And(r => !r.Inactive);                          // Only active Apps
 
+                // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
+
+                if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
+                    ;                                                   // Don't ignore anything
+                else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
+                    pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
+                else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
+                    pred = pred.And(r => r.Archived);                   // Ignore Active requests
+                else                                                    // Both boxes are unchecked
+                    pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
+
                 // If a specific project is selected, only select Apps from that project
 
                 if (ddlProjectName.SelectedIndex != 0)                      // If != Project is selected. Fetch rqsts only for that Projects
@@ -514,7 +550,7 @@ namespace Portal11.Rqsts
 
                 if (litSavedUserRole.Text != UserRole.Auditor.ToString())   // If != user is not an Auditor, but is a staff member
                 {
-                    pred = pred.And(r => (r.CurrentState != AppState.UnsubmittedByCoordinator)); // Ignore Requests that haven't been submitted yet
+                    pred = pred.And(r => (r.CurrentState != AppState.UnsubmittedByInternalCoordinator)); // Ignore Requests that haven't been submitted yet
                     pred = pred.And(r => (r.CurrentState != AppState.UnsubmittedByProjectDirector));
                     pred = pred.And(r => (r.CurrentState != AppState.UnsubmittedByProjectStaff));
                 }
@@ -590,9 +626,9 @@ namespace Portal11.Rqsts
 
                             switch (own)                                    // By Reviewer Type, look for relevant checkbox
                             {
-                                case UserRole.Coordinator:
+                                case UserRole.InternalCoordinator:
                                     {
-                                        if (ckRCoordinator.Checked)
+                                        if (ckRInternalCoordinator.Checked)
                                             useRow = true;
                                         break;
                                     }
@@ -642,6 +678,8 @@ namespace Portal11.Rqsts
                                 Owner = EnumActions.GetEnumDescription(own), // Fetch "English" version of owner
                                 Description = a.Description
                             };
+                            if (a.Archived)                                  // If true row is Archived
+                                row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
 
                             rows.Add(row);                                  // Add the filled-in row to the list of rows
                         }
@@ -654,6 +692,8 @@ namespace Portal11.Rqsts
                 // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
 
                 NavigationActions.EnableGridViewNavButtons(StaffAppView);   // Enable appropriate nav buttons based on page count
+                StaffAppView.PageIndex = 0;                                 // Go back to the first page
+                StaffAppView.SelectedIndex = -1;                            // No selected row any more
             }
             return;
         }
@@ -673,6 +713,41 @@ namespace Portal11.Rqsts
                 var pred = PredicateBuilder.True<Dep>();                    // Initialize predicate to select from Dep table
                 pred = pred.And(r => !r.Inactive);                          // Only active Requests
 
+                // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
+
+                if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
+                    ;                                                   // Don't ignore anything
+                else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
+                    pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
+                else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
+                    pred = pred.And(r => r.Archived);                   // Ignore Active requests
+                else                                                    // Both boxes are unchecked
+                    pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
+
+                // If a specific Entity is selected, only select requests for that Entity
+
+                if (ddlEntityName.SelectedIndex > 0)                       // If > Entity is selected. Fetch rqsts only for that Entity
+                {
+                    int id = Convert.ToInt32(ddlEntityName.SelectedValue);  // Convert ID of selected Entity
+                    pred = pred.And(r => r.EntityID == id);                 // Only requests from selected Entity
+                }
+
+                // If a specific GLCode is selected, only select requests for that GLCode
+
+                if (ddlGLCode.SelectedIndex > 0)                            // If > GLCode is selected. Fetch rqsts only for that GLCode
+                {
+                    int id = Convert.ToInt32(ddlGLCode.SelectedValue);      // Convert ID of selected GLCode
+                    pred = pred.And(r => r.GLCodeID == id);                 // Only requests from selected GLCode
+                }
+
+                // If a specific Person is selected, only select requests from that Person
+
+                if (ddlPersonName.SelectedIndex > 0)                        // If > Person is selected. Fetch rqsts only for that Person
+                {
+                    int id = Convert.ToInt32(ddlPersonName.SelectedValue);  // Convert ID of selected Person
+                    pred = pred.And(r => r.PersonID == id);                 // Only requests from selected Person
+                }
+
                 // If a specific project is selected, only select Deps from that project
 
                 if (ddlProjectName.SelectedIndex != 0)                      // If != Project is selected. Fetch rqsts only for that Projects
@@ -685,7 +760,7 @@ namespace Portal11.Rqsts
 
                 if (litSavedUserRole.Text != UserRole.Auditor.ToString())   // If != user is not an Auditor, but is a staff member
                 {
-                    pred = pred.And(r => (r.CurrentState != DepState.UnsubmittedByCoordinator)); // Ignore Requests that haven't been submitted yet
+                    pred = pred.And(r => (r.CurrentState != DepState.UnsubmittedByInternalCoordinator)); // Ignore Requests that haven't been submitted yet
                 }
                 else
                 {
@@ -815,6 +890,8 @@ namespace Portal11.Rqsts
                                 Owner = EnumActions.GetEnumDescription(own), // Fetch "English" version of owner
                                 Description = d.Description
                             };
+                            if (d.Archived)                                  // If true row is Archived
+                                row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
 
                             rows.Add(row);                                  // Add the filled-in row to the list of rows
                         }
@@ -827,6 +904,8 @@ namespace Portal11.Rqsts
                 // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
 
                 NavigationActions.EnableGridViewNavButtons(StaffDepView);   // Enable appropriate nav buttons based on page count
+                StaffDepView.PageIndex = 0;                                 // Go back to the first page
+                StaffDepView.SelectedIndex = -1;                            // No selected row any more
             }
             return;
         }
@@ -846,19 +925,54 @@ namespace Portal11.Rqsts
                 var pred = PredicateBuilder.True<Exp>();                    // Initialize predicate to select from Exp table
                 pred = pred.And(r => !r.Inactive);                          // Only active Requests
 
-                // If a specific project is selected, only select Deps from that project
+                // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
 
-                if (ddlProjectName.SelectedIndex != 0)                      // If != Project is selected. Fetch rqsts only for that Projects
+                if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
+                    ;                                                   // Don't ignore anything
+                else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
+                    pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
+                else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
+                    pred = pred.And(r => r.Archived);                   // Ignore Active requests
+                else                                                    // Both boxes are unchecked
+                    pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
+
+                // If a specific Entity is selected, only select requests for that Entity
+
+                if (ddlEntityName.SelectedIndex > 0)                       // If > Entity is selected. Fetch rqsts only for that Entity
                 {
-                    int projectID = Convert.ToInt32(ddlProjectName.SelectedValue);  // Convert ID of selected Project
-                    pred = pred.And(r => r.ProjectID == projectID);         // Only active Apps from current project
+                    int id = Convert.ToInt32(ddlEntityName.SelectedValue);  // Convert ID of selected Entity
+                    pred = pred.And(r => r.EntityID == id);                 // Only requests from selected Entity
+                }
+
+                // If a specific GLCode is selected, only select requests for that GLCode
+
+                if (ddlGLCode.SelectedIndex > 0)                            // If > GLCode is selected. Fetch rqsts only for that GLCode
+                {
+                    int id = Convert.ToInt32(ddlGLCode.SelectedValue);      // Convert ID of selected GLCode
+                    pred = pred.And(r => r.GLCodeID == id);                 // Only requests from selected GLCode
+                }
+
+                // If a specific Person is selected, only select requests from that Person
+
+                if (ddlPersonName.SelectedIndex > 0)                        // If > Person is selected. Fetch rqsts only for that Person
+                {
+                    int id = Convert.ToInt32(ddlPersonName.SelectedValue);  // Convert ID of selected Person
+                    pred = pred.And(r => r.PersonID == id);                 // Only requests from selected Person
+                }
+
+                // If a specific Project is selected, only select requests from that Project
+
+                if (ddlProjectName.SelectedIndex > 0)                       // If > Project is selected. Fetch rqsts only for that Project
+                {
+                    int id = Convert.ToInt32(ddlProjectName.SelectedValue); // Convert ID of selected Project
+                    pred = pred.And(r => r.ProjectID == id);                // Only requests from selected project
                 }
 
                 // Now look for Requests in the right state. For staff, it everything submitted for review. For auditor, it's only complete requests.
 
                 if (litSavedUserRole.Text != UserRole.Auditor.ToString())   // If != user is not an Auditor, but is a staff member
                 {
-                    pred = pred.And(r => (r.CurrentState != ExpState.UnsubmittedByCoordinator)); // Ignore Requests that haven't been submitted yet
+                    pred = pred.And(r => (r.CurrentState != ExpState.UnsubmittedByInternalCoordinator)); // Ignore Requests that haven't been submitted yet
                     pred = pred.And(r => (r.CurrentState != ExpState.UnsubmittedByProjectDirector));
                     pred = pred.And(r => (r.CurrentState != ExpState.UnsubmittedByProjectStaff));
                 }
@@ -998,7 +1112,7 @@ namespace Portal11.Rqsts
                                 ExpTypeDesc = EnumActions.GetEnumDescription(r.ExpType), // Convert enum form to English for display
                                 Amount = r.Amount,
                                 CurrentState = r.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
-                                StateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum form to English for display
+                                CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum form to English for display
                                 ReturnNote = r.ReturnNote,
                                 Owner = EnumActions.GetEnumDescription(own) // Fetch "English" version of owner
                             };
@@ -1016,6 +1130,10 @@ namespace Portal11.Rqsts
                                     row.Target = r.Person.Name;
                             }
                             row.Summary = r.Summary;
+
+                            if (r.Archived)                                     // If true row is Archived
+                                row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
+
                             rows.Add(row);                                  // Add the filled-in row to the list of rows
                         }
                     }
@@ -1026,13 +1144,108 @@ namespace Portal11.Rqsts
                 // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
 
                 NavigationActions.EnableGridViewNavButtons(StaffExpView);   // Enable appropriate nav buttons based on page count
+                StaffExpView.PageIndex = 0;                                 // Go back to the first page
+                StaffExpView.SelectedIndex = -1;                            // No selected row any more
+            }
+            return;
+        }
+
+        // Fill a Drop Down List with available Entity Names
+
+        void FillEntityDDL(int? entityID)
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                string fran = SupportingActions.GetFranchiseKey();  // Fetch current franchise key
+                var query = from ent in context.Entitys
+                            where !ent.Inactive                    // All active projects
+                                && (ent.FranchiseKey == fran)      // For this franchise
+                            orderby ent.Name
+                            select new { ent.EntityID, ent.Name };
+
+                DataTable rows = new DataTable();
+                rows.Columns.Add(PortalConstants.DdlID);
+                rows.Columns.Add(PortalConstants.DdlName);
+
+                foreach (var row in query)
+                {
+                    DataRow dr = rows.NewRow();                      // Build a row from the next query output
+                    dr[PortalConstants.DdlID] = row.EntityID;
+                    dr[PortalConstants.DdlName] = row.Name;
+                    rows.Rows.Add(dr);                               // Add the new row to the data table
+                }
+
+                StateActions.LoadDdl(ddlEntityName, entityID, rows,
+                    " -- Error: No Entities defined in Portal --", "-- All Entities --", alwaysDisplayLeader:true); // Put the cherry on top
+            }
+            return;
+        }
+
+        // Fill a Drop Down List with available GLCode Names
+
+        void FillGLCodeDDL(int? GLCodeID)
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                string fran = SupportingActions.GetFranchiseKey();  // Fetch current franchise key
+                var query = from gl in context.GLCodes
+                            where !gl.Inactive                    // All active projects
+                                && (gl.FranchiseKey == fran)      // For this franchise
+                            orderby gl.Code
+                            select new { gl.GLCodeID, gl.Code };
+
+                DataTable rows = new DataTable();
+                rows.Columns.Add(PortalConstants.DdlID);
+                rows.Columns.Add(PortalConstants.DdlName);
+
+                foreach (var row in query)
+                {
+                    DataRow dr = rows.NewRow();                      // Build a row from the next query output
+                    dr[PortalConstants.DdlID] = row.GLCodeID;
+                    dr[PortalConstants.DdlName] = row.Code;
+                    rows.Rows.Add(dr);                               // Add the new row to the data table
+                }
+
+                StateActions.LoadDdl(ddlGLCode, GLCodeID, rows,
+                    " -- Error: No Codes defined in Portal --", "-- All Codes --", alwaysDisplayLeader: true); // Put the cherry on top
+            }
+            return;
+        }
+
+        // Fill a Drop Down List with available Person Names
+
+        void FillPersonDDL(int? personID)
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                string fran = SupportingActions.GetFranchiseKey();  // Fetch current franchise key
+                var query = from pers in context.Persons
+                            where !pers.Inactive                    // All active projects
+                                && (pers.FranchiseKey == fran)      // For this franchise
+                            orderby pers.Name
+                            select new { pers.PersonID, pers.Name };
+
+                DataTable rows = new DataTable();
+                rows.Columns.Add(PortalConstants.DdlID);
+                rows.Columns.Add(PortalConstants.DdlName);
+
+                foreach (var row in query)
+                {
+                    DataRow dr = rows.NewRow();                      // Build a row from the next query output
+                    dr[PortalConstants.DdlID] = row.PersonID;
+                    dr[PortalConstants.DdlName] = row.Name;
+                    rows.Rows.Add(dr);                               // Add the new row to the data table
+                }
+
+                StateActions.LoadDdl(ddlPersonName, personID, rows,
+                    " -- Error: No Persons defined in Portal --", "-- All Persons --", alwaysDisplayLeader:true); // Put the cherry on top
             }
             return;
         }
 
         // Fill a Drop Down List with available Project Names
 
-        void LoadProjectDDL()
+        void FillProjectDDL(int? projectID)
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -1055,8 +1268,8 @@ namespace Portal11.Rqsts
                     rows.Rows.Add(dr);                               // Add the new row to the data table
                 }
 
-                StateActions.LoadDdl(ddlProjectName, null, rows,
-                    " -- Error: No Projects defined in Portal --", "-- All Projects --"); // Put the cherry on top
+                StateActions.LoadDdl(ddlProjectName, projectID, rows,
+                    " -- Error: No Projects defined in Portal --", "-- All Projects --", alwaysDisplayLeader:true); // Put the cherry on top
             }
             return;
         }
@@ -1067,7 +1280,9 @@ namespace Portal11.Rqsts
         {
             HttpCookie staffCheckboxesCookie = new HttpCookie(PortalConstants.CStaffCheckboxes);
 
-            staffCheckboxesCookie[PortalConstants.CStaffCkRCoordinator] = ckRCoordinator.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkSearchVisible] = pnlSearch.Visible.ToString();
+
+            staffCheckboxesCookie[PortalConstants.CStaffCkRInternalCoordinator] = ckRInternalCoordinator.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkRFinanceDirector] = ckRFinanceDirector.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkRProjectMember] = ckRProjectMember.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkRTrustDirector] = ckRTrustDirector.Checked.ToString();
@@ -1075,6 +1290,22 @@ namespace Portal11.Rqsts
 
             staffCheckboxesCookie[PortalConstants.CStaffFromDate] = txtBeginningDate.Text;
             staffCheckboxesCookie[PortalConstants.CStaffToDate] = txtEndingDate.Text;
+
+            int? selection = StateActions.UnloadDdl(ddlEntityName);
+            if (selection != null)                                      // If != something is selected
+                staffCheckboxesCookie[PortalConstants.CStaffDdlEntityID] = selection.ToString();
+            selection = StateActions.UnloadDdl(ddlGLCode);
+            if (selection != null)                                      // If != something is selected
+                staffCheckboxesCookie[PortalConstants.CStaffDdlGLCodeID] = selection.ToString();
+            selection = StateActions.UnloadDdl(ddlPersonName);
+            if (selection != null)                                      // If != something is selected
+                staffCheckboxesCookie[PortalConstants.CStaffDdlPersonID] = selection.ToString();
+            selection = StateActions.UnloadDdl(ddlProjectName);
+            if (selection != null)                                      // If != something is selected
+                staffCheckboxesCookie[PortalConstants.CStaffDdlProjectID] = selection.ToString();
+
+            staffCheckboxesCookie[PortalConstants.CStaffCkRActive] = ckRActive.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkRArchived] = ckRArchived.Checked.ToString();
 
             staffCheckboxesCookie[PortalConstants.CStaffApprovalsVisible] = pnlApp.Visible.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkAExpress] = ckAExpress.Checked.ToString();
@@ -1107,10 +1338,17 @@ namespace Portal11.Rqsts
             if (staffCheckboxesCookie != null)                              // If != the cookie is present
             {
 
-                // Check boxes at top of page
+                // Search panel
 
-                if (staffCheckboxesCookie[PortalConstants.CStaffCkRCoordinator] == "True") ckRCoordinator.Checked = true;
-                else ckRCoordinator.Checked = false;
+                if (staffCheckboxesCookie[PortalConstants.CStaffCkSearchVisible] == "True")
+                    ExpandSearchPanel();
+                else
+                    CollapseSearchPanel();
+
+                // Role check boxes
+
+                if (staffCheckboxesCookie[PortalConstants.CStaffCkRInternalCoordinator] == "True") ckRInternalCoordinator.Checked = true;
+                else ckRInternalCoordinator.Checked = false;
 
                 if (staffCheckboxesCookie[PortalConstants.CStaffCkRFinanceDirector] == "True") ckRFinanceDirector.Checked = true;
                 else ckRFinanceDirector.Checked = false;
@@ -1128,6 +1366,52 @@ namespace Portal11.Rqsts
 
                 txtBeginningDate.Text = staffCheckboxesCookie[PortalConstants.CStaffFromDate];
                 txtEndingDate.Text = staffCheckboxesCookie[PortalConstants.CStaffToDate];
+
+                // Dropdown Lists
+
+                string entityID = staffCheckboxesCookie[PortalConstants.CStaffDdlEntityID];
+                if (entityID == null)                                       // If = cookie doesn't contain an Entity ID; no selection
+                    FillEntityDDL(null);                                    // Fill the list, no selection
+                else
+                    FillEntityDDL(Convert.ToInt32(entityID));               // Fill the list, highlight selection
+
+                string GLCodeID = staffCheckboxesCookie[PortalConstants.CStaffDdlGLCodeID];
+                if (GLCodeID == null)                                       // If = cookie doesn't contain an GLCode ID; no selection
+                    FillGLCodeDDL(null);                                    // Fill the list, no selection
+                else
+                    FillGLCodeDDL(Convert.ToInt32(GLCodeID));               // Fill the list, highlight selection
+
+                string personID = staffCheckboxesCookie[PortalConstants.CStaffDdlPersonID];
+                if (personID == null)                                       // If = cookie doesn't contain an Person ID; no selection
+                    FillPersonDDL(null);                                    // Fill the list, no selection
+                else
+                    FillPersonDDL(Convert.ToInt32(personID));               // Fill the list, highlight selection
+
+                string projectID = staffCheckboxesCookie[PortalConstants.CStaffDdlProjectID];
+                if (projectID == null)                                      // If = cookie doesn't contain an Project ID; no selection
+                    FillProjectDDL(null);                                   // Fill the list, no selection
+                else
+                    FillProjectDDL(Convert.ToInt32(projectID));             // Fill the list, highlight selection
+
+                // Archive check boxes
+
+                string active = staffCheckboxesCookie[PortalConstants.CStaffCkRActive];
+                if (active != null)                             // If != value is present
+                {
+                    if (active == "True")                       // If == checkbox was checked
+                        ckRActive.Checked = true;
+                    else
+                        ckRActive.Checked = false;
+                }
+
+                string archive = staffCheckboxesCookie[PortalConstants.CStaffCkRArchived];
+                if (archive != null)                            // If != value is present
+                {
+                    if (archive == "True")                      // If == checkbox was checked
+                        ckRArchived.Checked = true;
+                    else
+                        ckRArchived.Checked = false;
+                }
 
                 // Approval Requests panel
 
@@ -1189,7 +1473,15 @@ namespace Portal11.Rqsts
                 if (staffCheckboxesCookie[PortalConstants.CStaffCkEVendorInvoice] == "True") ckEVendorInvoice.Checked = true;
                 else ckEVendorInvoice.Checked = false;
             }
+            else                                                        // Cookie doesn't exist
+            {
+                FillEntityDDL(null);                                    // Fill the list, no selection
+                FillGLCodeDDL(null);
+                FillPersonDDL(null);
+                FillProjectDDL(null);
+            }
             return;
         }
+
     }
 }

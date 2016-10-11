@@ -108,5 +108,14 @@ namespace Portal11.Logic
                 return name;
             return name.Length <= maxLength ? name : name.Substring(0, maxLength) + "..."; // If <= just return the string; else truncate and append ...
         }
+
+        // Handy little tool to drill into an Exception to find the "root" problem
+
+        public static Exception GetOriginalException(this Exception ex)
+        {
+            if (ex.InnerException == null) return ex;
+
+            return ex.InnerException.GetOriginalException();
+        }
     }
 }

@@ -52,6 +52,11 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-left">
+                        <li class="pull-left"><a runat="server" id="mnuHomeProject" href="~/Proj/ProjectDashboard" visible="false"
+                            title="Go to the Project Dashboard page">Home</a></li>
+                        <li class="pull-left"><a runat="server" id="mnuHomeStaff" href="~/Staff/StaffDashboard" visible="false"
+                            title="Go to the Staff Dashboard page">Home</a></li>
+
                         <li class="pull-left"><a runat="server" id="mnuAdmin" href="~/Admin/Main.aspx" visible="false" 
                             title="Go to the Main Administration page, where Employee, Grant, Project, User and Vendor functions are available">Admin</a></li>
 
@@ -92,11 +97,11 @@
                     </asp:LoginView>
                     <ul class="nav navbar-nav navbar-right">
                         <li><a runat="server" href="#">
-                            <asp:Literal runat="server" ID="litFullName" /></a></li>
+                            <asp:Label runat="server" ID="labFullName" /></a></li>
                         <li><a runat="server" id="mnuNoProjectRole" href="#" visible="false">
                             <asp:Literal runat="server" ID="litNoProjectRole" /></a></li>
-                        <li><a runat="server" id="mnuProjectRole" href="~/Proj/ProjectDashboard" visible="false">
-                            <asp:Literal runat="server" ID="litProjectRole" /></a></li>
+<%--                        <li><a runat="server" id="mnuProjectRole" href="~/Proj/ProjectDashboard" visible="false">
+                            <asp:Literal runat="server" ID="litProjectRole" /></a></li>--%>
                         <li><a runat="server" id="mnuProjectName" href="~/Proj/ProjectDashboard" visible="false">
                             <asp:Literal runat="server" ID="litProjectName" /></a></li>
                         <li><a runat="server" id="mnuStaffRole" href="~/Staff/StaffDashboard" visible="false">

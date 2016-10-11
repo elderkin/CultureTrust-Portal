@@ -186,6 +186,32 @@ namespace Portal11.Rqsts
             ExtensionActions.FillQCA(txtGoodsQuantity, txtGoodsCostPerUnit, txtAmount); // Try to get cute and fill a missing field
         }
 
+        // Text boxes for date values
+
+        protected void txtBeginningDate_TextChanged(object sender, EventArgs e)
+        {
+            DateActions.ValidateDateInput(txtBeginningDate, "Beginning Date", litDangerMessage); // Do the heavy lifting
+            return;
+        }
+
+        protected void txtEndingDate_TextChanged(object sender, EventArgs e)
+        {
+            DateActions.ValidateDateInput(txtEndingDate, "Ending Date", litDangerMessage); // Do the heavy lifting
+            return;
+        }
+
+        protected void txtDateOfInvoice_TextChanged(object sender, EventArgs e)
+        {
+            DateActions.ValidateDateInput(txtDateOfInvoice, "Invoice Date", litDangerMessage); // Do the heavy lifting
+            return;
+        }
+
+        protected void txtDateNeeded_TextChanged(object sender, EventArgs e)
+        {
+            DateActions.ValidateDateInput(txtDateNeeded, "Date Needed", litDangerMessage); // Do the heavy lifting
+            return;
+        }
+
         // The user has clicked on a date or range in a calendar. Let's see what's up! Suck out the selected date and hide the calendar.
         // BeginningDate and EndingDate are conjoined. Selecting a date or range in BeginningDate primes the date in EndingDate.
 
@@ -578,6 +604,7 @@ namespace Portal11.Rqsts
                     Exp dest = new Exp()
                     {                                               // Instantiate and fill the destination Rqst
                         Inactive = false,
+                        Archived = false,
                         Amount = src.Amount,
                         BeginningDate = src.BeginningDate, EndingDate = src.EndingDate,
                         CardsQuantity = src.CardsQuantity, CardsValueEach = src.CardsValueEach,
@@ -656,6 +683,8 @@ namespace Portal11.Rqsts
                         //  5) Unload the supporting documents
 
                         Exp toSave = new Exp(){                     // Get a place to hold everything
+                            Inactive = false,
+                            Archived = false,
                             ProjectID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int, // Connect Expense to Project
                             CreatedTime = System.DateTime.Now,      // Stamp time when Expense was first created as "now"
                             BeginningDate = (DateTime)SqlDateTime.MinValue, // Non-null values to satisfy SQL
@@ -872,7 +901,7 @@ namespace Portal11.Rqsts
                     ddlEntity.Items.Clear();                            // Remove items of another Vendor Role, if any
 
                     StateActions.LoadDdl(ddlEntity, entityID, rows,
-                        " -- Error: No " + lblEntity.Text + "s assigned to Project --", "-- none selected --",
+                        "", "-- none selected --",
                         needed, "-- Please add new " + lblEntity.Text + " --"); // Put the cherry on top
 
                 }
@@ -916,7 +945,6 @@ namespace Portal11.Rqsts
 
         // If the Person panel is enabled, fill the drop down list from the database. Note that these values are drawn from
         // the ProjectPerson table, which shows Persons assigned to this project. Figure out the person role that corresponds to the request type.
-        // Unlike other 
 
         void FillPersonDDL(int? personID, bool needed=false)
         {
@@ -946,7 +974,7 @@ namespace Portal11.Rqsts
                     ddlPerson.Items.Clear();                        // Remove items of another Person Role, if any
 
                     StateActions.LoadDdl(ddlPerson, personID, rows,
-                        " -- Error: No " + lblPerson.Text + "s assigned to Project --", "-- none selected --",
+                        "", "-- none selected --",
                         needed, "-- Please add new " + lblPerson.Text + " --"); // Put the cherry on top
 
 
@@ -1305,6 +1333,5 @@ namespace Portal11.Rqsts
             }
             return;
         }
-
     }
 }
