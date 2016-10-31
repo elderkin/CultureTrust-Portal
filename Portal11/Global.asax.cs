@@ -37,11 +37,11 @@ namespace Portal11
 
             // A debugging option: Always toss the existing database and re-create it
 
-            Database.SetInitializer(new PortalDatabaseInitializer()); // One-shot to fill empty database with tables
+//            Database.SetInitializer(new PortalDatabaseInitializer()); // One-shot to fill empty database with tables
 
             // The "production" option. Use the Initializer to execute migrations if the model has changed.
 
-//            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Portal11.Migrations.Configuration>());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext, Portal11.Migrations.Configuration>());
 
             // Create custom user roles if they don't already exist
 

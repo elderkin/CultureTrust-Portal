@@ -54,7 +54,7 @@ namespace Portal11.ErrorLog
         public static void LogDatabaseError(Exception ex, string pageName, string errorMessage)
         {
             try
-            {
+            { 
                 string secondaryError = "";                             // Start with no secondary error message      
                 if (ex is DbEntityValidationException)                  // If is error is a validation exception. Interpret details
                 {
@@ -110,7 +110,7 @@ namespace Portal11.ErrorLog
             }
             catch (Exception)
             {
-                // uh oh! just keep going
+                ; // uh oh! just keep going
             }
         }
 

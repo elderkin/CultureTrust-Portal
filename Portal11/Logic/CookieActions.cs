@@ -13,50 +13,78 @@ namespace Portal11.Logic
 
         public static void DeleteLoginInfoCookie()
         {
-            if (HttpContext.Current.Request.Cookies[PortalConstants.CLoginInfo] != null) // if != stale Login cookie currently exists, delete it
+            try
             {
-                HttpCookie staleCookie = new HttpCookie(PortalConstants.CLoginInfo); // Fetch stale cookie (from last user login)
-                staleCookie.Expires = DateTime.Now.AddDays(-1d);        // Ask cookie to expire immediately
-                HttpContext.Current.Response.Cookies.Add(staleCookie);  // and update cookie into oblivion
+                if (HttpContext.Current.Request.Cookies[PortalConstants.CLoginInfo] != null) // if != stale Login cookie currently exists, delete it
+                {
+                    HttpCookie staleCookie = new HttpCookie(PortalConstants.CLoginInfo); // Fetch stale cookie (from last user login)
+                    staleCookie.Expires = DateTime.Now.AddDays(-1d);        // Ask cookie to expire immediately
+                    HttpContext.Current.Response.Cookies.Add(staleCookie);  // and update cookie into oblivion
+                }
+            }
+            catch (NullReferenceException e)
+            {
+                ;                                                           // Just continue in spite of the error
             }
             return;
-        }
+            }
 
         public static void DeleteUserInfoCookie()
         {
-            if (HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo] != null) // if != stale User cookie currently exists, delete it
+            try
+            { 
+                if (HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo] != null) // if != stale User cookie currently exists, delete it
+                {
+                    HttpCookie staleCookie = new HttpCookie(PortalConstants.CUserInfo); // Fetch stale cookie (from last user login)
+                    staleCookie.Expires = DateTime.Now.AddDays(-1d);        // Ask cookie to expire immediately
+                    HttpContext.Current.Response.Cookies.Add(staleCookie);  // and update cookie into oblivion
+                }
+            }
+            catch (NullReferenceException e)
             {
-                HttpCookie staleCookie = new HttpCookie(PortalConstants.CUserInfo); // Fetch stale cookie (from last user login)
-                staleCookie.Expires = DateTime.Now.AddDays(-1d);        // Ask cookie to expire immediately
-                HttpContext.Current.Response.Cookies.Add(staleCookie);  // and update cookie into oblivion
+                ;                                                           // Just continue in spite of the error
             }
             return;
         }
 
         public static void DeleteProjectInfoCookie()
         {
-            if (HttpContext.Current.Request.Cookies[PortalConstants.CProjectInfo] != null)  // if != stale Project cookie currently exists, delete it
+            try
+            { 
+                if (HttpContext.Current.Request.Cookies[PortalConstants.CProjectInfo] != null)  // if != stale Project cookie currently exists, delete it
+                {
+                    HttpCookie staleCookie = new HttpCookie(PortalConstants.CProjectInfo); // Fetch stale cookie (from last user login)
+                    staleCookie.Expires = DateTime.Now.AddDays(-1d);        // Ask cookie to expire immediately
+                    HttpContext.Current.Response.Cookies.Add(staleCookie);  // and update cookie into oblivion
+                }
+            }
+            catch (NullReferenceException e)
             {
-                HttpCookie staleCookie = new HttpCookie(PortalConstants.CProjectInfo); // Fetch stale cookie (from last user login)
-                staleCookie.Expires = DateTime.Now.AddDays(-1d);        // Ask cookie to expire immediately
-                HttpContext.Current.Response.Cookies.Add(staleCookie);  // and update cookie into oblivion
+                ;                                                           // Just continue in spite of the error
             }
             return;
         }
 
         public static void DeleteCheckboxCookies()
         {
-            if (HttpContext.Current.Request.Cookies[PortalConstants.CProjectCheckboxes] != null) // If != stale Project Checkboxes cookie currently exists, delete it
-            {
-                HttpCookie staleCookie = new HttpCookie(PortalConstants.CProjectCheckboxes); // Fetch stale cookie
-                staleCookie.Expires = DateTime.Now.AddDays(-1d);        // Ask cookie to expire immediately
-                HttpContext.Current.Response.Cookies.Add(staleCookie);  // and update cookie into oblivion
+            try
+            { 
+                if (HttpContext.Current.Request.Cookies[PortalConstants.CProjectCheckboxes] != null) // If != stale Project Checkboxes cookie currently exists, delete it
+                {
+                    HttpCookie staleCookie = new HttpCookie(PortalConstants.CProjectCheckboxes); // Fetch stale cookie
+                    staleCookie.Expires = DateTime.Now.AddDays(-1d);        // Ask cookie to expire immediately
+                    HttpContext.Current.Response.Cookies.Add(staleCookie);  // and update cookie into oblivion
+                }
+                if (HttpContext.Current.Request.Cookies[PortalConstants.CStaffCheckboxes] != null) // If != stale Staff Checkboxes cookie currently exists, delete it
+                {
+                    HttpCookie staleCookie = new HttpCookie(PortalConstants.CStaffCheckboxes); // Fetch stale cookie
+                    staleCookie.Expires = DateTime.Now.AddDays(-1d);        // Ask cookie to expire immediately
+                    HttpContext.Current.Response.Cookies.Add(staleCookie);  // and update cookie into oblivion
+                }
             }
-            if (HttpContext.Current.Request.Cookies[PortalConstants.CStaffCheckboxes] != null) // If != stale Staff Checkboxes cookie currently exists, delete it
+            catch (NullReferenceException e)
             {
-                HttpCookie staleCookie = new HttpCookie(PortalConstants.CStaffCheckboxes); // Fetch stale cookie
-                staleCookie.Expires = DateTime.Now.AddDays(-1d);        // Ask cookie to expire immediately
-                HttpContext.Current.Response.Cookies.Add(staleCookie);  // and update cookie into oblivion
+                ;                                                           // Just continue in spite of the error
             }
             return;
         }

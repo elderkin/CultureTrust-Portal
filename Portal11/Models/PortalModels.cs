@@ -455,6 +455,7 @@ namespace Portal11.Models
         [Required]
         public string FranchiseKey { get; set; }
         public bool Inactive { get; set; }
+        public const int InactiveColumn = 3;                // Column when displayed in GridView
         public EntityType EntityType { get; set; }
         [Required, StringLength(100)]
         public string Name { get; set; }
@@ -684,6 +685,7 @@ namespace Portal11.Models
         [Required]
         public string FranchiseKey { get; set; }
         public bool Inactive { get; set; }
+        public const int InactiveColumn = 5;                // Column when displayed in GridView
         public bool ExpCode { get; set; }
         public bool DepCode { get; set; }
         [Required]
@@ -737,6 +739,7 @@ namespace Portal11.Models
         [Required]
         public string FranchiseKey { get; set; }
         public bool Inactive { get; set; }
+        public const int InactiveColumn = 4;                // Column when displayed in GridView
         [Required, StringLength(100)]
         public string Name { get; set; }
         [StringLength(250), DataType(DataType.MultilineText)]
@@ -808,6 +811,7 @@ namespace Portal11.Models
         public int ProjectClassID { get; set; }
         [Required]
         public bool Inactive { get; set; }
+        public const int InactiveColumn = 5;                // Column when displayed in GridView
         [Required]
         public int ProjectID { get; set; }
         [Required, StringLength(100)]

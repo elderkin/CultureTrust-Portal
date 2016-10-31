@@ -100,8 +100,12 @@
                                 <asp:Label ID="lblEmail" runat="server" Text='<%# Eval("Email").ToString().TrimString(40) %>' />
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField DataField="Inactive" HeaderText="Inactive" />
-                    </Columns>
+                       <asp:TemplateField HeaderText="Inactive">
+                            <ItemTemplate>
+                                <asp:Label ID="lblInactive" runat="server" Text='<%# Bind("Inactive") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                     </Columns>
                 </asp:GridView>
 
             </div>
