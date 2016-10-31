@@ -60,7 +60,7 @@
                     <div class="checkbox">
                         <asp:CheckBox ID="ckRAwaitingProjectStaff" runat="server" Text="Awaiting Project Staff" CssClass="col-xs-12" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckRAwaitingCWStaff" runat="server" Text="Awaiting CW Staff" CssClass="col-xs-12"
+                        <asp:CheckBox ID="ckRAwaitingCWStaff" runat="server" Text="Awaiting CW Staff" CssClass="col-xs-12" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckRApproved" runat="server" Text="Approved/Complete/Paid" CssClass="col-xs-12" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />

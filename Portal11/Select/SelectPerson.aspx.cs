@@ -55,6 +55,9 @@ namespace Portal11.Select
                 e.Row.ToolTip = "Click to select this Person";            // Establish tool tip during flyover
                 e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.PersonView, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
+
+                Label inactiveLabel = (Label)e.Row.FindControl("lblInactive");
+                inactiveLabel.Visible = true;                               // Make sure the Inactive column appears if hidden earlier
             }
             return;
         }
@@ -134,6 +137,9 @@ namespace Portal11.Select
                 PersonView.DataSource = persons;                        // Give it to the GridView control
                 PersonView.DataBind();                                  // And display it
 
+                // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
+
+                PersonView.Columns[Person.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
                 NavigationActions.EnableGridViewNavButtons(PersonView); // Enable appropriate nav buttons based on page count
             }
         }

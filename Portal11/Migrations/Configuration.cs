@@ -10,6 +10,7 @@ namespace Portal11.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;                   // A little risky, but we only turn this on rarely
             ContextKey = "Portal11.Models.ApplicationDbContext";
         }
 
@@ -17,10 +18,10 @@ namespace Portal11.Migrations
         {
             //  This method will be called after migrating to the latest version.
 
-            context.Persons.AddOrUpdate(
-                p => p.Name,
-                new Models.Person { Name = "Doe, Jane", Address = "123 Anywhere St.\r\nPhiladelphia, PA 19000", Phone = "215-123-4567", Email = "Jane.doe@def.org", CreatedTime = System.DateTime.Now }
-                );
+            //context.Persons.AddOrUpdate(
+            //    p => p.Name,
+            //    new Models.Person { Name = "Doe, Jane", Address = "123 Anywhere St.\r\nPhiladelphia, PA 19000", Phone = "215-123-4567", Email = "Jane.doe@def.org", CreatedTime = System.DateTime.Now }
+            //    );
 
             //                pers.FranchiseKey = Franchise.LocalFranchiseKey;
             //pers.Inactive = false;

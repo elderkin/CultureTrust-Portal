@@ -83,7 +83,7 @@ namespace Portal11
                     //  1) Display their Full Name
 
                     labFullName.Text = userInfoCookie[PortalConstants.CUserFullName]; //Load label with user's full name from cookie
-                    labFullName.ToolTip = "This is a test";
+                    labFullName.ToolTip = "Not associated with a specific project";
 
                     //  2) If the User has Admin powers - regardless of role - turn on the Admin menu
 

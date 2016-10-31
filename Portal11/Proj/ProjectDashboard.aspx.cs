@@ -586,7 +586,7 @@ namespace Portal11.Proj
             if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a Project InternalCoordinator. Powerful
             {
                 btnDepCopy.Enabled = true;                              // No match what state, we can copy the request
-                if (state == DepState.UnsubmittedByInternalCoordinator)         // If == the Request is under construction by us
+                if (state == DepState.UnsubmittedByInternalCoordinator) // If == the Request is under construction by us
                 {
                     btnDepDelete.Enabled = true;                        // Turn on other buttons
                     btnDepEdit.Enabled = true;                          // that make sense in this state

@@ -118,8 +118,9 @@ namespace Portal11.Rqsts
         {
             SaveApp(AppState.Returned, "Returned");                 // Update App; write new History row
             //TODO: Notify the Project Director
-            Response.Redirect(PortalConstants.URLStaffDashboard + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                  + PortalConstants.QSStatus + "=" + "Request returned to Project Direcctor");
+            Response.Redirect(litSavedReturn.Text + "?"
+                                + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
+                                + PortalConstants.QSStatus + "=" + "Request returned to Project Direcctor");
         }
 
         // User pressed History button. Fetch all the AppHistory rows for this App and fill a GridView.

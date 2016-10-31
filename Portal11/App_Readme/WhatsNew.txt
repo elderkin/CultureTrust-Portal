@@ -1,4 +1,13 @@
-﻿Version 0.7
+﻿Version 1.0 - First production use
+
+On all Select Pages, display Inactive column only if Inactive checkbox is checked.
+Bring Project Director to correct page - Project Dashboard - after reviewing a request.
+
+Version 0.8
+
+On the Project Dashboard, the "Awaiting CW Staff" option is now checked by default.
+
+Version 0.7
 
 Approvals of Certificate of Insurance no longer require any Supporting Documents
 Projects can create Deposit and Expense requests before Entities and Persons are assigned to the project.

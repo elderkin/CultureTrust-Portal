@@ -97,10 +97,14 @@
                         </asp:TemplateField>
                         <asp:BoundField DataField="Code" HeaderText="Code" />
                         <asp:BoundField DataField="Description" HeaderText="Description" />
-                        <asp:BoundField DataField="Inactive" HeaderText="Inactive" ItemStyle-Width="8"/>
                         <asp:BoundField DataField="DepCode" HeaderText="Deposit" ItemStyle-Width="8"/>
                         <asp:BoundField DataField="ExpCode" HeaderText="Expense" ItemStyle-Width="8"/>
-                    </Columns>
+                        <asp:TemplateField HeaderText="Inactive">
+                            <ItemTemplate>
+                                <asp:Label ID="lblInactive" runat="server" Text='<%# Bind("Inactive") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                     </Columns>
                 </asp:GridView>
 
             </div>

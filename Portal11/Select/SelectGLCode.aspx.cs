@@ -54,6 +54,9 @@ namespace Portal11.Select
                 e.Row.ToolTip = "Click to select this GLCode";            // Establish tool tip during flyover
                 e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.GLCodeView, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
+
+                Label inactiveLabel = (Label)e.Row.FindControl("lblInactive");
+                inactiveLabel.Visible = true;                               // Make sure the Inactive column appears if hidden earlier
             }
             return;
         }
@@ -137,6 +140,10 @@ namespace Portal11.Select
                 List<GLCode> codes = context.GLCodes.AsExpandable().Where(pred).OrderBy(p => p.Code).ToList(); // Query, sort and make list
                 GLCodeView.DataSource = codes;                         // Give it to the GridView control
                 GLCodeView.DataBind();                                 // And display it
+
+                // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
+
+                GLCodeView.Columns[GLCode.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
 
                 NavigationActions.EnableGridViewNavButtons(GLCodeView); // Enable appropriate nav buttons based on page count
             }
