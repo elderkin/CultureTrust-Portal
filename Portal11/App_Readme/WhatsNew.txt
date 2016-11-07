@@ -1,4 +1,23 @@
-﻿Version 0.7
+﻿Version 1.1
+
+For Entities, GL Codes, Persons, and Projects, the Portal now requires that names be unique. That is, duplicate names are not allowed.
+In all Grids, the number of rows per page is now controlled by a user-specific parameter. This can be adjusted on the Edit Portal User page.
+On Edit Project, the Balance Date can now be edited.
+In Project Dashboard and Staff Dashboard, a bug in pagination of request lists is fixed.
+A bug that prevented Staff from Reviewing Approvals is fixed.
+In Project Dashboard, a Project Director can now archive a Deposit Request.
+A Gift Card is now called a PEX Card.
+
+Version 1.0 - First production use
+
+On all Select Pages, display Inactive column only if Inactive checkbox is checked.
+Bring Project Director to correct page - Project Dashboard - after reviewing a request.
+
+Version 0.8
+
+On the Project Dashboard, the "Awaiting CW Staff" option is now checked by default.
+
+Version 0.7
 
 Approvals of Certificate of Insurance no longer require any Supporting Documents
 Projects can create Deposit and Expense requests before Entities and Persons are assigned to the project.

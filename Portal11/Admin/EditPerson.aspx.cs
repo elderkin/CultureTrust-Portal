@@ -144,6 +144,11 @@ namespace Portal11.Admin
                 }
                 catch (Exception ex)
                 {
+                    if (ExceptionActions.IsDuplicateKeyException(ex))       // If true this is a Duplicate Key exception
+                    {
+                        litDangerMessage.Text = $"Another Person with the name '{txtName.Text}' already exists. Person Names must be unique.";
+                        return;                                             // Report the error to user and try again
+                    }
                     LogError.LogDatabaseError(ex, "EditPerson", "Error updating Person row"); // Fatal error
                 }
             }

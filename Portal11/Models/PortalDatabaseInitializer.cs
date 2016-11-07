@@ -424,6 +424,9 @@ namespace Portal11.Models
             gl.Code = "63018 — Postage & Shipping";
             context.GLCodes.Add(gl); context.SaveChanges();
 
+            gl.Code = "63019 — Printing and Publication";
+            context.GLCodes.Add(gl); context.SaveChanges();
+
             gl.Code = "63000 — PROGRAM / GENERAL ADMIN: 63019 — Printing & Publications";
             context.GLCodes.Add(gl); context.SaveChanges();
 

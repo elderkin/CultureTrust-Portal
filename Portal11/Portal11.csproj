@@ -536,6 +536,7 @@
     <Compile Include="Logic\CookieActions.cs" />
     <Compile Include="Logic\DateActions.cs" />
     <Compile Include="Logic\EnumActions.cs" />
+    <Compile Include="Logic\ExceptionActions.cs" />
     <Compile Include="Logic\ProjectClassActions.cs" />
     <Compile Include="Logic\QueryStringActions.cs" />
     <Compile Include="Logic\SupportingActions.cs">

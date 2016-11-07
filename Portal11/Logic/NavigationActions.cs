@@ -62,9 +62,9 @@ namespace Portal11.Logic
         // Fill a particular GridView - EDHistoryView - with rows from the EDHistory table. Unusually, this GridView is used identically
         // by four pages, so filling it is factored here.
 
-
         public static void LoadAllAppHistorys(int appID, GridView EDHistoryView)
         {
+            EDHistoryView.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var query = from edh in context.AppHistorys
@@ -99,6 +99,7 @@ namespace Portal11.Logic
 
         public static void LoadAllDepHistorys(int depID, GridView EDHistoryView)
         {
+            EDHistoryView.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var query = from edh in context.DepHistorys
@@ -133,6 +134,7 @@ namespace Portal11.Logic
 
         public static void LoadAllExpHistorys(int expID, GridView EDHistoryView)
         {
+            EDHistoryView.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var query = from edh in context.ExpHistorys

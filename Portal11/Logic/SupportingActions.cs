@@ -395,7 +395,7 @@ namespace Portal11.Logic
                 try
                 {
                     string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
-                    string sourceFileName = ""; int sourceFileLength = 0; string destFileName="";
+                    string sourceFileName = ""; int sourceFileLength = 0; string destFileName=""; string sourceMIME = "";
 
                     //  Figure out whether the Supporting Doc is temporary or permanent
 
@@ -416,6 +416,7 @@ namespace Portal11.Logic
 
                         sourceFileName = sdt.FileName;                          // Source of the download - a temporary file
                         sourceFileLength = sdt.FileLength;
+                        sourceMIME = sdt.MIME;                                  // Remember file type
                         destFileName = item.Text;                               // Pull the file name from the ListBox row, where it was displayed
                     }
                     else                                                        // This entry has a corresponding row in the RqstSupporting table
@@ -432,20 +433,31 @@ namespace Portal11.Logic
 
                         sourceFileName = sd.SupportingDocID.ToString() + Path.GetExtension(sd.FileName); // Formulate source of the download
                         sourceFileLength = sd.FileLength;
+                        sourceMIME = sd.MIME;                                   // Remember file type
                         destFileName = sd.FileName;
                     }
 
                     //  2) Command the server to download the file to the browser
 
-                    HttpContext.Current.Response.Clear();
-                    HttpContext.Current.Response.ClearHeaders();
-                    HttpContext.Current.Response.ClearContent();
-                    HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + destFileName + "\""); 
-                                                                                    // Name of file after download
-                    HttpContext.Current.Response.AddHeader("Content-Length", sourceFileLength.ToString());
-                    HttpContext.Current.Response.Flush();
-                    HttpContext.Current.Response.TransmitFile(serverRoot + sourceFileName); // Name of source file on server /Supporting directory
-                    HttpContext.Current.Response.End();                             // Download that baby
+                    if (sourceMIME == "application/pdf")                        // If == the supporting document is a PDF file
+                    {
+                        string pdfName = serverRoot + sourceFileName;
+                        HttpContext.Current.Response.ContentType = sourceMIME;  // Ask the browser to view the PDF file
+                        HttpContext.Current.Response.Write($"<script>window.open('{pdfName}','_blank');</script>");
+                    }
+                    else
+                    {
+
+                        HttpContext.Current.Response.Clear();
+                        HttpContext.Current.Response.ClearHeaders();
+                        HttpContext.Current.Response.ClearContent();                // Just download the file and let user figure it out
+                        HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + destFileName + "\"");
+                        // Name of file after download
+                        HttpContext.Current.Response.AddHeader("Content-Length", sourceFileLength.ToString());
+                        HttpContext.Current.Response.Flush();
+                        HttpContext.Current.Response.TransmitFile(serverRoot + sourceFileName); // Name of source file on server /Supporting directory
+                        HttpContext.Current.Response.End();                             // Download that baby
+                    }
                 }
                 catch (Exception ex)
                 {

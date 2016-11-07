@@ -95,6 +95,11 @@
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="Email" HeaderText="Email" />
+                        <asp:TemplateField HeaderText="Inactive">
+                            <ItemTemplate>
+                                <asp:Label ID="lblInactive" runat="server" Text='<%# Bind("Inactive") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
 

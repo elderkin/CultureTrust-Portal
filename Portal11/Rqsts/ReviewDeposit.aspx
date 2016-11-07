@@ -236,7 +236,7 @@
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Notes</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtNotes" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                        <asp:TextBox ID="txtNotes" runat="server" CssClass="form-control has-success" TextMode="MultiLine" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>

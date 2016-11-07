@@ -75,6 +75,43 @@ namespace Portal11.Admin
             }
         }
 
+        // Inner workings of the Balance Date control, which includes a calendar
+
+        protected void txtBalanceDate_TextChanged(object sender, EventArgs e)
+        {
+            DateActions.ValidateDateInput(txtBalanceDate, lblBalanceDate.Text, litDangerMessage); // Do the heavy lifting
+            return;
+        }
+
+        // Toggle the visibility of a calendar. If becoming visible, load with date from text box, if any
+
+        protected void btnBalanceDate_Click(object sender, EventArgs e)
+        {
+            calClick(txtBalanceDate, calBalanceDate);                           // Do the heavy lifting in common code
+            return;
+        }
+
+        void calClick(TextBox txt, System.Web.UI.WebControls.Calendar cal)
+        {
+            if (cal.Visible)                                                    // If true the calendar control is currently visible
+                cal.Visible = false;                                            // Hide it
+            else
+            {
+                cal.Visible = true;                                             // Make the calendar control visible
+                DateActions.LoadTxtIntoCal(txt, cal);                           // Pull date from text box, store it in calendar
+            }
+            return;
+        }
+
+        protected void calBalanceDate_SelectionChanged(object sender, EventArgs e)
+        {
+            DateTime start = calBalanceDate.SelectedDate;
+            txtBalanceDate.Text = DateActions.LoadDateIntoTxt(start);             // Convert date to text 
+            DateTime last = start;
+            calBalanceDate.Visible = false;                                       // One click and the calendar is gone
+            return;
+        }
+
         // Cancel button has been clicked. Just return to the main Admin page.
 
         protected void Cancel_Click(object sender, EventArgs e)
@@ -100,16 +137,16 @@ namespace Portal11.Admin
                     if (projectID == 0)                                         // If == no doubt about it, Save makes a new row
                     {
 
-                        // Make sure the Name is unique in this Franchise
+                        //// Make sure the Name is unique in this Franchise
 
-                        int matchingNames = context.Projects.Where(p => (p.FranchiseKey == fran) && (p.Name == txtName.Text)).Count();
-                        // Look for existing row match
-                        if (matchingNames != 0)                                 // If != a Project with this Name value already exists in database
-                        {
-                            Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger + "&"
-                                                + PortalConstants.QSStatus + "=That Project Name already exists. You can edit it.", false); // Back to the barn
-                            return;
-                        }
+                        //int matchingNames = context.Projects.Where(p => (p.FranchiseKey == fran) && (p.Name == txtName.Text)).Count();
+                        //// Look for existing row match
+                        //if (matchingNames != 0)                                 // If != a Project with this Name value already exists in database
+                        //{
+                        //    Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger + "&"
+                        //                        + PortalConstants.QSStatus + "=That Project Name already exists. You can edit it.", false); // Back to the barn
+                        //    return;
+                        //}
                         Project toSave = new Project();                             // Get a place to hold everything
                         toSave.CreatedTime = System.DateTime.Now;                   // Stamp time when Request was first created as "now"
                         UnloadPanels(toSave);                                       // Move from Panels to record
@@ -130,6 +167,11 @@ namespace Portal11.Admin
                 }
                 catch (Exception ex)
                 {
+                    if (ExceptionActions.IsDuplicateKeyException(ex))       // If true this is a Duplicate Key exception
+                    {
+                        litDangerMessage.Text = $"Another Project with the name '{txtName.Text}' already exists. Project Names must be unique.";
+                        return;                                             // Report the error to user and try again
+                    }
                     LogError.LogDatabaseError(ex, "EditProject", "Error writing Project row"); // Fatal error
                 }
             }
@@ -150,6 +192,7 @@ namespace Portal11.Admin
             //txtTotalGrants.Text = total.ToString("C");                      // Also display total of all grants
             // Project Director
             FillProjectDirectorDDL();
+            return;
         }
 
         // Move the "as edited" values from the Page into a Project record.
@@ -159,14 +202,18 @@ namespace Portal11.Admin
             record.Name = txtName.Text;
             record.Inactive = chkInact.Checked;
             record.Description = txtDescription.Text;
-            record.BalanceDate = System.DateTime.Now;                   // Assume balances were updated. Set update date as now.
+            if (txtBalanceDate.Text == "")                              // If == field is blank. Supply default
+                record.BalanceDate = System.DateTime.Now;                   // Default date as now.
+            else
+                record.BalanceDate = DateActions.LoadTxtIntoDate(txtBalanceDate); // Carefully convert the text into a date
+
             // Current Funds
             decimal bucks;
             bool convt = decimal.TryParse(txtCurrentFunds.Text, NumberStyles.Currency, CultureInfo.CurrentCulture.NumberFormat, out bucks);
                                                                         // Use a localization-savvy method to convert string to decimal
             if (convt) record.CurrentFunds = bucks;                     // If true conversion was successful, stash value
-            // Restricted Grants
 
+            return;
         }
 
         // Fill the Project Director drop down list from the database
@@ -235,8 +282,8 @@ namespace Portal11.Admin
                 ddlProjectDirector.Items.Insert(0, new ListItem("-- No Project Director selected --", String.Empty)); 
                 // Place an empty item at top of list to force selection
                 ddlProjectDirector.SelectedIndex = 0;                   // Select that row
-                return;
             }
+            return;
         }
 
         // Take the selection from the Project Director drop down list, if any. Represent it in a UserProject row.
@@ -249,6 +296,8 @@ namespace Portal11.Admin
             {
                 StateActions.ChangeProjectRole(projID, selectedID, ProjectRole.ProjectDirector); // Do the heavy lifting
             }
+            return;
         }
+
     }
 }

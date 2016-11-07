@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Portal11.Models
 {
@@ -43,7 +44,7 @@ namespace Portal11.Models
         public int LoginCount { get; set; }
         public DateTime LastLogin { get; set; }
         public string Inactive { get; set; }
-        public const int InactiveColumn = 6;
+        public const int InactiveColumn = 7;
     }
 
     // One row of the GridView named AllAppView, used by ProjectDashboard
@@ -452,11 +453,12 @@ namespace Portal11.Models
     public class Entity
     {
         public int EntityID { get; set; }
-        [Required]
+        [Required, StringLength(20), Index("FranchiseAndEntity", 1)]
         public string FranchiseKey { get; set; }
         public bool Inactive { get; set; }
+        public const int InactiveColumn = 3;                // Column when displayed in GridView
         public EntityType EntityType { get; set; }
-        [Required, StringLength(100)]
+        [Required, StringLength(100), Index("FranchiseAndEntity", 2, IsUnique = true)]
         public string Name { get; set; }
         [StringLength(250), DataType(DataType.MultilineText)]
         public string Address { get; set; }
@@ -512,7 +514,7 @@ namespace Portal11.Models
         public DateTime BeginningDate { get; set; }         // Pay Period for Paycheck
         public DateTime EndingDate { get; set; }
 
-        public int CardsQuantity { get; set; }              // Number of Gift Cards and value of each
+        public int CardsQuantity { get; set; }              // Number of PEX Cards and value of each
         public decimal CardsValueEach { get; set; }
 
 
@@ -526,7 +528,7 @@ namespace Portal11.Models
 
         public DateTime DateOfInvoice { get; set; }         // Date Invoice was received
 
-        public DateTime DateNeeded { get; set; }            // Date needed for Gift Cards
+        public DateTime DateNeeded { get; set; }            // Date needed for PEX Cards
 
         [StringLength(250), DataType(DataType.MultilineText)]
         public string DeliveryAddress { get; set; }         // Delivery Instructions, special for Purchase Order
@@ -563,7 +565,7 @@ namespace Portal11.Models
         public int? PersonID { get; set; }
         public virtual Person Person { get; set; }
 
-        public YesNo POVendorMode { get; set; }              // PO Fulfilment Instructions
+        public YesNo POVendorMode { get; set; }             // PO Fulfilment Instructions
 
         [Required]
         public int? ProjectID { get; set; }                 // The Project that owns this Request
@@ -572,7 +574,9 @@ namespace Portal11.Models
         [DataType(DataType.MultilineText)]
         public string ReturnNote { get; set; }              // When approval is denied, the reason goes here
 
-        public SourceOfExpFunds SourceOfFunds { get; set; }    // Where the Request gets its Funds
+        public bool Rush { get; set; }                      // Whether the Request has "Rush" status
+
+        public SourceOfExpFunds SourceOfFunds { get; set; } // Where the Request gets its Funds
         public int? ProjectClassID { get; set; }
         public virtual ProjectClass ProjectClass { get; set; }
 
@@ -630,7 +634,7 @@ namespace Portal11.Models
         Approved,
         [Description("Payment Sent")]
         PaymentSent,
-        [Description("Paid")]
+        [Description("Paid and Sent")]
         Paid,
         [Description("Returned")]
         Returned,
@@ -644,8 +648,8 @@ namespace Portal11.Models
     {
         [Description("Contractor Invoice")]
         ContractorInvoice = 1,
-        [Description("Gift Card")]
-        GiftCard,
+        [Description("PEX Card")]
+        PEXCard,
         [Description("Paycheck")]
         Paycheck,
         [Description("Purchase Order")]
@@ -681,12 +685,13 @@ namespace Portal11.Models
     public class GLCode
     {
         public int GLCodeID { get; set; }
-        [Required]
+        [Required, StringLength(20), Index("FranchiseAndGLCode", 1)]
         public string FranchiseKey { get; set; }
         public bool Inactive { get; set; }
+        public const int InactiveColumn = 5;                // Column when displayed in GridView
         public bool ExpCode { get; set; }
         public bool DepCode { get; set; }
-        [Required]
+        [Required, StringLength(100), Index("FranchiseAndGLCode", 2, IsUnique = true)]
         public string Code { get; set; }
         public string Description { get; set; }
         [Required]
@@ -734,10 +739,11 @@ namespace Portal11.Models
     public class Person
     {
         public int PersonID { get; set; }
-        [Required]
+        [Required, StringLength(20), Index("FranchiseAndPerson", 1)]
         public string FranchiseKey { get; set; }
         public bool Inactive { get; set; }
-        [Required, StringLength(100)]
+        public const int InactiveColumn = 4;                // Column when displayed in GridView
+        [Required, StringLength(100), Index("FranchiseAndPerson", 2, IsUnique = true)]
         public string Name { get; set; }
         [StringLength(250), DataType(DataType.MultilineText)]
         public string Address { get; set; }
@@ -788,11 +794,16 @@ namespace Portal11.Models
     public class Project
     {
         public int ProjectID { get; set; }
-        [Required]
+        [Required, StringLength(20), Index("FranchiseAndProject", 1)
+        //    , Index("FranchiseAndProjectCode",1)
+            ]
         public string FranchiseKey { get; set; }
         public bool Inactive { get; set; }
-        [Required, StringLength(100)]
+        [Required, StringLength(100), Index("FranchiseAndProject", 2, IsUnique = true)]
         public string Name { get; set; }
+        [StringLength(3)]
+        //[Required, StringLength(3), Index("FranchiseAndProjectCode", 2, IsUnique = true)]
+        public string Code { get; set; }
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
         [Required]
@@ -808,6 +819,7 @@ namespace Portal11.Models
         public int ProjectClassID { get; set; }
         [Required]
         public bool Inactive { get; set; }
+        public const int InactiveColumn = 5;                // Column when displayed in GridView
         [Required]
         public int ProjectID { get; set; }
         [Required, StringLength(100)]
@@ -824,10 +836,10 @@ namespace Portal11.Models
     public class ProjectClassMaster
     {
         public int ProjectClassMasterID { get; set; }
-        [Required]
+        [Required, StringLength(20), Index("FranchiseAndPCM", 1)]
         public string FranchiseKey { get; set; }
         public bool Inactive { get; set; }
-        [Required, StringLength(100)]
+        [Required, StringLength(100), Index("FranchiseAndPCM", 2, IsUnique = true)]
         public string Name { get; set; }
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
@@ -1202,7 +1214,7 @@ namespace Portal11.Models
 
             CStaffExpVisible = "StaffExpVisible",
             CStaffCkEContractorInvoice = "CkEContractorInvoice",
-            CStaffCkEGiftCard = "CkEGiftCard",
+            CStaffCkEPEXCard = "CkEPEXCard",
             CStaffCkEPaycheck = "CkEPaycheck",
             CStaffCkEPurchaseOrder = "CkEPurchaseOrder",
             CStaffCkEReimbursement = "CkEReimbursement",

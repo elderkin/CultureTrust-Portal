@@ -33,6 +33,11 @@ namespace Portal11
                     OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager, ApplicationUser>(
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
+
+                        //TODO: Remove the following clause when underlying problem is identified
+                        ,OnException = (context =>
+                        { throw context.Exception; }
+                        )
                 }
             });
             // Use a cookie to temporarily store information about a user logging in with a third party login provider

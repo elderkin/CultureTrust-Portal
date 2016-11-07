@@ -110,8 +110,9 @@ namespace Portal11.Rqsts
         {
             SaveDep(DepState.Returned, "Returned");                 // Update Dep; write new History row
             //TODO: Notify the Project Director
-            Response.Redirect(PortalConstants.URLStaffDashboard + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                  + PortalConstants.QSStatus + "=" + "Request returned to Project Direcctor");
+            Response.Redirect(litSavedReturn.Text + "?"
+                                + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
+                                + PortalConstants.QSStatus + "=" + "Request returned to Project Direcctor");
         }
 
         // User pressed History button. Fetch all the DepHistory rows for this Dep and fill a GridView.

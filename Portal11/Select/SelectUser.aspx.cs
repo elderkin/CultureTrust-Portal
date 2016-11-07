@@ -36,6 +36,7 @@ namespace Portal11.Admin
                     LogError.LogQueryStringError("SelectUser", "Missing Query String 'Command'"); // Log fatal error
 
                 litSavedCommand.Text = cmd;                             // Remember the command that invoked this page
+                UserView.PageSize = CookieActions.FindGridViewRows();   // Find number of rows per page from cookie
                 LoadUserView();                                         // Fill the grid
             }
         }
@@ -56,6 +57,9 @@ namespace Portal11.Admin
                 e.Row.ToolTip = "Click to select this User";            // Establish tool tip during flyover
                 e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.UserView, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
+
+                Label inactiveLabel = (Label)e.Row.FindControl("lblInactive");
+                inactiveLabel.Visible = true;                               // Make sure the Inactive column appears if hidden earlier
             }
             return;
         }
@@ -162,6 +166,10 @@ namespace Portal11.Admin
                 List<ApplicationUser> users = context.Users.AsExpandable().Where(pred).OrderBy(p => p.FullName).ToList(); // Query, sort and make list
                 UserView.DataSource = users;                            // Give it to the GridView control
                 UserView.DataBind();                                    // And display it
+
+                // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
+
+                UserView.Columns[ApplicationUser.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
 
                 NavigationActions.EnableGridViewNavButtons(UserView);   // Enable appropriate nav buttons based on page count
             }

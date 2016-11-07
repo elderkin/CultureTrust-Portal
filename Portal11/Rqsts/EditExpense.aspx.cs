@@ -766,7 +766,7 @@ namespace Portal11.Rqsts
                         litSupportingDocMin.Text = "1";
                         break;
                     }
-                case ExpType.GiftCard:
+                case ExpType.PEXCard:
                     {
                         lblAmount.Text = "Total Amount";
                         pnlBeginningEnding.Visible = false;

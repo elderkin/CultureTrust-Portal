@@ -13,14 +13,12 @@
         <div class="col-md-4 col-xs-6">
             <h2><%: Title %></h2>
         </div>
-        <div class="panel panel-default col-md-offset-4 col-md-4 col-xs-6">
-            <h4>Balance as of:&nbsp;<asp:Literal ID="litBalance" runat="server"></asp:Literal>
-            </h4>
-
-            <div class="row">
-                <div class="col-xs-offset-1 col-xs-11">
-                    Current Funds:&nbsp;<asp:Literal ID="litCurrentFunds" runat="server" >$xxx,xxx.xx</asp:Literal>
-                </div>
+        <div class="text-right col-md-offset-4 col-md-4 col-xs-6">
+            <div class="col-xs-12">
+                <h4>Balance as of:&nbsp;<asp:Literal ID="litBalance" runat="server"></asp:Literal></h4>
+            </div>
+            <div class="col-xs-12">
+                <h4>Current Funds:&nbsp;<asp:Literal ID="litCurrentFunds" runat="server" >$xxx,xxx.xx</asp:Literal></h4>
             </div>
         </div>
     </div>
@@ -60,7 +58,7 @@
                     <div class="checkbox">
                         <asp:CheckBox ID="ckRAwaitingProjectStaff" runat="server" Text="Awaiting Project Staff" CssClass="col-xs-12" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckRAwaitingCWStaff" runat="server" Text="Awaiting CW Staff" CssClass="col-xs-12"
+                        <asp:CheckBox ID="ckRAwaitingCWStaff" runat="server" Text="Awaiting CW Staff" CssClass="col-xs-12" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckRApproved" runat="server" Text="Approved/Complete/Paid" CssClass="col-xs-12" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />

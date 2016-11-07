@@ -114,8 +114,9 @@ namespace Portal11.Rqsts
         {
             SaveExp(ExpState.Returned, "Returned");                 // Update Exp; write new History row
             //TODO: Notify the Project Director
-            Response.Redirect(PortalConstants.URLStaffDashboard + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                  + PortalConstants.QSStatus + "=" + "Request returned to Project Direcctor");
+            Response.Redirect(litSavedReturn.Text + "?"
+                                + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
+                                + PortalConstants.QSStatus + "=" + "Request Returned to Project");
         }
 
         // User pressed History button. Fetch all the ExpHistory rows for this Exp and fill a GridView.
@@ -189,7 +190,7 @@ namespace Portal11.Rqsts
                         pnlPOFulfillmentInstructions.Visible = false;
                         break;
                     }
-                case ExpType.GiftCard:
+                case ExpType.PEXCard:
                     {
                         lblAmount.Text = "Total Amount";
                         pnlBeginningEnding.Visible = false;
