@@ -42,6 +42,12 @@ namespace Portal11.Rqsts
                 }
 
                 RestoreCheckboxes();                                        // Read cookie, restore checkbox settings, fill DDLs
+
+                int rows = CookieActions.FindGridViewRows();                // Find number of rows per page from cookie
+                StaffAppView.PageSize = rows;                               // Adjust each GridView accordingly
+                StaffDepView.PageSize = rows;
+                StaffExpView.PageSize = rows;
+
                 LoadAllApps();                                              // Load the grid view of Approvals
                 LoadAllDeps();                                              // Load the grid view of Deposits
                 LoadAllExps();                                              // Load the grid view of Expenses
@@ -86,8 +92,14 @@ namespace Portal11.Rqsts
         protected void SearchCriteriaChanged(object sender, EventArgs e)
         {
             LoadAllApps();                                                  // Recreate the grid view
+            ResetAppContext();                                              // No selected row, no live buttons
+
             LoadAllDeps();                                                  // Load the grid view of Deposits
+            ResetDepContext();                                              // No selected row, no live buttons
+
             LoadAllExps();                                                  // Load the grid view of Expenses
+            ResetExpContext();                                              // No selected row, no live buttons
+
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             return;
         }
@@ -190,6 +202,7 @@ namespace Portal11.Rqsts
         {
             ExpandAppPanel();
             LoadAllApps();
+            ResetAppContext();                                              // No selected row, no live buttons
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             return;
         }
@@ -221,6 +234,7 @@ namespace Portal11.Rqsts
         {
             ExpandDepPanel();
             LoadAllDeps();
+            ResetDepContext();                                              // No selected row, no live buttons
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             return;
         }
@@ -252,6 +266,7 @@ namespace Portal11.Rqsts
         {
             ExpandExpPanel();
             LoadAllExps();                                                  // Refresh the contents of the gridview
+            ResetDepContext();                                              // No selected row, no live buttons
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             return;
         }
@@ -270,9 +285,8 @@ namespace Portal11.Rqsts
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                StaffAppView.PageIndex = e.NewPageIndex;                    // Propagate the desired page index
-                LoadAllApps();                                              // Reload the grid view control
-                StaffAppView.SelectedIndex = -1;                            // No row selected
+                LoadAllApps(e.NewPageIndex);                                // Reload the grid view control, position to target page
+                ResetAppContext();                                          // No selected row, no live buttons after a page flip
             }
             return;
         }
@@ -281,9 +295,8 @@ namespace Portal11.Rqsts
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                StaffDepView.PageIndex = e.NewPageIndex;                    // Propagate the desired page index
-                LoadAllDeps();                                              // Reload the grid view control
-                StaffDepView.SelectedIndex = -1;                            // No row selected
+                LoadAllDeps(e.NewPageIndex);                                // Reload the grid view control, position to target page
+                ResetDepContext();                                          // No selected row, no live buttons after a page flip
             }
             return;
         }
@@ -292,9 +305,8 @@ namespace Portal11.Rqsts
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                StaffExpView.PageIndex = e.NewPageIndex;                    // Propagate the desired page index
-                LoadAllExps();                                              // Reload the grid view control
-                StaffExpView.SelectedIndex = -1;                            // No row selected
+                LoadAllExps(e.NewPageIndex);                                // Reload the grid view control, position to target page
+                ResetExpContext();                                          // No selected row, no live buttons after a page flip
             }
             return;
         }
@@ -473,10 +485,6 @@ namespace Portal11.Rqsts
             // Unconditionally send Rqst to ReviewApproval. It is possible that the user does not have the authority to review the rqst in
             // its current state. But we'll let Review display all the detail for the Rqst and then deny editing.
 
-            Response.Redirect("zzz" + "?" + PortalConstants.QSRequestID + "=" + rqstID + "&" // Start with an existing request
-                                              + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview + "&" // Review it
-                                              + PortalConstants.QSReturn + "=" + PortalConstants.URLStaffDashboard); // Return to this page when done
-
             Response.Redirect(PortalConstants.URLReviewApproval + "?" + PortalConstants.QSRequestID + "=" + rqstID + "&" // Start with an existing request
                                               + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview + "&" // Review it
                                               + PortalConstants.QSReturn + "=" + PortalConstants.URLStaffDashboard); // Return to this page when done
@@ -514,11 +522,12 @@ namespace Portal11.Rqsts
 
         // Fetch all of the Approvals for CS Staff, subject to further search constraints. Display in a GridView
 
-        void LoadAllApps()
+        void LoadAllApps(int pageIndex = 0)
         {
             if (!pnlApp.Visible)                                            // If false the panel is not visible
                 return;                                                     // Don't waste time on filling it
 
+            StaffAppView.PageIndex = pageIndex;                             // Go to the page specified by the caller
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
 
@@ -692,7 +701,6 @@ namespace Portal11.Rqsts
                 // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
 
                 NavigationActions.EnableGridViewNavButtons(StaffAppView);   // Enable appropriate nav buttons based on page count
-                StaffAppView.PageIndex = 0;                                 // Go back to the first page
                 StaffAppView.SelectedIndex = -1;                            // No selected row any more
             }
             return;
@@ -700,11 +708,12 @@ namespace Portal11.Rqsts
 
         // Fetch all of the Deposits for CS Staff, subject to further search constraints. Display in a GridView
 
-        void LoadAllDeps()
+        void LoadAllDeps(int pageIndex = 0)
         {
             if (!pnlDep.Visible)                                            // If false the panel is not visible
                 return;                                                     // Don't waste time on filling it
 
+            StaffDepView.PageIndex = pageIndex;                            // Go back to the page specified by the caller
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
 
@@ -904,7 +913,6 @@ namespace Portal11.Rqsts
                 // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
 
                 NavigationActions.EnableGridViewNavButtons(StaffDepView);   // Enable appropriate nav buttons based on page count
-                StaffDepView.PageIndex = 0;                                 // Go back to the first page
                 StaffDepView.SelectedIndex = -1;                            // No selected row any more
             }
             return;
@@ -912,11 +920,12 @@ namespace Portal11.Rqsts
 
         // Fetch all of the Expenses for CS Staff, subject to further search constraints. Display in a GridView
 
-        void LoadAllExps()
+        void LoadAllExps(int pageIndex = 0)
         {
             if (!pnlExp.Visible)                                            // If false the panel is not visible
                 return;                                                     // Don't waste time on filling it
 
+            StaffExpView.PageIndex = pageIndex;                             // Go to the page specified by caller
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
 
@@ -1002,7 +1011,6 @@ namespace Portal11.Rqsts
                 List<Exp> exps = context.Exps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
                 // Pull all possible Rqsts into a list - everything that's not inactive and in a relevant state.
 
-
                 // From this list of Rqsts, build a list of rows for the AllRqstView GridView based on the selection criteria provided by the user.
 
                 List<StaffExpViewRow> rows = new List<StaffExpViewRow>();   // Create the empty list
@@ -1022,9 +1030,9 @@ namespace Portal11.Rqsts
                                     useRow = true;                      // Take the row
                                 break;
                             }
-                        case ExpType.GiftCard:
+                        case ExpType.PEXCard:
                             {
-                                if (ckEGiftCard.Checked)                // If true relevant checkbox is checked
+                                if (ckEPEXCard.Checked)                // If true relevant checkbox is checked
                                     useRow = true;                      // Take the row
                                 break;
                             }
@@ -1144,10 +1152,26 @@ namespace Portal11.Rqsts
                 // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
 
                 NavigationActions.EnableGridViewNavButtons(StaffExpView);   // Enable appropriate nav buttons based on page count
-                StaffExpView.PageIndex = 0;                                 // Go back to the first page
                 StaffExpView.SelectedIndex = -1;                            // No selected row any more
             }
             return;
+        }
+
+        // We no longer have a selected Request. Adjust buttons
+
+        void ResetAppContext()
+        {
+            btnAppReview.Enabled = false;
+        }
+
+        void ResetDepContext()
+        {
+            btnDepReview.Enabled = false;
+        }
+
+        void ResetExpContext()
+        {
+            btnExpReview.Enabled = false;
         }
 
         // Fill a Drop Down List with available Entity Names
@@ -1320,7 +1344,7 @@ namespace Portal11.Rqsts
 
             staffCheckboxesCookie[PortalConstants.CStaffExpVisible] = pnlExp.Visible.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEContractorInvoice] = ckEContractorInvoice.Checked.ToString();
-            staffCheckboxesCookie[PortalConstants.CStaffCkEGiftCard] = ckEGiftCard.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkEPEXCard] = ckEPEXCard.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEPaycheck] = ckEPaycheck.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEPurchaseOrder] = ckEPurchaseOrder.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEReimbursement] = ckEReimbursement.Checked.ToString();
@@ -1458,8 +1482,8 @@ namespace Portal11.Rqsts
                 if (staffCheckboxesCookie[PortalConstants.CStaffCkEContractorInvoice] == "True") ckEContractorInvoice.Checked = true;
                 else ckEContractorInvoice.Checked = false;
 
-                if (staffCheckboxesCookie[PortalConstants.CStaffCkEGiftCard] == "True") ckEGiftCard.Checked = true;
-                else ckEGiftCard.Checked = false;
+                if (staffCheckboxesCookie[PortalConstants.CStaffCkEPEXCard] == "True") ckEPEXCard.Checked = true;
+                else ckEPEXCard.Checked = false;
 
                 if (staffCheckboxesCookie[PortalConstants.CStaffCkEPaycheck] == "True") ckEPaycheck.Checked = true;
                 else ckEPaycheck.Checked = false;

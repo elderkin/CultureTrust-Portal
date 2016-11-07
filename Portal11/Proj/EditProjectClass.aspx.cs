@@ -1,4 +1,5 @@
 ﻿using Portal11.ErrorLog;
+using Portal11.Logic;
 using Portal11.Models;
 using System;
 using System.Collections.Generic;
@@ -117,6 +118,11 @@ namespace Portal11.Proj
                 }
                 catch (Exception ex)
                 {
+                    if (ExceptionActions.IsDuplicateKeyException(ex))       // If true this is a Duplicate Key exception
+                    {
+                        litDangerMessage.Text = $"Another Project Class with the name '{txtName.Text}' already exists on this Project. Project Classes must be unique.";
+                        return;                                             // Report the error to user and try again
+                    }
                     LogError.LogDatabaseError(ex, "EditProjectClass", "Error writing ProjectClass row"); // Fatal error
                 }
             }

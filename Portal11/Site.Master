@@ -66,7 +66,7 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li><a runat="server" href="~/Select/SelectProject?Command=Menu">Select Project</a></li>
 <%--                                <li><a runat="server" href="~/Proj/AssignPersons" >Assign Persons to Project</a></li>--%>
-                                <li><a runat="server" href="~/Select/SelectProjectClass?Command=Edit">Edit Project Classes</a></li>
+                                <li><a id="mnuEditProjectClasses" runat="server" href="~/Select/SelectProjectClass?Command=Edit">Edit Project Classes</a></li>
                             </ul>
                         </li>
 
@@ -96,7 +96,7 @@
                         </LoggedInTemplate>
                     </asp:LoginView>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a runat="server" href="#">
+                        <li><a runat="server">
                             <asp:Label runat="server" ID="labFullName" /></a></li>
                         <li><a runat="server" id="mnuNoProjectRole" href="#" visible="false">
                             <asp:Literal runat="server" ID="litNoProjectRole" /></a></li>

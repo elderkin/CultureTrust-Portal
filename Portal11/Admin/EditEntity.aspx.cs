@@ -148,7 +148,12 @@ namespace Portal11.Admin
                 }
                 catch (Exception ex)
                 {
-                    LogError.LogDatabaseError(ex, "EditEntity", "Error updating Entity row"); // Fatal error
+                    if (ExceptionActions.IsDuplicateKeyException(ex))       // If true this is a Duplicate Key exception
+                    {
+                        litDangerMessage.Text = $"Another Entity with the name '{txtName.Text}' already exists. Entity Names must be unique.";
+                        return;                                             // Report the error to user and try again
+                    }
+                    LogError.LogDatabaseError(ex, "EditEntity", "Error updating Entity row"); // Otherwise, log a Fatal error and don't return here
                 }
             }
 

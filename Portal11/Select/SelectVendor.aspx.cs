@@ -36,6 +36,7 @@ namespace Portal11.Select
                     LogError.LogQueryStringError("SelectVendor", "Missing Query String 'Command'"); // Log fatal error
                 litSavedCommand.Text = cmd;                                 // Remember the command that invoked this page
 
+                AllVendorView.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
                 LoadVendorView();                                           // Fill the grid
             }
         }

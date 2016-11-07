@@ -92,7 +92,11 @@
                         <asp:BoundField DataField="Description" HeaderText="Description" />
                         <asp:BoundField DataField="CreatedFromMaster" HeaderText="From Master" />
                         <asp:BoundField DataField="Default" HeaderText="Default" />
-                        <asp:BoundField DataField="Inactive" HeaderText="Inactive" />
+                       <asp:TemplateField HeaderText="Inactive">
+                            <ItemTemplate>
+                                <asp:Label ID="lblInactive" runat="server" Text='<%# Bind("Inactive") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
 

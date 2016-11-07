@@ -41,16 +41,10 @@ namespace Portal11.Account
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var userMgr = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context)); // Open path to User Manager
-                ApplicationUser loggedInUser = userMgr.FindByEmail(email);             // Look for an existing user
-
-                //var query = from u in context.Users
-                //            where u.Email == email
-                //            select u;
-                //ApplicationUser loggedInUser = query.SingleOrDefault(); // Fetch the ApplicationUser record for the logged in user
+                ApplicationUser loggedInUser = userMgr.FindByEmail(email); // Look for an existing user
                 if (loggedInUser == null)                               // Cannot re-locate record used during login
                 {
-                    LogError.LogInternalError("LoginDispatch", string.Format("Unable to find User with email '{0}' in database",
-                        email));                                        // Fatal error
+                    LogError.LogInternalError("LoginDispatch", $"Unable to find User with email '{email}' in database"); // Fatal error
                 }
 
                 // If the User's account is Inactive, log them right back out again.
@@ -94,6 +88,7 @@ namespace Portal11.Account
                 userInfoCookie[PortalConstants.CUserID] = loggedInUser.Id;
                 userInfoCookie[PortalConstants.CUserFullName] = loggedInUser.FullName;
                 userInfoCookie[PortalConstants.CUserFranchiseKey] = loggedInUser.FranchiseKey; // Insert current User's Franchise Key
+                userInfoCookie[PortalConstants.CUserGridViewRows] = loggedInUser.GridViewRows.ToString(); // Find number of rows to display in GridView controls
 
                 // The User could be both an Administrator and something else. So we check for Administrator first and fill in one of its cookie fields. 
                 //

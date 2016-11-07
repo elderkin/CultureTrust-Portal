@@ -37,6 +37,7 @@ namespace Portal11.Select
                     LogError.LogQueryStringError("SelectEntity", "Missing Query String 'Command'"); // Log fatal error
                 litSavedCommand.Text = cmd;                                 // Remember the command that invoked this page
 
+                AllEntityView.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
                 LoadEntityView();                                           // Fill the grid
             }
         }
@@ -57,6 +58,9 @@ namespace Portal11.Select
                 e.Row.ToolTip = "Click to select this Entity";            // Establish tool tip during flyover
                 e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AllEntityView, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
+
+                Label inactiveLabel = (Label)e.Row.FindControl("lblInactive");
+                inactiveLabel.Visible = true;                               // Make sure the Inactive column appears if hidden earlier
             }
             return;
         }
@@ -102,8 +106,7 @@ namespace Portal11.Select
             Label name = (Label)AllEntityView.SelectedRow.Cells[1].FindControl("lblName"); // Find the label control that contains Entity Name
             string entityID = entID.Text;                                   // Extract the text of the control, which is EntityID as a string
             if (entityID == "")
-                LogError.LogQueryStringError("SelectEntity", string.Format(
-                    "EntityID '{0}' from selected GridView row is missing", entityID)); // Log fatal error
+                LogError.LogQueryStringError("SelectEntity", $"EntityID '{entityID}' from selected GridView row is missing"); // Log fatal error
 
             Response.Redirect(PortalConstants.URLEditEntity + "?" + PortalConstants.QSEntityID + "=" + entityID + "&" +
                                             PortalConstants.QSEntityName + "=" + name.Text + "&" +
@@ -139,6 +142,10 @@ namespace Portal11.Select
                 List<Entity> ents = context.Entitys.AsExpandable().Where(pred).OrderBy(p => p.Name).ToList(); // Query, sort and make list
                 AllEntityView.DataSource = ents;                        // Give it to the GridView control
                 AllEntityView.DataBind();                               // And display it
+
+                // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
+
+                AllEntityView.Columns[Entity.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
 
                 NavigationActions.EnableGridViewNavButtons(AllEntityView); // Enable appropriate nav buttons based on page count
             }

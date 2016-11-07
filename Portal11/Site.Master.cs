@@ -83,7 +83,7 @@ namespace Portal11
                     //  1) Display their Full Name
 
                     labFullName.Text = userInfoCookie[PortalConstants.CUserFullName]; //Load label with user's full name from cookie
-                    labFullName.ToolTip = "This is a test";
+                    labFullName.ToolTip = "Not associated with a specific project";
 
                     //  2) If the User has Admin powers - regardless of role - turn on the Admin menu
 
@@ -122,6 +122,7 @@ namespace Portal11
                             {
                                 litNoProjectRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // No project available. Use "base" role
                                 mnuNoProjectRole.Visible = true;                    // Make menu visible in Navbar; it doesn't link anywhere
+                                mnuEditProjectClasses.Visible = false;              // Doesn't work without a project selected, so turn it off
                             }
                             break;
                         }

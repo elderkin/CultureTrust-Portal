@@ -131,6 +131,11 @@ namespace Portal11.Admin
                 }
                 catch (Exception ex)
                 {
+                    if (ExceptionActions.IsDuplicateKeyException(ex))       // If true this is a Duplicate Key exception
+                    {
+                        litDangerMessage.Text = $"Another GLCode with the code '{txtCode.Text}' already exists. GLCodes must be unique.";
+                        return;                                             // Report the error to user and try again
+                    }
                     LogError.LogDatabaseError(ex, "EditGLCode", "Error writing GLCode row"); // Fatal error
                 }
             }

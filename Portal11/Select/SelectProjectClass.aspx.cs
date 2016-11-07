@@ -34,6 +34,7 @@ namespace Portal11.Select
                 //    LogError.LogQueryStringError("EditProjectClasses", "Missing Query String 'Command'"); // Log fatal error
 
                 litSavedCommand.Text = PortalConstants.QSCommandEdit;       // Always Edit, at least for now
+                ProjectClassView.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
                 LoadProjectClassView();                                     // Fill the grid
             }
         }
@@ -54,6 +55,9 @@ namespace Portal11.Select
                 e.Row.ToolTip = "Click to select this Project Class";       // Establish tool tip during flyover
                 e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.ProjectClassView, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
+
+                Label inactiveLabel = (Label)e.Row.FindControl("lblInactive");
+                inactiveLabel.Visible = true;                               // Make sure the Inactive column appears if hidden earlier
             }
             return;
         }
@@ -139,6 +143,10 @@ namespace Portal11.Select
                 List<ProjectClass> projs = context.ProjectClasses.AsExpandable().Where(pred).OrderBy(p => p.Name).ToList(); // Query, sort and make list
                 ProjectClassView.DataSource = projs;                        // Give it to the GridView control
                 ProjectClassView.DataBind();                                // And display it
+
+                // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
+
+                ProjectClassView.Columns[ProjectClass.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
 
                 NavigationActions.EnableGridViewNavButtons(ProjectClassView); // Enable appropriate nav buttons based on page count
             }

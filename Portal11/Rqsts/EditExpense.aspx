@@ -35,7 +35,7 @@
                             <asp:ListItem Text="Reimbursement" Value="Reimbursement"></asp:ListItem>
                             <asp:ListItem Text="Vendor Invoice" Value="VendorInvoice"></asp:ListItem>
                             <asp:ListItem Text="Purchase Order" Value="PurchaseOrder"></asp:ListItem>
-                            <asp:ListItem Text="Gift Card" Value="GiftCard"></asp:ListItem>
+                            <asp:ListItem Text="PEX Card" Value="PEXCard"></asp:ListItem>
                         </asp:RadioButtonList>
                     </div>
                 </div>

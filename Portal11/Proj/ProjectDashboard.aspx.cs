@@ -79,6 +79,12 @@ namespace Portal11.Proj
                     btnDepNew.Enabled = true;                           // Allow them to create a new Deposit
 
                 RestoreCheckboxes();                                    // Restore more recent checkbox settings from a cookie
+
+                int rows = CookieActions.FindGridViewRows();            // Find number of rows per page from cookie
+                AllAppView.PageSize = rows;                             // Adjust grids accordingly
+                AllDepView.PageSize = rows;
+                AllExpView.PageSize = rows;
+
                 LoadAllApps();
                 LoadAllDeps();
                 LoadAllExps();                                          // Load the grid view for display
@@ -233,7 +239,8 @@ namespace Portal11.Proj
         {
             ExpandAppPanel();
             LoadAllApps();
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            ResetAppContext();                                          // No selected row, no live buttons
+            SaveCheckboxes();                                           // Save current checkbox settings in a cookie
             return;
         }
 
@@ -266,7 +273,8 @@ namespace Portal11.Proj
         {
             ExpandDepPanel();
             LoadAllDeps();
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            ResetDepContext();                                          // No selected row, no live buttons
+            SaveCheckboxes();                                           // Save current checkbox settings in a cookie
             return;
         }
 
@@ -299,7 +307,8 @@ namespace Portal11.Proj
         {
             ExpandExpPanel();
             LoadAllExps();                                              // Refresh the contents of the gridview
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            ResetExpContext();                                          // No selected row, no live buttons
+            SaveCheckboxes();                                           // Save current checkbox settings in a cookie
             return;
         }
 
@@ -577,16 +586,24 @@ namespace Portal11.Proj
 
             if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == User is a Project Director
             {
-                btnDepCopy.Enabled = true;                              // No match what state, we can copy the request
+                // Note: Project Director cannot copy a Deposit Request - only IC can do that
                 if (state == DepState.AwaitingProjectDirector)          // If == the Request is waiting our action
+                {
                     btnDepReview.Enabled = true;                        // A Project Director can review this Request
+                }
+                else if (state == DepState.DepositComplete)             // If == the Request is complete; could be archived
+                {
+                    Label archivedLabel = (Label)AllDepView.SelectedRow.FindControl("lblArchived"); // Find the label control that contains Archived
+                    if (archivedLabel.Text == "False")                  // If == not currently archived.
+                        btnDepArchive.Enabled = true;                   // Light Archive button. Can't archive if already archived
+                }
                 return;                                                 // Otherwise, Project Director is powerless
             }
 
             if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a Project InternalCoordinator. Powerful
             {
                 btnDepCopy.Enabled = true;                              // No match what state, we can copy the request
-                if (state == DepState.UnsubmittedByInternalCoordinator)         // If == the Request is under construction by us
+                if (state == DepState.UnsubmittedByInternalCoordinator) // If == the Request is under construction by us
                 {
                     btnDepDelete.Enabled = true;                        // Turn on other buttons
                     btnDepEdit.Enabled = true;                          // that make sense in this state
@@ -686,8 +703,7 @@ namespace Portal11.Proj
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
-                AllAppView.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
-                LoadAllApps();                                          // Reload the grid view control
+                LoadAllApps(e.NewPageIndex);                            // Reload the grid view control to the specified page
                 ResetAppContext();                                      // No selected row, no live buttons after a page flip
             }
             return;
@@ -699,8 +715,7 @@ namespace Portal11.Proj
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
-                AllDepView.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
-                LoadAllDeps();                                          // Reload the grid view control
+                LoadAllDeps(e.NewPageIndex);                            // Reload the grid view control to the specified page
                 ResetDepContext();                                      // No selected row, no live buttons after a page flip
             }
             return;
@@ -712,8 +727,7 @@ namespace Portal11.Proj
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
-                AllExpView.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
-                LoadAllExps();                                          // Reload the grid view control
+                LoadAllExps(e.NewPageIndex);                            // Reload the grid view control, position to new page
                 ResetExpContext();                                      // No selected row, no live buttons after a page flip
             }
             return;
@@ -1104,11 +1118,12 @@ namespace Portal11.Proj
         // Fetch all of the Requests for this project, subject to further search constraints. Display in a GridView.
         // Find current project ID in listSavedProjectID
 
-        void LoadAllApps()
+        void LoadAllApps(int pageIndex = 0)
         {
-            if (!pnlApp.Visible)                                    // If ! the panel is hidden, no need to refresh
+            if (!pnlApp.Visible)                                        // If ! the panel is hidden, no need to refresh
                 return;
 
+            AllAppView.PageIndex = pageIndex;                           // Go to the page specified by the caller
             int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -1258,17 +1273,17 @@ namespace Portal11.Proj
                 AllAppView.DataBind();                                  // And get it in gear
 
                 NavigationActions.EnableGridViewNavButtons(AllAppView); // Enable appropriate nav buttons based on page count
-                AllAppView.PageIndex = 0;                               // Go back to the first page
                 AllAppView.SelectedIndex = -1;                          // No selected row any more
             }
             return;
         }
 
-        void LoadAllDeps()
+        void LoadAllDeps(int pageIndex = 0)
         {
-            if (!pnlDep.Visible)                                    // If ! the panel is hidden, no need to refresh
+            if (!pnlDep.Visible)                                        // If ! the panel is hidden, no need to refresh
                 return;
 
+            AllDepView.PageIndex = pageIndex;                           // Go to the page specified by the caller
             int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -1463,7 +1478,6 @@ namespace Portal11.Proj
                 AllDepView.DataBind();                                  // And get it in gear
 
                 NavigationActions.EnableGridViewNavButtons(AllDepView); // Enable appropriate nav buttons based on page count
-                AllDepView.PageIndex = 0;                               // Go back to the first page
                 AllDepView.SelectedIndex = -1;                          // No selected row any more
             }
             return;
@@ -1472,11 +1486,12 @@ namespace Portal11.Proj
         // Fetch all of the Requests for this project, subject to further search constraints. Display in a GridView.
         // Find current project ID in listSavedProjectID
 
-        void LoadAllExps()
+        void LoadAllExps(int pageIndex = 0)
         {
-            if (!pnlExp.Visible)                                    // If ! the panel is hidden, no need to refresh
+            if (!pnlExp.Visible)                                        // If ! the panel is hidden, no need to refresh
                 return;
 
+            AllExpView.PageIndex = pageIndex;                           // Select which page of grid to display
             int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -1660,12 +1675,11 @@ namespace Portal11.Proj
                 AllExpView.DataBind();                                  // And get it in gear
 
                 NavigationActions.EnableGridViewNavButtons(AllExpView); // Enable appropriate nav buttons based on page count
-                AllExpView.PageIndex = 0;                               // Go back to the first page
                 AllExpView.SelectedIndex = -1;                          // No selected row any more
             }
         }
 
-        // We no longer have a selected Request. Return to the first page of the GridView and adjust buttons
+        // We no longer have a selected Request. Adjust buttons
 
         void ResetAppContext()
         {

@@ -75,6 +75,8 @@ namespace Portal11.Staff
                 if (cmd == PortalConstants.QSCommandEdit)                   // If == we are selecting a Project to edit
                     btnNew.Enabled = true;                                  // Offer the opportunity to create a new Project
 
+                AllProjectView.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
+                UserProjectView.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
                 LoadProjectView();                                          // Fill the grid
             }
         }

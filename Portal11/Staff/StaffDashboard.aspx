@@ -492,7 +492,7 @@
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckEReimbursement" runat="server" Text="Reimbursement" CssClass="col-xs-6" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckEGiftCard" runat="server" Text="Gift Card" CssClass="col-xs-6" Checked="true"
+                        <asp:CheckBox ID="ckEPEXCard" runat="server" Text="PEX Card" CssClass="col-xs-6" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                     </div>
                     </div>
