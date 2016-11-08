@@ -1,4 +1,4 @@
-﻿Version 1.1
+﻿﻿Version 1.1
 
 For Entities, GL Codes, Persons, and Projects, the Portal now requires that names be unique. That is, duplicate names are not allowed.
 In all Grids, the number of rows per page is now controlled by a user-specific parameter. This can be adjusted on the Edit Portal User page.
