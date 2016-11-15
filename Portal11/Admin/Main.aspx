@@ -164,6 +164,14 @@
                             <a runat="server" href="~/Select/SelectUser.aspx?Command=Assign" 
                                 title="Choose a Portal User and change their role (Project Director or Project Staff) on existing Projects">Assign Portal User to Project</a>
                         </li>
+                        <li class="list-group-item">
+                            <a runat="server" href="~/Lists/ImportProjectBalances" 
+                                title="Read and import a CSV file of project balance dates and balances">Import Project Balances</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a runat="server" href="~/Lists/ListProjects.aspx" 
+                                title="List all the Projects in a printable format">List Projects</a>
+                        </li>
                     </ul>
                 </div>
             </div>

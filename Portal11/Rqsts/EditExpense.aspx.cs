@@ -1078,6 +1078,7 @@ namespace Portal11.Rqsts
                     pnlDeliveryAddress.Visible = true;                      // Turn on the Delivery Address
                     txtDeliveryAddress.Text = record.DeliveryAddress;       // And fill it
                 }
+                cblDeliveryInstructions.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected = record.Rush; // Fill value of checkbox
             }
 
             txtDescription.Text = record.Description;
@@ -1201,7 +1202,10 @@ namespace Portal11.Rqsts
                 record.DeliveryAddress = txtDeliveryAddress.Text;
 
             if (pnlDeliveryInstructions.Visible)
+            {
                 record.DeliveryMode = EnumActions.ConvertTextToDeliveryMode(rdoDeliveryMode.SelectedValue); // Convert selection to enum
+                record.Rush = cblDeliveryInstructions.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected; // Stash value of checkbox
+            }
 
             record.Description = txtDescription.Text;
 

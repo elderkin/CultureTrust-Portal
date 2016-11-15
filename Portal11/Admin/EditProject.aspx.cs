@@ -136,17 +136,6 @@ namespace Portal11.Admin
                     if (litSavedProjectID.Text != "") projectID = Convert.ToInt32(litSavedProjectID.Text); // If != saved ID is available, use it  
                     if (projectID == 0)                                         // If == no doubt about it, Save makes a new row
                     {
-
-                        //// Make sure the Name is unique in this Franchise
-
-                        //int matchingNames = context.Projects.Where(p => (p.FranchiseKey == fran) && (p.Name == txtName.Text)).Count();
-                        //// Look for existing row match
-                        //if (matchingNames != 0)                                 // If != a Project with this Name value already exists in database
-                        //{
-                        //    Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger + "&"
-                        //                        + PortalConstants.QSStatus + "=That Project Name already exists. You can edit it.", false); // Back to the barn
-                        //    return;
-                        //}
                         Project toSave = new Project();                             // Get a place to hold everything
                         toSave.CreatedTime = System.DateTime.Now;                   // Stamp time when Request was first created as "now"
                         UnloadPanels(toSave);                                       // Move from Panels to record
@@ -185,11 +174,10 @@ namespace Portal11.Admin
         {
             txtName.Text = record.Name;
             chkInact.Checked = record.Inactive;
+            txtCode.Text = record.Code;
             txtDescription.Text = record.Description;
             txtBalanceDate.Text = record.BalanceDate.Date.ToShortDateString();
             txtCurrentFunds.Text = record.CurrentFunds.ToString("C");
-            //decimal total = StateActions.LoadGrantsList(record.ProjectID, lstRestrictedGrants); // Fill read-only list box of current grants
-            //txtTotalGrants.Text = total.ToString("C");                      // Also display total of all grants
             // Project Director
             FillProjectDirectorDDL();
             return;
@@ -201,9 +189,10 @@ namespace Portal11.Admin
         {
             record.Name = txtName.Text;
             record.Inactive = chkInact.Checked;
+            record.Code = txtCode.Text.ToUpper();                       // Force Code to upper case
             record.Description = txtDescription.Text;
             if (txtBalanceDate.Text == "")                              // If == field is blank. Supply default
-                record.BalanceDate = System.DateTime.Now;                   // Default date as now.
+                record.BalanceDate = System.DateTime.Now;               // Default date as now.
             else
                 record.BalanceDate = DateActions.LoadTxtIntoDate(txtBalanceDate); // Carefully convert the text into a date
 

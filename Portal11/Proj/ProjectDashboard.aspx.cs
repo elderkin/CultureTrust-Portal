@@ -9,6 +9,7 @@ using Portal11.Models;
 using Portal11.Logic;
 using System.Data;
 using Portal11.ErrorLog;
+using System.Drawing;
 
 namespace Portal11.Proj
 {
@@ -477,6 +478,12 @@ namespace Portal11.Proj
                 label = (Label)e.Row.FindControl("lblArchived");            // Find the label control that contains Archived in this row
                 if (label.Text == "True")                                   // If == this record is Archived
                     e.Row.Font.Italic = true;                               // Use italics to indicate Archived status
+
+                // See if the row is Rush
+
+                label = (Label)e.Row.FindControl("lblRush");                // Find the label control that contains Rush in this row
+                if (label.Text == "True")                                   // If == this record is Rush
+                    e.Row.ForeColor = Color.Red;                            // Use color to indicate Rush status
             }
             return;
         }
@@ -1649,7 +1656,8 @@ namespace Portal11.Proj
                         Amount = ExtensionActions.LoadDecimalIntoTxt(r.Amount), // Carefully load decimal amount into text field
                         CurrentState = r.CurrentState,                  // Load enum version for use when row is selected
                         CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
-                        Archived = r.Archived                           // Whether the request is archived
+                        Archived = r.Archived,                          // Whether the request is archived
+                        Rush = r.Rush                                   // Whether the request is Rush
                     };
 
                     // Fill "Target" with Vendor Name or Person Name. Only one will be present, depending on ExpType.

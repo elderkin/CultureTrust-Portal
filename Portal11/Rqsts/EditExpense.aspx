@@ -654,12 +654,18 @@
                     <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="radio">
                             <asp:RadioButtonList ID="rdoDeliveryMode" runat="server" AutoPostBack="true"
-                                Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth" Visible="true"
+                                Style="margin-left: 20px;" CssClass="rdoColWidth" Visible="true"
                                 OnSelectedIndexChanged="rdoDeliveryMode_SelectedIndexChanged">
                                 <asp:ListItem Text="Hold for pickup." Value="Pickup" Selected="True"></asp:ListItem>
                                 <asp:ListItem Text="Mail to payee." Value="MailPayee"></asp:ListItem>
                                 <asp:ListItem Text="Mail to the below address." Value="MailAddress"></asp:ListItem>
                             </asp:RadioButtonList>
+                        </div>
+                        <div class="checkbox text-danger" >
+                            <asp:CheckBoxList ID="cblDeliveryInstructions" runat="server" Style="margin-left: 20px; margin-bottom: 10px">
+                                <asp:ListItem Text="Rush" Value="Rush" data-toggle="tooltip"
+                                    title="Please process this request as quickly as possible"></asp:ListItem>
+                            </asp:CheckBoxList>
                         </div>
                     </div>
                 </div>
