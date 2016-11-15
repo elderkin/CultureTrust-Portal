@@ -596,6 +596,11 @@
                                 <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>'></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Rush" Visible="false">
+                            <ItemTemplate>
+                                <asp:Label ID="lblRush" runat="server" Text='<%# Bind("Rush") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
 

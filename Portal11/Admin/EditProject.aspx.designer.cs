@@ -67,6 +67,24 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.CheckBox chkInact;
         
         /// <summary>
+        /// pnlCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlCode;
+        
+        /// <summary>
+        /// txtCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtCode;
+        
+        /// <summary>
         /// pnlDescription control.
         /// </summary>
         /// <remarks>

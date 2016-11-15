@@ -227,7 +227,7 @@ namespace Portal11.Logic
         //  1) Find each row in the ListBox of supporting files. A rowID preceded by "T" indicates an entry in the RqstSupportingTemp table
         //  2) Find the row of the RqstSupportingTemp table that corresponds to this file.
         //  3) Add a new row to the RqstSupporting table, copying RqstSupportingTemp info. This generates an ID
-        //  4) Rename the supporting file in the /Attachments directory using the ID to produce a permanent filename
+        //  4) Rename the supporting file in the /Supportings directory using the ID to produce a permanent filename
         //  5) Update the row of the Listbox to remove the "T" marker, since the file is now in its final resting place
         //  6) Remove the rows of the RqstSupportingTemp table.
 
@@ -273,7 +273,7 @@ namespace Portal11.Logic
                             context.SupportingDocs.Add(sd);         // Add the new row
                             context.SaveChanges();                  // Commit the database changes, generate ID
 
-                            //  4) Rename the supporting file in the /Attachments directory using the ID to produce a permanent filename
+                            //  4) Rename the supporting file in the /Supportings directory using the ID to produce a permanent filename
 
                             string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
                             File.Move(serverRoot + sdt.FileName, serverRoot + sd.SupportingDocID.ToString() + ext); // The new name is just the new row ID
@@ -302,12 +302,49 @@ namespace Portal11.Logic
             }
         }
 
+        // Upload CSV - completing a click of the FileUpload control. This is not a supporting document, but an Excel file
+        // that the user wants us to read. But to read it, it must reside on the server. So our job is to get it there.
+        // There are no database implications to this, just file movement.
+        //
+        // This isn't a supporting doc action, but it's so similar I thought it fit best here.
+
+        public static bool UploadCSV(FileUpload fup, string serverFileName, Literal suc, Literal dan)
+        {
+            try
+            {
+
+                //  Pull the relevant information out of the FileUpload control.
+
+                string name = fup.PostedFile.FileName;          // Fetch the name of the file to upload
+                string ext = Path.GetExtension(name).ToUpper(); // We'll propagate the extension
+                string type = fup.PostedFile.ContentType.ToUpper(); // Content type helps with download
+//                if ((type != PortalConstants.CSVType) || (ext != PortalConstants.CSVExt)) // If != file is not a CSV
+                if ((ext != PortalConstants.CSVExt))
+                {
+                    dan.Text = $"Selected file '{name}' is not a valid Comma-Separated Value (CSV) file";
+                    return false;
+                }
+                string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
+
+                //  Save the file to the /Supporting directory using the ID to produce a filename
+
+                string uploadFullName = serverRoot + serverFileName; // Formulate name of destination file
+                fup.SaveAs(uploadFullName);                         // Copy the Supporting file to server using our manufactured name
+                return true;
+            }
+            catch (Exception ex)
+            {
+                dan.Text = $"Unable to upload CSV file: '{ex.Message}'";
+                return false;                                       // Tell caller this failed
+            }
+        }
+
         // Upload file - completing a click of the FileUpload control. Get ready for a wild ride!
         //  1) Pull the relevant information out of the FileUpload control.
         //  2) Add a new row to the SupportingDocTemp table. This generates an ID
-        //  3) Save the file to the /Attachments directory using the ID to produce a temporary filename
+        //  3) Save the file to the /Supportings directory using the ID to produce a temporary filename
         //  4) Update the SupportingDocTemp row to include the temporary filename
-        //  5) Add a line to the Listbox control describing the new attachment
+        //  5) Add a line to the Listbox control describing the new Supporting
         //  6) Tell the user what a wonderful job we did
 
         public static void UploadDoc(FileUpload fup, ListBox lst, Literal userID, Literal suc, Literal dan)
@@ -342,11 +379,11 @@ namespace Portal11.Logic
                     context.SupportingDocTemps.Add(sdt);            // Add the new row, generate ID
                     context.SaveChanges();                          // Commit the new row
 
-                    //  3) Save the file to the /Attachments directory using the ID to produce a filename
+                    //  3) Save the file to the /Supportings directory using the ID to produce a filename
 
                     string uploadName = userID.Text + " " + sdt.SupportingDocTempID.ToString() + ext; // Formulate file name
                     string uploadFullName = serverRoot + uploadName; // And the full name including path
-                    fup.SaveAs(uploadFullName);                     // Copy the Attachment file to server using our manufactured name
+                    fup.SaveAs(uploadFullName);                     // Copy the Supporting file to server using our manufactured name
 
                     //  4) Update the SupportingDocTemp row to include the temporary filename
 
@@ -354,7 +391,7 @@ namespace Portal11.Logic
                     toUpdate.FileName = uploadName;                 // Insert the actual filename
                     context.SaveChanges();                          // Commit the new row including that change
 
-                    //  5) Add a line to the Listbox control describing the new attachment
+                    //  5) Add a line to the Listbox control describing the new Supporting
 
                     lst.Items.Add(new ListItem(name, PortalConstants.SupportingTempFlag + sdt.SupportingDocTempID.ToString()));
                     // Add the filename (visible) 
@@ -439,14 +476,14 @@ namespace Portal11.Logic
 
                     //  2) Command the server to download the file to the browser
 
-                    if (sourceMIME == "application/pdf")                        // If == the supporting document is a PDF file
-                    {
-                        string pdfName = serverRoot + sourceFileName;
-                        HttpContext.Current.Response.ContentType = sourceMIME;  // Ask the browser to view the PDF file
-                        HttpContext.Current.Response.Write($"<script>window.open('{pdfName}','_blank');</script>");
-                    }
-                    else
-                    {
+                    //if (sourceMIME == "application/pdf")                        // If == the supporting document is a PDF file
+                    //{
+                    //    string pdfName = serverRoot + sourceFileName;
+                    //    HttpContext.Current.Response.ContentType = sourceMIME;  // Ask the browser to view the PDF file
+                    //    HttpContext.Current.Response.Write($"<script>window.open('{pdfName}','_blank');</script>");
+                    //}
+                    //else
+                    //{
 
                         HttpContext.Current.Response.Clear();
                         HttpContext.Current.Response.ClearHeaders();
@@ -457,7 +494,7 @@ namespace Portal11.Logic
                         HttpContext.Current.Response.Flush();
                         HttpContext.Current.Response.TransmitFile(serverRoot + sourceFileName); // Name of source file on server /Supporting directory
                         HttpContext.Current.Response.End();                             // Download that baby
-                    }
+                    //}
                 }
                 catch (Exception ex)
                 {

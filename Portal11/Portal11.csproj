@@ -47,6 +47,7 @@
       <HintPath>..\packages\LINQKit.1.1.2\lib\net45\LinqKit.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -192,7 +193,9 @@
     <Content Include="ErrorLog\FatalError.aspx" />
     <Content Include="Images\LoginBackground-1024x768.jpg" />
     <Content Include="Images\LoginIcon-640x480.jpg" />
+    <Content Include="Lists\ImportProjectBalances.aspx" />
     <Content Include="Lists\ListPortalUsers.aspx" />
+    <Content Include="Lists\ListProjects.aspx" />
     <Content Include="Proj\EditProjectClass.aspx" />
     <Content Include="Proj\TestModal.aspx" />
     <Content Include="Rqsts\EditApproval.aspx" />
@@ -526,12 +529,26 @@
     <Compile Include="ErrorLog\LogError.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Lists\ImportProjectBalances.aspx.cs">
+      <DependentUpon>ImportProjectBalances.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Lists\ImportProjectBalances.aspx.designer.cs">
+      <DependentUpon>ImportProjectBalances.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Lists\ListPortalUsers.aspx.cs">
       <DependentUpon>ListPortalUsers.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Lists\ListPortalUsers.aspx.designer.cs">
       <DependentUpon>ListPortalUsers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Lists\ListProjects.aspx.cs">
+      <DependentUpon>ListProjects.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Lists\ListProjects.aspx.designer.cs">
+      <DependentUpon>ListProjects.aspx</DependentUpon>
     </Compile>
     <Compile Include="Logic\CookieActions.cs" />
     <Compile Include="Logic\DateActions.cs" />

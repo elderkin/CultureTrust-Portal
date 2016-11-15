@@ -9,6 +9,7 @@ using Portal11.Logic;
 using Portal11.ErrorLog;
 using System.Data;
 using LinqKit;
+using System.Drawing;
 
 namespace Portal11.Rqsts
 {
@@ -23,9 +24,6 @@ namespace Portal11.Rqsts
         {
             if (!Page.IsPostBack)
             {
-//                LogError.LogInternalError("StaffDashboard", $"Invalid AppType in ApprovalID "); // Log fatal error
-                //int badone = 1, badzero = 0;
-                //int badquotient = badone / badzero;
 
                 // If the page before us has left a Query String with a status message, find it and display it
 
@@ -431,6 +429,12 @@ namespace Portal11.Rqsts
                 label = (Label)e.Row.FindControl("lblArchived");                // Find the label control that contains Archived in this row
                 if (label.Text == "True")                                       // If == this record is Archived
                     e.Row.Font.Italic = true;                                   // Use italics to indicate Archived status
+
+                // See if the row is Rush
+
+                label = (Label)e.Row.FindControl("lblRush");                    // Find the label control that contains Rush in this row
+                if (label.Text == "True")                                       // If == this record is Rush
+                    e.Row.ForeColor = Color.Red;                                // Use color to indicate Rush status
             }
             return;
         }
@@ -1122,7 +1126,8 @@ namespace Portal11.Rqsts
                                 CurrentState = r.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
                                 CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum form to English for display
                                 ReturnNote = r.ReturnNote,
-                                Owner = EnumActions.GetEnumDescription(own) // Fetch "English" version of owner
+                                Owner = EnumActions.GetEnumDescription(own), // Fetch "English" version of owner
+                                Rush = r.Rush                               // Whether the Request is a "Rush"
                             };
 
                             // Fill "Target" with Vendor Name or Employee Name or Recipient. Only one will be present, depending on RqstType.

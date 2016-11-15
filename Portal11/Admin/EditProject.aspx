@@ -41,6 +41,23 @@
             </div>
         </asp:Panel>
 
+        <asp:Panel ID="pnlCode" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" AssociatedControlID="txtCode" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="true">Project Code</asp:Label>
+                    <div class="col-lg-4 col-md-4 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtCode" CssClass="form-control has-success"></asp:TextBox>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-xs-6">
+                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtCode"
+                            CssClass="text-danger" ErrorMessage="Please supply a Project Code." />
+                        <asp:RegularExpressionValidator runat="server" ControlToValidate="txtCode" ValidationExpression="[\S\d]{3}"
+                            CssClass="text-danger" ErrorMessage="Project Code must be exactly three characters in length." />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
         <asp:Panel ID="pnlDescription" runat="server">
             <div class="form-group">
                 <div class="row">

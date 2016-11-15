@@ -311,6 +311,7 @@ namespace Portal11.Staff
 
                     if (!chkInactive.Checked)                               // If false, we do not want Inactive Projects
                         pred = pred.And(p => !p.Inactive);                  // Only active Projects
+
                     string search = txtProject.Text;                        // Fetch the string that the user typed in, if any
                     if (search != "")                                       // If != the search string is not blank, use a Contains clause
                         pred = pred.And(p => p.Name.Contains(search));      // Only Projects whose name match our search criteria
@@ -327,6 +328,7 @@ namespace Portal11.Staff
                     {
                         SelectProjectAllViewRow row = new SelectProjectAllViewRow();    // Instantiate empty row all ready to fill
                         row.ProjectID = p.ProjectID.ToString();             // Fill the part of the row that's always there
+                        row.Code = p.Code;
                         row.Name = p.Name;
                         row.Description = p.Description;
                         row.Inactive = p.Inactive.ToString();

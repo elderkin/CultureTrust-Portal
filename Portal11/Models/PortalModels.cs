@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Drawing;
 
 namespace Portal11.Models
 {
@@ -45,6 +46,33 @@ namespace Portal11.Models
         public DateTime LastLogin { get; set; }
         public string Inactive { get; set; }
         public const int InactiveColumn = 7;
+    }
+
+    // One row of the GridView named AllPortalUsers, used by ListPortalUsers
+
+    public class AllProjectsRow
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public DateTime BalanceDate { get; set; }
+        public string CurrentFunds { get; set; }
+        public string ProjectDirector { get; set; }
+        public int TotalRequests { get; set; }
+        public string Inactive { get; set; }
+        public const int InactiveColumn = 8;
+    }
+
+    // One row of the GridView named ImportCSV, used by ImportProjectBalance
+
+    public class ImportCSVRow
+    {
+        public string ProjectCode { get; set; }
+        public string BalanceDate { get; set; }
+        public string CurrentFunds { get; set; }
+        public string Status { get; set; }
+        public bool Error { get; set; }
     }
 
     // One row of the GridView named AllAppView, used by ProjectDashboard
@@ -99,6 +127,7 @@ namespace Portal11.Models
         public const int CurrentStateDescRow = 7;
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
+        public bool Rush { get; set; }
     }
 
     // One row of the GridViews named AllProjectView, used by SelectProject
@@ -107,6 +136,7 @@ namespace Portal11.Models
     {
         public string ProjectID { get; set; }
         public string Inactive { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int Count { get; set; }
@@ -178,6 +208,7 @@ namespace Portal11.Models
         public string Summary { get; set; }
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
+        public bool Rush { get; set; }
     }
 
     // One row of the GridView named UserProjectView, used by AssignUserToProject
@@ -575,6 +606,7 @@ namespace Portal11.Models
         public string ReturnNote { get; set; }              // When approval is denied, the reason goes here
 
         public bool Rush { get; set; }                      // Whether the Request has "Rush" status
+        public const string DeliveryInstructionsRush = "Rush";
 
         public SourceOfExpFunds SourceOfFunds { get; set; } // Where the Request gets its Funds
         public int? ProjectClassID { get; set; }
@@ -1296,6 +1328,7 @@ namespace Portal11.Models
             CYes = "Yes",
             CNo = "No",
             CNone = "None",
+            CSVFileName = "Uploaded CSV File.CSV", CSVExt = ".CSV", CSVType = "APPLICATION/VND.MS-EXCEL",
             POVendorModeYes = "Yes",
             POVendorModeNo = "No",
             PODeliveryModePickup = "Pickup",

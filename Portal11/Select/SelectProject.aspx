@@ -92,7 +92,12 @@
                                 <asp:Label ID="lblRowID" runat="server" Text='<%# Bind("ProjectID") %>'></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
-                         <asp:TemplateField HeaderText="Project Name">
+                        <asp:TemplateField HeaderText="Project Code">
+                            <ItemTemplate>
+                                <asp:Label ID="lblCode" runat="server" Text='<%# Bind("Code") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Project Name">
                             <ItemTemplate>
                                 <asp:Label ID="lblName" runat="server" Text='<%# Bind("Name") %>'></asp:Label>
                             </ItemTemplate>

@@ -269,6 +269,7 @@
                             OnPageIndexChanging="StaffAppView_PageIndexChanging">
 
                             <SelectedRowStyle CssClass="success" />
+                            <HeaderStyle HorizontalAlign="Center" />
 
                             <PagerStyle CssClass="active" HorizontalAlign="Center"></PagerStyle>
                             <PagerTemplate>
@@ -294,14 +295,13 @@
                                 </table>
                             </EmptyDataTemplate>
                             <Columns>
-                                <%-- Code assumes that RowID is column 0 and CurrentState is in column 4--%>
                                 <asp:TemplateField HeaderText="ID" Visible="false">
                                     <ItemTemplate>
                                         <asp:Label ID="lblRowID" runat="server" Text='<%# Bind("RowID") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:BoundField DataField="CurrentTime" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
-                                <asp:BoundField DataField="ProjectName" HeaderText="Project" />
+                                <asp:BoundField DataField="CurrentTime" ItemStyle-HorizontalAlign="Right" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                                <asp:BoundField DataField="ProjectName" ItemStyle-HorizontalAlign="Left" HeaderText="Project" HeaderStyle-HorizontalAlign="Right"/>
                                 <asp:BoundField DataField="AppTypeDesc" HeaderText="Approval Type" />
                                 <asp:BoundField DataField="AppReviewType" HeaderText="Review Type" />
                                 <asp:TemplateField HeaderText="Status" Visible="false">
@@ -422,13 +422,12 @@
                                 </table>
                             </EmptyDataTemplate>
                             <Columns>
-                                <%-- Code assumes that RowID is column 0 and CurrentState is in column 4--%>
                                 <asp:TemplateField HeaderText="ID" Visible="false">
                                     <ItemTemplate>
                                         <asp:Label ID="lblRowID" runat="server" Text='<%# Bind("RowID") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:BoundField DataField="CurrentTime" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                                <asp:BoundField DataField="CurrentTime" ItemStyle-HorizontalAlign="Right" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
                                 <asp:BoundField DataField="ProjectName" HeaderText="Project" />
                                 <asp:BoundField DataField="DepTypeDesc" HeaderText="Deposit Type" />
                                 <asp:BoundField DataField="Amount" HeaderText="Amount" DataFormatString="${0:###,###.00}"
@@ -553,16 +552,14 @@
                                 </table>
                             </EmptyDataTemplate>
                             <Columns>
-                                <%-- Code assumes that RowID is column 0 and CurrentState is in column 4--%>
                                 <asp:TemplateField HeaderText="ID" Visible="false">
                                     <ItemTemplate>
                                         <asp:Label ID="lblRowID" runat="server" Text='<%# Bind("RowID") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:BoundField DataField="CurrentTime" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                                <asp:BoundField DataField="CurrentTime" ItemStyle-HorizontalAlign="Right" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
                                 <asp:BoundField DataField="ProjectName" HeaderText="Project" />
                                 <asp:BoundField DataField="ExpTypeDesc" HeaderText="Expense Type" />
-                                <%--                                <asp:BoundField DataField="Summary" HeaderText="Summary" />--%>
                                 <asp:BoundField DataField="Amount" HeaderText="Amount" DataFormatString="${0:###,###.00}"
                                     HtmlEncode="false" ItemStyle-HorizontalAlign="Right" />
                                 <asp:TemplateField HeaderText="Status" Visible="false">
@@ -576,6 +573,11 @@
                                 <asp:TemplateField HeaderText="Archived" Visible="false">
                                     <ItemTemplate>
                                         <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Rush" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblRush" runat="server" Text='<%# Bind("Rush") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>

@@ -1,4 +1,10 @@
-﻿﻿Version 1.1
+﻿Version 1.2
+
+An Expense Requests can be labeled "Rush" in its Delivery Instructions. Rush requests appear in red on the Project Dashboard and Staff Dashboard.
+On the Admin page, the new List Projects function creates a printable list of all projects.
+Projects now contain 3-letter codes that identify them in the accounting system. Edit Project can set this code. The new Admin function List Projects displays the code. And the new Admin function Import Project Balances reads a CSV file of codes, balance dates, and current funds and updates the projects.
+
+﻿Version 1.1
 
 For Entities, GL Codes, Persons, and Projects, the Portal now requires that names be unique. That is, duplicate names are not allowed.
 In all Grids, the number of rows per page is now controlled by a user-specific parameter. This can be adjusted on the Edit Portal User page.

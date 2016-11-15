@@ -71,8 +71,13 @@ namespace Portal11.Lists
                 // Build a predicate that accounts for the Inactive check box and the Search txe box.
 
                 var pred = PredicateBuilder.True<ApplicationUser>();    // Initialize predicate to select from User table
+
+                string fran = SupportingActions.GetFranchiseKey();      // Fetch current franchise key
+                pred = pred.And(p => p.FranchiseKey == fran);           // Show only Users for this franchise
+
                 if (!chkInactive.Checked)                               // If false, we do not want Inactive Users
                     pred = pred.And(p => !p.Inactive);                  // Only active Users
+
                 string search = txtUser.Text;                           // Fetch the string that the user typed in, if any
                 if (search != "")                                       // If != the search string is not blank, use a Contains clause
                     pred = pred.And(p => p.FullName.Contains(search));  // Only Users whose name match our search criteria
