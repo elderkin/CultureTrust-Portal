@@ -156,16 +156,16 @@ namespace Portal11.Admin
                 }
                 catch (Exception ex)
                 {
-                    if (ExceptionActions.IsDuplicateKeyException(ex))       // If true this is a Duplicate Key exception
+                    if (ExceptionActions.IsDuplicateKeyException(ex))               // If true this is a Duplicate Key exception
                     {
                         litDangerMessage.Text = $"Another Project with the name '{txtName.Text}' already exists. Project Names must be unique.";
-                        return;                                             // Report the error to user and try again
+                        return;                                                     // Report the error to user and try again
                     }
                     LogError.LogDatabaseError(ex, "EditProject", "Error writing Project row"); // Fatal error
                 }
             }
-            
-            NavigationActions.NextPage("");                                         // Now go back to Dashboard (or wherever)
+            Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
+                                                + PortalConstants.QSStatus + "=Project saved");
         }
 
         // Move values from the Project record into the Page.

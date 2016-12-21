@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Edit GL Code" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="EditGLCode.aspx.cs" 
-    Inherits="Portal11.Admin.EditGLCode" %>
+    Inherits="Portal11.Admin.EditGLCode" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <h2><%: Title %></h2>
@@ -11,6 +11,7 @@
             <asp:Literal runat="server" ID="litSuccessMessage" />
         </p>
     <div class="form-horizontal">
+        <asp:Panel runat="server" DefaultButton="btnSave">
 
         <asp:Panel ID="pnlName" runat="server">
             <div class="form-group">
@@ -78,9 +79,10 @@
         <div class="row">
             <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-sm-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="Cancel_Click" CausesValidation="false" ToolTip="Return to the main page without saving" />
-            <asp:Button ID="btnSave" runat="server" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+            <asp:Button ID="btnSave" runat="server" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="Save_Click" ToolTip="Save this GL Code and return to main page" Text="Save" />
         </div>
+        </asp:Panel>
 
         <!-- "Scratch" storage used during form processing -->
         <asp:Literal ID="litSavedGLCodeID" runat="server" Visible="false" />

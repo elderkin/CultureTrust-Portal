@@ -350,7 +350,8 @@ namespace Portal11.Staff
                             query = (from dep in context.Deps
                                         where dep.ProjectID == p.ProjectID
                                             && !dep.Archived
-                                            && (dep.CurrentState == DepState.UnsubmittedByInternalCoordinator)
+                                            && ((dep.CurrentState == DepState.UnsubmittedByInternalCoordinator)
+                                            || (dep.CurrentState == DepState.Returned))
                                         select dep).Count();
                             row.Count = row.Count + query;                  // Accumulate number of interesting requests
 
@@ -409,8 +410,7 @@ namespace Portal11.Staff
                             var query = (from app in context.Apps
                                          where app.ProjectID == p.ProjectID
                                              && !app.Archived
-                                             && ((app.CurrentState == AppState.Approved)
-                                             || (app.CurrentState == AppState.AwaitingProjectDirector)
+                                             && ((app.CurrentState == AppState.AwaitingProjectDirector)
                                              || (app.CurrentState == AppState.Returned)
                                              || (app.CurrentState == AppState.UnsubmittedByProjectDirector)
                                              || (app.CurrentState == AppState.UnsubmittedByProjectStaff))
@@ -421,16 +421,14 @@ namespace Portal11.Staff
                                      where dep.ProjectID == p.ProjectID
                                          && !dep.Archived
                                          && ((dep.CurrentState == DepState.AwaitingProjectDirector)
-                                         || (dep.CurrentState == DepState.DepositComplete)
-                                         || (dep.CurrentState == DepState.Returned))
+                                         )
                                      select dep).Count();
                             row.Count = row.Count + query;                  // Accumulate number of interesting request
 
                             query = (from exp in context.Exps
                                      where exp.ProjectID == p.ProjectID
                                          && !exp.Archived
-                                         && ((exp.CurrentState == ExpState.Approved)
-                                         || (exp.CurrentState == ExpState.AwaitingProjectDirector)
+                                         && ((exp.CurrentState == ExpState.AwaitingProjectDirector)
                                          || (exp.CurrentState == ExpState.Returned)
                                          || (exp.CurrentState == ExpState.UnsubmittedByProjectDirector)
                                          || (exp.CurrentState == ExpState.UnsubmittedByProjectStaff))

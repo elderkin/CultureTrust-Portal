@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Select User" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SelectUser.aspx.cs" 
-    Inherits="Portal11.Admin.SelectUser" EnableEventValidation="false" %>
+    Inherits="Portal11.Admin.SelectUser" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <h2><%: Title %></h2>

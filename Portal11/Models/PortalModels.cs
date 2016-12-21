@@ -140,7 +140,7 @@ namespace Portal11.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public int Count { get; set; }
-        public const int InactiveColumn = 4;
+        public const int InactiveColumn = 5;
     }
 
     public class SelectProjectUserViewRow
@@ -250,6 +250,8 @@ namespace Portal11.Models
         public bool Inactive { get; set; }
         public bool Archived { get; set; }
         public AppType AppType { get; set; }                // Will grow to include many types
+        public const int AppTypeICOnly = 0, AppTypeExpress = 1, AppTypeFull = 2; // Order in which they appear in radio button list
+                                                            // Note this is different than the AppReviewType enumeration
         [Required]
         public int? ProjectID { get; set; }
         public virtual Project Project { get; set; }
@@ -334,9 +336,12 @@ namespace Portal11.Models
         Express = 1,
         [Description("Full - include financial and executive review")]
         Full,
+        [Description("IC Only - Review only by Internal Coordinator")]
+        ICOnly,
         [Description("Reserved For Future Use")]
         ReservedForFutureUse
     }
+
 
     // Each type of Approval fills different fields in the App object. This mapping is complicated and expressed in code.
 
@@ -449,9 +454,9 @@ namespace Portal11.Models
         AwaitingTrustDirector,
         [Description("Awaiting Finance Director")]
         AwaitingFinanceDirector,
-        [Description("Approved/Ready To Deposit")]
+        [Description("Obsolete")]
         ApprovedReadyToDeposit,
-        [Description("Deposit Complete")]
+        [Description("Approved/Deposit Complete")]
         DepositComplete,
         [Description("Returned")]
         Returned,
@@ -764,6 +769,34 @@ namespace Portal11.Models
         public string Phone { get; set; }
         [StringLength(100)]
         public string Email { get; set; }
+    }
+
+    // The Parameters that control the entire portal
+
+    public class PortalParameter    {
+        public int PortalParameterID { get; set; }
+        [Required, StringLength(20), Index("Franchise", IsUnique = true)]
+        public string FranchiseKey { get; set; }
+        public bool EmailFDRefer { get; set; }
+        public string EmailFDReferSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailFDReferBody { get; set; }
+        public bool EmailICRefer { get; set; }
+        public string EmailICReferSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailICReferBody { get; set; }
+        public bool EmailPDRefer { get; set; }
+        public string EmailPDReferSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailPDReferBody { get; set; }
+        public bool EmailTDRefer { get; set; }
+        public string EmailTDReferSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailTDReferBody { get; set; }
+        public bool EmailTERefer { get; set; }
+        public string EmailTEReferSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailTEReferBody { get; set; }
     }
 
     // A Person, who can take on the role of Contractor, Employee, Responsible, or Recipient on a project-by-project basis
@@ -1123,6 +1156,7 @@ namespace Portal11.Models
             QSFullName = "FullName",
             QSGLCodeID = "GLCodeID",
             QSGrantID = "GrantID",
+            QSMethod = "Method",
             QSPageName = "PageName",
             QSPersonID = "PersonID",
             QSProjectID = "ProjectID",
@@ -1162,7 +1196,34 @@ namespace Portal11.Models
             CUserProjectAll = "All",
             CUserProjectUser = "User",
             CUserGridViewRows = "GridViewRows";
-        
+
+        // ParameterCookie stores information about the portal read from the PortalParameter table.
+
+        public const string
+            CPortalParameter = "PortalParameterCookie",
+            CEmailFDRefer = "EmailFDRefer", CEmailFDReferSubject = "EmailFDReferSubject", CEmailFDReferBody = "EmailFDReferBody",
+            CEmailICRefer = "EmailICRefer", CEmailICReferSubject = "EmailICReferSubject", CEmailICReferBody = "EmailICReferBody",
+            CEmailPDRefer = "EmailPDRefer", CEmailPDReferSubject = "EmailPDReferSubject", CEmailPDReferBody = "EmailPDReferBody",
+            CEmailTDRefer = "EmailTDRefer", CEmailTDReferSubject = "EmailTDReferSubject", CEmailTDReferBody = "EmailTDReferBody",
+            CEmailTERefer = "EmailTERefer", CEmailTEReferSubject = "EmailTEReferSubject", CEmailTEReferBody = "EmailTEReferBody";
+
+        public const string
+            CEmailDefaultApprovalApprovedSubject = "Approval Request is ready for your action",
+            CEmailDefaultApprovalApprovedBody = "An Approval Request has advanced in the review process. It is ready for your action.",
+            CEmailDefaultApprovalReturnedSubject = "Approval Request returned to you",
+            CEmailDefaultApprovalReturnedBody = "An Approval Request has been returned to you during the review process. It is ready for your action.";
+
+        public const string
+            CEmailDefaultDepositApprovedSubject = "Deposit Request is ready for your action",
+            CEmailDefaultDepositApprovedBody = "A Deposit Request has advanced in the review process. It is ready for your action.",
+            CEmailDefaultDepositReturnedSubject = "Deposit Request returned to you",
+            CEmailDefaultDepositReturnedBody = "A Deposit Request has been returned to you during the review process. It is ready for your action.";
+
+        public const string
+            CEmailDefaultExpenseApprovedSubject = "Expense Request is ready for your action",
+            CEmailDefaultExpenseApprovedBody = "An Expense Request has advanced in the review process. It is ready for your action.",
+            CEmailDefaultExpenseReturnedSubject = "Expense Request returned to you",
+            CEmailDefaultExpenseReturnedBody = "An Expense Request has been returned to you during the review process. It is ready for your action.";
 
         // ProjectInfoCookie stores information about the project that the user has selected to work on.
 
@@ -1273,7 +1334,7 @@ namespace Portal11.Models
             WhatsNewName = "WhatsNew.txt";
         public const int
             AllPersonViewW9Column = 3,
-            MaxSupportingFileSize = 1048576,
+            MaxSupportingFileSize = 6000000,
             ProjectPersonViewW9Column = 3;
 
         // URLs of key pages. Expressed here so if their names change, it only has to be changed here
@@ -1329,6 +1390,8 @@ namespace Portal11.Models
             CNo = "No",
             CNone = "None",
             CSVFileName = "Uploaded CSV File.CSV", CSVExt = ".CSV", CSVType = "APPLICATION/VND.MS-EXCEL",
+            EmailAddress = "portal@cultureworksfoundry.org", EmailPassword = "GUsr9o9y3Aj4&", EmailServer = "mail.cultureworksfoundry.org",
+//            EmailAddress = "portal@cultureworksphila.org", EmailPassword = "password2016", EmailServer = "mail.cultureworksphila.org",
             POVendorModeYes = "Yes",
             POVendorModeNo = "No",
             PODeliveryModePickup = "Pickup",
@@ -1337,6 +1400,9 @@ namespace Portal11.Models
             DeliveryModePickup = "Pickup",
             DeliveryModeMailPayee = "MailPayee",
             DeliveryModeMailAddress = "MailAddress";
+
+        public const int
+            EmailPort = 587;
 
     }
 }

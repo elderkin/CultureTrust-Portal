@@ -409,6 +409,7 @@ namespace Portal11.Rqsts
             // SaveDep just saved the Request, which may or may not have written a DepHistory row. But now, let's write another
             // DepHistory row to describe the Submit action.
 
+            string emailSent = "";
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 try
@@ -423,6 +424,10 @@ namespace Portal11.Rqsts
 
                     context.DepHistorys.Add(hist);                  // Save new DepHistory row
                     context.SaveChanges();                          // Update the Dep, create the DepHistory
+
+                    emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
+                        Convert.ToInt32(litSavedProjectID.Text),        // Request is associated with this project
+                        PortalConstants.CEmailDefaultDepositApprovedSubject, PortalConstants.CEmailDefaultDepositApprovedBody); // Use this subject and body, if needed
                 }
                 catch (Exception ex)
                 {
@@ -433,7 +438,7 @@ namespace Portal11.Rqsts
             // Now go back to Dashboard
 
             Response.Redirect(PortalConstants.URLProjectDashboard + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                                  + PortalConstants.QSStatus + "=Deposit Request submitted");
+                                                  + PortalConstants.QSStatus + "=Deposit Request submitted." + emailSent);
         }
 
         // Show History Button clicked. Open up and fill a GridView of all the DepHistory rows for this Deposit Request

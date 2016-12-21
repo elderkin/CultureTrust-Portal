@@ -111,7 +111,7 @@ namespace Portal11.Admin
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            NavigationActions.NextPage("");                                 // Back to the barn. Nothing to save.
+            Response.Redirect(PortalConstants.URLAdminMain);                        // Back to the barn. 
         }
 
         // Save button clicked. "Save" means that we unload all the controls for the Entity into a database row. 
@@ -157,7 +157,7 @@ namespace Portal11.Admin
                 }
             }
 
-            NavigationActions.NextPage("?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
+            Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
                                                 + PortalConstants.QSStatus + "=Entity saved"); // Back to where we came
         }
 

@@ -28,12 +28,6 @@ namespace Portal11.Rqsts
                 if (expID.Int == 0 || cmd != PortalConstants.QSCommandReview || ret == "") // If null or blank, this form invoked incorrectly
                     LogError.LogQueryStringError("ReviewExpense", "Invalid Query String 'Command' or 'ExpID'"); // Log fatal error
 
-                // Stash these parameters into invisible literals on the current page.
-
-                litSavedExpID.Text = expID.String;
-                litSavedCommand.Text = cmd;
-                litSavedReturn.Text = ret;
-
                 // Fetch the Exp row and fill the page
 
                 using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
@@ -54,6 +48,13 @@ namespace Portal11.Rqsts
                         btnReturn.Enabled = false;                      // Cannot "Return" the Exp
                         litDangerMessage.Text = "You can view this Expense Request, but you cannot approve it."; // Explain that to user
                     }
+
+                    // Stash these parameters into invisible literals on the current page.
+
+                    litSavedCommand.Text = cmd;
+                    litSavedExpID.Text = expID.String;
+                    litSavedProjectID.Text = exp.ProjectID.ToString();
+                    litSavedReturn.Text = ret;
                 }
             }
             return;
@@ -95,17 +96,22 @@ namespace Portal11.Rqsts
         }
 
         // User clicked Approve. "Advance" the State according to complex rules and write down the Return Note, if any.
-        // Update the Exp and create a ExpHistory. Then head back to the StaffDashboard.
+        // Update the Exp and create a ExpHistory. Send next reviewer an email. Then head back to the relevant Dashboard.
 
         protected void btnApprove_Click(object sender, EventArgs e)
         {
             ExpState currentState = EnumActions.ConvertTextToExpState(litSavedState.Text); // Pull ToString version; convert to enum type
             ExpState nextState = StateActions.FindNextState(currentState); // Now what?
             SaveExp(nextState, "Approved");                         // Update Exp; write new History row
+
+            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
+                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+                PortalConstants.CEmailDefaultExpenseApprovedSubject, PortalConstants.CEmailDefaultExpenseApprovedBody); // Use this subject and body, if needed
+
             Response.Redirect(litSavedReturn.Text + "?" 
                                 + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
                                 + PortalConstants.QSStatus + "=" + "Request Appoved and Advanced to '" 
-                                + EnumActions.GetEnumDescription(nextState) + "' status");
+                                + EnumActions.GetEnumDescription(nextState) + "' status." + emailSent);
         }
 
         // User clicked Return. Set the state to Returned and process the request just like an Approve. Then notify the user of the glitch.
@@ -113,10 +119,14 @@ namespace Portal11.Rqsts
         protected void btnReturn_Click(object sender, EventArgs e)
         {
             SaveExp(ExpState.Returned, "Returned");                 // Update Exp; write new History row
-            //TODO: Notify the Project Director
+
+            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(ExpState.Returned), // Tell next reviewer, who is in this role
+                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+                PortalConstants.CEmailDefaultExpenseReturnedSubject, PortalConstants.CEmailDefaultExpenseReturnedBody); // Use this subject and body, if needed
+
             Response.Redirect(litSavedReturn.Text + "?"
                                 + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                + PortalConstants.QSStatus + "=" + "Request Returned to Project");
+                                + PortalConstants.QSStatus + "=" + "Request Returned to Project Director." + emailSent);
         }
 
         // User pressed History button. Fetch all the ExpHistory rows for this Exp and fill a GridView.

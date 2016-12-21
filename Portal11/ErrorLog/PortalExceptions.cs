@@ -18,6 +18,10 @@ namespace Portal11.ErrorLog
         public ApplicationStartException() : base() { }
     }
 
+    public class EmailErrorException : Exception
+    {
+        public EmailErrorException(string message) : base(message) { }
+    }
     public class InternalErrorException : Exception
     {
         public InternalErrorException(string message) : base(message) { }

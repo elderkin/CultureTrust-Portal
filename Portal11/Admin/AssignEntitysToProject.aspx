@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Assign Entitys to Project" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AssignEntitysToProject.aspx.cs" 
-    Inherits="Portal11.Admin.AssignEntityToProject" EnableEventValidation="false" %>
+    Inherits="Portal11.Admin.AssignEntityToProject" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <h2><%: Title %> '<asp:Literal runat="server" ID="litProjectName" />'</h2>

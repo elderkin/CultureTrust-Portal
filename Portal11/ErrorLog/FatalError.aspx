@@ -18,9 +18,11 @@
                     &quot;<asp:Literal runat="server" ID="litErrorText" />&quot; 
                     <br /> on page 
                     &quot;<asp:Literal runat="server" ID="litPageName" />&quot; 
+                    <br /> and method 
+                    &quot;<asp:Literal runat="server" ID="litMethodName" />&quot; 
                     <br /> from page 
                     &quot;<asp:Literal runat="server" ID="litFromPathAndQuery" />&quot; at: &quot;<asp:Literal runat="server" ID="litCurrentTime" />&quot;
-                    <br /> and cannot complete your task. 
+                    <br /> The Portal cannot complete your task. 
                     <br /> 
                   <br />Please write down this information - including the time - and report it to CultureWorks staff. Thank you.
                 </div>

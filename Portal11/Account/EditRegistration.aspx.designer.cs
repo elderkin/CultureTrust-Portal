@@ -94,6 +94,15 @@ namespace Portal11.Account {
         protected global::System.Web.UI.WebControls.RadioButtonList rblRole;
         
         /// <summary>
+        /// cblEmailOptions control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBoxList cblEmailOptions;
+        
+        /// <summary>
         /// txtLoginCount control.
         /// </summary>
         /// <remarks>

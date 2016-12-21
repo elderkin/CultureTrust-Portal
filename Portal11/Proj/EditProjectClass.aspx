@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Edit Project Class" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="EditProjectClass.aspx.cs" 
-    Inherits="Portal11.Proj.EditProjectClass" %>
+    Inherits="Portal11.Proj.EditProjectClass" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <h2><%: Title %></h2>

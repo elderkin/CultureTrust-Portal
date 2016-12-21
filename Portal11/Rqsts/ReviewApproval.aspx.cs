@@ -28,12 +28,6 @@ namespace Portal11.Rqsts
                 if (appID.Int == 0 || cmd != PortalConstants.QSCommandReview || ret == "") // If null or blank, this form invoked incorrectly
                     LogError.LogQueryStringError("ReviewApproval", "Invalid Query String 'Command' or 'RequestID'"); // Log fatal error
 
-                // Stash these parameters into invisible literals on the current page.
-
-                litSavedAppID.Text = appID.String;
-                litSavedCommand.Text = cmd;
-                litSavedReturn.Text = ret;
-
                 // Fetch the App row and fill the page
 
                 using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
@@ -45,14 +39,21 @@ namespace Portal11.Rqsts
                     EnablePanels(app.AppType);                          // Make the relevant panels visible
                     LoadPanels(app);                                    // Move values from record to page
 
-                    // See if this user has the role to Approve the App in its current state. If not, just let them view the App
+                    // See if this user has the role to approve the App in its current state. If not, just let them view the App
 
-                    if (!StateActions.UserCanApproveRequest(app.CurrentState, app.AppReviewType)) // If false user can not Approve this App. Disable functions
+                    if (!StateActions.UserCanApproveRequest(app.CurrentState)) // If false user can not Approve this App. Disable functions
                     {
                         btnApprove.Enabled = false;                     // Cannot "Approve" the App
                         btnReturn.Enabled = false;                      // Cannot "Return" the App
                         litDangerMessage.Text = "You can view this Approval Request, but you cannot approve it."; // Explain that to user
                     }
+
+                    // Stash these parameters into invisible literals on the current page.
+
+                    litSavedAppID.Text = appID.String;
+                    litSavedCommand.Text = cmd;
+                    litSavedProjectID.Text = app.ProjectID.ToString();
+                    litSavedReturn.Text = ret;
                     litSavedReviewType.Text = app.AppReviewType.ToString(); // Save for later
 
                 }
@@ -106,10 +107,15 @@ namespace Portal11.Rqsts
             AppState nextState = StateActions.FindNextState(currentState, newAppReviewType ); // Now what?
 
             SaveApp(nextState, "Advanced");                         // Update App; write new History row
+
+            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
+                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+                PortalConstants.CEmailDefaultApprovalApprovedSubject, PortalConstants.CEmailDefaultApprovalApprovedBody); // Use this subject and body, if needed
+
             Response.Redirect(litSavedReturn.Text + "?"
                                 + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
                                 + PortalConstants.QSStatus + "=" + "Request Appoved and Advanced to '"
-                                + EnumActions.GetEnumDescription(nextState) + "' status");
+                                + EnumActions.GetEnumDescription(nextState) + "' status." + emailSent);
         }
 
         // User clicked Return. Set the state to Returned and process the request just like an Approve. Then notify the user of the glitch.
@@ -117,10 +123,13 @@ namespace Portal11.Rqsts
         protected void btnReturn_Click(object sender, EventArgs e)
         {
             SaveApp(AppState.Returned, "Returned");                 // Update App; write new History row
-            //TODO: Notify the Project Director
+            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(AppState.Returned), // Convert selection to enum
+                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+                PortalConstants.CEmailDefaultApprovalReturnedSubject, PortalConstants.CEmailDefaultApprovalReturnedBody); // Use this subject and body, if needed
+
             Response.Redirect(litSavedReturn.Text + "?"
                                 + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                + PortalConstants.QSStatus + "=" + "Request returned to Project Direcctor");
+                                + PortalConstants.QSStatus + "=" + "Request returned to Project Direcctor." + emailSent);
         }
 
         // User pressed History button. Fetch all the AppHistory rows for this App and fill a GridView.
@@ -179,10 +188,19 @@ namespace Portal11.Rqsts
                 case AppType.Contract:
                 case AppType.Grant:
                 case AppType.Campaign:
-                case AppType.Certificate:
                 case AppType.Report:
                     {
-                        break;                                      // So far, we show everything for every type
+                        rdoReviewType.Items[App.AppTypeICOnly].Enabled = false; rdoReviewType.Items[App.AppTypeICOnly].Selected = false; // COI
+                        rdoReviewType.Items[App.AppTypeExpress].Enabled = true; rdoReviewType.Items[App.AppTypeExpress].Selected = false; // Express
+                        rdoReviewType.Items[App.AppTypeFull].Enabled = true; rdoReviewType.Items[App.AppTypeFull].Selected = false; // Full
+                        break;
+                    }
+                case AppType.Certificate:
+                    {
+                        rdoReviewType.Items[App.AppTypeICOnly].Enabled = false; rdoReviewType.Items[App.AppTypeICOnly].Selected = false; // COI
+                        rdoReviewType.Items[App.AppTypeExpress].Enabled = false; rdoReviewType.Items[App.AppTypeExpress].Selected = false; // Express
+                        rdoReviewType.Items[App.AppTypeFull].Enabled = false; rdoReviewType.Items[App.AppTypeFull].Selected = false; // Full
+                        break;
                     }
                 default:
                     {
@@ -207,26 +225,27 @@ namespace Portal11.Rqsts
 
             txtTypeDescription.Text = EnumActions.GetEnumDescription((Enum)record.AppType); // Convert enum value to English value for display
 
-            // Load Review Type
+            ExtensionActions.LoadEnumIntoRdo(record.AppReviewType, rdoReviewType); // Load enum value into Radio Button List
+            //// Load Review Type
 
-            switch (record.AppReviewType)
-            {
-                case AppReviewType.Express:
-                    {
-                        rdoReviewType.Items.FindByValue(AppReviewType.Express.ToString()).Selected = true; // Light the Express button
-                        break;
-                    }
-                case AppReviewType.Full:
-                    {
-                        rdoReviewType.Items.FindByValue(AppReviewType.Full.ToString()).Selected = true; // Light the Full button
-                        break;
-                    }
-                default:
-                    {
-                        LogError.LogInternalError("ReviewApproval", $"Invalid AppReviewType value '{record.AppReviewType}' found in App record"); // Log fatal error
-                        break;
-                    }
-            }
+            //switch (record.AppReviewType)
+            //{
+            //    case AppReviewType.Express:
+            //        {
+            //            rdoReviewType.Items.FindByValue(AppReviewType.Express.ToString()).Selected = true; // Light the Express button
+            //            break;
+            //        }
+            //    case AppReviewType.Full:
+            //        {
+            //            rdoReviewType.Items.FindByValue(AppReviewType.Full.ToString()).Selected = true; // Light the Full button
+            //            break;
+            //        }
+            //    default:
+            //        {
+            //            LogError.LogInternalError("ReviewApproval", $"Invalid AppReviewType value '{record.AppReviewType}' found in App record"); // Log fatal error
+            //            break;
+            //        }
+            //}
 
             if (pnlNotes.Visible)
                 txtNotes.Text = record.Notes;

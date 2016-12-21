@@ -297,31 +297,36 @@ namespace Portal11.Rqsts
             // SaveApp just saved the Request, which may or may not have written a AppHistory row. But now, let's write another
             // AppHistory row to describe the Submit action.
 
+            string emailSent = "";
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 try
                 {
-                    App toSubmit = context.Apps.Find(savedAppID);   // Find the App that we want to update
-                    AppHistory hist = new AppHistory();             // Get a place to build a new AppHistory row
+                    App toSubmit = context.Apps.Find(savedAppID);       // Find the App that we want to update
+                    AppHistory hist = new AppHistory();                 // Get a place to build a new AppHistory row
                     StateActions.CopyPreviousState(toSubmit, hist, "Submitted"); // Fill the AppHistory row from "old" version of Approval
 
                     AppState nextState = StateActions.FindNextState(toSubmit.CurrentState, toSubmit.AppReviewType); // Figure out who gets it next. Nuanced.
                     StateActions.SetNewAppState(toSubmit, nextState, litSavedUserID.Text, hist); // Move to that state
-                    toSubmit.SubmitUserID = litSavedUserID.Text;    // Remember who submitted this App. They get notification on Return.
+                    toSubmit.SubmitUserID = litSavedUserID.Text;        // Remember who submitted this App. They get notification on Return.
 
-                    context.AppHistorys.Add(hist);                  // Save new AppHistory row
-                    context.SaveChanges();                          // Update the App, create the AppHistory
+                    context.AppHistorys.Add(hist);                      // Save new AppHistory row
+                    context.SaveChanges();                              // Update the App, create the AppHistory
+
+                    emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
+                        Convert.ToInt32(litSavedProjectID.Text),        // Request is associated with this project
+                        PortalConstants.CEmailDefaultApprovalApprovedSubject, PortalConstants.CEmailDefaultApprovalApprovedBody); // Use this subject and body, if needed
                 }
                 catch (Exception ex)
                 {
-                    LogError.LogDatabaseError(ex, "EditApproval", "Unable to update Approval into Submitted state"); // Fatal error
+                    LogError.LogDatabaseError(ex, "EditApproval", "Unable to update Approval into Submitted state."); // Fatal error
                 }
             }
 
             // Now go back to Dashboard
 
             Response.Redirect(PortalConstants.URLProjectDashboard + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                                  + PortalConstants.QSStatus + "=Approval Request submitted");
+                                                  + PortalConstants.QSStatus + "=Approval Request submitted." + emailSent);
         }
 
         // Show History Button clicked. Open up and fill a GridView of all the AppHistory rows for this Approval Request
@@ -479,11 +484,17 @@ namespace Portal11.Rqsts
                 case AppType.Campaign:
                 case AppType.Report:
                     {
+                        rdoReviewType.Items[App.AppTypeICOnly].Enabled = false; rdoReviewType.Items[App.AppTypeICOnly].Selected = false; // COI
+                        rdoReviewType.Items[App.AppTypeExpress].Enabled = true; rdoReviewType.Items[App.AppTypeExpress].Selected = false; // Express
+                        rdoReviewType.Items[App.AppTypeFull].Enabled = true; rdoReviewType.Items[App.AppTypeFull].Selected = true; // Full
                         litSupportingDocMin.Text = "1";
                         break;
                     }
                 case AppType.Certificate:
                     {
+                        rdoReviewType.Items[App.AppTypeICOnly].Enabled = true; rdoReviewType.Items[App.AppTypeICOnly].Selected = true; // COI
+                        rdoReviewType.Items[App.AppTypeExpress].Enabled = false; rdoReviewType.Items[App.AppTypeExpress].Selected = false; // Express
+                        rdoReviewType.Items[App.AppTypeFull].Enabled = false; rdoReviewType.Items[App.AppTypeFull].Selected = false; // Full
                         litSupportingDocMin.Text = "0";
                         break;
                     }

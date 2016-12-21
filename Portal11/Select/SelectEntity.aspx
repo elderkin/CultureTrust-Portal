@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Select Entity" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SelectEntity.aspx.cs" 
-    Inherits="Portal11.Select.SelectEntity" EnableEventValidation="false" %>
+    Inherits="Portal11.Select.SelectEntity" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
 <%@ Import Namespace="Portal11.Logic" %>

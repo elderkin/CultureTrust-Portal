@@ -49,6 +49,15 @@ namespace Portal11.ErrorLog {
         protected global::System.Web.UI.WebControls.Literal litPageName;
         
         /// <summary>
+        /// litMethodName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litMethodName;
+        
+        /// <summary>
         /// litFromPathAndQuery control.
         /// </summary>
         /// <remarks>
