@@ -1,4 +1,5 @@
-﻿<%@ Page Title="Edit Grant" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="EditGrant.aspx.cs" Inherits="Portal11.Admin.EditGrant" %>
+﻿<%@ Page Title="Edit Grant" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" 
+    CodeBehind="EditGrant.aspx.cs" Inherits="Portal11.Admin.EditGrant" MaintainScrollPositionOnPostback="true"%>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <h2><%: Title %></h2>

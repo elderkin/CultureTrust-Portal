@@ -80,6 +80,21 @@ namespace Portal11.Account
                             }
                         }
                     }
+
+                    // Load current email options into check boxes
+
+                    foreach (ListItem item in cblEmailOptions.Items)
+                    {
+                        if (item.Value == "EmailOnApprove")                 // If == load option from database
+                            item.Selected = !existingUser.NoEmailOnApprove;  // Load checkbox from database
+
+                        else if (item.Value == "EmailOnReturn")             // If == load option from database
+                            item.Selected = !existingUser.NoEmailOnReturn;  // Load checkbox from database
+
+                        else if (item.Value == "EmailOnRefer")             // If == load option from database
+                            item.Selected = !existingUser.NoEmailOnRefer;  // Load checkbox from database
+                    }
+
                     txtLoginCount.Text = existingUser.LoginCount.ToString();
                     txtLastLogin.Text = existingUser.LastLogin.ToString();
 
@@ -147,15 +162,7 @@ namespace Portal11.Account
                             existingUser.Inactive = item.Selected;          // Unload Inactive checkbox to database
 
                         else if (item.Value == UserRole.Administrator.ToString())  // If == load Administrator option from database
-                        {
                             existingUser.Administrator = item.Selected;     // Unload Administrator checkbox to database
-                            //if (item.Selected)                              // If true box is checked - user gets the role
-                            //{
-                            //    existingUser.Administrator = true;          // Grant the role
-                            //}
-                            //else
-                            //    existingUser.Administrator = false;         // Deny the role
-                        }
                     }
 
                     // Update database with Roles from check boxes
@@ -167,7 +174,7 @@ namespace Portal11.Account
                         {
                             if (item.Selected)                              // Box is checked
                             {
-                                existingUser.UserRole = EnumActions.ConvertTextToUserRole (item.Value); // Convert back into enumeration type
+                                existingUser.UserRole = EnumActions.ConvertTextToUserRole(item.Value); // Convert back into enumeration type
                                 break;                                      // Radio buttons mean one and done
                             }
                         }
@@ -177,6 +184,21 @@ namespace Portal11.Account
                         litDangerMessage.Text = "A System Administrator must have a CultureTrust Staff Role.";
                         return;
                     }
+
+                    // Unload current email options from check boxes
+
+                    foreach (ListItem item in cblEmailOptions.Items)
+                    {
+                        if (item.Value == "EmailOnApprove")                 // If == load option from checkbox
+                            existingUser.NoEmailOnApprove = !item.Selected; // Unload option checkbox to database
+
+                        else if (item.Value == "EmailOnReturn")             // If == load option from checkbox
+                            existingUser.NoEmailOnReturn = !item.Selected;  // Unload checkbox to database
+
+                        else if (item.Value == "EmailOnRefer")              // If == load option from checkbox
+                            existingUser.NoEmailOnRefer = !item.Selected;   // Unload checkbox to database
+                    }
+
                     userMgr.Update(existingUser);                           // Write changes to database
                 }
                 catch (Exception ex)

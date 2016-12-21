@@ -14,7 +14,6 @@ namespace Portal11.Logic
     //  2) Routines that deal with ProjectRole
     //  3) General support for enum data types (moved to EnumActions)
     //  4) General support for Drop Down Lists
-    //  5) General support for other lists
 
     public class StateActions : System.Web.UI.Page
     {
@@ -28,11 +27,11 @@ namespace Portal11.Logic
             {
                 return AppState.UnsubmittedByInternalCoordinator;           // Report actual enum value of AppState
             }
-            else if (role == ProjectRole.ProjectDirector.ToString()) // If == User is a Project Director
+            else if (role == ProjectRole.ProjectDirector.ToString())        // If == User is a Project Director
             {
-                return AppState.UnsubmittedByProjectDirector;       // Return actual enum value of AppState
+                return AppState.UnsubmittedByProjectDirector;               // Return actual enum value of AppState
             }
-            else if (role == ProjectRole.ProjectStaff.ToString())   // If == User is a Project Staff
+            else if (role == ProjectRole.ProjectStaff.ToString())           // If == User is a Project Staff
             {
                 return AppState.UnsubmittedByProjectStaff;
             }
@@ -76,57 +75,111 @@ namespace Portal11.Logic
             }
         }
 
-        // Given a current state, determine which role can approve the Deposit
+        // Given a current state, determine which project role can process the Request.
 
-        public static UserRole UserRoleToApproveRequest(AppState currentState, AppReviewType reviewType)
+        public static ProjectRole ProjectRoleToProcessRequest(AppState currentState)
         {
-            if (reviewType == AppReviewType.Express)                // A simpler review process
+            switch (currentState)
             {
-                switch (currentState)
-                {
-                    case AppState.UnsubmittedByInternalCoordinator:
-                    case AppState.UnsubmittedByProjectDirector:
-                    case AppState.UnsubmittedByProjectStaff:
-                    case AppState.AwaitingProjectDirector:
-                    case AppState.Approved:
-                    case AppState.Returned:
-                        return UserRole.Project;
-                    case AppState.AwaitingTrustDirector:
-                        return UserRole.TrustDirector;
-                    case AppState.AwaitingInternalCoordinator:
-                        return UserRole.InternalCoordinator;
-                    default:
-                        {
-                            LogError.LogInternalError("StateActions", $"Unable to process AppState value '{currentState.ToString()}' from database"); // Fatal error
-                            return UserRole.Undefined;
-                        }
-                }
+                case AppState.UnsubmittedByInternalCoordinator:
+                case AppState.AwaitingInternalCoordinator:
+                    return ProjectRole.InternalCoordinator;
+                case AppState.UnsubmittedByProjectDirector:
+                case AppState.AwaitingProjectDirector:
+                case AppState.Returned:
+                    return ProjectRole.ProjectDirector;
+                case AppState.UnsubmittedByProjectStaff:
+                    return ProjectRole.ProjectStaff;
+                case AppState.Approved:
+                case AppState.AwaitingTrustDirector:
+                case AppState.AwaitingFinanceDirector:
+                case AppState.AwaitingTrustExecutive:
+                    return ProjectRole.NoRole;
+                default:
+                    {
+                        LogError.LogInternalError("StateActions.ProjectRoleToProcessRequest", $"Unable to process AppState value '{currentState.ToString()}'"); // Fatal error
+                        return ProjectRole.NoRole;
+                    }
             }
-            else
+        }
+
+        public static ProjectRole ProjectRoleToProcessRequest(DepState currentState)
+        {
+            switch (currentState)
             {
-                switch (currentState)
-                {
-                    case AppState.UnsubmittedByInternalCoordinator:
-                    case AppState.UnsubmittedByProjectDirector:
-                    case AppState.UnsubmittedByProjectStaff:
-                    case AppState.AwaitingProjectDirector:
-                    case AppState.Approved:
-                    case AppState.Returned:
-                        return UserRole.Project;
-                    case AppState.AwaitingTrustDirector:
-                        return UserRole.TrustDirector;
-                    case AppState.AwaitingFinanceDirector:
-                        return UserRole.FinanceDirector;
-                    case AppState.AwaitingTrustExecutive:
-                        return UserRole.TrustExecutive;
-                    case AppState.AwaitingInternalCoordinator:
-                        return UserRole.InternalCoordinator;
-                    default:
-                        {
-                            LogError.LogInternalError("StateActions", $"Unable to process AppState value '{currentState.ToString()}' from database"); // Fatal error
-                            return UserRole.Undefined;
-                        }
-                }
+                case DepState.UnsubmittedByInternalCoordinator:
+                case DepState.Returned:
+                    return ProjectRole.InternalCoordinator;
+                case DepState.AwaitingProjectDirector:
+                    return ProjectRole.ProjectDirector;
+                case DepState.DepositComplete:
+                case DepState.AwaitingTrustDirector:
+                case DepState.AwaitingFinanceDirector:
+                case DepState.ApprovedReadyToDeposit:                       // Now obsolete
+                    return ProjectRole.NoRole;
+                default:
+                    {
+                        LogError.LogInternalError("StateActions.ProjectRoleToProcessequest", $"Unable to process DepositState value '{currentState.ToString()}'"); // Fatal error
+                        return ProjectRole.NoRole;
+                    }
+            }
+        }
+
+        public static ProjectRole ProjectRoleToProcessRequest(ExpState currentState)
+        {
+            switch (currentState)
+            {
+                case ExpState.UnsubmittedByInternalCoordinator:
+                    return ProjectRole.InternalCoordinator;
+                case ExpState.UnsubmittedByProjectStaff:
+                    return ProjectRole.ProjectStaff;
+                case ExpState.UnsubmittedByProjectDirector:
+                case ExpState.AwaitingProjectDirector:
+                case ExpState.Returned:
+                    return ProjectRole.ProjectDirector;
+                case ExpState.Paid:
+                case ExpState.AwaitingTrustDirector:
+                case ExpState.AwaitingFinanceDirector:
+                case ExpState.Approved:
+                case ExpState.PaymentSent:
+                case ExpState.AwaitingTrustExecutive:
+                    return ProjectRole.NoRole;
+                default:
+                    {
+                        LogError.LogInternalError("StateActions.UserRoleToApproveRequest", $"Unable to process ExpState value '{currentState.ToString()}'"); // Fatal error
+                        return ProjectRole.NoRole;
+                    }
+            }
+        }
+
+        // Given a current state, determine which user role can approve the Deposit. Note that we ignore whether the
+        // request is Express or Full. We just look at the current state and say the role that can deal with it.
+        // For Express requests, the request will never get into some of these states. But no harm done.
+
+        public static UserRole UserRoleToApproveRequest(AppState currentState)
+        {
+            switch (currentState)
+            {
+                case AppState.UnsubmittedByInternalCoordinator:
+                case AppState.UnsubmittedByProjectDirector:
+                case AppState.UnsubmittedByProjectStaff:
+                case AppState.AwaitingProjectDirector:
+                case AppState.Approved:
+                case AppState.Returned:
+                    return UserRole.Project;
+                case AppState.AwaitingTrustDirector:
+                    return UserRole.TrustDirector;
+                case AppState.AwaitingFinanceDirector:
+                    return UserRole.FinanceDirector;
+                case AppState.AwaitingTrustExecutive:
+                    return UserRole.TrustExecutive;
+                case AppState.AwaitingInternalCoordinator:
+                    return UserRole.InternalCoordinator;
+                default:
+                    {
+                        LogError.LogInternalError("StateActions.UserRoleToApproveRequest", $"Unable to process AppState value '{currentState.ToString()}'"); // Fatal error
+                        return UserRole.Undefined;
+                    }
             }
         }
 
@@ -137,32 +190,21 @@ namespace Portal11.Logic
                 case DepState.UnsubmittedByInternalCoordinator:
                 case DepState.AwaitingProjectDirector:
                 case DepState.DepositComplete:
-                case DepState.Returned:
                     return UserRole.Project;
+                case DepState.Returned:
+                    return UserRole.InternalCoordinator;                    // Note: Deposits are returned to IC, not PD
                 case DepState.AwaitingTrustDirector:
                     return UserRole.TrustDirector;
                 case DepState.AwaitingFinanceDirector:
-                case DepState.ApprovedReadyToDeposit:
+                case DepState.ApprovedReadyToDeposit:                       // Now obsolete
                     return UserRole.FinanceDirector;
                 default:
                     {
-                        LogError.LogInternalError("StateActions", $"Unable to process DepositState value '{currentState.ToString()}' from database"); // Fatal error
+                        LogError.LogInternalError("StateActions.UserRoleToApproveRequest", $"Unable to process DepositState value '{currentState.ToString()}'"); // Fatal error
                         return UserRole.Undefined;
                     }
             }
         }
-
-        // Given a role and a current state, determine whether the user can approve the Deposit
-        //TODO: What if User has multiple roles?
-
-        internal static bool UserRoleCanApproveRequest(UserRole role, DepState depositState)
-        {
-            if (role == UserRoleToApproveRequest(depositState))             // If == the specified role can approve the Rqst
-                return true;                                                // Report that
-            return false;                                                   // Otherwise the specified role cannot approve the Rqst
-        }
-
-        // Given a current state, determine which role can approve the Exp
 
         public static UserRole UserRoleToApproveRequest(ExpState currentState)
         {
@@ -185,7 +227,7 @@ namespace Portal11.Logic
                     return UserRole.TrustExecutive;
                 default:
                     {
-                        LogError.LogInternalError("StateActions", $"Unable to process ExpState value '{currentState.ToString()}' from database"); // Fatal error
+                        LogError.LogInternalError("StateActions.UserRoleToApproveRequest", $"Unable to process ExpState value '{currentState.ToString()}'"); // Fatal error
                         return UserRole.Undefined;
                     }
             }
@@ -193,11 +235,11 @@ namespace Portal11.Logic
 
         // Given a current state, determine whether the user can approve the Dep/Exp, based on UserRole and ProjectRole from cookies
 
-        internal static bool UserCanApproveRequest(AppState appState, AppReviewType reviewType)
+        internal static bool UserCanApproveRequest(AppState appState)
         {
             HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Fetch user info cookie for current user
             UserRole userRole = EnumActions.ConvertTextToUserRole(userInfoCookie[PortalConstants.CUserRole]); //Fetch user role, convert to enum
-            if (userRole == UserRoleToApproveRequest(appState, reviewType)) // If == the specified role can approve the Dep
+            if (userRole == UserRoleToApproveRequest(appState))     // If == the specified role can approve the Dep
             {
                 if (userRole == UserRole.Project)                   // If == this is a Project user. Need another check
                 {
@@ -245,18 +287,6 @@ namespace Portal11.Logic
                 return true;
             }
             return false;                                           // Otherwise the specified role cannot approve the Exp
-        }
-
-        // Given a role and a current state, determine whether the user can debite the Exp from the current grant
-
-        internal static bool UserRoleCanDebitExp(UserRole role, ExpState expState)
-        {
-            if (role == UserRole.FinanceDirector)                   // If == the specified role can debit
-            {
-                if (expState == ExpState.Approved)                  // If == Request is in the right state for debiting
-                    return true;                                    // Green means go
-            }
-            return false;                                           // Otherwise the specified role cannot debit the Exp
         }
 
         // Copy the most recent state, which is about to be overwritten, into new History row. This preserves the previous state of the Request
@@ -326,7 +356,8 @@ namespace Portal11.Logic
                     case AppState.ReservedForFutureUse:
                     default:
                         {
-                            LogError.LogInternalError("StateActions", $"Unable to decode DepState value '{currentState.ToString()}' from database"); // Fatal error
+                            LogError.LogInternalError("StateActions.FindNextState", 
+                                $"Inappropriate AppState value '{currentState.ToString()}' and Review Type '{reviewType.ToString()}"); // Fatal error
                             return AppState.Error;
                         }
                 }
@@ -360,15 +391,48 @@ namespace Portal11.Logic
                     case AppState.ReservedForFutureUse:
                     default:
                         {
-                            LogError.LogInternalError("StateActions", $"Unable to decode AppState value '{currentState.ToString()}' from database"); // Fatal error
+                            LogError.LogInternalError("StateActions.FindNextState", 
+                                $"Inappropriate AppState value '{currentState.ToString()}' and Review Type '{reviewType.ToString()}"); // Fatal error
                             return AppState.Error;
                         }
                 }
+            }
+            else if (reviewType == AppReviewType.ICOnly)                // Execute an Internal Coordinator Only review
+            {
 
+                // Project Member -> Project Director -> Internal Coordinator - "Approved"
+
+                switch (currentState)                                   // Break out by current state
+                {
+                    case AppState.UnsubmittedByInternalCoordinator:
+                    case AppState.UnsubmittedByProjectStaff:
+                        return AppState.AwaitingProjectDirector;
+                    case AppState.UnsubmittedByProjectDirector:
+                    case AppState.AwaitingProjectDirector:
+                        return AppState.AwaitingInternalCoordinator;
+                    case AppState.AwaitingInternalCoordinator:
+                        return AppState.Approved;
+
+                    // None of these states should ever arrive here. Report an internal logic error.
+
+                    case AppState.AwaitingTrustDirector:
+                    case AppState.AwaitingFinanceDirector:
+                    case AppState.AwaitingTrustExecutive:
+                    case AppState.Approved:
+                    case AppState.Error:
+                    case AppState.Returned:
+                    case AppState.ReservedForFutureUse:
+                    default:
+                        {
+                            LogError.LogInternalError("StateActions.FindNextState", 
+                                $"Inappropriate AppState value '{currentState.ToString()}' and Review Type '{reviewType.ToString()}"); // Fatal error
+                            return AppState.Error;
+                        }
+                }
             }
             else
             {
-                LogError.LogInternalError("StateActions", $"Unable to decode AppReviewType value '{reviewType.ToString()}' from database"); // Fatal error
+                LogError.LogInternalError("StateActions.FindNextState", $"Inappropriate ReviewType value '{reviewType.ToString()}'"); // Fatal error
                 return AppState.Error;
             }
         }
@@ -384,10 +448,6 @@ namespace Portal11.Logic
                 case DepState.AwaitingTrustDirector:
                     return DepState.AwaitingFinanceDirector;
                 case DepState.AwaitingFinanceDirector:
-                //    return DepState.Approved;
-                //case DepState.Approved:
-                    return DepState.ApprovedReadyToDeposit;
-                case DepState.ApprovedReadyToDeposit:
                     return DepState.DepositComplete;
 
                 // None of these states should ever arrive here. Report an internal logic error.
@@ -398,7 +458,7 @@ namespace Portal11.Logic
                 case DepState.ReservedForFutureUse:
                 default:
                     {
-                        LogError.LogInternalError("StateActions", $"Unable to decode DepState value '{currentState.ToString()}' from database"); // Fatal error
+                        LogError.LogInternalError("StateActions.FindNextState", $"Inappropriate DepState value '{currentState.ToString()}'"); // Fatal error
                         return DepState.Error;
                     }
             }
@@ -432,7 +492,7 @@ namespace Portal11.Logic
                 case ExpState.ReservedForFutureUse:
                 default:
                     {
-                        LogError.LogInternalError("StateActions", $"Unable to decode ExpState value '{currentState.ToString()}' from database"); // Fatal error
+                        LogError.LogInternalError("StateActions.FindNextState", $"Inappropriate ExpState value '{currentState.ToString()}'"); // Fatal error
                         return ExpState.Error;
                     }
             }
@@ -515,7 +575,7 @@ namespace Portal11.Logic
                 }
                 catch (Exception ex)
                 {
-                    LogError.LogDatabaseError(ex, "StateActions", "Error writing or deleting UserProject row"); // Fatal error
+                    LogError.LogDatabaseError(ex, "StateActions.ChangeProjectRole", "Error writing or deleting UserProject row"); // Fatal error
                 }
             }
         }
@@ -624,7 +684,7 @@ namespace Portal11.Logic
                 }
                 catch (System.FormatException)
                 {
-                    LogError.LogInternalError("StateActions", "Unable to unload Selected Value from DDL"); // Fatal error
+                    LogError.LogInternalError("StateActions.UnloadDdl", "Unable to unload Selected Value from DDL"); // Fatal error
                 }
             }
             return null;
@@ -651,58 +711,12 @@ namespace Portal11.Logic
                 }
                 catch (System.FormatException)
                 {
-                    LogError.LogInternalError("StateActions", "Unable to unload Selected Value from DDL"); // Fatal error
+                    LogError.LogInternalError("StateActions.UnloadDdl", "Unable to unload Selected Value from DDL"); // Fatal error
                     id = null;
                     needed = false;
                 }
             }
             return;
         }
-
-        // Start of 5)
-
-        // Load a list with all the grants available to this project into a List Box
-
-        public static decimal LoadGrantsList(int projID, ListBox lst)
-        {
-            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-            {
-                var query = from pg in context.ProjectGrants
-                            where pg.ProjectID == projID
-                            orderby pg.Grant.Name
-                            select new { pg.GrantID, pg.Grant.Name, pg.Grant.CurrentFunds };
-                // Find all grants that are assigned to this project
-
-                DataTable grants = new DataTable();
-                grants.Columns.Add("GrantID");
-                grants.Columns.Add("Name");
-
-                decimal total = 0;                                  // Initialize total funds in grants
-                foreach (var row in query)
-                {
-                    DataRow dr = grants.NewRow();                   // Build a row from the next query output
-                    dr["GrantID"] = row.GrantID;
-                    dr["Name"] = row.Name + " (" + row.CurrentFunds.ToString("C") + ")"; // Insert name (and balance) together
-                    grants.Rows.Add(dr);                            // Add the new row to the data table
-                    total = total + row.CurrentFunds;               // Accumulate total grants
-                }
-
-                if (grants.Rows.Count == 0)                         // If == the lst is empty because there is nothing in the database.
-                {
-                    DataRow dr = grants.NewRow();                   // Build a row for the filler
-                    dr["GrantID"] = "";
-                    dr["Name"] = " -- No Grants assigned to Project --";
-                    grants.Rows.Add(dr);                            // Add the filler row
-                }
-
-                lst.DataSource = grants;                            // Pass the full table of users to drop down list
-                lst.DataTextField = "Name";                         // Display this column in the list
-                lst.DataValueField = "GrantID";                     // Return this value for selected row. Right now, the user can't select a row
-                lst.DataBind();                                     // And get it in gear
-
-                return total;                                       // Make the total available to caller
-            }
-        }
-
     }
 }

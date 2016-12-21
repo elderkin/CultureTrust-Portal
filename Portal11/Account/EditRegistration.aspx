@@ -14,6 +14,7 @@
     </p>
 
     <div class="form-horizontal">
+        <asp:Panel runat="server" DefaultButton="btnUpdate">
 
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="txtEmail" CssClass="col-md-2 col-sm-2 control-label" Font-Bold="true">Email</asp:Label>
@@ -103,6 +104,24 @@
             </div>
         </div>
 
+        <div class="form-group">
+            <asp:Label runat="server" AssociatedControlID="cblEmailOptions" CssClass="col-md-2 col-sm-2 col-xs-12 control-label" Font-Bold="false">Email Options</asp:Label>
+            <div class="col-md-3 col-sm-5 col-xs-6">
+                <div class="well">
+                    <div class="checkbox" style="padding-top: 0">
+                        <asp:CheckBoxList ID="cblEmailOptions" runat="server" Style="margin-left: 20px">
+<%--                            <asp:ListItem Text="Send Email to Project Director on request approval" Value="EmailOnApprove" data-toggle="tooltip"
+                                title="If set, PD will receive email when a request is approved."></asp:ListItem>
+                            <asp:ListItem Text="Send Email to Project Director on request return" Value="EmailOnReturn" data-toggle="tooltip"
+                                title="If set, PD will receive email when a request is returned"></asp:ListItem>--%>
+                            <asp:ListItem Text="Send Email to user when a request awaits their action" Value="EmailOnRefer" data-toggle="tooltip"
+                                title="If set, PD, TD, FD, TE will receive email when a request is sent to them"></asp:ListItem>
+                        </asp:CheckBoxList>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <!-- Login Count -->
         <div class="form-group">
             <div class="row">
@@ -127,9 +146,10 @@
         <div class="row">
             <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-sm-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnCancel_Click" CausesValidation="false" ToolTip="Return to the Dashboard without saving" />
-            <asp:Button ID="btnUpdate" runat="server" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
-                OnClick="btnUpdate_Click" ToolTip="Save these updates" Text="Save" />
+            <asp:Button ID="btnUpdate" runat="server" Text="Save" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+                OnClick="btnUpdate_Click" ToolTip="Save these updates" />
         </div>
+        </asp:Panel>
 
 
 <%--    Niche to stash context during operation of page--%>

@@ -20,6 +20,7 @@
     </style>
 
     <div class="form-horizontal">
+        <asp:Panel runat="server" DefaultButton="btnSave">
         <div class="form-group">
             <div class="row">
                 <asp:Label runat="server" AssociatedControlID="rdoDepType"
@@ -418,6 +419,7 @@
         <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
         <asp:Literal ID="litSupportingDocMin" runat="server" Visible="false" Text="Minimum"></asp:Literal>
 
+        </asp:Panel>
     </div>
 
     <!-- This little style helps us hide the File Upload button. And this piece of Javascript makes the click event of the Add button trigger the click event of the File Upload control. This is

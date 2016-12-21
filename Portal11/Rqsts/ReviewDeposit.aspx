@@ -250,6 +250,8 @@
                     <div class="col-lg-3 col-md-4 col-xs-6">
                         <asp:TextBox runat="server" ID="txtReturnNote" CssClass="form-control" TextMode="MultiLine" />
                     </div>
+                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtReturnNote"
+                        CssClass="text-danger" ErrorMessage="Please supply a reason why you are returning the request." />
                 </div>
             </div>
         </asp:Panel>
@@ -311,16 +313,17 @@
             <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-sm-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnCancel_Click" CausesValidation="false" ToolTip="Return to the Dashboard without saving" />
             <asp:Button ID="btnApprove" runat="server" Text="Approve" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
-                OnClick="btnApprove_Click" ToolTip="Advance this Deposit Request to the next stage" />
+                OnClick="btnApprove_Click" CausesValidation="false" ToolTip="Advance this Deposit Request to the next stage" />
             <asp:Button ID="btnReturn" runat="server" Text="Return" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnReturn_Click" ToolTip="Disapprove this Deposit Request and return it to the Project Director with a Review Note" />
             <asp:Button ID="btnHistory" runat="server" Text="Show Hist" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
-                OnClick="btnHistory_Click" ToolTip="View the history of this Deposit Request" />
+                OnClick="btnHistory_Click" CausesValidation="false" ToolTip="View the history of this Deposit Request" />
         </div>
 
         <!-- "Scratch" storage used during form processing -->
         <asp:Literal ID="litSavedCommand" runat="server" Visible="false" />
         <asp:Literal ID="litSavedDepID" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedState" runat="server" Visible="false" />
 

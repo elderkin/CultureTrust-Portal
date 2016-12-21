@@ -25,12 +25,6 @@ namespace Portal11.Rqsts
                 if (depID.Int == 0 || cmd != PortalConstants.QSCommandReview || ret == "") // If null or blank, this form invoked incorrectly
                     LogError.LogQueryStringError("ReviewDeposit", "Invalid Query String 'Command' or 'DepID'"); // Log fatal error
 
-                // Stash these parameters into invisible literals on the current page.
-
-                litSavedDepID.Text = depID.String;
-                litSavedCommand.Text = cmd;
-                litSavedReturn.Text = ret;
-
                 // Fetch the Dep row and fill the page
 
                 using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
@@ -50,6 +44,13 @@ namespace Portal11.Rqsts
                         btnReturn.Enabled = false;                      // Cannot "Return" the Dep
                         litDangerMessage.Text = "You can view this Deposit Request, but you cannot approve it."; // Explain that to user
                     }
+
+                    // Stash these parameters into invisible literals on the current page.
+
+                    litSavedDepID.Text = depID.String;
+                    litSavedCommand.Text = cmd;
+                    litSavedProjectID.Text = dep.ProjectID.ToString();
+                    litSavedReturn.Text = ret;
                 }
             }
             return;
@@ -98,10 +99,15 @@ namespace Portal11.Rqsts
             DepState currentState = EnumActions.ConvertTextToDepState(litSavedState.Text); // Pull ToString version; convert to enum type
             DepState nextState = StateActions.FindNextState(currentState); // Now what?
             SaveDep(nextState, "Approved");                         // Update Dep; write new History row
+
+            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
+                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+                PortalConstants.CEmailDefaultDepositApprovedSubject, PortalConstants.CEmailDefaultDepositApprovedBody); // Use this subject and body, if needed
+
             Response.Redirect(litSavedReturn.Text + "?"
                                 + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
                                 + PortalConstants.QSStatus + "=" + "Request Appoved and Advanced to '"
-                                + EnumActions.GetEnumDescription(nextState) + "' status");
+                                + EnumActions.GetEnumDescription(nextState) + "' status." + emailSent);
         }
 
         // User clicked Return. Set the state to Returned and process the request just like an Approve. Then notify the user of the glitch.
@@ -109,10 +115,14 @@ namespace Portal11.Rqsts
         protected void btnReturn_Click(object sender, EventArgs e)
         {
             SaveDep(DepState.Returned, "Returned");                 // Update Dep; write new History row
-            //TODO: Notify the Project Director
+
+            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(DepState.Returned), // Tell next reviewer, who is in this role
+                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+                PortalConstants.CEmailDefaultDepositApprovedSubject, PortalConstants.CEmailDefaultDepositApprovedBody); // Use this subject and body, if needed
+
             Response.Redirect(litSavedReturn.Text + "?"
                                 + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                + PortalConstants.QSStatus + "=" + "Request returned to Project Direcctor");
+                                + PortalConstants.QSStatus + "=" + "Request returned to Internal Coordinator." + emailSent);
         }
 
         // User pressed History button. Fetch all the DepHistory rows for this Dep and fill a GridView.

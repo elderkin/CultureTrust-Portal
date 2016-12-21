@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Select Project" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SelectProject.aspx.cs" 
-    Inherits="Portal11.Staff.SelectProject" EnableEventValidation="false" %>
+    Inherits="Portal11.Staff.SelectProject" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <%@ Import Namespace="Portal11.Logic" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">

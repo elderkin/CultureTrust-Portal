@@ -326,24 +326,8 @@ namespace Portal11.Rqsts
 
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 AppState state = EnumActions.ConvertTextToAppState(label.Text); // Carefully convert back into enumeration type
-                bool bingo = false;                                         // To bold or not to bold
-                if (litSavedUserRole.Text == UserRole.TrustDirector.ToString()) // If == User is a Trust Director
-                {
-                    if (state == AppState.AwaitingTrustDirector)            // User is next approver
-                        bingo = true;
-                }
-                else if (litSavedUserRole.Text == UserRole.FinanceDirector.ToString()) // If == User is a Finance Director
-                {
-                    if ((state == AppState.AwaitingFinanceDirector) || (state == AppState.Approved) ) // Ours
-                        bingo = true;
-                }
-                else if (litSavedUserRole.Text == UserRole.TrustExecutive.ToString()) // If == User is a Finance Director
-                {
-                    if (state == AppState.AwaitingTrustExecutive) // Ours
-                        bingo = true;
-                }
-                if (bingo)
-                    e.Row.Cells[StaffAppViewRow.OwnerRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+                if (StateActions.UserRoleToApproveRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
+                    e.Row.Cells[StaffAppViewRow.OwnerRow].Font.Bold = true; // Bold Status cell.
 
                 // See if the row is Archived
 
@@ -368,19 +352,8 @@ namespace Portal11.Rqsts
 
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 DepState state = EnumActions.ConvertTextToDepState(label.Text); // Carefully convert back into enumeration type
-                bool bingo = false;                                         // To bold or not to bold
-                if (litSavedUserRole.Text == UserRole.TrustDirector.ToString()) // If == User is a Trust Director
-                {
-                    if (state == DepState.AwaitingTrustDirector)            // User is next approver
-                        bingo = true;
-                }
-                else if (litSavedUserRole.Text == UserRole.FinanceDirector.ToString()) // If == User is a Finance Director
-                {
-                    if ((state == DepState.AwaitingFinanceDirector) || (state == DepState.ApprovedReadyToDeposit)) // Ours
-                        bingo = true;
-                }
-                if (bingo)
-                    e.Row.Cells[StaffDepViewRow.OwnerRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+                if (StateActions.UserRoleToApproveRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
+                    e.Row.Cells[StaffDepViewRow.OwnerRow].Font.Bold = true; // Bold Status cell.
 
                 // See if the row is Archived
 
@@ -405,24 +378,8 @@ namespace Portal11.Rqsts
 
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Carefully convert back into enumeration type
-                bool bingo = false;                                         // To bold or not to bold
-                if (litSavedUserRole.Text == UserRole.TrustDirector.ToString()) // If == User is a Trust Director
-                {
-                    if (state == ExpState.AwaitingTrustDirector)            // User is next approver
-                        bingo = true;
-                }
-                else if (litSavedUserRole.Text == UserRole.FinanceDirector.ToString()) // If == User is a Finance Director
-                {
-                    if ((state == ExpState.AwaitingFinanceDirector) || (state == ExpState.Approved) || (state == ExpState.PaymentSent)) // Ours
-                        bingo = true;
-                }
-                else if (litSavedUserRole.Text == UserRole.TrustExecutive.ToString()) // If == User is a Finance Director
-                {
-                    if (state == ExpState.AwaitingTrustExecutive) // Ours
-                        bingo = true;
-                }
-                if (bingo)
-                    e.Row.Cells[StaffExpViewRow.OwnerRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+                if (StateActions.UserRoleToApproveRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
+                    e.Row.Cells[StaffExpViewRow.OwnerRow].Font.Bold = true; // Bold Status cell.
 
                 // See if the row is Archived
 
@@ -630,7 +587,7 @@ namespace Portal11.Rqsts
                     {
                         if (litSavedUserRole.Text != UserRole.Auditor.ToString()) // If true User is not an Auditor. Auditors don't check Next Reviewer
                         {
-                            own = StateActions.UserRoleToApproveRequest(a.CurrentState, a.AppReviewType); // Find which role will approve this Request
+                            own = StateActions.UserRoleToApproveRequest(a.CurrentState); // Find which role will approve this Request
 
                             // Apply the Next Reviewer screen using the Current State of the row. Current State determines the identity of the next
                             // reviewer. It's Next Reviewer that's screen via checkboxes.
@@ -866,6 +823,12 @@ namespace Portal11.Rqsts
                                 case UserRole.FinanceDirector:
                                     {
                                         if (ckRFinanceDirector.Checked)
+                                            useRow = true;
+                                        break;
+                                    }
+                                case UserRole.InternalCoordinator:
+                                    {
+                                        if (ckRInternalCoordinator.Checked)
                                             useRow = true;
                                         break;
                                     }

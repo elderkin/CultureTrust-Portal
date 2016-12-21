@@ -4,12 +4,8 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using Portal11.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
-using System.Collections.Generic;
 
 namespace Portal11.Models
 {
@@ -88,6 +84,7 @@ namespace Portal11.Models
         public DbSet<Grant> Grants { get; set; }
         public DbSet<GrantMaker> GrantMakers { get; set; }
         public DbSet<Person> Persons { get; set; }
+        public DbSet<PortalParameter> PortalParameters { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectClass> ProjectClasses { get; set; }
         public DbSet<ProjectClassMaster> ProjectClassMasters { get; set; }
@@ -99,6 +96,7 @@ namespace Portal11.Models
         public DbSet<SupportingDocTemp> SupportingDocTemps { get; set; }
         public DbSet<UserProject> UserProjects { get; set; }
         public DbSet<Vendor> Vendors { get; set; }
+//        public DbSet<ApplicationUser> ApplicationUsers { get; }
     }
 }
 

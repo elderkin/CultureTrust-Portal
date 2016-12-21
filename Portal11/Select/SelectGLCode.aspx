@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Select GL Code" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SelectGLCode.aspx.cs" 
-    Inherits="Portal11.Select.SelectGLCode" EnableEventValidation="false"%>
+    Inherits="Portal11.Select.SelectGLCode" EnableEventValidation="false" MaintainScrollPositionOnPostback="true"%>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <h2><%: Title %></h2>

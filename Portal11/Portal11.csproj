@@ -155,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Account\AddPhoneNumber.aspx" />
+    <Content Include="Account\ChangeMyEmailOptions.aspx" />
     <Content Include="Account\ChangeMyPassword.aspx" />
     <Content Include="Account\ChangeUserPassword.aspx" />
     <Content Include="Account\Confirm.aspx" />
@@ -174,6 +175,7 @@
     <Content Include="Account\ResetPasswordConfirmation.aspx" />
     <Content Include="Account\TwoFactorAuthenticationSignIn.aspx" />
     <Content Include="Account\VerifyPhoneNumber.aspx" />
+    <Content Include="Admin\AdjustParameters.aspx" />
     <Content Include="Admin\AssignEntitysToProject.aspx" />
     <Content Include="Admin\AssignGrantToProject.aspx" />
     <Content Include="Admin\AssignPersonsToProject.aspx" />
@@ -183,7 +185,6 @@
     <Content Include="Admin\EditGLCode.aspx" />
     <Content Include="Admin\EditGrant.aspx" />
     <Content Include="Admin\Main.aspx" />
-    <Content Include="Admin\MaintainVendor.aspx" />
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
     <Content Include="App_Readme\Elmah.SqlServer.txt" />
     <Content Include="App_Readme\Elmah.txt" />
@@ -293,6 +294,13 @@
     </Compile>
     <Compile Include="Account\AddPhoneNumber.aspx.designer.cs">
       <DependentUpon>AddPhoneNumber.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Account\ChangeMyEmailOptions.aspx.cs">
+      <DependentUpon>ChangeMyEmailOptions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Account\ChangeMyEmailOptions.aspx.designer.cs">
+      <DependentUpon>ChangeMyEmailOptions.aspx</DependentUpon>
     </Compile>
     <Compile Include="Account\ChangeMyPassword.aspx.cs">
       <DependentUpon>ChangeMyPassword.aspx</DependentUpon>
@@ -427,6 +435,13 @@
     <Compile Include="Account\VerifyPhoneNumber.aspx.designer.cs">
       <DependentUpon>VerifyPhoneNumber.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Admin\AdjustParameters.aspx.cs">
+      <DependentUpon>AdjustParameters.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\AdjustParameters.aspx.designer.cs">
+      <DependentUpon>AdjustParameters.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Admin\AssignEntitysToProject.aspx.cs">
       <DependentUpon>AssignEntitysToProject.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -490,13 +505,6 @@
     <Compile Include="Admin\Main.aspx.designer.cs">
       <DependentUpon>Main.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Admin\MaintainVendor.aspx.cs">
-      <DependentUpon>MaintainVendor.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Admin\MaintainVendor.aspx.designer.cs">
-      <DependentUpon>MaintainVendor.aspx</DependentUpon>
-    </Compile>
     <Compile Include="ErrorLog\DatabaseError.aspx.cs">
       <DependentUpon>DatabaseError.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -552,6 +560,7 @@
     </Compile>
     <Compile Include="Logic\CookieActions.cs" />
     <Compile Include="Logic\DateActions.cs" />
+    <Compile Include="Logic\EmailActions.cs" />
     <Compile Include="Logic\EnumActions.cs" />
     <Compile Include="Logic\ExceptionActions.cs" />
     <Compile Include="Logic\ProjectClassActions.cs" />

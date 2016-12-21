@@ -366,23 +366,7 @@ namespace Portal11.Proj
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 AppState state = EnumActions.ConvertTextToAppState(label.Text); // Carefully convert back into enumeration type
 
-                bool bling = false;                                         // Assume row will not be bolded
-                if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a Coordinator
-                {
-                    if ((state == AppState.UnsubmittedByInternalCoordinator) || (state == AppState.AwaitingInternalCoordinator)) // If == Coordinator is working on Request
-                        bling = true;                                       // Bold the bling
-                }
-                else if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If != User is not the Project Director
-                {
-                    if ((state == AppState.UnsubmittedByProjectDirector) || (state == AppState.AwaitingProjectDirector) || (state == AppState.Returned))
-                        bling = true;                                          // If true Request is in interesting state for PD
-                }
-                else if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If != User is not the Project Staff
-                {
-                    if (state == AppState.UnsubmittedByProjectStaff)
-                        bling = true;                                          // If true Request is in interesting state for PS
-                }
-                if (bling)                                                      // If true User can operate on Request.
+                if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
                     e.Row.Cells[ProjectAppViewRow.CurrentStateDescRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
 
                 // See if the row is Archived
@@ -413,19 +397,8 @@ namespace Portal11.Proj
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 DepState state = EnumActions.ConvertTextToDepState(label.Text); // Carefully convert back into enumeration type
 
-                bool bling = false;                                         // Assume row will not be bolded
-                if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a Coordinator
-                {
-                    if ((state == DepState.UnsubmittedByInternalCoordinator) || (state == DepState.Returned)) // If == InternalCoordinator is working on Request
-                        bling = true;                                       // Bold the row
-                }
-                else if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If != User is not the Project Director
-                {
-                    if ((state == DepState.AwaitingProjectDirector))        // If true Request is in interesting state for Project Director
-                        bling = true;                                       // Bold the row
-                }
-                if (bling)                                                  // If true User can operate on Request.
-                    e.Row.Cells[ProjectDepViewRow.CurrentStateDescRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+                if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
+                    e.Row.Cells[ProjectDepViewRow.CurrentStateDescRow].Font.Bold = true; // Bold Status cell.
 
                 // See if the row is Archived
 
@@ -454,24 +427,8 @@ namespace Portal11.Proj
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Carefully convert back into enumeration type
 
-                bool bling = false;                                         // Assume row will not be bolded
-                if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a InternalCoordinator
-                {
-                    if (state == ExpState.UnsubmittedByInternalCoordinator)         // If == InternalCoordinator is working on Request
-                        bling = true;                                       // Bold the bling
-                }
-                else if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If != User is not the Project Director
-                {
-                    if ((state == ExpState.UnsubmittedByProjectDirector) || (state == ExpState.AwaitingProjectDirector) || (state == ExpState.Returned))
-                        bling = true;                                       // If true Request is in interesting state for PD
-                }
-                else if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If != User is not the Project Staff
-                {
-                    if (state == ExpState.UnsubmittedByProjectStaff)
-                        bling = true;                                       // If true Request is in interesting state for PS
-                }
-                if (bling)                                                  // If true User can operate on Request.
-                    e.Row.Cells[ProjectExpViewRow.CurrentStateDescRow].Font.Bold = true; // If we get here, User can act on the row. Bold Status cell.
+                if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
+                    e.Row.Cells[ProjectExpViewRow.CurrentStateDescRow].Font.Bold = true; // Bold Status cell.
 
                 // See if the row is Archived
 

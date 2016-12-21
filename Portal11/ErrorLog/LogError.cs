@@ -114,21 +114,42 @@ namespace Portal11.ErrorLog
             }
         }
 
-        // Come here when a page detects an internal logic error not associated with a Query String parameter. Examples are a GridView row
-        // that does not include a valid ID value, a database lookup of an ID value that comes up empty. Tell elmah to log it, then 
+        // Come here when a page has trouble sending an email. Email is sufficiently fragile that shit happens, 
+        // but we don't want to blow all the way up into a fatal error when it does. Tell elmah to log it, then continue
         // report the error to the user via the Error page.
 
-        public static void LogInternalError(string pageName, string errorMessage)
+        public static void LogEmailError(string pageName, string errorMessage)
         {
             try
             {
                 // log error to Elmah
 
-                string msg = "Page '" + pageName + "' experienced internal error: " + errorMessage; // Formulate error message
+                string msg = "Page '" + pageName + "' experienced email error: " + errorMessage; // Formulate error message
+                ErrorSignal.FromCurrentContext().Raise(new ErrorLog.EmailErrorException(msg)); // Ask elmah to log this error
+            }
+            catch (Exception)
+            {
+                // uh oh! just keep going
+            }
+            return;                                                             // Not fatal. Allow execution to continue
+        }
+
+        // Come here when a page detects an internal logic error not associated with a Query String parameter. Examples are a GridView row
+        // that does not include a valid ID value, a database lookup of an ID value that comes up empty. Tell elmah to log it, then 
+        // report the error to the user via the Error page.
+
+        public static void LogInternalError(string methodName, string errorMessage)
+        {
+            try
+            {
+                // log error to Elmah
+
+                string pagePath = HttpContext.Current.Request.Url.AbsolutePath; // Path to failing page
+                string msg = "Page path: '" + pagePath + "' method: '" + methodName + "' experienced internal error: " + errorMessage; // Formulate error message
                 ErrorSignal.FromCurrentContext().Raise(new ErrorLog.InternalErrorException(msg)); // Ask elmah to log this error
 
                 HttpContext.Current.Server.Transfer(PortalConstants.URLErrorFatal + "?" + PortalConstants.QSErrorText + "=" + errorMessage + "&" +
-                                                        PortalConstants.QSPageName + "=" + pageName);
+                                                        PortalConstants.QSPageName + "=" + pagePath + "&" + PortalConstants.QSMethod + "=" + methodName);
             }
             catch (Exception)
             {

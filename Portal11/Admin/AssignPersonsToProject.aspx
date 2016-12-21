@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Assign Persons To Project" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AssignPersonsToProject.aspx.cs" 
-    Inherits="Portal11.Admin.AssignPersonsToProject" EnableEventValidation="false" %>
+    Inherits="Portal11.Admin.AssignPersonsToProject" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <h2><%: Title %> '<asp:Literal runat="server" ID="litProjectName" />'</h2>

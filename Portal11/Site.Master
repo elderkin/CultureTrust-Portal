@@ -75,6 +75,7 @@
                                 aria-expanded="false" visible="true">User <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a runat="server" href="~/Account/ChangeMyPassword">Change My Password</a></li>
+                                <li><a runat="server" href="~/Account/ChangeMyEmailOptions">Change My Email Options</a></li>
                             </ul>
                         </li>
 

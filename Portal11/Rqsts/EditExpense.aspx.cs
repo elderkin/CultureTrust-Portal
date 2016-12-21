@@ -6,6 +6,8 @@ using System.Data;
 using System.Data.SqlTypes;
 using System.Globalization;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -548,21 +550,26 @@ namespace Portal11.Rqsts
             // SaveExp just saved the Request, which may or may not have written a ExpHistory row. But now, let's write another
             // ExpHistory row to describe the Submit action.
 
+            string emailSent = "";
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 try
                 {
-                    Exp toSubmit = context.Exps.Find(savedExpID);   // Find the Exp that we want to update
-                    ExpHistory hist = new ExpHistory();             // Get a place to build a new ExpHistory row
+                    Exp toSubmit = context.Exps.Find(savedExpID);       // Find the Exp that we want to update
+                    ExpHistory hist = new ExpHistory();                 // Get a place to build a new ExpHistory row
 
                     StateActions.CopyPreviousState(toSubmit, hist, "Submitted"); // Fill the ExpHistory row from "old" version of Expense
 
                     ExpState nextState = StateActions.FindNextState(toSubmit.CurrentState); // Figure out what next state is. Nuanced.
                     StateActions.SetNewExpState(toSubmit, nextState, litSavedUserID.Text, hist); // Move to that state
-                    toSubmit.SubmitUserID = litSavedUserID.Text;    // Remember who submitted this Exp. They get notification on Return.
+                    toSubmit.SubmitUserID = litSavedUserID.Text;        // Remember who submitted this Exp. They get notification on Return.
 
-                    context.ExpHistorys.Add(hist);                  // Save new ExpHistory row
-                    context.SaveChanges();                          // Update the Exp with new fields
+                    context.ExpHistorys.Add(hist);                      // Save new ExpHistory row
+                    context.SaveChanges();                              // Update the Exp with new fields
+
+                    emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
+                        Convert.ToInt32(litSavedProjectID.Text),        // Request is associated with this project
+                        PortalConstants.CEmailDefaultExpenseApprovedSubject, PortalConstants.CEmailDefaultExpenseApprovedBody); // Use this subject and body, if needed
                 }
                 catch (Exception ex)
                 {
@@ -573,7 +580,7 @@ namespace Portal11.Rqsts
             // Now go back to Dashboard
 
             Response.Redirect(PortalConstants.URLProjectDashboard + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                                  + PortalConstants.QSStatus + "=Expense Request submitted");
+                                                  + PortalConstants.QSStatus + "=Expense Request submitted." + emailSent);
         }
 
         // Show History Button clicked. Open up and fill a GridView of all the ExpHistory rows for this ExpenseRequest

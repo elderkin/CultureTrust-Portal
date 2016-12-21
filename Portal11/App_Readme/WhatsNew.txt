@@ -1,4 +1,16 @@
-﻿Version 1.2
+﻿Version 1.3
+
+The Portal now sends emails when a request is approved. There are several new features to control this process.
+The new Adjust Parameters page on the Admin menu controls whether each role - PD, FD, IC, TD and TE - receive an email when a request reaches them.
+The Adjust Parameters page can also override the subject and body of these emails.
+The Edit Portal User page controls whether a user receives these emails, regardless of their role. It can turn them all off.
+The new Change My Email Options page on the User dropdown menu controls the same flag. It can turn all emails off.
+For Deposit Requests, the approval flow only visits the Finance Director once, not twice.
+When a Deposit Request is returned, it is now correctly directed to the attention of the Internal Coordinator.
+When any type of Request is returned, the Return Note field is now mandatory.
+Approval Requests of type Certificate of Insurance now have their own, abbreviated review path.
+
+Version 1.2
 
 An Expense Requests can be labeled "Rush" in its Delivery Instructions. Rush requests appear in red on the Project Dashboard and Staff Dashboard.
 On the Admin page, the new List Projects function creates a printable list of all projects.

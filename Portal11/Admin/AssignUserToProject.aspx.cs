@@ -78,9 +78,9 @@ namespace Portal11.Admin
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                AssignUserToProjectView.PageIndex = e.NewPageIndex;            // Propagate the desired page index
+                AssignUserToProjectView.PageIndex = e.NewPageIndex;         // Propagate the desired page index
                 LoadProjectView();                                          // Fill the grid
-                AssignUserToProjectView.SelectedIndex = -1;                    // No row currently selected
+                AssignUserToProjectView.SelectedIndex = -1;                 // No row currently selected
             }
         }
 
@@ -88,14 +88,14 @@ namespace Portal11.Admin
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
-            NavigationActions.NextPage("");
+            Response.Redirect(PortalConstants.URLAdminMain);                // Back to the barn. 
         }
 
         // Add Director, Add Staff and Remove buttons are all quite similar, so we process them together
 
         protected void btnAddDirector_Click(object sender, EventArgs e)
         {
-            ChangeAssociation(ProjectRole.ProjectDirector);             // Make the User a Project Director for this Project
+            ChangeAssociation(ProjectRole.ProjectDirector);                 // Make the User a Project Director for this Project
 
             litSuccessMessage.Text = "Successfully added User '" + litSavedFullName.Text + "' as " +
                 EnumActions.GetEnumDescription(ProjectRole.ProjectDirector); // Tell the user of our success

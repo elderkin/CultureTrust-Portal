@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Edit Project" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="EditProject.aspx.cs" 
-    Inherits="Portal11.Admin.EditProject" %>
+    Inherits="Portal11.Admin.EditProject" MaintainScrollPositionOnPostback="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
@@ -13,6 +13,7 @@
             <asp:Literal runat="server" ID="litSuccessMessage" />
         </p>
     <div class="form-horizontal">
+    <asp:Panel runat="server" DefaultButton="btnSave">
 
         <asp:Panel ID="pnlName" runat="server">
             <div class="form-group">
@@ -199,9 +200,10 @@
         <div class="row">
             <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-sm-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="Cancel_Click" CausesValidation="false" ToolTip="Return to the Dashboard without saving" />
-            <asp:Button ID="btnSave" runat="server" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+            <asp:Button ID="btnSave" runat="server" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="Save_Click" ToolTip="Save this Request and continue editing" Text="Save" />
         </div>
+        </asp:Panel>
 
         <!-- "Scratch" storage used during form processing -->
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />

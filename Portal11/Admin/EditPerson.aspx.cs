@@ -153,7 +153,7 @@ namespace Portal11.Admin
                 }
             }
             // Now go back to Dashboard
-            Response.Redirect(PortalConstants.URLStaffDashboard + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
+            Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
                                                 + PortalConstants.QSStatus + "=Person saved");
         }
 

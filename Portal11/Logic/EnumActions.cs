@@ -24,7 +24,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to AppReviewType enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToAppReviewType", $"Unable to parse text '{text}' to AppReviewType enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -37,7 +37,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to AppState enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToAppState", $"Unable to parse text '{text}' to AppState enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -50,7 +50,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to AppType enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToAppType", $"Unable to parse text '{text}' to AppType enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -63,7 +63,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to DeliveryMode enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToDeliveryMode", $"Unable to parse text '{text}' to DeliveryMode enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -76,7 +76,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to DepState enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToDepState", $"Unable to parse text '{text}' to DepState enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -89,7 +89,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to DepType enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToDepType", $"Unable to parse text '{text}' to DepType enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -102,7 +102,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to EntityRole enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToEntityRole", $"Unable to parse text '{text}' to EntityRole enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -115,7 +115,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to ExpState enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToExpState", $"Unable to parse text '{text}' to ExpState enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -128,7 +128,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to ExpType enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToExpType", $"Unable to parse text '{text}' to ExpType enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -141,7 +141,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to PaymentMethod enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToPaymentMethod", $"Unable to parse text '{text}' to PaymentMethod enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -154,7 +154,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to PersonRole enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToPersonRole", $"Unable to parse text '{text}' to PersonRole enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -167,7 +167,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to PODeliveryMode enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToPODeliveryMode", $"Unable to parse text '{text}' to PODeliveryMode enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -180,7 +180,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to ProjectRole enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToProjectRole", $"Unable to parse text '{text}' to ProjectRole enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -193,7 +193,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to UserRole enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToUserRole", $"Unable to parse text '{text}' to UserRole enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -206,7 +206,7 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions", $"Unable to parse text '{text}' to YesNo enum"); // Fatal error
+                LogError.LogInternalError("EnumActions.ConvertTextToYesNo", $"Unable to parse text '{text}' to YesNo enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }
@@ -231,7 +231,7 @@ namespace Portal11.Logic
                     }
                 }
             }
-            LogError.LogInternalError("StateAction", $"Unable to lookup Enum value '{value.ToString()}'"); // Fatal error
+            LogError.LogInternalError("EnumAction.GetEnumDescription", $"Unable to lookup Enum value '{value.ToString()}'"); // Fatal error
             return "Internal Error";
         }
     }

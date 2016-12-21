@@ -19,6 +19,7 @@
     </style>
 
     <div class="form-horizontal">
+        <asp:Panel runat="server" DefaultButton="btnSave">
         <div class="form-group">
             <div class="row">
                 <asp:Label runat="server" AssociatedControlID="rdoAppType" 
@@ -83,6 +84,8 @@
                                 Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
                             
                                 OnSelectedIndexChanged="rdoReviewType_SelectedIndexChanged">
+                                <%--Code assumes that the following three list items are in this order--%>
+                                <asp:ListItem Text="IC Only - Review only by Internal Coordinator" Value="ICOnly" Enabled="false"></asp:ListItem>
                                 <asp:ListItem Text="Express - no Financial or Executive Review" Value="Express"></asp:ListItem>
                                 <asp:ListItem Text="Full - include Financial and Executive Review" Value="Full" Selected="True"></asp:ListItem>
                             </asp:RadioButtonList>
@@ -219,6 +222,7 @@
         <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
         <asp:Literal ID="litSupportingDocMin" runat="server" Visible="false" Text="Minimum"></asp:Literal>
 
+        </asp:Panel>
     </div>
 
     <!-- This little style helps us hide the File Upload button. And this piece of Javascript makes the click event of the Add button trigger the click event of the File Upload control. This is

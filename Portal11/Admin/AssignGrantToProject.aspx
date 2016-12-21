@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Assign Grant to Project" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" 
-    CodeBehind="AssignGrantToProject.aspx.cs" Inherits="Portal11.Admin.AssignGrantToProject" EnableEventValidation="false" %>
+    CodeBehind="AssignGrantToProject.aspx.cs" Inherits="Portal11.Admin.AssignGrantToProject" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <h2><%: Title %></h2>
