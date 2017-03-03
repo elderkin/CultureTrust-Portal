@@ -71,8 +71,7 @@ namespace Portal11.Rqsts
                                 // Log fatal error
 
                                 // Note: The rdo displays TEXT that matches the Description of each AppType, but the VALUE contains the enumerated AppType
-                                string type = app.AppType.ToString();   // Fetch the type of Approval for use as button name
-                                rdoAppType.Items.FindByValue(type).Selected = true; // Select the button corresponding to our type
+                                rdoAppType.SelectedValue = app.AppType.ToString(); // Select the type of Approval
                                 rdoAppType.Enabled = false;             // Disable the control - cannot change type of existing Approval
 
                                 EnablePanels(app.AppType);              // Make the relevant panels visible
@@ -110,8 +109,7 @@ namespace Portal11.Rqsts
                                 if (app == null)
                                     LogError.LogInternalError("EditApproval", $"Unable to find Approval ID '{appID.String}' in database"); // Fatal error
 
-                                string type = app.AppType.ToString(); // Fetch the type of Approval for use as button name
-                                rdoAppType.Items.FindByValue(type).Selected = true; // Select the button corresponding to our type
+                                rdoAppType.SelectedValue = app.AppType.ToString(); // Select our Approval type
                                 rdoAppType.Enabled = false;         // Disable the control - cannot change type of existing Approval
                                 EnablePanels(app.AppType);          // Make the relevant panels visible
                                 LoadPanels(app);                    // Fill in the visible panels from the Approval
@@ -313,8 +311,12 @@ namespace Portal11.Rqsts
                     context.AppHistorys.Add(hist);                      // Save new AppHistory row
                     context.SaveChanges();                              // Update the App, create the AppHistory
 
-                    emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
-                        Convert.ToInt32(litSavedProjectID.Text),        // Request is associated with this project
+                    emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
+                        StateActions.UserRoleToApproveRequest(nextState), // Who is in this role
+                        toSubmit.ProjectID,                             // Request is associated with this project
+                        toSubmit.Project.Name,                          // Project has this name (for parameter substitution)
+                        EnumActions.GetEnumDescription(RequestType.Approval), // This is an Approval Request
+                        EnumActions.GetEnumDescription(nextState),      // Here is its next state
                         PortalConstants.CEmailDefaultApprovalApprovedSubject, PortalConstants.CEmailDefaultApprovalApprovedBody); // Use this subject and body, if needed
                 }
                 catch (Exception ex)
@@ -365,6 +367,7 @@ namespace Portal11.Rqsts
                         Notes = src.Notes,
                         ProjectID = src.ProjectID,                  // New Rqst is in the same project
                         ReturnNote = "",                            // Clear out the return note, if any
+                        StaffNote = "",                             // Clear out staff note, if any
                         CurrentTime = System.DateTime.Now,
                         CurrentState = StateActions.FindUnsubmittedAppState(litSavedProjectRole.Text),
                         CurrentUserID = litSavedUserID.Text         // Current user becomes creator of new Rqst
@@ -475,6 +478,10 @@ namespace Portal11.Rqsts
             pnlReviewType.Visible = true;
             pnlNotes.Visible = true;
             pnlReturnNote.Visible = false;
+            if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == the user is an IC
+                pnlStaffNote.Visible = true;                        // ICs can see the Staff Note
+            else
+                pnlStaffNote.Visible = false;                       // But no other project role can
             pnlState.Visible = true;
             pnlSupporting.Visible = true;
             switch (type)
@@ -525,14 +532,14 @@ namespace Portal11.Rqsts
 
             ExtensionActions.LoadEnumIntoRdo(record.AppReviewType, rdoReviewType); // Load enum value into Radio Button List
 
-            if (pnlNotes.Visible)
-                txtNotes.Text = record.Notes;
+            txtNotes.Text = record.Notes;
 
             if (record.CurrentState == AppState.Returned)               // If == the Rqst has been returned, so a Return Note may be present
             {
                 pnlReturnNote.Visible = true;                           // Make this panel visible
                 txtReturnNote.Text = record.ReturnNote;                 // Copy the text of the Return Note
             }
+            txtStaffNote.Text = record.StaffNote;
 
             // Supporting Documents handled elsewhere
 
@@ -548,6 +555,7 @@ namespace Portal11.Rqsts
             // Approval State - already set
             rdoReviewType.Enabled = false;
             txtNotes.Enabled = false;
+            txtStaffNote.Enabled = false;
             // Suporting Docs - leave Listbox filled and enabled so that double click still works
             if (pnlSupporting.Visible)
                 fupUpload.Enabled = false;   // But no new items
@@ -566,6 +574,9 @@ namespace Portal11.Rqsts
 
             if (pnlNotes.Visible)
                 record.Notes = txtNotes.Text;
+
+            if (pnlStaffNote.Visible)
+                record.StaffNote = txtStaffNote.Text;
 
             // Return Note is read-only, so not unloaded
 

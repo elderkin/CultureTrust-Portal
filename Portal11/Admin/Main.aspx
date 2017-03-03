@@ -160,7 +160,7 @@
                             <a runat="server" href="~/elmah.axd" title="Open the web page for the ELMAH error log">View Error Log</a>
                         </li>
                         <li class="list-group-item">
-                            <a runat="server" href="~/Admin/AdjustParameters.aspx" title="Change the settings of parameters that control portal operations">Adjust Parameters</a>
+                            <a runat="server" href="~/Admin/EmailParameters.aspx" title="Change the settings of parameters that control portal operations">Email Parameters</a>
                         </li>
                     </ul>
                 </div>

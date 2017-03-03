@@ -220,6 +220,24 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtReturnNote;
         
         /// <summary>
+        /// pnlStaffNote control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlStaffNote;
+        
+        /// <summary>
+        /// txtStaffNote control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtStaffNote;
+        
+        /// <summary>
         /// pnlHistory control.
         /// </summary>
         /// <remarks>
@@ -326,5 +344,14 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSavedState;
+        
+        /// <summary>
+        /// litSavedUserRole control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedUserRole;
     }
 }

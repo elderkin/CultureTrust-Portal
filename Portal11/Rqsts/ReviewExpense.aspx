@@ -11,6 +11,19 @@
         <p class="text-success">
             <asp:Literal runat="server" ID="litSuccessMessage" />
         </p>
+
+    <style>
+        .rdoColWidth tr td {
+            width: 40%;
+        }
+        .panel.col-lg-3 {
+            margin-bottom: 0px;
+        }
+        .table {
+            margin-bottom: 0px;
+        }
+    </style>
+    
     <div class="form-horizontal">
 
         <!-- Project Name -->
@@ -199,18 +212,6 @@
             </div>
         </asp:Panel>
 
-        <!-- Dollar Amount -->
-        <asp:Panel ID="pnlAmount" runat="server">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" ID="lblAmount" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" ReadOnly="true" />
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
-
         <!-- Payment Method -->
         <asp:Panel ID="pnlPaymentMethod" runat="server">
             <div class="form-group">
@@ -292,18 +293,6 @@
             </div>
         </asp:Panel>
 
-        <!-- GL Code -->
-        <asp:Panel ID="pnlGLCode" runat="server">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">General Ledger Code</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtGLCode" CssClass="form-control" ReadOnly="true" />
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
-
         <!-- Source of Funds and Project Class -->
         <asp:Panel ID="pnlFunds" runat="server">
             <div class="form-group">
@@ -334,6 +323,90 @@
         </asp:Panel>
         <! -- End of pnlFunds -->
 
+        <!-- Dollar Amount -->
+        <asp:Panel ID="pnlAmount" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" ID="lblAmount" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
+                    <div class="col-lg-4 col-md-4 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" ReadOnly="true" />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- GL Code -->
+        <asp:Panel ID="pnlGLCode" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">General Ledger Code</asp:Label>
+                    <div class="col-lg-4 col-md-4 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtGLCode" CssClass="form-control" ReadOnly="true" />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- Expense Split -->
+        <asp:Panel ID="pnlExpenseSplit" runat="server" Visible="false">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Expense Splits</asp:Label>
+                    <div class="col-sm-10 col-xs-offset-0 col-xs-12">
+ 
+                        <div class="col-xs-12" style="padding-left:0">
+                        <asp:GridView ID="gvExpSplit" runat="server"
+                            CssClass="table table-striped table-hover"
+                            ItemType="Portal11.Models.GLCodeSplitRow"
+                            AutoGenerateColumns="false"
+                            AllowPaging="false">
+
+                            <SelectedRowStyle CssClass="success" />
+
+                            <EmptyDataTemplate>
+                                <table>
+                                    <tr>
+                                        <td>There are no Splits for this Request</td>
+                                    </tr>
+                                </table>
+                            </EmptyDataTemplate>
+                            <Columns>
+                                <asp:TemplateField HeaderText="Project Class">
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitProjectClass" runat="server" CssClass="form-control" 
+                                            Text='<%# Bind("SelectedProjectClassID") %>' Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right" >
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" 
+                                            Text='<%# Bind("Amount") %>' style="text-align:right" Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Expense Account">
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitGLCode" runat="server" CssClass="form-control" 
+                                            Text='<%# Bind("SelectedGLCodeID") %>' Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control"  
+                                            Text='<%# Bind("Note") %>' Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                        </div>
+                    </div>
+                    <div class="text-danger col-xs-offset-1 col-xs-11">
+                        <asp:Literal ID="litSplitError" runat="server" Visible="false" 
+                            Text="Each split expense row must have a valid Dollar Amount and a selected Expense Account" />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
         <!-- Delivery Instructions - shared by PO and everybody else -->
         <asp:Panel ID="pnlDeliveryInstructions" runat="server">
             <div class="form-group">
@@ -341,6 +414,9 @@
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Delivery Instructions</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
                         <asp:TextBox ID="txtDeliveryInstructions" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    </div>
+                    <div class="form-group col-xs-1 has-error">
+                        <asp:TextBox ID="txtDeliveryInstructionsRush" runat="server" CssClass="form-control has-error text-danger" Text="Rush" Enabled="false" Visible="false" />
                     </div>
                 </div>
             </div>
@@ -387,7 +463,7 @@
         <asp:Panel ID="pnlNotes" runat="server">
             <div class="form-group">
                 <div class="row">
-                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Notes</asp:Label>
+                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Creator Note</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
                         <asp:TextBox ID="txtNotes" runat="server" CssClass="form-control has-success" TextMode="MultiLine" ReadOnly="true"></asp:TextBox>
                     </div>
@@ -405,6 +481,19 @@
                     </div>
                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txtReturnNote"
                         CssClass="text-danger" ErrorMessage="Please supply a reason why you are returning the request." />
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- Staff Note -->
+        <asp:Panel ID="pnlStaffNote" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" AssociatedControlID="txtStaffNote" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">
+                        Staff Note<br />(visible only to other staff)</asp:Label>
+                    <div class="col-lg-3 col-md-4 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtStaffNote" CssClass="form-control" TextMode="MultiLine" />
+                    </div>
                 </div>
             </div>
         </asp:Panel>
@@ -478,7 +567,9 @@
         <asp:Literal ID="litSavedExpID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedRush" runat="server" Visible="false" />
         <asp:Literal ID="litSavedState" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedUserRole" runat="server" Visible="false" />
 
     </div>
 

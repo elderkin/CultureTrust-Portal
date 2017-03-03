@@ -259,7 +259,7 @@ namespace Portal11.Admin
                         try                                             // It's possible that our Project's selection is no longer in user list
                         {
                             ddlProjectDirector.ClearSelection();        // Get rid of any existing selection
-                            ddlProjectDirector.Items.FindByValue(row.UserID).Selected = true; // Mark the selection
+                            ddlProjectDirector.SelectedValue = row.UserID; // Select this guy
                             return;
                         }
                         catch (NullReferenceException) { }              // No harm, just don't select an item in the ddl

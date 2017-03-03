@@ -7,31 +7,6 @@ using System.Drawing;
 namespace Portal11.Models
 {
 
-    // One row of the GridView named AssignProjectView, used by AssignUserToProject
-
-    public class AssignUserToProjectViewRow
-    {
-        public string RowID { get; set; }
-        public ProjectRole ProjectRole { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string CurrentPD { get; set; }
-        public string UserRole { get; set; }
-        public const int DescriptionLength = 40;
-    }
-
-    // One row of the GridView named EDHistoryView, used by EditDeposit, EditRequest, ReviewDeposit, and ReviewRequest
-
-    public class EDHistoryViewRow
-    {
-        public DateTime Date { get; set; }
-        public string FormerStatus { get; set; }
-        public string EstablishedBy { get; set; }
-        public string UpdatedStatus { get; set; }
-        public string ReasonForChange { get; set; }
-        public string ReturnNote { get; set; }
-    }
-
     // One row of the GridView named AllPortalUsers, used by ListPortalUsers
 
     public class AllPortalUsersRow
@@ -62,6 +37,42 @@ namespace Portal11.Models
         public int TotalRequests { get; set; }
         public string Inactive { get; set; }
         public const int InactiveColumn = 8;
+    }
+
+    // One row of the GridView named AssignProjectView, used by AssignUserToProject
+
+    public class AssignUserToProjectViewRow
+    {
+        public string RowID { get; set; }
+        public ProjectRole ProjectRole { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string CurrentPD { get; set; }
+        public string UserRole { get; set; }
+        public const int DescriptionLength = 40;
+    }
+
+    // One row of the GridView named EDHistoryView, used by EditDeposit, EditRequest, ReviewDeposit, and ReviewRequest
+
+    public class EDHistoryViewRow
+    {
+        public DateTime Date { get; set; }
+        public string FormerStatus { get; set; }
+        public string EstablishedBy { get; set; }
+        public string UpdatedStatus { get; set; }
+        public string ReasonForChange { get; set; }
+        public string ReturnNote { get; set; }
+    }
+
+    // One row of the GridView named ExpenseSplit, used by EditExpense
+
+    public class GLCodeSplitRow
+    {
+        public int TotalRows { get; set; }
+        public string SelectedProjectClassID { get; set; }
+        public string Amount { get; set; }
+        public string SelectedGLCodeID { get; set; }
+        public string Note { get; set; }
     }
 
     // One row of the GridView named ImportCSV, used by ImportProjectBalance
@@ -157,16 +168,14 @@ namespace Portal11.Models
     public class StaffAppViewRow
     {
         public string RowID { get; set; }
-        public const int RowIDCell = 0;
         public DateTime CurrentTime { get; set; }
         public string ProjectName { get; set; }
         public string AppTypeDesc { get; set; }
         public string AppReviewType { get; set; }
         public AppState CurrentState { get; set; }
-        public const int CurrentStateCell = 5;
         public string CurrentStateDesc { get; set; }
         public string Owner { get; set; }
-        public const int OwnerRow = 7;
+        public const int OwnerColumn = 5;
         public string Description { get; set; }
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
@@ -175,16 +184,14 @@ namespace Portal11.Models
     public class StaffDepViewRow
     {
         public string RowID { get; set; }
-        public const int RowIDCell = 0;
         public DateTime CurrentTime { get; set; }
         public string ProjectName { get; set; }
         public string DepTypeDesc { get; set; }
         public decimal Amount { get; set; }
         public DepState CurrentState { get; set; }
-        public const int CurrentStateCell = 5;
         public string CurrentStateDesc { get; set; }
         public string Owner { get; set; }
-        public const int OwnerRow = 7;
+        public const int OwnerColumn = 5;
         public string Description { get; set; }
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
@@ -194,18 +201,17 @@ namespace Portal11.Models
     public class StaffExpViewRow
     {
         public string RowID { get; set; }
-        public const int RowIDCell = 0;
         public DateTime CurrentTime { get; set; }
         public string ProjectName { get; set; }
         public string ExpTypeDesc { get; set; }
         public decimal Amount { get; set; }
         public ExpState CurrentState { get; set; }
-        public const int CurrentStateCell = 5;
         public string CurrentStateDesc { get; set; }
         public string Owner { get; set; }
-        public const int OwnerRow = 7;
+        public const int OwnerColumn = 5;
         public string Target { get; set; }
         public string Summary { get; set; }
+        public string Description { get; set; }
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
         public bool Rush { get; set; }
@@ -269,6 +275,9 @@ namespace Portal11.Models
 
         [DataType(DataType.MultilineText)]
         public string ReturnNote { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string StaffNote { get; set; }
 
         // The CURRENT state of the Request - where it is in the flow right now and who put it in this state
         [Required]
@@ -413,6 +422,9 @@ namespace Portal11.Models
         public virtual Person Person { get; set; }
         public bool PersonIsAnonymous { get; set; }
         public const string PersonAnonymous = "Anonymous";
+
+        [DataType(DataType.MultilineText)]
+        public string StaffNote { get; set; }
 
         // The CURRENT state of the Deposit - where it is in the flow right now and who put it in this state
         [Required]
@@ -617,6 +629,9 @@ namespace Portal11.Models
         public int? ProjectClassID { get; set; }
         public virtual ProjectClass ProjectClass { get; set; }
 
+        [DataType(DataType.MultilineText)]
+        public string StaffNote { get; set; }
+
         //TODO: Delete Summary
         [StringLength(30)]
         public string Summary { get; set; }                 // A free text name for the Expense
@@ -735,6 +750,20 @@ namespace Portal11.Models
         public DateTime CreatedTime { get; set; }
     }
 
+    // The split expense rows for a given Request
+
+    public class GLCodeSplit
+    {
+        public int GLCodeSplitID { get; set; }
+        public int RqstID { get; set; }
+        public int? GLCodeID { get; set; }
+        public virtual GLCode GLCode { get; set; }
+        public int? ProjectClassID { get; set; }
+        public virtual ProjectClass ProjectClass { get; set; }
+        public decimal Amount { get; set; }
+        public string Note { get; set; }
+    }
+
     // A Grant from a Grant Maker to a Project
 
     public class Grant
@@ -797,6 +826,35 @@ namespace Portal11.Models
         public string EmailTEReferSubject { get; set; }
         [DataType(DataType.MultilineText)]
         public string EmailTEReferBody { get; set; }
+
+        public string EmailPDBroadcastRushSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailPDBroadcastRushBody { get; set; }
+        public string EmailStaffBroadcastRushSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailStaffBroadcastRushBody { get; set; }
+        public string EmailFDRushSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailFDRushBody { get; set; }
+        public bool EmailICRush { get; set; }
+        public string EmailICRushSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailICRushBody { get; set; }
+        public string EmailPDRushSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailPDRushBody { get; set; }
+        public string EmailTDRushSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailTDRushBody { get; set; }
+        public string EmailTERushSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailTERushBody { get; set; }
+
+        public bool EmailDebug { get; set; }
+        public string EmailDebugAddress { get; set; }
+
+        public int SupportingDocCurrentIndex { get; set; }
+        public string SupportingDocCurrentSubdirectory { get; set; }
     }
 
     // A Person, who can take on the role of Contractor, Employee, Responsible, or Recipient on a project-by-project basis
@@ -1032,11 +1090,13 @@ namespace Portal11.Models
 
     // Files attached to a Expense or Deposit. This is just a description of the file. The actual file is stored in the
     // /Supporting directory.
-    
+
     public class SupportingDoc
     {
         public int SupportingDocID { get; set; }
         public string FileName { get; set; }
+        public int? Index { get; set; }                         // Currently unused
+        public string Subdirectory { get; set; }                // Currently unused
         public string MIME { get; set; }
         public int FileLength { get; set; }
         [Required]
@@ -1197,15 +1257,7 @@ namespace Portal11.Models
             CUserProjectUser = "User",
             CUserGridViewRows = "GridViewRows";
 
-        // ParameterCookie stores information about the portal read from the PortalParameter table.
-
-        public const string
-            CPortalParameter = "PortalParameterCookie",
-            CEmailFDRefer = "EmailFDRefer", CEmailFDReferSubject = "EmailFDReferSubject", CEmailFDReferBody = "EmailFDReferBody",
-            CEmailICRefer = "EmailICRefer", CEmailICReferSubject = "EmailICReferSubject", CEmailICReferBody = "EmailICReferBody",
-            CEmailPDRefer = "EmailPDRefer", CEmailPDReferSubject = "EmailPDReferSubject", CEmailPDReferBody = "EmailPDReferBody",
-            CEmailTDRefer = "EmailTDRefer", CEmailTDReferSubject = "EmailTDReferSubject", CEmailTDReferBody = "EmailTDReferBody",
-            CEmailTERefer = "EmailTERefer", CEmailTEReferSubject = "EmailTEReferSubject", CEmailTEReferBody = "EmailTEReferBody";
+        // Default email subjects and bodies
 
         public const string
             CEmailDefaultApprovalApprovedSubject = "Approval Request is ready for your action",
@@ -1222,6 +1274,8 @@ namespace Portal11.Models
         public const string
             CEmailDefaultExpenseApprovedSubject = "Expense Request is ready for your action",
             CEmailDefaultExpenseApprovedBody = "An Expense Request has advanced in the review process. It is ready for your action.",
+            CEmailDefaultExpenseBroadcastSubject = "A rush Expense Request has been submitted for project {0}",
+            CEmailDefaultExpenseBroadcastBody = "A rush Expense Request has been submitted. Expect an email asking for your review.",
             CEmailDefaultExpenseReturnedSubject = "Expense Request returned to you",
             CEmailDefaultExpenseReturnedBody = "An Expense Request has been returned to you during the review process. It is ready for your action.";
 
@@ -1240,7 +1294,7 @@ namespace Portal11.Models
             CProjectCheckboxes = "ProjectCheckboxesCookie",
 
             CProjectCkSearchVisible = "ProjectSearchVisible",
-            CProjectCkRAwaitingProjectStaff = "CkRAwaitingProjectStaff",
+            CProjectCkRUnsubmitted = "CkRUnsubmitted",
             CProjectCkRAwaitingCWStaff = "CkRAwaitingCWStaff",
             CProjectCkRApproved = "CkRApproved",
             CProjectCkRReturned = "CkRReturned",
@@ -1266,7 +1320,6 @@ namespace Portal11.Models
             CProjectCkEPaid = "CkEPaid",
             CProjectCkEReturned = "CkEReturned";
 
-
         // This cookie holds the settings of checkboxes on the Staff Dashbord page so we can leave the page and return with the same settings
 
         public const string
@@ -1274,11 +1327,14 @@ namespace Portal11.Models
 
             CStaffCkSearchVisible = "StaffSearchVisible",
 
-            CStaffCkRInternalCoordinator = "CkRInternalCoordinator",
+            CStaffCkRCompleted = "CkRCompleted",
             CStaffCkRFinanceDirector = "CkRFinanceDirector",
+            CStaffCkRInternalCoordinator = "CkRInternalCoordinator",
             CStaffCkRProjectMember = "CkRProjectMember",
+            CStaffCkRReturned = "CkRReturned",
             CStaffCkRTrustDirector = "CkRTrustDirector",
             CStaffCkRTrustExecutive = "CkRTrustExecutive",
+            CStaffCkRUnsubmitted = "CkRUnsubmitted",
 
             CStaffFromDate = "CStaffFromDate",
             CStaffToDate = "CStaffToDate",
@@ -1315,8 +1371,16 @@ namespace Portal11.Models
             CStaffCkEFinanceDirector = "CkEFinanceDirector",
             CStaffCkEProjectMember = "CkEProjectMember",
             CStaffCkETrustDirector = "CkETrustDirector",
-            CStaffCkETrustExecutive = "CkETrustExecutive"
-            ;
+            CStaffCkETrustExecutive = "CkETrustExecutive";
+
+        // This cookie holds the settings of page index values within the gridviews on the Staff Dashbord page
+
+        public const string
+            CStaffPageIndexes = "StaffPageIndexes",
+
+            CStaffPIApp = "StaffPIApp",
+            CStaffPIDep = "StaffPIDep",
+            CStaffPIExp = "StaffPIExp";
 
         // Random constants
 
@@ -1334,6 +1398,7 @@ namespace Portal11.Models
             WhatsNewName = "WhatsNew.txt";
         public const int
             AllPersonViewW9Column = 3,
+            SingleClickTimeout = 400,
             MaxSupportingFileSize = 6000000,
             ProjectPersonViewW9Column = 3;
 

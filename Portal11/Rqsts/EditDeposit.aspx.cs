@@ -80,8 +80,7 @@ namespace Portal11.Rqsts
                                 // Log fatal error
 
                                 // Note: The rdo displays TEXT that matches the Description of each DepType, but the VALUE contains the enumerated DepType
-                                string type = dep.DepType.ToString();   // Fetch the type of Deposit for use as button name
-                                rdoDepType.Items.FindByValue(type).Selected = true; // Select the button corresponding to our type
+                                rdoDepType.SelectedValue = dep.DepType.ToString(); // Select the button corresponding to our type
                                 rdoDepType.Enabled = false;             // Disable the control - cannot change type of existing Deposit
 
                                 EnablePanels(dep.DepType);              // Make the relevant panels visible
@@ -120,8 +119,7 @@ namespace Portal11.Rqsts
                                     LogError.LogInternalError("EditDeposit", string.Format("Unable to find Deposit ID '{0}' in database",
                                         depID.String));         // Fatal error
 
-                                string type = dep.DepType.ToString(); // Fetch the type of Deposit for use as button name
-                                rdoDepType.Items.FindByValue(type).Selected = true; // Select the button corresponding to our type
+                                rdoDepType.SelectedValue = dep.DepType.ToString(); // Select the button corresponding to our type
                                 rdoDepType.Enabled = false;         // Disable the control - cannot change type of existing Deposit
                                 EnablePanels(dep.DepType);          // Make the relevant panels visible
                                 LoadPanels(dep);                    // Fill in the visible panels from the Deposit
@@ -137,7 +135,7 @@ namespace Portal11.Rqsts
                                 // OK, who can revise a returned Deposit Request? 
                                 // Let's say that it's only the Coordinator, since they're the only one who could create it.
 
-                                if ((dep.CurrentState == DepState.Returned) && 
+                                if ((dep.CurrentState == DepState.Returned) &&
                                     (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString())) // If true it's a Coordinator and a Returned Request
                                     btnRevise.Visible = true;       // Turn on the "Revise" button - specific to this case
                                 btnShowHistory.Visible = true;      // We can show the history so make button visible 
@@ -164,6 +162,11 @@ namespace Portal11.Rqsts
 
         }
 
+        protected void txtAmount_TextChanged(object sender, EventArgs e)
+        {
+            ExtensionActions.ReloadDecimalText((TextBox)sender);    // Pretty up the text just entered
+        }
+
         // User pressed a radio button to select a Deposit type. Each Deposit type uses a different combination of panels.
         // Make visible the appropriate panels and fill the appropriate dropdown lists. Then do some housekeeping to get the
         // appropriate defaults applied. There ought to be a better way to do this, but I can't find it. By the way, this
@@ -173,7 +176,7 @@ namespace Portal11.Rqsts
         {
             DepType selected = EnumActions.ConvertTextToDepType(rdoDepType.SelectedValue); // Fetch selected button, convert value to enum
             EnablePanels(selected);                                     // Turn on/off controls based on selected Exp Type
-            FillDropDownLists();                                        // Load dropdown lists with unselected database values
+            FillDropDownLists(selected);                                // Load dropdown lists with unselected database values
             return;
         }
 
@@ -346,7 +349,7 @@ namespace Portal11.Rqsts
 
                     DepHistory hist = new DepHistory();               // Get a place to build a new History row
                     StateActions.CopyPreviousState(toRevise, hist, "Revised"); // Create a History log row from "old" version of Request
-//                    hist.ReturnNote = toRevise.ReturnNote;          // Save the Note from the Returned Rqst
+                                                                               //                    hist.ReturnNote = toRevise.ReturnNote;          // Save the Note from the Returned Rqst
 
                     //  3) Change the State of the Rqst from "Returned" to "Unsubmitted," erase the ReturnNote comments and save it.
 
@@ -425,8 +428,12 @@ namespace Portal11.Rqsts
                     context.DepHistorys.Add(hist);                  // Save new DepHistory row
                     context.SaveChanges();                          // Update the Dep, create the DepHistory
 
-                    emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
-                        Convert.ToInt32(litSavedProjectID.Text),        // Request is associated with this project
+                    emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
+                        StateActions.UserRoleToApproveRequest(nextState), // Who is in this role
+                        toSubmit.ProjectID,                         // Request is associated with this project
+                        toSubmit.Project.Name,                      // Project has this name (for parameter substitution)
+                        EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
+                        EnumActions.GetEnumDescription(nextState),      // Here is its next state
                         PortalConstants.CEmailDefaultDepositApprovedSubject, PortalConstants.CEmailDefaultDepositApprovedBody); // Use this subject and body, if needed
                 }
                 catch (Exception ex)
@@ -476,7 +483,8 @@ namespace Portal11.Rqsts
                         DateOfDeposit = src.DateOfDeposit,
                         DepType = src.DepType,
                         Description = src.Description + " (copy)",  // Note that this is a copy
-                        DestOfFunds = src.DestOfFunds, ProjectClassID = src.ProjectClassID,
+                        DestOfFunds = src.DestOfFunds,
+                        ProjectClassID = src.ProjectClassID,
                         EntityIsAnonymous = src.EntityIsAnonymous,
                         EntityNeeded = src.EntityNeeded,
                         EntityRole = src.EntityRole,
@@ -490,6 +498,7 @@ namespace Portal11.Rqsts
                         PledgePayment = src.PledgePayment,
                         ProjectID = src.ProjectID,                  // New Rqst is in the same project
                         ReturnNote = "",                            // Clear out the return note, if any
+                        StaffNote = "",                             // Clear out the staff note, if any
                         SourceOfFunds = src.SourceOfFunds,
                         CurrentTime = System.DateTime.Now,
                         CurrentState = StateActions.FindUnsubmittedDepState(litSavedProjectRole.Text),
@@ -552,7 +561,7 @@ namespace Portal11.Rqsts
                         };
                         UnloadPanels(toSave);                       // Move from Panels to record
                         StateActions.SetNewDepState(toSave, EnumActions.ConvertTextToDepState(litSavedStateEnum.Text), litSavedUserID.Text);
-                            // Write down our current State and authorship
+                        // Write down our current State and authorship
                         context.Deps.Add(toSave);                   // Save new Rqst row
                         context.SaveChanges();                      // Commit the Add
                         litSavedDepID.Text = toSave.DepID.ToString(); // Show that we've saved it once
@@ -577,7 +586,7 @@ namespace Portal11.Rqsts
                         DepHistory hist = new DepHistory();         // Get a place to build a new DepHistory row
                         StateActions.CopyPreviousState(toUpdate, hist, "Saved"); // Create a DepHistory log row from "old" version of Deposit
                         StateActions.SetNewDepState(toUpdate, hist.PriorDepState, litSavedUserID.Text, hist);
-                            // Write down our current State (which doesn't change here) and authorship
+                        // Write down our current State (which doesn't change here) and authorship
                         context.DepHistorys.Add(hist);              // Save new DepHistory row
                         context.SaveChanges();                      // Commit the Add or Modify
                         UnloadSupportingDocs();                     // Save all the new supporting documents
@@ -606,6 +615,10 @@ namespace Portal11.Rqsts
             pnlReturnNote.Visible = false;
             litSavedEntityEnum.Text = EntityRole.DepositEntity.ToString(); // Set preferred entity role for Deposit use
             pnlSourceOfFunds.Visible = true; litSavedPersonEnum.Text = PersonRole.Donor.ToString(); // Only type of Person is Donor (so far ;-)
+            if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == user is an IC
+                pnlStaffNote.Visible = true;                        // The IC can see the staff note
+            else
+                pnlStaffNote.Visible = false;                       // But no one else can
             pnlState.Visible = true;
             pnlSupporting.Visible = true;
             switch (type)
@@ -657,15 +670,19 @@ namespace Portal11.Rqsts
                         break;
                     }
             }
+            if (UseOnlyDepositGLCodes(type))                        // If true only use Deposit GL Codes
+                labGLCode.Text = "Income Account";
+            else                                                    // Otherwise use all GL Codes
+                labGLCode.Text = "Income or Expense Account";
             return;
         }
 
         // Fill in the "big" dropdown lists for a Deposit. Fill Entity and Person even though they might not be visible yet.
 
-        void FillDropDownLists()
+        void FillDropDownLists(DepType type)
         {
             FillEntityDDL(null);
-            FillGLCodeDDL(null);
+            FillGLCodeDDL(null, UseOnlyDepositGLCodes(type));       // Load only Deposit GL codes or all GL codes based on Deposit Type
             FillPersonDDL(null);
             FillProjectClassDDL(null);
             txtDateOfDeposit.Text = DateTime.Now.ToString("MM/dd/yyyy"); // Supply today's date as default
@@ -674,7 +691,7 @@ namespace Portal11.Rqsts
 
         // Fill the drop down list of Entitys from the database.
 
-        void FillEntityDDL(int? entityID, bool needed=false)
+        void FillEntityDDL(int? entityID, bool needed = false)
         {
             int projID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int; // Find ID of current project
             EntityRole selectedRole = EnumActions.ConvertTextToEntityRole(litSavedEntityEnum.Text); // Role for this Request Type
@@ -699,7 +716,7 @@ namespace Portal11.Rqsts
                 }
 
                 StateActions.LoadDdl(ddlEntity, entityID, rows,
-                    "", "-- none selected --", 
+                    "", "-- none selected --",
                     needed, "-- Please add new " + lblEntity.Text + " --"); // Put the cherry on top
 
             }
@@ -708,19 +725,19 @@ namespace Portal11.Rqsts
 
         // If the GLCode panel is enabled, fill the drop down list from the database
 
-        void FillGLCodeDDL(int? glcodeID)
+        void FillGLCodeDDL(int? glcodeID, bool useOnlyDepositCodes)
         {
             if (pnlGLCode.Visible)                                  // If true need to populate list
             {
-                if (ddlGLCode.Items.Count == 0)                     // If = the control is empty. Fill it
-                {
+//                if (ddlGLCode.Items.Count == 0)                     // If = the control is empty. Fill it
+//                {
                     using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                     {
                         string franchiseKey = SupportingActions.GetFranchiseKey(); // Find current key value
                         var query = from gl in context.GLCodes
-                                    where !gl.Inactive && gl.DepCode && gl.FranchiseKey == franchiseKey
+                                    where !gl.Inactive && gl.FranchiseKey == franchiseKey
                                     orderby gl.Code
-                                    select new { gl.GLCodeID, gl.Code }; // Find all Deposit-specific codes that are active
+                                    select new { gl.GLCodeID, gl.Code, gl.DepCode }; // Find all codes that are active - Dep and Exp
 
                         DataTable rows = new DataTable();            // Create an empty DataTable to hold rows returned by Query
                         rows.Columns.Add(PortalConstants.DdlID);
@@ -728,6 +745,8 @@ namespace Portal11.Rqsts
 
                         foreach (var row in query)
                         {
+                            if (useOnlyDepositCodes && (!row.DepCode)) // If true we're only using Deposit codes and this isn't one of them
+                                continue;                            // Skip just this row of the query 
                             DataRow dr = rows.NewRow();              // Build a row from the next query output
                             dr[PortalConstants.DdlID] = row.GLCodeID;
                             dr[PortalConstants.DdlName] = row.Code;
@@ -738,7 +757,7 @@ namespace Portal11.Rqsts
                             "-- none selected --"); // Put the cherry on top
 
                     }
-                }
+//                }
             }
             return;
         }
@@ -772,7 +791,7 @@ namespace Portal11.Rqsts
                 }
 
                 StateActions.LoadDdl(ddlPerson, personID, rows,
-                    "", "-- none selected --", 
+                    "", "-- none selected --",
                     needed, "-- Please add new " + lblPerson.Text + " --"); // Put the cherry on top
 
             }
@@ -844,19 +863,19 @@ namespace Portal11.Rqsts
             {
                 if (record.DestOfFunds == SourceOfExpFunds.Restricted) // If == the Source of Funds is a Project Class
                 {
-                    rdoDestOfFunds.Items.FindByValue(PortalConstants.RDOFundsRestricted).Selected = true; // Select the button corresponding to restricted funds
+                    rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsRestricted; // Select the button corresponding to restricted funds
                     pnlProjectClass.Visible = true;
                 }
                 else if (record.DestOfFunds == SourceOfExpFunds.Unrestricted) // If == the Dest of Funds does not use a Project Class
                 {
-                    rdoDestOfFunds.Items.FindByValue(PortalConstants.RDOFundsUnrestricted).Selected = true; // Select the other button
+                    rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsUnrestricted; // Select the other button
                     pnlProjectClass.Visible = false;                    // Unrestricted means no Project Class so don't show the list
                 }
                 FillProjectClassDDL(record.ProjectClassID);             // Fill the DDL even if it's not visible yet. User could change that
             }
 
             if (pnlGLCode.Visible)
-                FillGLCodeDDL(record.GLCodeID);                         // Fill drop down list and hightlight the selected item
+                FillGLCodeDDL(record.GLCodeID, UseOnlyDepositGLCodes(record.DepType)); // Fill drop down list and hightlight the selected item
 
             if (pnlNotes.Visible)
                 txtNotes.Text = record.Notes;
@@ -878,12 +897,12 @@ namespace Portal11.Rqsts
                 {
                     case SourceOfDepFunds.NA:
                         {
-                            rdoSourceOfFunds.Items.FindByValue(PortalConstants.RDONotApplicable).Selected = true; // Select the corresponding button
+                            rdoSourceOfFunds.SelectedValue = PortalConstants.RDONotApplicable; // Select the corresponding button
                             break;
                         }
                     case SourceOfDepFunds.Entity:
                         {
-                            rdoSourceOfFunds.Items.FindByValue(PortalConstants.RDOEntity).Selected = true; // Select the corresponding button
+                            rdoSourceOfFunds.SelectedValue = PortalConstants.RDOEntity; // Select the corresponding button
                             pnlEntity.Visible = true;                       // Make the drop down list appear
                             if (record.EntityIsAnonymous)                   // If true the Anonymous button is set
                             {
@@ -894,7 +913,7 @@ namespace Portal11.Rqsts
                         }
                     case SourceOfDepFunds.Individual:
                         {
-                            rdoSourceOfFunds.Items.FindByValue(PortalConstants.RDOIndividual).Selected = true; // Select the corresponding button
+                            rdoSourceOfFunds.SelectedValue = PortalConstants.RDOIndividual; // Select the corresponding button
                             pnlPerson.Visible = true;                       // Make the checkbox and drop down list appear.
                             if (record.PersonIsAnonymous)                   // If true the Anonymous button is set
                             {
@@ -911,6 +930,8 @@ namespace Portal11.Rqsts
                         }
                 }
             }
+            if (pnlStaffNote.Visible)
+                txtStaffNote.Text = record.StaffNote;
 
             // Supporting Documents handled elsewhere
 
@@ -931,6 +952,7 @@ namespace Portal11.Rqsts
             txtNotes.Enabled = false;
             pnlOptions.Enabled = false;
             rdoSourceOfFunds.Enabled = false; ddlPerson.Enabled = false; ddlEntity.Enabled = false;
+            pnlStaffNote.Enabled = false;
             // Suporting Docs - leave Listbox filled and enabled so that double click still works
             if (pnlSupporting.Visible)
                 fupUpload.Enabled = false;   // But no new items
@@ -1017,6 +1039,9 @@ namespace Portal11.Rqsts
                 }
             }
 
+            if (pnlStaffNote.Visible)
+                record.StaffNote = txtStaffNote.Text;
+
             return;
         }
 
@@ -1040,6 +1065,29 @@ namespace Portal11.Rqsts
                 SupportingActions.UnloadDocs(lstSupporting, litSavedUserID.Text, RequestType.Deposit, QueryStringActions.ConvertID(litSavedDepID.Text).Int, litDangerMessage);
             }
             return;
+        }
+
+        // For a given DepType, figure out whether to use just Deposit GL Codes or all GL Codes
+
+        bool UseOnlyDepositGLCodes(DepType type)
+        {
+            switch (type)
+            {
+                case DepType.Check:
+                case DepType.EFT:
+                    return false;                                   // Use all GL codes
+
+                case DepType.Cash:
+                case DepType.InKind:
+                case DepType.Pledge:
+                    return true;                                    // Use just Deposit GL codes
+
+                default:
+                    {
+                        LogError.LogInternalError("EditDeposit", $"Invalid DepTypes value '{type}' found"); // Fatal error
+                        return false;
+                    }
+            }
         }
     }
 }

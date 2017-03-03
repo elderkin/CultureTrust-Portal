@@ -2,8 +2,6 @@
 using Portal11.Logic;
 using Portal11.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -28,6 +26,9 @@ namespace Portal11.Rqsts
                 if (appID.Int == 0 || cmd != PortalConstants.QSCommandReview || ret == "") // If null or blank, this form invoked incorrectly
                     LogError.LogQueryStringError("ReviewApproval", "Invalid Query String 'Command' or 'RequestID'"); // Log fatal error
 
+                HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Fetch user info cookie for current user
+                litSavedUserRole.Text = userInfoCookie[PortalConstants.CUserRole]; //Fetch user role, save for later
+
                 // Fetch the App row and fill the page
 
                 using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
@@ -43,6 +44,8 @@ namespace Portal11.Rqsts
 
                     if (!StateActions.UserCanApproveRequest(app.CurrentState)) // If false user can not Approve this App. Disable functions
                     {
+                        txtReturnNote.Enabled = false;                  // Can see this note but not edit it
+                        txtStaffNote.Enabled = false;                   // Can see this note but not edit it
                         btnApprove.Enabled = false;                     // Cannot "Approve" the App
                         btnReturn.Enabled = false;                      // Cannot "Return" the App
                         litDangerMessage.Text = "You can view this Approval Request, but you cannot approve it."; // Explain that to user
@@ -55,7 +58,6 @@ namespace Portal11.Rqsts
                     litSavedProjectID.Text = app.ProjectID.ToString();
                     litSavedReturn.Text = ret;
                     litSavedReviewType.Text = app.AppReviewType.ToString(); // Save for later
-
                 }
             }
             return;
@@ -106,10 +108,15 @@ namespace Portal11.Rqsts
             AppReviewType newAppReviewType = EnumActions.ConvertTextToAppReviewType(rdoReviewType.SelectedValue); // Convert selection to enum
             AppState nextState = StateActions.FindNextState(currentState, newAppReviewType ); // Now what?
 
-            SaveApp(nextState, "Advanced");                         // Update App; write new History row
+            int projectID = new int(); string projectName = "";
+            SaveApp(nextState, "Advanced", out projectID, out projectName); // Update App; write new History row
 
-            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
-                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+            string emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
+                StateActions.UserRoleToApproveRequest(nextState),   // Who is in this role
+                projectID,                                          // Request is associated with this project
+                projectName,                                        // Project has a name
+                EnumActions.GetEnumDescription(RequestType.Approval), // This is an Approval Request
+                EnumActions.GetEnumDescription(nextState),          // Here is its next state
                 PortalConstants.CEmailDefaultApprovalApprovedSubject, PortalConstants.CEmailDefaultApprovalApprovedBody); // Use this subject and body, if needed
 
             Response.Redirect(litSavedReturn.Text + "?"
@@ -122,9 +129,14 @@ namespace Portal11.Rqsts
 
         protected void btnReturn_Click(object sender, EventArgs e)
         {
-            SaveApp(AppState.Returned, "Returned");                 // Update App; write new History row
-            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(AppState.Returned), // Convert selection to enum
-                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+            int projectID = new int(); string projectName = "";
+            SaveApp(AppState.Returned, "Returned", out projectID, out projectName); // Update App; write new History row
+            string emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
+                StateActions.UserRoleToApproveRequest(AppState.Returned), // Who is in this role
+                projectID,                                          // Request is associated with this project
+                projectName,                                        // Project has a name
+                EnumActions.GetEnumDescription(RequestType.Approval), // This is an Approval Request
+                EnumActions.GetEnumDescription(AppState.Returned),  // Here is its next state
                 PortalConstants.CEmailDefaultApprovalReturnedSubject, PortalConstants.CEmailDefaultApprovalReturnedBody); // Use this subject and body, if needed
 
             Response.Redirect(litSavedReturn.Text + "?"
@@ -145,7 +157,7 @@ namespace Portal11.Rqsts
         //  2) Create a new AppHistory row and fill it.
         //  3) Update the App row with new State, new ReviewType and Return Note.
 
-        private void SaveApp(AppState nextState, string verb)
+        private void SaveApp(AppState nextState, string verb, out int projectID, out string projectName)
         {
             HttpCookie userInfoCookie = Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
@@ -158,17 +170,21 @@ namespace Portal11.Rqsts
                     toUpdate.AppReviewType = EnumActions.ConvertTextToAppReviewType(rdoReviewType.SelectedValue); // Convert selection to enum
                     toUpdate.ReturnNote = txtReturnNote.Text;                   // Fetch updated content of the note, if any
                     hist.ReturnNote = txtReturnNote.Text;                       // Preserve this note in the History trail
+                    toUpdate.StaffNote = txtStaffNote.Text;                     // Fetch updated content of this note, if any
                     StateActions.CopyPreviousState(toUpdate, hist, verb);       // Create a Request History log row from "old" version of Request
                     StateActions.SetNewAppState(toUpdate, nextState, userInfoCookie[PortalConstants.CUserID], hist); // Write down our current State and authorship
                     context.AppHistorys.Add(hist);                              // Save new AppHistory row
                     context.SaveChanges();                                      // Commit the Add and Modify
+                    projectID = (int)toUpdate.ProjectID;                        // Report project ID to caller
+                    projectName = toUpdate.Project.Name;                        // Report project name to caller
+                    return;
                 }
                 catch (Exception ex)
                 {
                     LogError.LogDatabaseError(ex, "ReviewApproval", "Unable to update App or AppHistory rows"); // Fatal error
                 }
             }
-            return;
+            projectID = 0; projectName = "";
         }
 
         // Based on the selected Approval Type, enable and disable the appropriate panels on the display.
@@ -181,6 +197,11 @@ namespace Portal11.Rqsts
             pnlNotes.Visible = true;
             pnlReturnNote.Visible = true;
             pnlReviewType.Visible = true;
+            if ((litSavedUserRole.Text == UserRole.Project.ToString())
+                || (litSavedUserRole.Text == UserRole.Auditor.ToString()))      // If true, user is a Project Director or Auditor
+                pnlStaffNote.Visible = false;                                   // They don't see Staff Note
+            else
+                pnlStaffNote.Visible = true;                                    // But Staff users can see it
             pnlState.Visible = true;
             pnlSupporting.Visible = true;
             switch (type)
@@ -226,26 +247,6 @@ namespace Portal11.Rqsts
             txtTypeDescription.Text = EnumActions.GetEnumDescription((Enum)record.AppType); // Convert enum value to English value for display
 
             ExtensionActions.LoadEnumIntoRdo(record.AppReviewType, rdoReviewType); // Load enum value into Radio Button List
-            //// Load Review Type
-
-            //switch (record.AppReviewType)
-            //{
-            //    case AppReviewType.Express:
-            //        {
-            //            rdoReviewType.Items.FindByValue(AppReviewType.Express.ToString()).Selected = true; // Light the Express button
-            //            break;
-            //        }
-            //    case AppReviewType.Full:
-            //        {
-            //            rdoReviewType.Items.FindByValue(AppReviewType.Full.ToString()).Selected = true; // Light the Full button
-            //            break;
-            //        }
-            //    default:
-            //        {
-            //            LogError.LogInternalError("ReviewApproval", $"Invalid AppReviewType value '{record.AppReviewType}' found in App record"); // Log fatal error
-            //            break;
-            //        }
-            //}
 
             if (pnlNotes.Visible)
                 txtNotes.Text = record.Notes;
@@ -257,6 +258,8 @@ namespace Portal11.Rqsts
                 pnlReturnNote.Visible = true;                           // Make this panel visible
                 txtReturnNote.Text = record.ReturnNote;                 // Copy the text of the Return Note
             }
+
+            txtStaffNote.Text = record.StaffNote;                       // Load value, if any
 
             SupportingActions.LoadDocs(RequestType.Approval, record.AppID, lstSupporting, litDangerMessage); // Load them into list box
 

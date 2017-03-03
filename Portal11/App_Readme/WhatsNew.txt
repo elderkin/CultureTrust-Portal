@@ -1,4 +1,23 @@
-﻿Version 1.3
+﻿Version 1.5
+
+On the Staff Dashboard, the Next Reviewer filter in the Search panel is reorganized to include "Unsubmitted," "Completed," and "Returned" checkboxes.
+On the Staff Dashboard, there is a "Review" button on each row to begin a Review of that Request.
+On the Staff Dashboard, the Portal now returns to the same page within the list of requests when you finish reviewing a Request. 
+On the Staff Dashboard, the Portal now displays the number of the page within the list of requests.
+There is a new "Staff Note" field for each Request. It is displayed only when an IC edits a request and when a staff member (FD, TD, TE) reviews a request. The staff member can add text to the Staff Note, which is saved when the Request is approved.
+Deposits of Checks and EFTs now allow both Deposit and Expense GL Codes.
+On the Project Dashboard, the Request Status filter in the Search panel now refers to "Unsubmitted" Requests rather than "Awaiting Project Staff" Requests.
+
+Version 1.4
+
+For Deposit and Expense Requests, dollar amounts are now right-justified and reformatted as they are entered.
+For Expense Requests, Reimbursement requests now allow the dollar amount to be "split" across many Expense Accounts.
+On the Admin page, the function "Adjust Parameters" is now called "Email Parameters."
+There are new Email Parameters to support "Rush" requests. A rush request first sends a "broadcast" email to all staff members. Then sends "rush" emails to reviewers.
+Approving Expense Requests is simplified. Once the Truse Executive approves the request, it becomes "Ready to Pay" for the Finance Director.
+Approving Deposit Requests is simplified. The approval process no longer involves the Trust Executive.
+
+Version 1.3
 
 The Portal now sends emails when a request is approved. There are several new features to control this process.
 The new Adjust Parameters page on the Admin menu controls whether each role - PD, FD, IC, TD and TE - receive an email when a request reaches them.

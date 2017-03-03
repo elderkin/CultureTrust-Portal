@@ -79,6 +79,7 @@ namespace Portal11.Models
         public DbSet<Entity> Entitys { get; set; }
         public DbSet<Exp> Exps { get; set; }
         public DbSet<ExpHistory> ExpHistorys { get; set; }
+        public DbSet<GLCodeSplit> GLCodeSplits { get; set; }
         public DbSet<Franchise> Franchises { get; set; }
         public DbSet<GLCode> GLCodes { get; set; }
         public DbSet<Grant> Grants { get; set; }

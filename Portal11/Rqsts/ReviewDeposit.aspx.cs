@@ -25,6 +25,9 @@ namespace Portal11.Rqsts
                 if (depID.Int == 0 || cmd != PortalConstants.QSCommandReview || ret == "") // If null or blank, this form invoked incorrectly
                     LogError.LogQueryStringError("ReviewDeposit", "Invalid Query String 'Command' or 'DepID'"); // Log fatal error
 
+                HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Fetch user info cookie for current user
+                litSavedUserRole.Text = userInfoCookie[PortalConstants.CUserRole]; //Fetch user role, save for later
+
                 // Fetch the Dep row and fill the page
 
                 using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
@@ -40,6 +43,8 @@ namespace Portal11.Rqsts
 
                     if (!StateActions.UserCanApproveRequest(dep.CurrentState)) // If false user can not Approve this Dep. Disable functions
                     {
+                        txtReturnNote.Enabled = false;                  // Can see this note but not edit it
+                        txtStaffNote.Enabled = false;                   // Can see this note but not edit it
                         btnApprove.Enabled = false;                     // Cannot "Approve" the Dep
                         btnReturn.Enabled = false;                      // Cannot "Return" the Dep
                         litDangerMessage.Text = "You can view this Deposit Request, but you cannot approve it."; // Explain that to user
@@ -98,10 +103,16 @@ namespace Portal11.Rqsts
         {
             DepState currentState = EnumActions.ConvertTextToDepState(litSavedState.Text); // Pull ToString version; convert to enum type
             DepState nextState = StateActions.FindNextState(currentState); // Now what?
-            SaveDep(nextState, "Approved");                         // Update Dep; write new History row
 
-            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
-                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+            int projectID = new int(); string projectName = "";
+            SaveDep(nextState, "Approved", out projectID, out projectName); // Update Dep; write new History row
+
+            string emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
+                StateActions.UserRoleToApproveRequest(nextState),   // Who is in this role
+                projectID,                                          // Request is associated with this project
+                projectName,                                        // Project has a name
+                EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
+                EnumActions.GetEnumDescription(nextState),          // Here is its next state
                 PortalConstants.CEmailDefaultDepositApprovedSubject, PortalConstants.CEmailDefaultDepositApprovedBody); // Use this subject and body, if needed
 
             Response.Redirect(litSavedReturn.Text + "?"
@@ -114,10 +125,15 @@ namespace Portal11.Rqsts
 
         protected void btnReturn_Click(object sender, EventArgs e)
         {
-            SaveDep(DepState.Returned, "Returned");                 // Update Dep; write new History row
+            int projectID = new int(); string projectName = "";
+            SaveDep(DepState.Returned, "Returned", out projectID, out projectName); // Update Dep; write new History row
 
-            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(DepState.Returned), // Tell next reviewer, who is in this role
-                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+            string emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
+                StateActions.UserRoleToApproveRequest(DepState.Returned), // Who is in this role
+                projectID,                                          // Request is associated with this project
+                projectName,                                        // Project has a name
+                EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
+                EnumActions.GetEnumDescription(DepState.Returned),  // Here is its next state
                 PortalConstants.CEmailDefaultDepositApprovedSubject, PortalConstants.CEmailDefaultDepositApprovedBody); // Use this subject and body, if needed
 
             Response.Redirect(litSavedReturn.Text + "?"
@@ -138,7 +154,7 @@ namespace Portal11.Rqsts
         //  2) Create a new DepHistory row and fill it.
         //  3) Update the Dep row with new State and Return Note.
 
-        private void SaveDep(DepState nextState, string verb)
+        private void SaveDep(DepState nextState, string verb, out int projectID, out string projectName)
         {
             HttpCookie userInfoCookie = Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
@@ -150,30 +166,39 @@ namespace Portal11.Rqsts
                     DepHistory hist = new DepHistory();                         // Get a place to build a new Request History row
                     toUpdate.ReturnNote = txtReturnNote.Text;                   // Fetch updated content of the note, if any
                     hist.ReturnNote = txtReturnNote.Text;                       // Preserve this note in the History trail
+                    toUpdate.StaffNote = txtStaffNote.Text;                     // Fetch updated content of the note, if any
                     StateActions.CopyPreviousState(toUpdate, hist, verb);       // Create a Request History log row from "old" version of Request
                     StateActions.SetNewDepState(toUpdate, nextState, userInfoCookie[PortalConstants.CUserID], hist); // Write down our current State and authorship
                     context.DepHistorys.Add(hist);                              // Save new DepHistory row
                     context.SaveChanges();                                      // Commit the Add and Modify
+                    projectID = (int)toUpdate.ProjectID;                        // Report project ID to caller
+                    projectName = toUpdate.Project.Name;                        // Report project name to caller
+                    return;
                 }
                 catch (Exception ex)
                 {
                     LogError.LogDatabaseError(ex, "ReviewDeposit", "Unable to update Dep or DepHistory rows"); // Fatal error
                 }
             }
-            return;
+            projectID = 0; projectName = "";
         }
 
         // Based on the selected Deposit Type, enable and disable the appropriate panels on the display.
 
         void EnablePanels(DepType type)
         {
-            pnlAmount.Visible = true;                                // Unconditionally visible for all Deposit types
+            pnlAmount.Visible = true;                                           // Unconditionally visible for all Deposit types
             pnlDescription.Visible = true;
             pnlEstablishedBy.Visible = true;
             pnlEstablishedTime.Visible = true;
             pnlGLCode.Visible = true;
             pnlNotes.Visible = true;
             pnlReturnNote.Visible = true;
+            if ((litSavedUserRole.Text == UserRole.Project.ToString())
+                || (litSavedUserRole.Text == UserRole.Auditor.ToString()))      // If true, user is a Project Director or Auditor
+                pnlStaffNote.Visible = false;                                   // They don't see Staff Note
+            else
+                pnlStaffNote.Visible = true;                                    // But Staff users can see it
             pnlState.Visible = true;
             pnlSupporting.Visible = true;
             switch (type)
@@ -242,12 +267,12 @@ namespace Portal11.Rqsts
 
             if (record.DestOfFunds == SourceOfExpFunds.Restricted) // If == the Source of Funds is a Project Class
             {
-                rdoDestOfFunds.Items.FindByValue(PortalConstants.RDOFundsRestricted).Selected = true; // Select the button corresponding to restricted funds
+                rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsRestricted; // Select "restricted" button
                 pnlProjectClass.Visible = true;
             }
             else if (record.DestOfFunds == SourceOfExpFunds.Unrestricted) // If == the Dest of Funds does not use a Project Class
             {
-                rdoDestOfFunds.Items.FindByValue(PortalConstants.RDOFundsUnrestricted).Selected = true; // Select the other button
+                rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsUnrestricted; // Select "unrestricted" button
                 pnlProjectClass.Visible = false;                    // Unrestricted means no Project Class so don't show the list
             }
             if (record.ProjectClassID != null)
@@ -280,12 +305,12 @@ namespace Portal11.Rqsts
             {
                 case SourceOfDepFunds.NA:
                     {
-                        rdoSourceOfFunds.Items.FindByValue(PortalConstants.RDONotApplicable).Selected = true; // Select the corresponding button
+                        rdoSourceOfFunds.SelectedValue = PortalConstants.RDONotApplicable; // Select "Not Applicable" button
                         break;
                     }
                 case SourceOfDepFunds.Entity:
                     {
-                        rdoSourceOfFunds.Items.FindByValue(PortalConstants.RDOEntity).Selected = true; // Select the corresponding button
+                        rdoSourceOfFunds.SelectedValue = PortalConstants.RDOEntity; // Select "Entity" button
                         pnlEntity.Visible = true;                       // Make the drop down list appear
                         if (record.EntityID != null)                    // If != there is an Entity to display
                             txtEntity.Text = record.Entity.Name;
@@ -295,7 +320,7 @@ namespace Portal11.Rqsts
                     }
                 case SourceOfDepFunds.Individual:
                     {
-                        rdoSourceOfFunds.Items.FindByValue(PortalConstants.RDOIndividual).Selected = true; // Select the corresponding button
+                        rdoSourceOfFunds.SelectedValue = PortalConstants.RDOIndividual; // Select "Individual" button
                         pnlPerson.Visible = true;                       // Make the drop down list appear.
                         if (record.PersonID != null)                    // If != there is a Person to display
                             txtPerson.Text = record.Person.Name;
@@ -309,6 +334,7 @@ namespace Portal11.Rqsts
                         break;
                     }
             }
+            txtStaffNote.Text = record.StaffNote;                       // Load current value of note, if any
 
             SupportingActions.LoadDocs(RequestType.Deposit, record.DepID, lstSupporting, litDangerMessage); // Load them into list box
 

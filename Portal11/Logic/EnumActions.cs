@@ -1,11 +1,8 @@
 ﻿using Portal11.ErrorLog;
 using Portal11.Models;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Web;
 
 namespace Portal11.Logic
 {
@@ -55,6 +52,12 @@ namespace Portal11.Logic
             }
         }
 
+        public static bool ConvertTextToBool(string text)
+        {
+            if (text == "True")
+                return true;
+            return false;
+        }
         public static DeliveryMode ConvertTextToDeliveryMode(string text)
         {
             try
