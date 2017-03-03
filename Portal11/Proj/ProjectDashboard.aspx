@@ -52,11 +52,11 @@
 
             <%--Request Status--%>
 
-            <div class="panel panel-default col-md-3 col-xs-6">
-                <div class="panel-body" style="min-height: 108px; max-height: 108px;">
+            <div class="panel panel-default col-md-4 col-xs-6">
+                <div class="panel-body" style="min-height: 110px; max-height: 110px; padding-top: 0px;">
                 <h4>Filter: Request Status</h4>
                     <div class="checkbox">
-                        <asp:CheckBox ID="ckRAwaitingProjectStaff" runat="server" Text="Awaiting Project Staff" CssClass="col-xs-12" Checked="true"
+                        <asp:CheckBox ID="ckRUnsubmitted" runat="server" Text="Unsubmitted" CssClass="col-xs-12" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckRAwaitingCWStaff" runat="server" Text="Awaiting CW Staff" CssClass="col-xs-12" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
@@ -69,10 +69,10 @@
             </div>
 
             <%--Date Range--%>
-            <div class="panel panel-default col-md-offset-1 col-md-3 col-xs-6">
+            <div class="panel panel-default col-md-4 col-xs-6">
                 <h4>Filter: Date Range</h4>
 
-             <div class="panel-body" style="min-height: 112px; max-height: 112px;">
+             <div class="panel-body" style="min-height: 110px; max-height: 110px;">
                  <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtBeginningDate" 
                         CssClass="col-xs-2 control-label">From</asp:Label>
@@ -157,9 +157,9 @@
 
         <%-- Archived --%>
 
-            <div class="panel panel-default col-md-offset-1 col-md-4 col-xs-6">
+            <div class="panel panel-default col-md-4 col-xs-6">
                 <h4>Filter: Archive Status</h4>
-                <div class="panel-body" style="min-height: 108px; max-height: 108px;">
+                <div class="panel-body" style="min-height: 110px; max-height: 110px;">
                 <div class="checkbox">
                     <asp:CheckBox ID="ckRActive" runat="server" Text="Show Active Requests" CssClass="col-xs-6" Checked="true"
                         OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
@@ -172,9 +172,9 @@
             <%-- Entity (Deposit Entity, Expense Vendor) --%>
 
             <div class="col-xs-12">
-            <div class="panel panel-default col-xs-offset-0 col-md-3 col-xs-6">
+            <div class="panel panel-default col-md-4 col-xs-6">
                 <h4>Filter: Entity Name</h4>
-                <div class="panel-body" style="min-height: 108px; max-height: 108px;">
+                <div class="panel-body" style="min-height: 110px; max-height: 110px;">
                     <div class="col-xs-12" title="abcdef">
                         <!-- Fill this control from code-behind -->
                         <asp:DropDownList runat="server" ID="ddlEntityName" CssClass="form-control"
@@ -184,9 +184,9 @@
                 </div>
             </div>
 
-            <div class="panel panel-default col-md-offset-1 col-md-3 col-xs-6">
+            <div class="panel panel-default col-md-4 col-xs-6">
                 <h4>Filter: Person Name</h4>
-                <div class="panel-body" style="min-height: 108px; max-height: 108px;">
+                <div class="panel-body" style="min-height: 110px; max-height: 110px;">
                     <div class="col-xs-12">
                         <!-- Fill this control from code-behind -->
                         <asp:DropDownList runat="server" ID="ddlPersonName" CssClass="form-control"
@@ -217,52 +217,20 @@
             <asp:Panel ID="pnlApp" runat="server">
             <br />
 
-<%--        <div class="form-group">
-            <div class="row">
-
-                <div class="panel panel-default col-xs-offset-1 col-md-4 col-xs-5">
-                    Filters
-                    <div class="checkbox">
-                        <asp:CheckBox ID="ckAAwaitingProjectStaff" runat="server" Text="Awaiting Project Manager" CssClass="col-xs-12" Checked="true"
-                            OnCheckedChanged="ckAFilters_CheckedChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckAAwaitingCWStaff" runat="server" Text="Awaiting CW Staff" CssClass="col-xs-12"
-                            OnCheckedChanged="ckAFilters_CheckedChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckAApproved" runat="server" Text="Approved" CssClass="col-xs-12" Checked="true"
-                            OnCheckedChanged="ckAFilters_CheckedChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckAReturned" runat="server" Text="Returned" CssClass="col-xs-12" Checked="true"
-                            OnCheckedChanged="ckAFilters_CheckedChanged" AutoPostBack="true" />
-                    </div>
-                </div>
-
-                <div class="col-md-offset-2 col-md-4 col-xs-5">
-                    Since
-                    <asp:DropDownList ID="ddlASince" runat="server" AutoPostBack="true"
-                        CssClass="form-control"
-                        OnSelectedIndexChanged="ddlASince_SelectedIndexChanged">
-                        <asp:ListItem Text="Project Creation" Value="ProjectCreation" Selected="True"></asp:ListItem>
-                        <asp:ListItem Text="Balance Date" Value="BalanceDate"></asp:ListItem>
-                        <asp:ListItem Text="Last 30 days" Value="Last30"></asp:ListItem>
-                        <asp:ListItem Text="Last 90 days" Value="Last90"></asp:ListItem>
-                        <asp:ListItem Text="Last 12 months" Value="Last12"></asp:ListItem>
-
-                    </asp:DropDownList>
-                </div>
-            </div>
-        </div>--%>
 
         <!-- Make a grid of Approval Requests. Allow User to select one for further study. -->
         <div class="row">
             <div class="col-xs-12">
 
                 <!-- Code assumes that RowID is the first column of this grid -->
-                <asp:GridView ID="AllAppView" runat="server"
+                <asp:GridView ID="gvAllApp" runat="server"
                     CssClass="table table-striped table-hover"
                     ItemType="Portal11.Models.ProjectAppViewRow"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="25"
-                    OnRowDataBound="AllAppView_RowDataBound"
-                    OnSelectedIndexChanged="AllAppView_SelectedIndexChanged"
-                    OnPageIndexChanging="AllAppView_PageIndexChanging">
+                    OnRowDataBound="gvAllApp_RowDataBound"
+                    OnSelectedIndexChanged="gvAllApp_SelectedIndexChanged"
+                    OnPageIndexChanging="gvAllApp_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 
@@ -282,6 +250,10 @@
                         <asp:Button ID="ButtonLast" runat="server" Text=">>" CommandName="Page"
                             CommandArgument="Last" Enabled="false"
                             CssClass="btn btn-sm btn-default"></asp:Button>
+                        <asp:Label runat="server" >
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            Page <%# gvAllApp.PageIndex+1 %> of <%# gvAllApp.PageCount %>
+                        </asp:Label>
                     </PagerTemplate>
 
                     <EmptyDataTemplate>
@@ -355,52 +327,19 @@
             <asp:Panel ID="pnlDep" runat="server">
             <br />
 
-<%--        <div class="form-group">
-            <div class="row">
-
-                <div class="panel panel-default col-xs-offset-1 col-md-4 col-xs-5">
-                    Filters
-                    <div class="checkbox">
-                        <asp:CheckBox ID="ckDAwaitingProjectStaff" runat="server" Text="Awaiting Project Manager" CssClass="col-xs-12" Checked="true"
-                            OnCheckedChanged="ckDFilters_CheckedChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckDAwaitingCWStaff" runat="server" Text="Awaiting CW Staff" CssClass="col-xs-12"
-                            OnCheckedChanged="ckDFilters_CheckedChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckDDepositComplete" runat="server" Text="Deposit Complete" CssClass="col-xs-12" Checked="true"
-                            OnCheckedChanged="ckDFilters_CheckedChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckDReturned" runat="server" Text="Returned" CssClass="col-xs-12" Checked="true"
-                            OnCheckedChanged="ckDFilters_CheckedChanged" AutoPostBack="true" />
-                    </div>
-                </div>
-
-                <div class="col-md-offset-2 col-md-4 col-xs-5">
-                    Since
-                    <asp:DropDownList ID="ddlDSince" runat="server" AutoPostBack="true"
-                        CssClass="form-control"
-                        OnSelectedIndexChanged="ddlDSince_SelectedIndexChanged">
-                        <asp:ListItem Text="Project Creation" Value="ProjectCreation" Selected="True"></asp:ListItem>
-                        <asp:ListItem Text="Balance Date" Value="BalanceDate"></asp:ListItem>
-                        <asp:ListItem Text="Last 30 days" Value="Last30"></asp:ListItem>
-                        <asp:ListItem Text="Last 90 days" Value="Last90"></asp:ListItem>
-                        <asp:ListItem Text="Last 12 months" Value="Last12"></asp:ListItem>
-
-                    </asp:DropDownList>
-                </div>
-            </div>
-        </div>--%>
-
         <!-- Make a grid of Deposit Requests. Allow User to select one for further study. -->
         <div class="row">
             <div class="col-xs-12">
 
                 <!-- Code assumes that RowID is the first column of this grid -->
-                <asp:GridView ID="AllDepView" runat="server"
+                <asp:GridView ID="gvAllDep" runat="server"
                     CssClass="table table-striped table-hover"
                     ItemType="Portal11.Models.ProjectDepViewRow"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="25"
-                    OnRowDataBound="AllDepView_RowDataBound"
-                    OnSelectedIndexChanged="AllDepView_SelectedIndexChanged"
-                    OnPageIndexChanging="AllDepView_PageIndexChanging">
+                    OnRowDataBound="gvAllDep_RowDataBound"
+                    OnSelectedIndexChanged="gvAllDep_SelectedIndexChanged"
+                    OnPageIndexChanging="gvAllDep_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 
@@ -420,6 +359,10 @@
                         <asp:Button ID="ButtonLast" runat="server" Text=">>" CommandName="Page"
                             CommandArgument="Last" Enabled="false"
                             CssClass="btn btn-sm btn-default"></asp:Button>
+                        <asp:Label runat="server" >
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            Page <%# gvAllDep.PageIndex+1 %> of <%# gvAllDep.PageCount %>
+                        </asp:Label>
                     </PagerTemplate>
 
                     <EmptyDataTemplate>
@@ -497,51 +440,19 @@
             <asp:Panel ID="pnlExp" runat="server">
             <br />
 
-<%--        <div class="form-group">
-            <div class="row">
-                <div class="panel panel-default col-xs-offset-1 col-md-4 col-xs-5">
-                    Filters
-                    <div class="checkbox">
-                        <asp:CheckBox ID="ckEAwaitingProjectStaff" runat="server" Text="Awaiting Project Staff" CssClass="col-xs-12" Checked="true"
-                            OnCheckedChanged="ckEFilters_CheckedChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckEAwaitingCWStaff" runat="server" Text="Awaiting CW Staff" CssClass="col-xs-12"
-                            OnCheckedChanged="ckEFilters_CheckedChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckEPaid" runat="server" Text="Paid" CssClass="col-xs-12"
-                            OnCheckedChanged="ckEFilters_CheckedChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckEReturned" runat="server" Text="Returned" CssClass="col-xs-12" Checked="true"
-                            OnCheckedChanged="ckEFilters_CheckedChanged" AutoPostBack="true" />
-                    </div>
-                </div>
-
-                <div class="col-md-offset-2 col-md-4 col-xs-5">
-                    Since
-                    <asp:DropDownList ID="ddlESince" runat="server" AutoPostBack="true"
-                        CssClass="form-control"
-                        OnSelectedIndexChanged="ddlESince_SelectedIndexChanged">
-                        <asp:ListItem Text="Project Creation" Value="ProjectCreation" Selected="True"></asp:ListItem>
-                        <asp:ListItem Text="Balance Date" Value="BalanceDate"></asp:ListItem>
-                        <asp:ListItem Text="Last 30 days" Value="Last30"></asp:ListItem>
-                        <asp:ListItem Text="Last 90 days" Value="Last90"></asp:ListItem>
-                        <asp:ListItem Text="Last 12 months" Value="Last12"></asp:ListItem>
-
-                    </asp:DropDownList>
-                </div>
-            </div>
-        </div>--%>
-
         <!-- Make a grid of equests. Allow User to select one for further study. -->
         <div class="row">
             <div class="col-xs-12">
 
                 <!-- Code assumes that RowID is the first column of this grid -->
-                <asp:GridView ID="AllExpView" runat="server"
+                <asp:GridView ID="gvAllExp" runat="server"
                     CssClass="table table-striped table-hover"
                     ItemType="Portal11.Models.ProjectExpViewRow"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="25"
-                    OnRowDataBound="AllExpView_RowDataBound"
-                    OnSelectedIndexChanged="AllExpView_SelectedIndexChanged"
-                    OnPageIndexChanging="AllExpView_PageIndexChanging">
+                    OnRowDataBound="gvAllExp_RowDataBound"
+                    OnSelectedIndexChanged="gvAllExp_SelectedIndexChanged"
+                    OnPageIndexChanging="gvAllExp_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 
@@ -559,6 +470,10 @@
                         <asp:Button ID="ButtonLast" runat="server" Text=">>" CommandName="Page"
                             CommandArgument="Last" Enabled="false"
                             CssClass="btn btn-sm btn-default"></asp:Button>
+                        <asp:Label runat="server" >
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            Page <%# gvAllExp.PageIndex+1 %> of <%# gvAllExp.PageCount %>
+                        </asp:Label>
                     </PagerTemplate>
 
                     <EmptyDataTemplate>

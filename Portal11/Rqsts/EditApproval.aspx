@@ -16,6 +16,9 @@
         .rdoColWidth tr td {
             width: 40%;
         }
+        .panel.col-lg-3 {
+            margin-bottom: 0px;
+        }
     </style>
 
     <div class="form-horizontal">
@@ -128,6 +131,20 @@
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Notes</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:TextBox runat="server" ID="txtNotes" TextMode="MultiLine" CssClass="form-control has-success"></asp:TextBox>
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- Staff Note -->
+        <asp:Panel ID="pnlStaffNote" runat="server" Visible="false">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" AssociatedControlID="txtStaffNote" 
+                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">
+                            Staff Note<br />(visible only to other staff)</asp:Label>
+                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtStaffNote" CssClass="form-control" TextMode="MultiLine" />
                     </div>
                 </div>
             </div>

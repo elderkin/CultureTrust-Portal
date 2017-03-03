@@ -444,7 +444,7 @@ namespace Portal11.Logic
                 case DepState.UnsubmittedByInternalCoordinator:
                     return DepState.AwaitingProjectDirector;        // From Coordinator, go to Project Director
                 case DepState.AwaitingProjectDirector:
-                    return DepState.AwaitingTrustDirector;          // From Project Director, go to Trust Director
+//                    return DepState.AwaitingTrustDirector;          // From Project Director, go to Trust Director
                 case DepState.AwaitingTrustDirector:
                     return DepState.AwaitingFinanceDirector;
                 case DepState.AwaitingFinanceDirector:
@@ -481,7 +481,7 @@ namespace Portal11.Logic
                 case ExpState.AwaitingTrustExecutive:
                     return ExpState.Approved;
                 case ExpState.Approved:
-                    return ExpState.PaymentSent;
+//                    return ExpState.PaymentSent;
                 case ExpState.PaymentSent:
                     return ExpState.Paid;
 
@@ -652,14 +652,14 @@ namespace Portal11.Logic
 
             if (needed)                                                     // Previous selection was "Needed." Restore that selection
             {
-                ddl.Items.FindByValue(PortalConstants.DdlNeededSignal).Selected = true; // Mark the "Needed" item
+                ddl.SelectedValue = PortalConstants.DdlNeededSignal;        // Select the "Needed" item
             }
             else                                                            // Existing Request. Find its Item and select it
             {
                 try                                                         // It's possible that our Request's selection is no longer in list
                 {
                     ddl.ClearSelection();                                   // Get rid of any existing selection
-                    ddl.Items.FindByValue(id.ToString()).Selected = true;   // Mark the selection
+                    ddl.SelectedValue = id.ToString();                      // Mark the selection
                 }
                 catch (NullReferenceException) { }                          // No harm, just don't select any item in the ddl
             }

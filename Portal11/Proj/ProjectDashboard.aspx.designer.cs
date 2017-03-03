@@ -76,13 +76,13 @@ namespace Portal11.Proj {
         protected global::System.Web.UI.WebControls.Panel pnlSearch;
         
         /// <summary>
-        /// ckRAwaitingProjectStaff control.
+        /// ckRUnsubmitted control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckRAwaitingProjectStaff;
+        protected global::System.Web.UI.WebControls.CheckBox ckRUnsubmitted;
         
         /// <summary>
         /// ckRAwaitingCWStaff control.
@@ -229,13 +229,13 @@ namespace Portal11.Proj {
         protected global::System.Web.UI.WebControls.Panel pnlApp;
         
         /// <summary>
-        /// AllAppView control.
+        /// gvAllApp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView AllAppView;
+        protected global::System.Web.UI.WebControls.GridView gvAllApp;
         
         /// <summary>
         /// btnAppNew control.
@@ -328,13 +328,13 @@ namespace Portal11.Proj {
         protected global::System.Web.UI.WebControls.Panel pnlDep;
         
         /// <summary>
-        /// AllDepView control.
+        /// gvAllDep control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView AllDepView;
+        protected global::System.Web.UI.WebControls.GridView gvAllDep;
         
         /// <summary>
         /// btnDepNew control.
@@ -427,13 +427,13 @@ namespace Portal11.Proj {
         protected global::System.Web.UI.WebControls.Panel pnlExp;
         
         /// <summary>
-        /// AllExpView control.
+        /// gvAllExp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView AllExpView;
+        protected global::System.Web.UI.WebControls.GridView gvAllExp;
         
         /// <summary>
         /// btnExpNew control.

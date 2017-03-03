@@ -38,8 +38,7 @@ namespace Portal11.Logic
         public static void LoadEnumIntoRdo(Enum val, RadioButtonList rdo)
         {
             rdo.SelectedIndex = -1;                         // Blow out any previous selection
-            string setting = val.ToString();                // Get the string version of the enum value
-            rdo.Items.FindByValue(setting).Selected = true; // Set that button in the Radio Button List
+            rdo.SelectedValue = val.ToString();             // Set that button in the Radio Button List
             return;
         }
 
@@ -82,7 +81,7 @@ namespace Portal11.Logic
         public static string LoadDecimalIntoTxt(decimal bucks)
         {
             if (bucks != -1)                                // If != there is a "real" value in the field
-                return bucks.ToString("C");                 // Convert value to a currency string and return
+                return bucks.ToString("C2",CultureInfo.CurrentCulture.NumberFormat); // Convert value to a local-format currency string (with 2 digits of precision)
             return "";                                      // Otherwise, return an empty string
         }
 
@@ -98,6 +97,14 @@ namespace Portal11.Logic
             {
                 return 0;                                   // But if it doesn't, just return a value of zero
             }
+        }
+
+        // A decimal-based textbox has been updated. Reformat the contents as currency.
+
+        public static void ReloadDecimalText(TextBox txt)
+        {
+            decimal amount = ExtensionActions.LoadTxtIntoDecimal(txt); // Pull revised amount from textbox and convert
+            txt.Text = ExtensionActions.LoadDecimalIntoTxt(amount); // Pretty up amount and put it back into textbox
         }
 
         // Trim a string to a specified maximum length

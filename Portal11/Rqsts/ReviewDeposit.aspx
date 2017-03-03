@@ -234,7 +234,7 @@
         <asp:Panel ID="pnlNotes" runat="server">
             <div class="form-group">
                 <div class="row">
-                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Notes</asp:Label>
+                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Creator Note</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
                         <asp:TextBox ID="txtNotes" runat="server" CssClass="form-control has-success" TextMode="MultiLine" ReadOnly="true"></asp:TextBox>
                     </div>
@@ -252,6 +252,19 @@
                     </div>
                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txtReturnNote"
                         CssClass="text-danger" ErrorMessage="Please supply a reason why you are returning the request." />
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- Staff Note -->
+        <asp:Panel ID="pnlStaffNote" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" AssociatedControlID="txtStaffNote" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">
+                        Staff Note<br />(visible only to other staff)</asp:Label>
+                    <div class="col-lg-3 col-md-4 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtStaffNote" CssClass="form-control" TextMode="MultiLine" />
+                    </div>
                 </div>
             </div>
         </asp:Panel>
@@ -326,6 +339,7 @@
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedState" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedUserRole" runat="server" Visible="false" />
 
     </div>
 

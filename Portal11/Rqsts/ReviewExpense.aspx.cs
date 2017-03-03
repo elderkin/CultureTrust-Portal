@@ -28,6 +28,9 @@ namespace Portal11.Rqsts
                 if (expID.Int == 0 || cmd != PortalConstants.QSCommandReview || ret == "") // If null or blank, this form invoked incorrectly
                     LogError.LogQueryStringError("ReviewExpense", "Invalid Query String 'Command' or 'ExpID'"); // Log fatal error
 
+                HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Fetch user info cookie for current user
+                litSavedUserRole.Text = userInfoCookie[PortalConstants.CUserRole]; //Fetch user role, save for later
+
                 // Fetch the Exp row and fill the page
 
                 using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
@@ -44,6 +47,8 @@ namespace Portal11.Rqsts
 
                     if (!StateActions.UserCanApproveRequest(exp.CurrentState)) // If false user can not Approve this Exp. Disable functions
                     {
+                        txtReturnNote.Enabled = false;                  // Can see this note but not edit it
+                        txtStaffNote.Enabled = false;                   // Can see this note but not edit it
                         btnApprove.Enabled = false;                     // Cannot "Approve" the Exp
                         btnReturn.Enabled = false;                      // Cannot "Return" the Exp
                         litDangerMessage.Text = "You can view this Expense Request, but you cannot approve it."; // Explain that to user
@@ -55,6 +60,7 @@ namespace Portal11.Rqsts
                     litSavedExpID.Text = expID.String;
                     litSavedProjectID.Text = exp.ProjectID.ToString();
                     litSavedReturn.Text = ret;
+                    litSavedRush.Text = exp.Rush.ToString();            // Whether or not it is a rush request
                 }
             }
             return;
@@ -102,10 +108,16 @@ namespace Portal11.Rqsts
         {
             ExpState currentState = EnumActions.ConvertTextToExpState(litSavedState.Text); // Pull ToString version; convert to enum type
             ExpState nextState = StateActions.FindNextState(currentState); // Now what?
-            SaveExp(nextState, "Approved");                         // Update Exp; write new History row
+            int projectID = new int(); string projectName = "";
+            SaveExp(nextState, "Approved", out projectID, out projectName); // Update Exp; write new History row
 
-            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(nextState), // Tell next reviewer, who is in this role
-                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+            string emailSent = EmailActions.SendEmailToReviewer(    // Send email to next reviewer
+                EnumActions.ConvertTextToBool(litSavedRush.Text),   // Whether the request is "rush"
+                StateActions.UserRoleToApproveRequest(nextState),   // Who is in this role
+                projectID,                                          // Request is associated with this project
+                projectName,                                        // Project has this name
+                EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
+                EnumActions.GetEnumDescription(nextState),          // Here is its next state
                 PortalConstants.CEmailDefaultExpenseApprovedSubject, PortalConstants.CEmailDefaultExpenseApprovedBody); // Use this subject and body, if needed
 
             Response.Redirect(litSavedReturn.Text + "?" 
@@ -118,10 +130,16 @@ namespace Portal11.Rqsts
 
         protected void btnReturn_Click(object sender, EventArgs e)
         {
-            SaveExp(ExpState.Returned, "Returned");                 // Update Exp; write new History row
+            int projectID = new int(); string projectName = "";
+            SaveExp(ExpState.Returned, "Returned", out projectID, out projectName); // Update Exp; write new History row
 
-            string emailSent = EmailActions.SendEmailToReviewer(StateActions.UserRoleToApproveRequest(ExpState.Returned), // Tell next reviewer, who is in this role
-                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+            string emailSent = EmailActions.SendEmailToReviewer(    // Send email to next reviewer
+                EnumActions.ConvertTextToBool(litSavedRush.Text),   // Whether the request is "rush"
+                StateActions.UserRoleToApproveRequest(ExpState.Returned), // Who is in this role
+                projectID,                                          // Request is associated with this project
+                projectName,                                        // Project has this name
+                EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
+                EnumActions.GetEnumDescription(ExpState.Returned),  // Here is its next state
                 PortalConstants.CEmailDefaultExpenseReturnedSubject, PortalConstants.CEmailDefaultExpenseReturnedBody); // Use this subject and body, if needed
 
             Response.Redirect(litSavedReturn.Text + "?"
@@ -142,7 +160,7 @@ namespace Portal11.Rqsts
         //  2) Create a new ExpHistory row and fill it.
         //  3) Update the Exp row with new State and Return Note.
 
-        private void SaveExp(ExpState nextState, string verb)
+        private void SaveExp(ExpState nextState, string verb, out int projectID, out string projectName)
         {
             HttpCookie userInfoCookie = Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
@@ -150,29 +168,33 @@ namespace Portal11.Rqsts
                 try
                 {
                     int expID = Convert.ToInt32(litSavedExpID.Text);            // Fetch ID of this Exp
-                    Exp toUpdate = context.Exps.Find(expID);                    // Fetch the Exp row that we want to update
+                    Exp toUpdate = context.Exps.Find(expID);                        // Fetch the Exp row that we want to update
                     ExpHistory hist = new ExpHistory();                         // Get a place to build a new Request History row
                     hist.ReturnNote = toUpdate.ReturnNote;                      // Preserve former value of the note
                     toUpdate.ReturnNote = txtReturnNote.Text;                   // Fetch updated content of the note, if any
+                    toUpdate.StaffNote = txtStaffNote.Text;                     // Fetch updated content of this note, if any
                     StateActions.CopyPreviousState(toUpdate, hist, verb);       // Create a Request History log row from "old" version of Request
                     StateActions.SetNewExpState(toUpdate, nextState, userInfoCookie[PortalConstants.CUserID], hist);
                                                                                 // Write down our current State and authorship
                     context.ExpHistorys.Add(hist);                              // Save new ExpHistory row
                     context.SaveChanges();                                      // Commit the Add and Modify
+                    projectID = (int)toUpdate.ProjectID;                        // Report Project ID to caller
+                    projectName = toUpdate.Project.Name;                        // Report Project Name to caller
+                    return;
                 }
                 catch (Exception ex)
                 {
                     LogError.LogDatabaseError(ex, "ReviewExpense", "Unable to update Exp or ExpHistory rows"); // Fatal error
                 }
             }
-            return;
+            projectID = 0; projectName = "";                                    // Control never reaches this point, so irrelevant
         }
 
         // Based on the selected Expense Type, enable and disable the appropriate panels on the display.
 
         void EnablePanels(ExpType type)
         {
-            pnlAmount.Visible = true;                                // Unconditionally visible for all Expense types
+            pnlAmount.Visible = true;                                           // Unconditionally visible for all Expense types
             pnlDescription.Visible = true;
             pnlEstablishedBy.Visible = true;
             pnlEstablishedTime.Visible = true;
@@ -180,6 +202,11 @@ namespace Portal11.Rqsts
             pnlGLCode.Visible = true;
             pnlNotes.Visible = true;
             pnlReturnNote.Visible = true;
+            if ((litSavedUserRole.Text == UserRole.Project.ToString())
+                || (litSavedUserRole.Text == UserRole.Auditor.ToString()))      // If true, user is a Project Director or Auditor
+                pnlStaffNote.Visible = false;                                   // They don't see Staff Note
+            else
+                pnlStaffNote.Visible = true;                                    // But Staff users can see it
             pnlState.Visible = true;
             pnlSupporting.Visible = true;
             switch (type)
@@ -250,7 +277,7 @@ namespace Portal11.Rqsts
                     }
                 case ExpType.Reimbursement:
                     {
-                        lblAmount.Text = "Dollar Amount";
+                        lblAmount.Text = "Total Dollar Amount";
                         pnlBeginningEnding.Visible = false;
                         pnlCards.Visible = false;
                         pnlContractQuestions.Visible = false;
@@ -320,6 +347,8 @@ namespace Portal11.Rqsts
                 txtDateOfInvoice.Text = DateActions.LoadDateIntoTxt(record.DateOfInvoice);
 
             txtDeliveryInstructions.Text = EnumActions.GetEnumDescription(record.DeliveryMode);
+            if (record.Rush)
+                txtDeliveryInstructionsRush.Visible = true;
             txtPODeliveryInstructions.Text = EnumActions.GetEnumDescription(record.PODeliveryMode);
             if (record.DeliveryAddress != null)
                 txtDeliveryAddress.Text = record.DeliveryAddress;
@@ -375,19 +404,19 @@ namespace Portal11.Rqsts
             {
                 case SourceOfExpFunds.NA:
                 {
-                    rdoSourceOfFunds.Items.FindByValue(SourceOfExpFunds.NA.ToString()).Selected = true; // Light the Not Applicable button
+                    rdoSourceOfFunds.SelectedValue = SourceOfExpFunds.NA.ToString(); // Light the Not Applicable button
                     pnlProjectClass.Visible = false;                    // No need to display Project Class, since there isn't one
                     break;
                 }
                 case SourceOfExpFunds.Restricted:
                 {
-                    rdoSourceOfFunds.Items.FindByValue(SourceOfExpFunds.Restricted.ToString()).Selected = true; // Light the Restricted button
+                    rdoSourceOfFunds.SelectedValue = SourceOfExpFunds.Restricted.ToString(); // Light the Restricted button
                     txtProjectClass.Text = record.ProjectClass.Name;    // Show the Project Class
                     break;
                 }
                 case SourceOfExpFunds.Unrestricted:
                 {
-                    rdoSourceOfFunds.Items.FindByValue(SourceOfExpFunds.Unrestricted.ToString()).Selected = true; // Light the Unrestricted button
+                    rdoSourceOfFunds.SelectedValue = SourceOfExpFunds.Unrestricted.ToString(); // Light the Unrestricted button
                     pnlProjectClass.Visible = false;                    // No need to display Project Class, since there isn't one
                     break;
                 }
@@ -399,6 +428,11 @@ namespace Portal11.Rqsts
                 }
             }
 
+            txtStaffNote.Text = record.StaffNote;                       // Load value, if any
+
+            if (SplitActions.LoadSplitRowsForView(record.ExpID, gvExpSplit)) // If true, ExpSplits existed and were loaded into the split gridview
+                EnergizeSplit();                                        // Adjust page to accommodate split gridview
+
             SupportingActions.LoadDocs(RequestType.Expense, record.ExpID, lstSupporting, litDangerMessage); // Load into list box
             return;
         }
@@ -408,5 +442,16 @@ namespace Portal11.Rqsts
             NavigationActions.LoadAllExpHistorys(Convert.ToInt32(litSavedExpID.Text), EDHistoryView); // Fill the list from the database
             return;
         }
+
+        // We have a full split gridview. Now adjust the operation of the page to process splits
+
+        void EnergizeSplit()
+        {
+            pnlProjectClass.Visible = false;                        // Can't see "Project Class" field any more
+//            pnlAmount.Visible = false;                              // Can't see "Total Dollar Amount" field any more
+            pnlGLCode.Visible = false;                              // Can't see "Expense Account" drop down list any more
+            pnlExpenseSplit.Visible = true;                         // Turn on the grid for splits
+            return;
+        }      
     }
 }

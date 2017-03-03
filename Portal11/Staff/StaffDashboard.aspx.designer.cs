@@ -76,15 +76,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Panel pnlNextReviewer;
         
         /// <summary>
-        /// ckRInternalCoordinator control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckRInternalCoordinator;
-        
-        /// <summary>
         /// ckRFinanceDirector control.
         /// </summary>
         /// <remarks>
@@ -94,13 +85,31 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.CheckBox ckRFinanceDirector;
         
         /// <summary>
-        /// ckRProjectMember control.
+        /// ckRUnsubmitted control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckRProjectMember;
+        protected global::System.Web.UI.WebControls.CheckBox ckRUnsubmitted;
+        
+        /// <summary>
+        /// ckRInternalCoordinator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckRInternalCoordinator;
+        
+        /// <summary>
+        /// ckRCompleted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckRCompleted;
         
         /// <summary>
         /// ckRTrustDirector control.
@@ -110,6 +119,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox ckRTrustDirector;
+        
+        /// <summary>
+        /// ckRReturned control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckRReturned;
         
         /// <summary>
         /// ckRTrustExecutive control.
@@ -274,15 +292,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.GridView StaffAppView;
         
         /// <summary>
-        /// btnAppReview control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAppReview;
-        
-        /// <summary>
         /// btnDepCollapse control.
         /// </summary>
         /// <remarks>
@@ -362,15 +371,6 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView StaffDepView;
-        
-        /// <summary>
-        /// btnDepReview control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDepReview;
         
         /// <summary>
         /// btnExpCollapse control.
@@ -463,15 +463,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.GridView StaffExpView;
         
         /// <summary>
-        /// btnExpReview control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExpReview;
-        
-        /// <summary>
         /// litSavedUserRole control.
         /// </summary>
         /// <remarks>
@@ -479,5 +470,32 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSavedUserRole;
+        
+        /// <summary>
+        /// litSelectedAppRow control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSelectedAppRow;
+        
+        /// <summary>
+        /// litSelectedDepRow control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSelectedDepRow;
+        
+        /// <summary>
+        /// litSelectedExpRow control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSelectedExpRow;
     }
 }

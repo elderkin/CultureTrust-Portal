@@ -283,33 +283,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtInvoiceNumber;
         
         /// <summary>
-        /// pnlAmount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlAmount;
-        
-        /// <summary>
-        /// lblAmount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblAmount;
-        
-        /// <summary>
-        /// txtAmount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAmount;
-        
-        /// <summary>
         /// pnlPaymentMethod control.
         /// </summary>
         /// <remarks>
@@ -445,24 +418,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtURL;
         
         /// <summary>
-        /// pnlGLCode control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlGLCode;
-        
-        /// <summary>
-        /// txtGLCode control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtGLCode;
-        
-        /// <summary>
         /// pnlFunds control.
         /// </summary>
         /// <remarks>
@@ -499,6 +454,78 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtProjectClass;
         
         /// <summary>
+        /// pnlAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlAmount;
+        
+        /// <summary>
+        /// lblAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblAmount;
+        
+        /// <summary>
+        /// txtAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtAmount;
+        
+        /// <summary>
+        /// pnlGLCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlGLCode;
+        
+        /// <summary>
+        /// txtGLCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtGLCode;
+        
+        /// <summary>
+        /// pnlExpenseSplit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlExpenseSplit;
+        
+        /// <summary>
+        /// gvExpSplit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvExpSplit;
+        
+        /// <summary>
+        /// litSplitError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSplitError;
+        
+        /// <summary>
         /// pnlDeliveryInstructions control.
         /// </summary>
         /// <remarks>
@@ -515,6 +542,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtDeliveryInstructions;
+        
+        /// <summary>
+        /// txtDeliveryInstructionsRush control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtDeliveryInstructionsRush;
         
         /// <summary>
         /// pnlPODeliveryInstructions control.
@@ -616,6 +652,24 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtReturnNote;
         
         /// <summary>
+        /// pnlStaffNote control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlStaffNote;
+        
+        /// <summary>
+        /// txtStaffNote control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtStaffNote;
+        
+        /// <summary>
         /// pnlHistory control.
         /// </summary>
         /// <remarks>
@@ -706,6 +760,15 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Literal litSavedReturn;
         
         /// <summary>
+        /// litSavedRush control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedRush;
+        
+        /// <summary>
         /// litSavedState control.
         /// </summary>
         /// <remarks>
@@ -713,5 +776,14 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSavedState;
+        
+        /// <summary>
+        /// litSavedUserRole control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedUserRole;
     }
 }

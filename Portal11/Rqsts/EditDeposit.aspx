@@ -15,7 +15,10 @@
 
     <style>
         .rdoColWidth tr td {
-            width: 30%;
+            width: 40%;
+        }
+        .panel.col-lg-3 {
+            margin-bottom: 0px;
         }
     </style>
 
@@ -77,7 +80,8 @@
                     <asp:Label runat="server" ID="lblAmount" AssociatedControlID="txtAmount" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Dollar Amount</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" />
+                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" 
+                            style="text-align:right" OnTextChanged="txtAmount_TextChanged" AutoPostBack="true"/>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAmount"
@@ -165,7 +169,7 @@
         <asp:Panel ID="pnlGLCode" runat="server" Visible="false">
             <div class="form-group">
                 <div class="row">
-                    <asp:Label runat="server" AssociatedControlID="ddlGLCode" 
+                    <asp:Label ID="labGLCode" runat="server" AssociatedControlID="ddlGLCode" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Income Account</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:DropDownList runat="server" ID="ddlGLCode" CssClass="form-control"></asp:DropDownList>
@@ -324,6 +328,20 @@
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Notes</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:TextBox runat="server" ID="txtNotes" TextMode="MultiLine" CssClass="form-control has-success"></asp:TextBox>
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- Staff Note -->
+        <asp:Panel ID="pnlStaffNote" runat="server" Visible="false">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" AssociatedControlID="txtStaffNote" 
+                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">
+                            Staff Note<br />(visible only to other staff)</asp:Label>
+                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtStaffNote" CssClass="form-control" TextMode="MultiLine" />
                     </div>
                 </div>
             </div>

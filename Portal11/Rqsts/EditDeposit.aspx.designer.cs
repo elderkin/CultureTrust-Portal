@@ -184,6 +184,15 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Panel pnlGLCode;
         
         /// <summary>
+        /// labGLCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label labGLCode;
+        
+        /// <summary>
         /// ddlGLCode control.
         /// </summary>
         /// <remarks>
@@ -425,6 +434,24 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtNotes;
+        
+        /// <summary>
+        /// pnlStaffNote control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlStaffNote;
+        
+        /// <summary>
+        /// txtStaffNote control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtStaffNote;
         
         /// <summary>
         /// pnlReturnNote control.
