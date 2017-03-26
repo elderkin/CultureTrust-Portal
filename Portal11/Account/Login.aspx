@@ -11,11 +11,14 @@
             top: 50%;
             left: 50%;
             margin-left: -300px;
-            margin-top: -350px;
+            margin-top: -250px;
         }
     </style>
     <asp:Panel runat="server" BackImageUrl="~/Images/LoginBackground-1024x768.jpg" Height="100%" Width="100%">
-        <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp;
+        <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; 
+        <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; 
+        <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; 
+        <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp;
     </asp:Panel>
     <div class="centered_div panel panel-success">
         <div class="panel-heading">
@@ -119,7 +122,7 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-xs-offset-1 col-xs-10">
-                                <asp:TextBox runat="server" ID="txtNew" TextMode="MultiLine" Rows="4" CssClass="form-control" Wrap="true" />
+                                <asp:TextBox runat="server" ID="txtNew" TextMode="MultiLine" Rows="5" CssClass="form-control" Wrap="true" />
                             </div>
                         </div>
                     </div>

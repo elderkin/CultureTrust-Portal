@@ -212,18 +212,6 @@
             </div>
         </asp:Panel>
 
-        <!-- Payment Method -->
-        <asp:Panel ID="pnlPaymentMethod" runat="server">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Payment Method</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtPaymentMethod" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
-
         <!-- Contract Questions -->
         <asp:Panel ID="pnlContractQuestions" runat="server">
             <div class="form-group">
@@ -293,8 +281,8 @@
             </div>
         </asp:Panel>
 
-        <!-- Source of Funds and Project Class -->
-        <asp:Panel ID="pnlFunds" runat="server">
+        <!-- Source of Funds -->
+<%--        <asp:Panel ID="pnlFunds" runat="server">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Source of Funds</asp:Label>
@@ -310,15 +298,18 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </asp:Panel>--%>
 
-                <asp:Panel ID="pnlProjectClass" runat="server">
+        <!-- Project Class -->
+        <asp:Panel ID="pnlProjectClass" runat="server">
+            <div class="form-group">
                     <div class="row">
                         <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Project Class</asp:Label>
                         <div class="col-lg-4 col-md-4 col-xs-6">
                             <asp:TextBox runat="server" ID="txtProjectClass" CssClass="form-control" ReadOnly="true" />
                         </div>
                     </div>
-                </asp:Panel>
             </div>
         </asp:Panel>
         <! -- End of pnlFunds -->
@@ -329,7 +320,7 @@
                 <div class="row">
                     <asp:Label runat="server" ID="lblAmount" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
                     <div class="col-lg-4 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" ReadOnly="true" />
+                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" style="text-align:right" ReadOnly="true" />
                     </div>
                 </div>
             </div>
@@ -399,9 +390,17 @@
                         </asp:GridView>
                         </div>
                     </div>
-                    <div class="text-danger col-xs-offset-1 col-xs-11">
-                        <asp:Literal ID="litSplitError" runat="server" Visible="false" 
-                            Text="Each split expense row must have a valid Dollar Amount and a selected Expense Account" />
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- Payment Method -->
+        <asp:Panel ID="pnlPaymentMethod" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Payment Method</asp:Label>
+                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                        <asp:TextBox ID="txtPaymentMethod" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -489,7 +488,7 @@
         <asp:Panel ID="pnlStaffNote" runat="server">
             <div class="form-group">
                 <div class="row">
-                    <asp:Label runat="server" AssociatedControlID="txtStaffNote" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">
+                    <asp:Label runat="server" AssociatedControlID="txtStaffNote" CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label" Font-Bold="false">
                         Staff Note<br />(visible only to other staff)</asp:Label>
                     <div class="col-lg-3 col-md-4 col-xs-6">
                         <asp:TextBox runat="server" ID="txtStaffNote" CssClass="form-control" TextMode="MultiLine" />

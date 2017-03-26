@@ -400,13 +400,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Panel pnlExp;
         
         /// <summary>
-        /// ckEPaycheck control.
+        /// ckEPayroll control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckEPaycheck;
+        protected global::System.Web.UI.WebControls.CheckBox ckEPayroll;
         
         /// <summary>
         /// ckEVendorInvoice control.

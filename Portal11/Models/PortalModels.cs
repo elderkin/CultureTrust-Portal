@@ -557,9 +557,9 @@ namespace Portal11.Models
         public bool Inactive { get; set; }
         public bool Archived { get; set; }
 
-        public decimal Amount { get; set; }                 // Total funds in this Request. For Paycheck, this is Gross Pay
+        public decimal Amount { get; set; }                 // Total funds in this Request. For Payroll, this is Gross Pay
 
-        public DateTime BeginningDate { get; set; }         // Pay Period for Paycheck
+        public DateTime BeginningDate { get; set; }         // Pay Period for Payroll
         public DateTime EndingDate { get; set; }
 
         public int CardsQuantity { get; set; }              // Number of PEX Cards and value of each
@@ -625,7 +625,7 @@ namespace Portal11.Models
         public bool Rush { get; set; }                      // Whether the Request has "Rush" status
         public const string DeliveryInstructionsRush = "Rush";
 
-        public SourceOfExpFunds SourceOfFunds { get; set; } // Where the Request gets its Funds
+        public SourceOfExpFunds SourceOfFunds { get; set; } // Where the Request gets its Funds OBSOLETE
         public int? ProjectClassID { get; set; }
         public virtual ProjectClass ProjectClass { get; set; }
 
@@ -702,8 +702,8 @@ namespace Portal11.Models
         ContractorInvoice = 1,
         [Description("PEX Card")]
         PEXCard,
-        [Description("Paycheck")]
-        Paycheck,
+        [Description("Payroll")]
+        Payroll,
         [Description("Purchase Order")]
         PurchaseOrder,
         [Description("Reimbursement")]
@@ -750,11 +750,12 @@ namespace Portal11.Models
         public DateTime CreatedTime { get; set; }
     }
 
-    // The split expense rows for a given Request
+    // The split GL Code rows for a given Request
 
     public class GLCodeSplit
     {
         public int GLCodeSplitID { get; set; }
+        public RequestType RqstType { get; set; }
         public int RqstID { get; set; }
         public int? GLCodeID { get; set; }
         public virtual GLCode GLCode { get; set; }
@@ -855,6 +856,8 @@ namespace Portal11.Models
 
         public int SupportingDocCurrentIndex { get; set; }
         public string SupportingDocCurrentSubdirectory { get; set; }
+
+        public bool DisableLogins { get; set; }                         // Only for non-Admin accounts
     }
 
     // A Person, who can take on the role of Contractor, Employee, Responsible, or Recipient on a project-by-project basis
@@ -1364,7 +1367,7 @@ namespace Portal11.Models
             CStaffExpVisible = "StaffExpVisible",
             CStaffCkEContractorInvoice = "CkEContractorInvoice",
             CStaffCkEPEXCard = "CkEPEXCard",
-            CStaffCkEPaycheck = "CkEPaycheck",
+            CStaffCkEPayroll = "CkEPayroll",
             CStaffCkEPurchaseOrder = "CkEPurchaseOrder",
             CStaffCkEReimbursement = "CkEReimbursement",
             CStaffCkEVendorInvoice = "CkEVendorInvoice",

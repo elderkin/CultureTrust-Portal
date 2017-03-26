@@ -157,10 +157,10 @@
                 <div class="panel-body">
                     <ul class="list-group" style="margin-bottom:0px;">
                         <li class="list-group-item">
-                            <a runat="server" href="~/elmah.axd" title="Open the web page for the ELMAH error log">View Error Log</a>
+                            <a runat="server" href="~/Admin/EditPortalParameters.aspx" title="Change the settings of parameters that control portal operations">Edit Portal Parameters</a>
                         </li>
                         <li class="list-group-item">
-                            <a runat="server" href="~/Admin/EmailParameters.aspx" title="Change the settings of parameters that control portal operations">Email Parameters</a>
+                            <a runat="server" href="~/elmah.axd" title="Open the web page for the ELMAH error log">View Error Log</a>
                         </li>
                     </ul>
                 </div>

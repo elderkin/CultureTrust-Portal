@@ -123,7 +123,7 @@
                                 OnSelectedIndexChanged="rdoPersonRole_SelectedIndexChanged">
                                 <asp:ListItem Text="Contractor (for Contractor Invoice)" Value="Contractor" Selected="True"></asp:ListItem>
                                 <asp:ListItem Text="Donor (for Deposit)" Value="Donor"></asp:ListItem>
-                                <asp:ListItem Text="Employee (for Paycheck)" Value="Employee"></asp:ListItem>
+                                <asp:ListItem Text="Employee (for Payroll)" Value="Employee"></asp:ListItem>
                                 <asp:ListItem Text="Recipient (for Reimbursement)" Value="Recipient"></asp:ListItem>
                                 <asp:ListItem Text="Responsible Person (for Gift Card)" Value="ResponsiblePerson"></asp:ListItem>
                             </asp:RadioButtonList>

@@ -481,7 +481,7 @@
                     <div class="panel panel-default col-xs-offset-1 col-lg-4 col-md-4 col-sm-5 col-xs-6">
                         Expense Type
                     <div class="checkbox">
-                        <asp:CheckBox ID="ckEPaycheck" runat="server" Text="Paycheck" CssClass="col-xs-6" Checked="true"
+                        <asp:CheckBox ID="ckEPayroll" runat="server" Text="Payroll" CssClass="col-xs-6" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckEVendorInvoice" runat="server" Text="Vendor Invoice" CssClass="col-xs-6" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />

@@ -971,9 +971,9 @@ namespace Portal11.Proj
                 try
                 {
 
-                    //  0) Delete the ExpSplit rows associated with this Exp.
+                    //  0) Delete the GLCodeSplit rows associated with this Exp.
 
-                    SplitActions.DeleteSplitRows(expID);                // Delete all ExpSplit rows with this ExpID
+                    SplitActions.DeleteSplitRows(RequestType.Expense, expID); // Delete all GLCodeSplit rows with this ExpID
 
                     //  1) Blow off the Supporting Docs associated with the Exp. This means deleting the files and SupportingDoc rows.
 

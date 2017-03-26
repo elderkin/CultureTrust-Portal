@@ -37,8 +37,8 @@
                             Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
                             RepeatLayout="Table" RepeatDirection="Vertical" RepeatColumns="2"
                             OnSelectedIndexChanged="rdoExpType_SelectedIndexChanged">
-                            <asp:ListItem Text="Paycheck" Value="Paycheck"></asp:ListItem>
                             <asp:ListItem Text="Contractor Invoice" Value="ContractorInvoice"></asp:ListItem>
+                            <asp:ListItem Text="Payroll" Value="Payroll"></asp:ListItem>
                             <asp:ListItem Text="Reimbursement" Value="Reimbursement"></asp:ListItem>
                             <asp:ListItem Text="Vendor Invoice" Value="VendorInvoice"></asp:ListItem>
                             <asp:ListItem Text="Purchase Order" Value="PurchaseOrder"></asp:ListItem>
@@ -403,27 +403,6 @@
             </div>
         </asp:Panel>
 
-        <!-- PaymentMethod -->
-        <asp:Panel ID="pnlPaymentMethod" runat="server" Visible="false">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" AssociatedControlID="rdoPaymentMethod" 
-                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Payment Method</asp:Label>
-                    <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <div class="radio">
-                            <asp:RadioButtonList ID="rdoPaymentMethod" runat="server" AutoPostBack="true"
-                                Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth" OnSelectedIndexChanged="rdoPaymentMethod_SelectedIndexChanged">
-                                <asp:ListItem Text="Check" Value="Check" Selected="True"></asp:ListItem>
-                                <asp:ListItem Text="CultureTrust Credit Card" Value="CreditCard" Enabled="false"></asp:ListItem>
-                                <asp:ListItem Text="EFT/Direct Deposit" Value="EFT"></asp:ListItem>
-                                <asp:ListItem Text="Request Invoice" Value="Invoice"></asp:ListItem>
-                            </asp:RadioButtonList>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
-
         <!-- Contract Questions -->
         <asp:Panel ID="pnlContractQuestions" runat="server" Visible="false">
             <div class="form-group">
@@ -563,7 +542,7 @@
             </div>
         </asp:Panel>
 
-        <!-- Source of Funds and Project Class -->
+<%--        <!-- Source of Funds and Project Class -->
         <asp:Panel ID="pnlSourceOfFunds" runat="server" Visible="false">
             <div class="form-group">
                 <div class="row">
@@ -581,8 +560,9 @@
                     </div>
                 </div>
             </div>
-        </asp:Panel>
+        </asp:Panel>--%>
 
+        <!-- Project Class -->
         <asp:Panel ID="pnlProjectClass" runat="server" Visible="false">
             <div class="form-group">
                 <div class="row">
@@ -607,7 +587,7 @@
                             style="text-align:right" />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAmount"
+                        <asp:RequiredFieldValidator runat="server" ID="rfvAmount" ControlToValidate="txtAmount"
                             CssClass="text-danger" ErrorMessage="Please supply a Dollar Amount value." />
                         <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount"
                             CssClass="text-danger" ErrorMessage="Currency values only. For example, $123.45"
@@ -712,14 +692,34 @@
                     </div>
                     <div class="text-danger col-xs-offset-1 col-xs-11">
                         <asp:Literal ID="litSplitError" runat="server" Visible="false" 
-                            Text="Each split expense row must have a valid Dollar Amount and a selected Expense Account" />
+                            Text="Each split expense row must have a selected Expense Account and a valid Dollar Amount" />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- PaymentMethod -->
+        <asp:Panel ID="pnlPaymentMethod" runat="server" Visible="false">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" AssociatedControlID="rdoPaymentMethod" 
+                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Payment Method</asp:Label>
+                    <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="radio">
+                            <asp:RadioButtonList ID="rdoPaymentMethod" runat="server" AutoPostBack="true"
+                                Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth" OnSelectedIndexChanged="rdoPaymentMethod_SelectedIndexChanged">
+                                <asp:ListItem Text="Check" Value="Check" Selected="True"></asp:ListItem>
+                                <asp:ListItem Text="CultureTrust Credit Card" Value="CreditCard" Enabled="false"></asp:ListItem>
+                                <asp:ListItem Text="EFT/Direct Deposit" Value="EFT"></asp:ListItem>
+                                <asp:ListItem Text="Request Invoice" Value="Invoice"></asp:ListItem>
+                            </asp:RadioButtonList>
+                        </div>
                     </div>
                 </div>
             </div>
         </asp:Panel>
 
         <!-- Delivery Instructions - two flavors: PO and everybody else -->
-
         <asp:Panel ID="pnlPODeliveryInstructions" runat="server" Visible="false">
             <div class="form-group">
                 <div class="row">
