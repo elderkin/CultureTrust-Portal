@@ -283,24 +283,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtInvoiceNumber;
         
         /// <summary>
-        /// pnlPaymentMethod control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlPaymentMethod;
-        
-        /// <summary>
-        /// txtPaymentMethod control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPaymentMethod;
-        
-        /// <summary>
         /// pnlContractQuestions control.
         /// </summary>
         /// <remarks>
@@ -418,24 +400,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtURL;
         
         /// <summary>
-        /// pnlFunds control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlFunds;
-        
-        /// <summary>
-        /// rdoSourceOfFunds control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList rdoSourceOfFunds;
-        
-        /// <summary>
         /// pnlProjectClass control.
         /// </summary>
         /// <remarks>
@@ -517,13 +481,22 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.GridView gvExpSplit;
         
         /// <summary>
-        /// litSplitError control.
+        /// pnlPaymentMethod control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litSplitError;
+        protected global::System.Web.UI.WebControls.Panel pnlPaymentMethod;
+        
+        /// <summary>
+        /// txtPaymentMethod control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtPaymentMethod;
         
         /// <summary>
         /// pnlDeliveryInstructions control.

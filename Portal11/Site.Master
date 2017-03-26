@@ -96,19 +96,20 @@
                             </ul>
                         </LoggedInTemplate>
                     </asp:LoginView>
+
                     <ul class="nav navbar-nav navbar-right">
                         <li><a runat="server">
                             <asp:Label runat="server" ID="labFullName" /></a></li>
                         <li><a runat="server" id="mnuNoProjectRole" href="#" visible="false">
                             <asp:Literal runat="server" ID="litNoProjectRole" /></a></li>
-<%--                        <li><a runat="server" id="mnuProjectRole" href="~/Proj/ProjectDashboard" visible="false">
-                            <asp:Literal runat="server" ID="litProjectRole" /></a></li>--%>
                         <li><a runat="server" id="mnuProjectName" href="~/Proj/ProjectDashboard" visible="false">
                             <asp:Literal runat="server" ID="litProjectName" /></a></li>
                         <li><a runat="server" id="mnuStaffRole" href="~/Staff/StaffDashboard" visible="false">
                             <asp:Literal runat="server" ID="litStaffRole" /></a></li>
                         <li><a runat="server" id="mnuAdminRole" href="~/Admin/Main" visible="false">
                             <asp:Literal runat="server" ID="litAdminRole" /></a></li>
+<%--                        <li><a runat="server" id="labNewThing" href="~/Account/EditMyPortalSettings" visible="true">
+                            <asp:Literal runat="server" ID="litNewThing" />New Thing</a></li>--%>
                     </ul>
                 </div>
             </div>

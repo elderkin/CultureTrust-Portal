@@ -334,6 +334,9 @@ namespace Portal11.Rqsts
                         break;
                     }
             }
+            if (SplitActions.LoadSplitRowsForView(RequestType.Deposit, record.DepID, gvDepSplit)) // If true, ExpSplits existed and were loaded
+                EnergizeSplit();                                        // Adjust page to accommodate split gridview
+
             txtStaffNote.Text = record.StaffNote;                       // Load current value of note, if any
 
             SupportingActions.LoadDocs(RequestType.Deposit, record.DepID, lstSupporting, litDangerMessage); // Load them into list box
@@ -344,6 +347,17 @@ namespace Portal11.Rqsts
         void LoadAllDepHistorys()
         {
             NavigationActions.LoadAllDepHistorys(Convert.ToInt32(litSavedDepID.Text), EDHistoryView); // Fill the list from the database
+            return;
+        }
+
+        // We have a full split gridview. Now adjust the operation of the page to process splits
+
+        void EnergizeSplit()
+        {
+            pnlProjectClass.Visible = false;                        // Can't see "Project Class" field any more
+//            pnlAmount.Visible = false;                              // Can't see "Total Dollar Amount" field any more
+            pnlGLCode.Visible = false;                              // Can't see "Expense Account" drop down list any more
+            pnlDepositSplit.Visible = true;                         // Turn on the grid for splits
             return;
         }
     }

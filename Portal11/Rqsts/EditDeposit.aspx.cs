@@ -2,6 +2,7 @@
 using Portal11.Logic;
 using Portal11.Models;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web;
@@ -85,12 +86,14 @@ namespace Portal11.Rqsts
 
                                 EnablePanels(dep.DepType);              // Make the relevant panels visible
                                 LoadPanels(dep);                        // Fill in the visible panels from the Deposit
+                                if (SplitActions.LoadSplitRows(RequestType.Deposit, dep.DepID, gvDepSplit)) // If true, GLCodeSplits existed and were loaded
+                                    EnergizeSplit();                    // Adjust page to accommodate split gridview
                                 LoadSupportingDocs(dep);                // Fill in the Supporting Docs - it takes extra work
                             }
                             litSuccessMessage.Text = "Deposit Request is ready to edit";
                             break;
                         }
-                    case PortalConstants.QSCommandNew:              // Process a "New" command. Create new, empty Deposit, save it in new row
+                    case PortalConstants.QSCommandNew:                  // Process a "New" command. Create new, empty Deposit, save it in new row
                         {
 
                             // We don't have to "fill" any of the controls on the page, just use them in their initial state.
@@ -117,12 +120,15 @@ namespace Portal11.Rqsts
                                 Dep dep = context.Deps.Find(depID.Int); // Fetch Dep row by its primary key
                                 if (dep == null)
                                     LogError.LogInternalError("EditDeposit", string.Format("Unable to find Deposit ID '{0}' in database",
-                                        depID.String));         // Fatal error
+                                        depID.String));             // Fatal error
 
                                 rdoDepType.SelectedValue = dep.DepType.ToString(); // Select the button corresponding to our type
                                 rdoDepType.Enabled = false;         // Disable the control - cannot change type of existing Deposit
                                 EnablePanels(dep.DepType);          // Make the relevant panels visible
                                 LoadPanels(dep);                    // Fill in the visible panels from the Deposit
+                                if (SplitActions.LoadSplitRows(RequestType.Deposit, dep.DepID, gvDepSplit)) // If true, GLCodeSplits existed and were loaded
+                                    EnergizeSplit();                // Adjust page to accommodate split gridview
+
                                 LoadSupportingDocs(dep);            // Fill in the Supporting Docs - it takes extra work
                                 ReadOnlyControls();                 // Make all controls readonly for viewing
 
@@ -276,6 +282,109 @@ namespace Portal11.Rqsts
             return;
         }
 
+        // The user has pressed the Split button. Flip the split-age.
+
+        protected void btnSplit_Click(object sender, EventArgs e)
+        {
+            if (ddlGLCode.Enabled)                                      // If true, the function is "Split"
+            {
+                LoadFirstSplitRow();                                    // Load gridview with initial values
+                EnergizeSplit();                                        // Turn the gridview on and other things off
+            }
+            else                                                        // The function is "Cancel"
+            {
+                DeEnergizeSplit();                                      // Turn the gridview and its friends off
+            }
+        }
+
+        // As the Split gridview is being loaded, fill the ddls in each row and light appropriate buttons. Complicated!
+
+        protected void gvDepSplit_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)        // If == This is a data row of the grid
+            {
+
+                // Find all the controls and items for this row. We don't need all of them in every case, but it seems simpler this way.
+
+                Label totalRows = (Label)e.Row.FindControl("txtTotalRows"); // Find control within the row
+                Label selectedProjectClassID = (Label)e.Row.FindControl("txtSelectedProjectClassID"); // Locate item in the gridview row
+                Label selectedGLCodeID = (Label)e.Row.FindControl("txtSelectedGLCodeID"); // Locate item in the gridview row
+                DropDownList splitProjectClass = (DropDownList)e.Row.FindControl("ddlSplitProjectClass"); // Find drop down list within the row
+                TextBox splitAmount = (TextBox)e.Row.FindControl("txtSplitAmount"); // Locate text box containing Amount
+                DropDownList splitGLCode = (DropDownList)e.Row.FindControl("ddlSplitGLCode"); // Find drop down list within the row
+                TextBox splitNote = (TextBox)e.Row.FindControl("txtSplitNote"); // Locate text box containing Note
+                Button splitAdd = (Button)e.Row.FindControl("btnSplitAdd"); // Locate Add button
+                Button splitRemove = (Button)e.Row.FindControl("btnSplitRemove"); // Locate the Remove button
+
+                // Copy the entire ddlGLCode drop down list into this row's empty drop down list. Instantiate each ListItem so that
+                // the new ddl is distinct from the ddlGLCode ddl. That way, we can select items from each list separately.
+
+                splitGLCode.Items.AddRange(ddlGLCode.Items.Cast<ListItem>().Select(x => new ListItem(x.Text, x.Value)).ToArray());
+                // Copy each ListItem from ddlGLCode ddl to SplitGLCode ddl
+
+                if (selectedGLCodeID.Text != "")                    // If != there is a selected row. Selection is the GLCodeID of the row.
+                    splitGLCode.SelectedValue = selectedGLCodeID.Text;  // Select that row
+
+                // Repeat the process with the ddlProjectClass drop down list
+
+                splitProjectClass.Items.AddRange(ddlProjectClass.Items.Cast<ListItem>().Select(x => new ListItem(x.Text, x.Value)).ToArray());
+                // Copy each ListItem from ddlProjectClass to splitProjectClass ddl
+
+                if (selectedProjectClassID.Text != "")              // If != there is a selected row. Selection is the ProjectClassID of the row
+                    splitProjectClass.SelectedValue = selectedProjectClassID.Text; // Select that row
+                else
+                    splitProjectClass.SelectedValue = litSavedDefaultProjectClassID.Text; // Select the "global" default row
+
+                // If the Destination of Funds is "Restricted" the ProjectClass panel is visible. Enable our ProjectClass ddl. Otherwise, disable it.
+
+                if (pnlProjectClass.Visible)                        // If true Project Class DDL is visible
+                    splitProjectClass.Enabled = true;               // Turn on drop down list
+                else
+                    splitProjectClass.Enabled = false;              // Turn off drop down list
+
+                // If this is the only row of the gridview, disable the Rem button. Can't delete the only row.
+
+                if (Convert.ToInt32(totalRows.Text) == 1)           // If == this is the only row of the gridview
+                {
+                    splitRemove.Enabled = false;                    // Disable the button
+                }
+
+                // If this is a View command, everything goes read-only
+
+                if (litSavedCommand.Text == PortalConstants.QSCommandView) // If == this is a View command
+                {
+                    splitProjectClass.Enabled = false;              // Disable all the controls on this line, one-by-one
+                    splitAmount.Enabled = false;
+                    splitGLCode.Enabled = false;
+                    splitNote.Enabled = false;
+                    splitAdd.Enabled = false;
+                    splitRemove.Enabled = false;
+                }
+            }
+        }
+
+        // Buttons and processing within the split expense gridview
+
+        protected void btnSplitAdd_Click(object sender, EventArgs e)
+        {
+            Button b = (Button)sender;                              // Treat sender argument as a button
+            GridViewRow r = (GridViewRow)b.NamingContainer;         // Find the object that contains the button - a gridview row
+            CopySplitGridView(RowToAdd: r.RowIndex);                // Copy the grid, adding a blank row where indicated
+        }
+
+        protected void btnSplitRemove_Click(object sender, EventArgs e)
+        {
+            Button b = (Button)sender;                              // Treat sender argument as a button
+            GridViewRow r = (GridViewRow)b.NamingContainer;         // Find the object that contains the button - a gridview row
+            CopySplitGridView(RowToRemove: r.RowIndex);             // Copy the grid, removing row where indicated
+        }
+
+        protected void txtSplitAmount_TextChanged(object sender, EventArgs e)
+        {
+            ExtensionActions.ReloadDecimalText((TextBox)sender);    // Pretty up the text just entered
+            RecalculateTotalDollarAmount();                         // Update "master" amount
+        }
+
         // User has clicked on a row of the Supporting Docs list. Just turn on the buttons that work now.
         // And don't ask me why, but unless we act, the page title reverts to its original value. So for the case of View, set it again.
 
@@ -395,6 +504,11 @@ namespace Portal11.Rqsts
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
 
+            // Before saving, make sure the Expense Split gridview contains healthy values. It's hard to validate these on-the-fly so do it here.
+
+            if (!ValidateSplitGridView())                           // If false, there's a problem. Report the error
+                return;                                             // Give user a chance to fix the problem
+
             // Before saving, make sure that a sufficient number of supporting documents are present. Note that a user can "Save" with
             // insufficent supporting docs, but can only "Submit" if the minimum is present.
 
@@ -508,12 +622,16 @@ namespace Portal11.Rqsts
                     context.Deps.Add(dest);                         // Store the new row
                     context.SaveChanges();                          // Commit the change to product the new Rqst ID
 
-                    //  2) Copy the Supporting Docs. We know that in the source Rqst, all the supporting docs are "permanent," i.e., we don't need
+                    //  2) Copy the split rows, if any.
+
+                    SplitActions.CopySplitRows(RequestType.Deposit, src.DepID, dest.DepID); // Copy all the split rows, if any
+
+                    //  3) Copy the Supporting Docs. We know that in the source Rqst, all the supporting docs are "permanent," i.e., we don't need
                     //  to worry about "temporary" docs.
 
                     SupportingActions.CopyDocs(context, RequestType.Deposit, src.DepID, dest.DepID); // Copy each of the Supporting Docs
 
-                    //  3) Create a DepHistory row to describe the copy
+                    //  4) Create a DepHistory row to describe the copy
 
                     DepHistory hist = new DepHistory();
                     StateActions.CopyPreviousState(src, hist, "Copied"); // Fill fields of new record
@@ -565,6 +683,8 @@ namespace Portal11.Rqsts
                         context.Deps.Add(toSave);                   // Save new Rqst row
                         context.SaveChanges();                      // Commit the Add
                         litSavedDepID.Text = toSave.DepID.ToString(); // Show that we've saved it once
+                        if (pnlDepSplit.Visible)                // If true, splits are alive and rows need to be written to database
+                            SplitActions.UnloadSplitRows(RequestType.Deposit, toSave.DepID, gvDepSplit); // Save the splits from the gridview to the database
                         UnloadSupportingDocs();                     // Save all the supporting documents
                         //TODO what if there's an error here?
                         litSuccessMessage.Text = "Deposit Request successfully saved"; // Let user know we're good
@@ -615,11 +735,12 @@ namespace Portal11.Rqsts
             pnlReturnNote.Visible = false;
             litSavedEntityEnum.Text = EntityRole.DepositEntity.ToString(); // Set preferred entity role for Deposit use
             pnlSourceOfFunds.Visible = true; litSavedPersonEnum.Text = PersonRole.Donor.ToString(); // Only type of Person is Donor (so far ;-)
+            btnSplit.Visible = false;
             if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == user is an IC
                 pnlStaffNote.Visible = true;                        // The IC can see the staff note
             else
                 pnlStaffNote.Visible = false;                       // But no one else can
-            pnlState.Visible = true;
+            pnlState.Visible = true; btnSplit.Text = "Split";
             pnlSupporting.Visible = true;
             switch (type)
             {
@@ -628,6 +749,7 @@ namespace Portal11.Rqsts
                         lblAmount.Text = "Dollar Amount";
                         lblDateOfDeposit.Text = "Date Received"; txtDateOfDeposit.ToolTip = "Please indicate the date that the cash was received.";
                         pnlOptions.Visible = true;
+                        btnSplit.Visible = true;                    // Cash can be split
                         litSupportingDocMin.Text = "1";
                         break;
                     }
@@ -636,6 +758,7 @@ namespace Portal11.Rqsts
                         lblAmount.Text = "Dollar Amount";
                         lblDateOfDeposit.Text = "Date on Check"; txtDateOfDeposit.ToolTip = "Please indicate the date on the check.";
                         pnlOptions.Visible = true;
+                        btnSplit.Visible = true;                    // Checks can be split
                         litSupportingDocMin.Text = "1";
                         break;
                     }
@@ -644,6 +767,7 @@ namespace Portal11.Rqsts
                         lblAmount.Text = "Dollar Amount";
                         lblDateOfDeposit.Text = "Date of Draft"; txtDateOfDeposit.ToolTip = "Please indicate the date that the transfer was received.";
                         pnlOptions.Visible = true;
+                        btnSplit.Visible = true;                    // EFTs can be split
                         litSupportingDocMin.Text = "1";
                         break;
                     }
@@ -828,7 +952,10 @@ namespace Portal11.Rqsts
                             dr[PortalConstants.DdlName] = row.Name;
                             rows.Rows.Add(dr);                           // Add the new row to the data table
                             if (row.Default)                            // If true, this is the default Project Class
+                            {
                                 defaultID = row.ProjectClassID;         // Save this for later use
+                                litSavedDefaultProjectClassID.Text = row.ProjectClassID.ToString(); // Save default for use in split expense rows
+                            }
                         }
 
                         if (pcID != null)                                   // If != caller specified something
@@ -952,6 +1079,7 @@ namespace Portal11.Rqsts
             txtNotes.Enabled = false;
             pnlOptions.Enabled = false;
             rdoSourceOfFunds.Enabled = false; ddlPerson.Enabled = false; ddlEntity.Enabled = false;
+            btnSplit.Visible = false;
             pnlStaffNote.Enabled = false;
             // Suporting Docs - leave Listbox filled and enabled so that double click still works
             if (pnlSupporting.Visible)
@@ -1045,6 +1173,127 @@ namespace Portal11.Rqsts
             return;
         }
 
+        // Add or remove a row from the gvDepSplit gridview. That means making a row-by-row copy of the contents and rebinding the gridview
+
+        void CopySplitGridView(int RowToAdd = -1, int RowToRemove = -1)
+        {
+            int totalRows = gvDepSplit.Rows.Count + ((RowToAdd == -1) ? 0 : 1) - ((RowToRemove == -1) ? 0 : 1); // Calculate final row count. Cute, eh?
+
+            List<GLCodeSplitRow> rows = new List<GLCodeSplitRow>(); // A list of rows for the refreshed gridview control
+            for (int i = 0; i < gvDepSplit.Rows.Count; i++)  // Cycle through existing rows, one-by-one
+            {
+                if (i != RowToRemove)                               // If != this is not the row to skip, so press on
+                {
+                    DropDownList ddlSplitGLCode = (DropDownList)gvDepSplit.Rows[i].FindControl("ddlSplitGLCode"); // Find drop down list
+                    DropDownList ddlSplitProjectClass = (DropDownList)gvDepSplit.Rows[i].FindControl("ddlSplitProjectClass"); // And the other one
+                    TextBox txtSplitAmount = (TextBox)gvDepSplit.Rows[i].FindControl("txtSplitAmount"); // Find the text box within gridview row
+                    TextBox txtSplitNote = (TextBox)gvDepSplit.Rows[i].FindControl("txtSplitNote"); // Find the text box within gridview row
+
+                    GLCodeSplitRow row = new GLCodeSplitRow()       // Create container for us to build up a row
+                    {
+                        TotalRows = totalRows,                      // Note row count of gridview to help RowDataBound get cute
+                        SelectedGLCodeID = ddlSplitGLCode.SelectedValue, // Spot the selected row of the drop down list, if any. This is the GLCode ID
+                        SelectedProjectClassID = ddlSplitProjectClass.SelectedValue, // Repeat for Project Class drop down list
+                        Amount = txtSplitAmount.Text,               // Copy amount value, if any, into refresh row
+                        Note = txtSplitNote.Text                    // Copy note, if any, into refresh row
+                    };
+                    rows.Add(row);                                  // Add the row to the list of rows
+
+                    if (i == RowToAdd)                              // If == we're at the right point to add a new row, as requested
+                    {
+                        GLCodeSplitRow addedrow = new GLCodeSplitRow();   // Create an empty row
+                        rows.Add(addedrow);                         // Add it to the list
+                    }
+                }
+            }
+            gvDepSplit.DataSource = rows;                         // Give the rows to the gridview
+            gvDepSplit.DataBind();
+
+            RecalculateTotalDollarAmount();                         // Update the "master" amount
+            return;
+        }
+
+        // We have a full split gridview. Now adjust the operation of the page to process splits
+
+        void EnergizeSplit()
+        {
+            rdoDestOfFunds.Enabled = false;                         // Can't change destination of funds radio buttons any more
+            ddlProjectClass.Enabled = false;                        // Can't use "Project Class" field any more
+            txtAmount.Enabled = false; rfvAmount.Enabled = false;   // Can't use "Total Dollar Amount" field any more
+            ddlGLCode.Enabled = false;                              // Can't use "Expense Account" drop down list any more
+            ddlGLCode.ClearSelection();                             // Deselect this item in the "parent" list - it's inactive now
+            rfvGLCode.Enabled = false;                              // Turn off the RequiredFieldValidation of GL code - it's not required now
+            btnSplit.Text = "Cancel";                               // Reverse the meaning of the Split button
+            pnlDepSplit.Visible = true;                             // Turn on the grid for splits
+            return;
+        }
+
+        void DeEnergizeSplit()
+        {
+            rdoDestOfFunds.Enabled = true;                          // Radio buttons are back
+            ddlProjectClass.Enabled = true;                         // "Project Class" drop down list is back
+            txtAmount.Enabled = true; txtAmount.Text = ""; rfvAmount.Enabled = true; // "Total Dollar Amount" field is back and empty
+            ddlGLCode.Enabled = true;                               // "Expense Account" drop down list is back
+            rfvGLCode.Enabled = true;                               // RequiredFieldValidation of GL code is back on
+            btnSplit.Text = "Split";                                // Reverse the meaning of the Split button
+            pnlDepSplit.Visible = false;                            // Turn off the grid for splits
+            return;
+        }
+
+        // We have a request with no split rows and the "Split" button has been pressed.
+        // Create an "empty" gridview row and prime it with existing fields from the page, if any
+
+        void LoadFirstSplitRow()
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+
+                // Case 1) This request has never had splits before.
+
+                List<GLCodeSplitRow> rows = new List<GLCodeSplitRow>(); // Create a list of rows for the gridview
+                GLCodeSplitRow row = new GLCodeSplitRow()               // Prime the first row of the grid from "parent" fields of the page
+                {
+                    TotalRows = 1,                                      // This is the only row in the grid
+                    SelectedGLCodeID = ddlGLCode.SelectedValue,         // Copy the selected GL Code, if any, from the ddl
+                    SelectedProjectClassID = ddlProjectClass.SelectedValue, // Copy the selected Project Code, if any, from the ddl
+                };
+                decimal a = ExtensionActions.LoadTxtIntoDecimal(txtAmount); // Fetch current value of Total Dollar Amount field
+                row.Amount = ExtensionActions.LoadDecimalIntoTxt(a);    // Pretty up that amount for display
+
+                rows.Add(row);                                          // Add the first (and only) row
+
+                gvDepSplit.DataSource = rows;                           // Give the rows to the gridview
+                gvDepSplit.DataBind();                                  // And bind them to display the rows, firing RowDataBound for each row
+                litSplitError.Visible = false;                          // Begin with the error message turned off
+            }
+            return;
+        }
+
+        // Validate the Split gridview. Check that every row has a valid amount and selected expense account
+
+        bool ValidateSplitGridView()
+        {
+            if (pnlDepSplit.Visible)                                // If true, splits are alive
+            {
+                foreach (GridViewRow r in gvDepSplit.Rows)          // Cycle through rows, one-by-one
+                {
+                    DropDownList ddlSplitGLCode = (DropDownList)r.FindControl("ddlSplitGLCode"); // Find drop down list
+                    DropDownList ddlSplitProjectClass = (DropDownList)r.FindControl("ddlSplitProjectClass"); // And the other one
+                    TextBox txtSplitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Find the text box within gridview row
+                    TextBox txtSplitNote = (TextBox)r.FindControl("txtSplitNote"); // Find the text box within gridview row
+
+                    if ((ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount) == -1) || // Carefully check for a valid decimal value in amount. If == error
+                        (ddlSplitGLCode.SelectedIndex <= 0))        // If <= nothing selected, that's an error
+                    {
+                        litSplitError.Visible = true;               // Turn on the error message
+                        return false;                               // Report the error
+                    }
+                }
+            }
+            litSplitError.Visible = false;                          // In case error message had been on before, turn it off
+            return true;                                            // Return a green light
+        }
+
         // Load the Supporting Listbox control from the database.
 
         void LoadSupportingDocs(Dep rqst)
@@ -1088,6 +1337,22 @@ namespace Portal11.Rqsts
                         return false;
                     }
             }
+        }
+
+        // Sum all the amount fields in the gridview. Use it to update the "master" amount field.
+
+        void RecalculateTotalDollarAmount()
+        {
+            decimal totalDollarAmount = 0;                          // Accumulator for dollar amount
+            foreach (GridViewRow r in gvDepSplit.Rows)              // Let's try this construction for goofs
+            {
+                TextBox txtSplitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Find the text box within gridview row
+                decimal rowAmount = ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount); // Convert the text into decimal, carefully
+                if (rowAmount != -1)                                // If != there's a legitimate value here
+                    totalDollarAmount += rowAmount;                 // Accumulate amount from this row     
+            }
+            txtAmount.Text = ExtensionActions.LoadDecimalIntoTxt(totalDollarAmount); // Update "master" amount with total of all rows
+            return;
         }
     }
 }

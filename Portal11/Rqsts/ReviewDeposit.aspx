@@ -11,6 +11,13 @@
         <p class="text-success">
             <asp:Literal runat="server" ID="litSuccessMessage" />
         </p>
+
+    <style>
+        .panel.col-lg-3 {
+            margin-bottom: 0px;
+        }
+    </style>
+
     <div class="form-horizontal">
 
         <!-- Project Name -->
@@ -85,18 +92,6 @@
             </div>
         </asp:Panel>
 
-        <!-- Dollar Amount -->
-        <asp:Panel ID="pnlAmount" runat="server">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" ID="lblAmount" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" ReadOnly="true" />
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
-
         <!-- Date of Deposit -->
         <asp:Panel ID="pnlDateOfDeposit" runat="server">
             <div class="form-group">
@@ -121,18 +116,6 @@
                                 <asp:ListItem Text="Pledge Payment" Value="PledgePayment" ></asp:ListItem>
                             </asp:CheckBoxList>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
-
-        <!-- GL Code -->
-        <asp:Panel ID="pnlGLCode" runat="server">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">General Ledger Code</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtGLCode" CssClass="form-control" ReadOnly="true" />
                     </div>
                 </div>
             </div>
@@ -183,7 +166,6 @@
 
             </div>
         </asp:Panel>
-        <! -- End of pnlFunds -->
 
         <!-- Dest of Funds and Project Class -->
         <asp:Panel ID="pnlDestOfFunds" runat="server">
@@ -213,7 +195,86 @@
                 </asp:Panel>
             </div>
         </asp:Panel>
-        <! -- End of pnlFunds -->
+
+        <!-- Dollar Amount -->
+        <asp:Panel ID="pnlAmount" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" ID="lblAmount" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
+                    <div class="col-lg-4 col-md-4 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" style="text-align:right" ReadOnly="true" />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- GL Code -->
+        <asp:Panel ID="pnlGLCode" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">General Ledger Code</asp:Label>
+                    <div class="col-lg-4 col-md-4 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtGLCode" CssClass="form-control" ReadOnly="true" />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- GL Code Split -->
+        <asp:Panel ID="pnlDepositSplit" runat="server" Visible="false">
+            <div class="form-group" style="margin-bottom:0">
+                <div class="row">
+                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Account Splits</asp:Label>
+                    <div class="col-sm-10 col-xs-offset-0 col-xs-12">
+ 
+                        <div class="col-xs-12" style="padding-left:0">
+                        <asp:GridView ID="gvDepSplit" runat="server"
+                            CssClass="table table-striped table-hover"
+                            ItemType="Portal11.Models.GLCodeSplitRow"
+                            AutoGenerateColumns="false"
+                            AllowPaging="false">
+
+                            <SelectedRowStyle CssClass="success" />
+
+                            <EmptyDataTemplate>
+                                <table>
+                                    <tr>
+                                        <td>There are no Splits for this Request</td>
+                                    </tr>
+                                </table>
+                            </EmptyDataTemplate>
+                            <Columns>
+                                <asp:TemplateField HeaderText="Project Class">
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitProjectClass" runat="server" CssClass="form-control" 
+                                            Text='<%# Bind("SelectedProjectClassID") %>' Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right" >
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" 
+                                            Text='<%# Bind("Amount") %>' style="text-align:right" Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Account">
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitGLCode" runat="server" CssClass="form-control" 
+                                            Text='<%# Bind("SelectedGLCodeID") %>' Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control"  
+                                            Text='<%# Bind("Note") %>' Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
 
         <!-- Supporting Docs -->
         <asp:Panel ID="pnlSupporting" runat="server">

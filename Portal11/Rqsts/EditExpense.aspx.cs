@@ -85,7 +85,7 @@ namespace Portal11.Rqsts
                                 rdoExpType.Enabled = false;         // Disable the control - cannot change type of existing Expense
                                 EnablePanels(exp.ExpType);          // Make the relevant panels visible
                                 LoadPanels(exp);                    // Fill in the visible panels from the Expense
-                                if (SplitActions.LoadSplitRows(exp.ExpID, gvExpSplit)) // If true, GLCodeSplits existed and were loaded into the split gridview
+                                if (SplitActions.LoadSplitRows(RequestType.Expense, exp.ExpID, gvExpSplit)) // If true, GLCodeSplits existed and were loaded
                                     EnergizeSplit();                // Adjust page to accommodate split gridview
 
                                 LoadSupportingDocs(exp);            // Fill in the Supporting Docs list
@@ -127,7 +127,7 @@ namespace Portal11.Rqsts
                                 rdoExpType.Enabled = false;         // Disable the control - cannot change type of existing Expense
                                 EnablePanels(exp.ExpType);          // Make the relevant panels visible
                                 LoadPanels(exp);                    // Fill in the visible panels from the Expense
-                                if (SplitActions.LoadSplitRows(exp.ExpID, gvExpSplit)) // If true, GLCodeSplits existed and were loaded into the split gridview
+                                if (SplitActions.LoadSplitRows(RequestType.Expense, exp.ExpID, gvExpSplit)) // If true, GLCodeSplits existed and were loaded
                                     EnergizeSplit();                // Adjust page to accommodate split gridview
 
                                 LoadSupportingDocs(exp);            // Fill in the Supporting Docs - it takes extra work
@@ -379,16 +379,16 @@ namespace Portal11.Rqsts
         // One of the radio buttons in the "Source of Funds" panel has clicked. Switch the Project Class drop down list on or off.
         // In addition, redraw the split gridview to reflect the appearance or disappearance of the Project Code.
 
-        protected void rdoSourceOfFunds_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (rdoSourceOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted) // If == Restricted button was clicked. Turn on drop down list
-                pnlProjectClass.Visible = true;                     // Turn on drop down list
-            else
-                pnlProjectClass.Visible = false;                    // Turn off drop down list
-            if (!ddlGLCode.Enabled)                                 // If false, the ddl is turned off so Split must be on. Refresh
-                CopySplitGridView();                                // Refresh the Split grid view, reflecting the change in the Source of Funds button
-            return;
-        }
+        //protected void rdoSourceOfFunds_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    if (rdoSourceOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted) // If == Restricted button was clicked. Turn on drop down list
+        //        pnlProjectClass.Visible = true;                     // Turn on drop down list
+        //    else
+        //        pnlProjectClass.Visible = false;                    // Turn off drop down list
+        //    if (!ddlGLCode.Enabled)                                 // If false, the ddl is turned off so Split must be on. Refresh
+        //        CopySplitGridView();                                // Refresh the Split grid view, reflecting the change in the Source of Funds button
+        //    return;
+        //}
 
         // One of the radio buttons in the "Fulfilment Instructions" and "Delivery Instructions" has clicked.
 
@@ -430,12 +430,7 @@ namespace Portal11.Rqsts
             }
             else                                                        // The function is "Cancel"
             {
-                ddlProjectClass.Enabled = true;                         // "Project Class" drop down list is back
-                txtAmount.Enabled = true; txtAmount.Text = "";          // "Total Dollar Amount" field is back and empty
-                ddlGLCode.Enabled = true;                               // "Expense Account" drop down list is back
-                rfvGLCode.Enabled = true;                               // RequiredFieldValidation of GL code is back on
-                btnSplit.Text = "Split";                                // Reverse the meaning of the Split button
-                pnlExpenseSplit.Visible = false;                        // Turn off the grid for splits
+                DeEnergizeSplit();                                      // Turn everything off
             }
         }
 
@@ -467,20 +462,15 @@ namespace Portal11.Rqsts
                 if (selectedGLCodeID.Text != "")                        // If != there is a selected row. Selection is the GLCodeID of the row.
                     splitGLCode.SelectedValue = selectedGLCodeID.Text;  // Select that row
 
-                // Repeat the process with the ddlProjectClass drop down list, if it is relevant
+                // Repeat the process with the ddlProjectClass drop down list
 
-                if (rdoSourceOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted) // If == the "Restricted" radio button is pressed; we're relevant
-                {
-                    splitProjectClass.Items.AddRange(ddlProjectClass.Items.Cast<ListItem>().Select(x => new ListItem(x.Text, x.Value)).ToArray());
-                    // Copy each ListItem from ddlProjectClass to splitProjectClass ddl
+                splitProjectClass.Items.AddRange(ddlProjectClass.Items.Cast<ListItem>().Select(x => new ListItem(x.Text, x.Value)).ToArray());
+                // Copy each ListItem from ddlProjectClass to splitProjectClass ddl
 
-                    if (selectedProjectClassID.Text != "")              // If != there is a selected row. Selection is the ProjectClassID of the row
-                        splitProjectClass.SelectedValue = selectedProjectClassID.Text; // Select that row
-                    else
-                        splitProjectClass.SelectedValue = litSavedDefaultProjectClassID.Text; // Select the "global" default row
-                }
+                if (selectedProjectClassID.Text != "")              // If != there is a selected row. Selection is the ProjectClassID of the row
+                    splitProjectClass.SelectedValue = selectedProjectClassID.Text; // Select that row
                 else
-                    splitProjectClass.Enabled = false;                  // If irrelevant, disable it
+                    splitProjectClass.SelectedValue = litSavedDefaultProjectClassID.Text; // Select the "global" default row
 
                 // If this is the only row of the gridview, disable the Rem button. Can't delete the only row.
 
@@ -767,7 +757,7 @@ namespace Portal11.Rqsts
                         PODeliveryMode = src.PODeliveryMode, POVendorMode = src.POVendorMode,
                         ProjectID = src.ProjectID,                  // New Rqst is in the same project
                         ReturnNote = "",                            // Clear out the return note, if any
-                        SourceOfFunds = src.SourceOfFunds, ProjectClassID = src.ProjectClassID,
+                        ProjectClassID = src.ProjectClassID,
                         StaffNote = "",                             // Clear out the staff note, if any
                         Summary = src.Summary + " (copy)",          // Note that this is a copy
                         CurrentTime = System.DateTime.Now,
@@ -780,7 +770,7 @@ namespace Portal11.Rqsts
 
                     //  2) Copy the split rows, if any.
 
-                    SplitActions.CopySplitRows(src.ExpID, dest.ExpID); // Copy all the split rows, if any
+                    SplitActions.CopySplitRows(RequestType.Expense, src.ExpID, dest.ExpID); // Copy all the split rows, if any
 
                     //  3) Copy the Supporting Docs. We know that in the source Rqst, all the supporting docs are "permanent," i.e., we don't need
                     //  to worry about "temporary" docs.
@@ -842,7 +832,8 @@ namespace Portal11.Rqsts
                         context.Exps.Add(toSave);                   // Save new Rqst row
                         context.SaveChanges();                      // Commit the Add
                         litSavedExpID.Text = toSave.ExpID.ToString(); // Show that we've saved it once
-                        UnloadSplitRows(toSave.ExpID, gvExpSplit); // Save the splits from the gridview to the database
+                        if (pnlExpenseSplit.Visible)                // If true, splits are alive and rows need to be written to database
+                            SplitActions.UnloadSplitRows(RequestType.Expense, toSave.ExpID, gvExpSplit); // Save the splits from the gridview to the database
                         UnloadSupportingDocs(toSave.ExpID);         // Save all the supporting documents
                         litSuccessMessage.Text = "Expense Request successfully saved"; // Let user know we're good
                         return toSave.ExpID;                        // Return the finished Rqst
@@ -865,7 +856,8 @@ namespace Portal11.Rqsts
                             // Write down our current State and authorship
                         context.ExpHistorys.Add(hist);              // Save new ExpHistory row
                         context.SaveChanges();                      // Commit the Add or Modify
-                        UnloadSplitRows(toUpdate.ExpID, gvExpSplit); // Save the splits from the gridview to the database
+                        if (pnlExpenseSplit.Visible)                // If true, splits are alive and rows need to be written to database
+                            SplitActions.UnloadSplitRows(RequestType.Expense, toUpdate.ExpID, gvExpSplit); // Save the splits from the gridview to the database
                         UnloadSupportingDocs(toUpdate.ExpID);       // Save all the new supporting documents
                         litSuccessMessage.Text = "Expense Request successfully updated";    // Let user know we're good
                         return toUpdate.ExpID;                      // Return the finished Rqst
@@ -883,14 +875,13 @@ namespace Portal11.Rqsts
 
         void EnablePanels(ExpType type)
         {
-            pnlAmount.Visible = true; txtAmount.Enabled = true; btnSplit.Visible = false; // Unconditionally visible (or invisible) for all Expense types
+            pnlAmount.Visible = true; txtAmount.Enabled = true;     // Unconditionally visible (or invisible) for all Expense types
             pnlDescription.Visible = true;
             pnlDeliveryAddress.Visible = false;
             pnlExpenseSplit.Visible = false; btnSplit.Text = "Split";
-            pnlSourceOfFunds.Visible = true;
-            pnlGLCode.Visible = true; ddlGLCode.Enabled = true;
+            pnlGLCode.Visible = true; ddlGLCode.Enabled = true; btnSplit.Visible = false;
             pnlNotes.Visible = true;
-            ddlProjectClass.Enabled = true;                         // Doesn't affect the panel's visibility, just enables the ddl
+            pnlProjectClass.Visible = true;
             pnlReturnNote.Visible = false;
             if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == user is an IC
                 pnlStaffNote.Visible = true;                        // The IC can see the staff note
@@ -935,7 +926,7 @@ namespace Portal11.Rqsts
                         litSupportingDocMin.Text = "1";
                         break;
                     }
-                case ExpType.Paycheck:
+                case ExpType.Payroll:
                     {
                         lblAmount.Text = "Gross Pay";
                         pnlBeginningEnding.Visible = true;
@@ -1141,7 +1132,7 @@ namespace Portal11.Rqsts
 
         void FillProjectClassDDL(int? pcID)
         {
-            if (pnlSourceOfFunds.Visible)                               // If true need to populate list
+            if (pnlProjectClass.Visible)                                // If true need to populate list
             {
                 if (ddlProjectClass.Items.Count == 0)                   // If = the control is empty. Fill it
                 {
@@ -1179,11 +1170,7 @@ namespace Portal11.Rqsts
 
                         StateActions.LoadDdl(ddlProjectClass, defaultID, rows, 
                             " -- Error: No Project Classes assigned to Project --", "-- none selected --"); // Put the cherry on top
-
                     }
-
-                    //StateActions.FinishDdlLoad(defaultID, ddlProjectClass, " -- Error: No Project Classes assigned to Project --", "-- none selected --"); 
-                    //    // Put the cherry on top
                 }
             }
             return;
@@ -1198,6 +1185,12 @@ namespace Portal11.Rqsts
 
             if (pnlAmount.Visible)
                 txtAmount.Text = ExtensionActions.LoadDecimalIntoTxt(record.Amount);
+
+            if (pnlBeginningEnding.Visible)
+            {
+                DateActions.LoadDateIntoTxtCal(record.BeginningDate, txtBeginningDate, calBeginningDate);
+                DateActions.LoadDateIntoTxtCal(record.EndingDate, txtEndingDate, calEndingDate);
+            }
 
             if (pnlCards.Visible)
             {
@@ -1216,14 +1209,15 @@ namespace Portal11.Rqsts
                 ExtensionActions.LoadYesNoIntoRdo(record.ContractComing, rdoContractComing); // Load enum value into Radio Button List
                 rdoContractComing_SelectedIndexChanged(0, e);               // React to the setting
             }
+
+            if (pnlDateNeeded.Visible)
+                DateActions.LoadDateIntoTxtCal(record.DateNeeded, txtDateNeeded, calDateNeeded);
+
             if (pnlDateOfInvoice.Visible)
             {
                 DateActions.LoadDateIntoTxtCal(record.DateOfInvoice, txtDateOfInvoice, calDateOfInvoice);
                 txtInvoiceNumber.Text = record.InvoiceNumber;
             }
-
-            if (pnlDateNeeded.Visible)
-                DateActions.LoadDateIntoTxtCal(record.DateNeeded, txtDateNeeded, calDateNeeded);
 
             if (pnlDeliveryInstructions.Visible)
             {
@@ -1238,12 +1232,6 @@ namespace Portal11.Rqsts
 
             txtDescription.Text = record.Description;
             
-            if (pnlBeginningEnding.Visible)
-            {
-                DateActions.LoadDateIntoTxtCal(record.BeginningDate, txtBeginningDate, calBeginningDate);
-                DateActions.LoadDateIntoTxtCal(record.EndingDate, txtEndingDate, calEndingDate);
-            }
-
             if (pnlEntity.Visible)
             {
                 FillEntityDDL(record.EntityID, record.EntityNeeded);    // Pull the VendorID and load the DDL
@@ -1290,25 +1278,13 @@ namespace Portal11.Rqsts
                 }
             }
 
+            if (pnlProjectClass.Visible)                                // If true, process Project Class
+                FillProjectClassDDL(record.ProjectClassID);             // Fill the DDL 
+
             if (record.CurrentState == ExpState.Returned)               // If == the Rqst has been returned, so a Return Note may be present
             {
                 pnlReturnNote.Visible = true;                           // Make this panel visible
                 txtReturnNote.Text = record.ReturnNote;                 // Copy the text of the Return Note
-            }
-
-            if (pnlSourceOfFunds.Visible)                               // If true, process Source of Funds and Project Class
-            {
-                if (record.SourceOfFunds == SourceOfExpFunds.Restricted)   // If == the Source of Funds is a Project Class
-                {
-                    rdoSourceOfFunds.SelectedValue = PortalConstants.RDOFundsRestricted; // Select the Restricted button
-                    pnlProjectClass.Visible = true;
-                }
-                else if (record.SourceOfFunds == SourceOfExpFunds.Unrestricted) // If == the Source of Funds does not use a Project Class
-                {
-                    rdoSourceOfFunds.SelectedValue = PortalConstants.RDOFundsUnrestricted; // Select the Unrestricted button
-                    pnlProjectClass.Visible = false;                    // Unrestricted means no Project Class so don't show the list
-                }
-                FillProjectClassDDL(record.ProjectClassID);             // Fill the DDL even if it's not visible yet. User could change that
             }
 
             if (pnlStaffNote.Visible)
@@ -1408,20 +1384,10 @@ namespace Portal11.Rqsts
             if (pnlPOFulFillmentInstructions.Visible)
                 record.POVendorMode = ExtensionActions.LoadRdoIntoYesNo(rdoPOVendorMode); // Convert Yes/No to enum
 
+            if (pnlProjectClass.Visible)                                    // If true the Expense does have a Project Class
+                record.ProjectClassID = StateActions.UnloadDdl(ddlProjectClass); // Pull the selected Project Class from the DDL
+
             // Return Note is read-only, so not unloaded
-            
-            if (pnlSourceOfFunds.Visible)                                    // If true the Expense does have a Source of Funds
-            {
-                if (rdoSourceOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted) // If == Restricted button is clicked. 
-                {
-                    record.SourceOfFunds = SourceOfExpFunds.Restricted;     // Remember this setting
-                    record.ProjectClassID = StateActions.UnloadDdl(ddlProjectClass); // Pull the selected Project Class from the DDL
-                }
-                else
-                    record.SourceOfFunds = SourceOfExpFunds.Unrestricted;   // Remember this non-setting
-            }
-            else
-                record.SourceOfFunds = SourceOfExpFunds.NA;                 // Not applicable to this type of Expense Request
 
             if (pnlStaffNote.Visible)
                 record.StaffNote = txtStaffNote.Text;
@@ -1468,7 +1434,7 @@ namespace Portal11.Rqsts
             ddlPerson.Enabled = false;
             rdoPODeliveryMode.Enabled = false;
             rdoPOVendorMode.Enabled = false;
-            rdoSourceOfFunds.Enabled = false; ddlProjectClass.Enabled = false;
+            ddlProjectClass.Enabled = false;
             btnSplit.Visible = false;
 //            txtURL.Enabled = false;
             ddlEntity.Enabled = false;
@@ -1495,7 +1461,7 @@ namespace Portal11.Rqsts
                     TextBox txtSplitAmount = (TextBox)gvExpSplit.Rows[i].FindControl("txtSplitAmount"); // Find the text box within gridview row
                     TextBox txtSplitNote = (TextBox)gvExpSplit.Rows[i].FindControl("txtSplitNote"); // Find the text box within gridview row
 
-                    GLCodeSplitRow row = new GLCodeSplitRow()     // Create container for us to build up a row
+                    GLCodeSplitRow row = new GLCodeSplitRow()       // Create container for us to build up a row
                     {
                         TotalRows = totalRows,                      // Note row count of gridview to help RowDataBound get cute
                         SelectedGLCodeID = ddlSplitGLCode.SelectedValue, // Spot the selected row of the drop down list, if any. This is the GLCode ID
@@ -1524,12 +1490,23 @@ namespace Portal11.Rqsts
         void EnergizeSplit()
         {
             ddlProjectClass.Enabled = false;                        // Can't use "Project Class" field any more
-            txtAmount.Enabled = false;                              // Can't use "Total Dollar Amount" field any more
+            txtAmount.Enabled = false; rfvAmount.Enabled = false;   // Can't use "Total Dollar Amount" field any more; don't validate
             ddlGLCode.Enabled = false;                              // Can't use "Expense Account" drop down list any more
             ddlGLCode.ClearSelection();                             // Deselect this item in the "parent" list - it's inactive now
             rfvGLCode.Enabled = false;                              // Turn off the RequiredFieldValidation of GL code - it's not required now
             btnSplit.Text = "Cancel";                               // Reverse the meaning of the Split button
             pnlExpenseSplit.Visible = true;                         // Turn on the grid for splits
+            return;
+        }
+
+        void DeEnergizeSplit()
+        {
+            ddlProjectClass.Enabled = true;                         // "Project Class" drop down list is back
+            txtAmount.Enabled = true; txtAmount.Text = ""; rfvAmount.Enabled = true; // "Total Dollar Amount" field is back and empty
+            ddlGLCode.Enabled = true;                               // "Expense Account" drop down list is back
+            rfvGLCode.Enabled = true;                               // RequiredFieldValidation of GL code is back on
+            btnSplit.Text = "Split";                                // Reverse the meaning of the Split button
+            pnlExpenseSplit.Visible = false;                        // Turn off the grid for splits
             return;
         }
 
@@ -1562,48 +1539,6 @@ namespace Portal11.Rqsts
             return;
         }
 
-        // Unload split expense lines into database rows
-
-        void UnloadSplitRows(int expID, GridView gv)
-        {
-            SplitActions.DeleteSplitRows(expID);                        // Get rid of any existing GLCodeSplit rows for this Request
-            if (pnlExpenseSplit.Visible)                                // If true, splits are alive and rows need to be written to database
-            {
-                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-                {
-                    try
-                    {
-                        foreach (GridViewRow row in gv.Rows)            // Process rows of GridView one-by-one
-                        {
-
-                            // For this row, find the things we want to write down in the database
-
-                            DropDownList ddlSplitGLCode = (DropDownList)row.FindControl("ddlSplitGLCode"); // Find drop down list
-                            DropDownList ddlSplitProjectClass = (DropDownList)row.FindControl("ddlSplitProjectClass"); // And the other one
-                            TextBox txtSplitAmount = (TextBox)row.FindControl("txtSplitAmount"); // Find the text box within gridview row
-                            TextBox txtSplitNote = (TextBox)row.FindControl("txtSplitNote"); // Find the text box within gridview row
-
-                            GLCodeSplit toSave = new GLCodeSplit         // Fill a new object for the row
-                            {
-                                RqstID = expID,                          // The Expense Request that owns us
-                                GLCodeID = StateActions.UnloadDdl(ddlSplitGLCode), // The selected GL Code
-                                ProjectClassID = StateActions.UnloadDdl(ddlSplitProjectClass), // The selected Project Class
-                                Amount = ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount), // The dollar amount
-                                Note = txtSplitNote.Text                // The note text, if any
-                            };
-                            context.GLCodeSplits.Add(toSave);           // Save new Rqst row
-                        }
-                        context.SaveChanges();                          // Commit the Adds
-                    }
-                    catch (Exception ex)
-                    {
-                        LogError.LogDatabaseError(ex, "EditExpense", "Error writing GLCodeSplit rows"); // Fatal error
-                    }
-                }
-            }
-            return;
-        }
-
         // Validate the Split gridview. Check that every row has a valid amount and selected expense account
 
         bool ValidateSplitGridView()
@@ -1617,7 +1552,7 @@ namespace Portal11.Rqsts
                     TextBox txtSplitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Find the text box within gridview row
                     TextBox txtSplitNote = (TextBox)r.FindControl("txtSplitNote"); // Find the text box within gridview row
 
-                    if ((ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount) == -1) || // Carefull check for a valid decimal value in amount. If == error
+                    if ((ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount) == -1) || // Carefully check for a valid decimal value in amount. If == error
                         (ddlSplitGLCode.SelectedIndex <= 0))      // If <= nothing selected, that's an error
                     {
                         litSplitError.Visible = true;               // Turn on the error message

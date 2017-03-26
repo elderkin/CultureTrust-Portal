@@ -198,9 +198,9 @@ namespace Portal11.Rqsts
             pnlDescription.Visible = true;
             pnlEstablishedBy.Visible = true;
             pnlEstablishedTime.Visible = true;
-            pnlFunds.Visible = true;
             pnlGLCode.Visible = true;
             pnlNotes.Visible = true;
+            pnlProjectClass.Visible = true;
             pnlReturnNote.Visible = true;
             if ((litSavedUserRole.Text == UserRole.Project.ToString())
                 || (litSavedUserRole.Text == UserRole.Auditor.ToString()))      // If true, user is a Project Director or Auditor
@@ -243,7 +243,7 @@ namespace Portal11.Rqsts
                         pnlPOFulfillmentInstructions.Visible = false;
                         break;
                     }
-                case ExpType.Paycheck:
+                case ExpType.Payroll:
                     {
                         lblAmount.Text = "Gross Pay";
                         pnlBeginningEnding.Visible = true;
@@ -395,42 +395,25 @@ namespace Portal11.Rqsts
 
             if (record.EntityID != null)
                 txtEntity.Text = record.Entity.Name;
-            else if (record.EntityNeeded)                               // If true, PD asks us to create a new Entity
+            else if (record.EntityNeeded)                                   // If true, PD asks us to create a new Entity
                 txtEntity.Text = "-- Please create a new " + lblEntity.Text + "--"; // Make that request
 
-            // Source of Funds. At a minimum, use radio buttons to show source. If it's Restricted, also show the Project Class.
+            // For a while, we used an enum called SourceOfFunds to select various options, one of which, Restricted, 
+            // required a Project Class. Then SourceOfFunds went away and everything became Restricted. To process legacy
+            // rows correctly, handle cases where the Project Class is null or wrong, supplying a default vaule for Project Class.
 
-            switch (record.SourceOfFunds)
+            try
             {
-                case SourceOfExpFunds.NA:
-                {
-                    rdoSourceOfFunds.SelectedValue = SourceOfExpFunds.NA.ToString(); // Light the Not Applicable button
-                    pnlProjectClass.Visible = false;                    // No need to display Project Class, since there isn't one
-                    break;
-                }
-                case SourceOfExpFunds.Restricted:
-                {
-                    rdoSourceOfFunds.SelectedValue = SourceOfExpFunds.Restricted.ToString(); // Light the Restricted button
-                    txtProjectClass.Text = record.ProjectClass.Name;    // Show the Project Class
-                    break;
-                }
-                case SourceOfExpFunds.Unrestricted:
-                {
-                    rdoSourceOfFunds.SelectedValue = SourceOfExpFunds.Unrestricted.ToString(); // Light the Unrestricted button
-                    pnlProjectClass.Visible = false;                    // No need to display Project Class, since there isn't one
-                    break;
-                }
-                default:
-                {
-                    LogError.LogInternalError("ReviewExpense", string.Format(
-                        "Invalid SourceOfFunds value '{0}' found in Exp record", record.SourceOfFunds)); // Log fatal error
-                    break;
-                }
+                txtProjectClass.Text = record.ProjectClass.Name;            // Show the Project Class
+            }
+            catch
+            {
+                txtProjectClass.Text = EnumActions.GetEnumDescription(SourceOfExpFunds.Unrestricted); // Supply default value
             }
 
             txtStaffNote.Text = record.StaffNote;                       // Load value, if any
 
-            if (SplitActions.LoadSplitRowsForView(record.ExpID, gvExpSplit)) // If true, ExpSplits existed and were loaded into the split gridview
+            if (SplitActions.LoadSplitRowsForView(RequestType.Expense, record.ExpID, gvExpSplit)) // If true, ExpSplits existed and were loaded
                 EnergizeSplit();                                        // Adjust page to accommodate split gridview
 
             SupportingActions.LoadDocs(RequestType.Expense, record.ExpID, lstSupporting, litDangerMessage); // Load into list box

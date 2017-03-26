@@ -57,6 +57,24 @@ namespace Portal11.Account
                 }
                 string userID = loggedInUser.Id;                        // Copy User ID out of database row and save for later use
 
+                // Check Portal Parameters for Disable Logins flag
+
+                if (!loggedInUser.Administrator)                        // If true user is not an Administrator. Could be locked out by disabled login
+                {
+                    string fran = SupportingActions.GetFranchiseKey();  // Fetch franchise code
+                    PortalParameter portalParameter = context.PortalParameters.Where(p => p.FranchiseKey == fran).FirstOrDefault(); // Lookup by franchise key
+                    if (portalParameter == null)                        // If == PortalParameter row is missing
+                    {
+                        LogError.LogInternalError("LoginDispatch", $"PortalParameter row for franchise '{fran}' is missing."); // Fatal error
+                    }
+                    if (portalParameter.DisableLogins)                  // If true logins for non-Administrators are disabled
+                    {
+                        Context.GetOwinContext().Authentication.SignOut(); // Log them right back out of there
+                        Response.Redirect(PortalConstants.URLLogin + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger + "&" +
+                            PortalConstants.QSStatus + "=Portal logins are temporarily disabled. Please try again later."); // Head back to the login page
+                    }
+                }
+
                 // Write down the fact that we just logged in the user
 
                 try

@@ -1055,9 +1055,9 @@ namespace Portal11.Rqsts
                                     useRow = true;                      // Take the row
                                 break;
                             }
-                        case ExpType.Paycheck:
+                        case ExpType.Payroll:
                             {
-                                if (ckEPaycheck.Checked)                // If true relevant checkbox is checked
+                                if (ckEPayroll.Checked)                // If true relevant checkbox is checked
                                     useRow = true;                      // Take the row
                                 break;
                             }
@@ -1386,7 +1386,7 @@ namespace Portal11.Rqsts
             staffCheckboxesCookie[PortalConstants.CStaffExpVisible] = pnlExp.Visible.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEContractorInvoice] = ckEContractorInvoice.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEPEXCard] = ckEPEXCard.Checked.ToString();
-            staffCheckboxesCookie[PortalConstants.CStaffCkEPaycheck] = ckEPaycheck.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkEPayroll] = ckEPayroll.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEPurchaseOrder] = ckEPurchaseOrder.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEReimbursement] = ckEReimbursement.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEVendorInvoice] = ckEVendorInvoice.Checked.ToString();
@@ -1532,8 +1532,8 @@ namespace Portal11.Rqsts
                 if (staffCheckboxesCookie[PortalConstants.CStaffCkEPEXCard] == "True") ckEPEXCard.Checked = true;
                 else ckEPEXCard.Checked = false;
 
-                if (staffCheckboxesCookie[PortalConstants.CStaffCkEPaycheck] == "True") ckEPaycheck.Checked = true;
-                else ckEPaycheck.Checked = false;
+                if (staffCheckboxesCookie[PortalConstants.CStaffCkEPayroll] == "True") ckEPayroll.Checked = true;
+                else ckEPayroll.Checked = false;
 
                 if (staffCheckboxesCookie[PortalConstants.CStaffCkEPurchaseOrder] == "True") ckEPurchaseOrder.Checked = true;
                 else ckEPurchaseOrder.Checked = false;

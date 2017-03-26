@@ -73,27 +73,6 @@
             </div>
         </asp:Panel>
 
-        <!-- Dollar Amount -->
-        <asp:Panel ID="pnlAmount" runat="server" Visible="false">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" ID="lblAmount" AssociatedControlID="txtAmount" 
-                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Dollar Amount</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" 
-                            style="text-align:right" OnTextChanged="txtAmount_TextChanged" AutoPostBack="true"/>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAmount"
-                            CssClass="text-danger" ErrorMessage="Please supply a Dollar Amount value." />
-                        <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount"
-                            CssClass="text-danger" ErrorMessage="Currency values only. For example, $123.45"
-                            ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$" />
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
-
     <!-- Date of Deposit -->
         <asp:Panel ID="pnlDateOfDeposit" runat="server" Visible="false">
             <div class="form-group">
@@ -160,23 +139,6 @@
                                     title="This deposit is credited toward a prior pledge; it is not new money"></asp:ListItem>
                             </asp:CheckBoxList>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
-
-        <!-- GL Code -->
-        <asp:Panel ID="pnlGLCode" runat="server" Visible="false">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label ID="labGLCode" runat="server" AssociatedControlID="ddlGLCode" 
-                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Income Account</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:DropDownList runat="server" ID="ddlGLCode" CssClass="form-control"></asp:DropDownList>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlGLCode"
-                            CssClass="text-danger" ErrorMessage="Please select a General Ledger Code from the list"></asp:RequiredFieldValidator>
                     </div>
                 </div>
             </div>
@@ -281,8 +243,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <asp:Panel ID="pnlProjectClass" runat="server" Visible="false">
+            <asp:Panel ID="pnlProjectClass" runat="server" Visible="false">
+                <div class="form-group">
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="ddlProjectClass" 
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Project Class</asp:Label>
@@ -291,7 +255,129 @@
                             <asp:DropDownList runat="server" ID="ddlProjectClass" CssClass="form-control"></asp:DropDownList>
                         </div>
                     </div>
-                </asp:Panel>
+                </div>
+            </asp:Panel>
+        </asp:Panel>
+
+        <!-- Dollar Amount -->
+        <asp:Panel ID="pnlAmount" runat="server" Visible="false">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" ID="lblAmount" AssociatedControlID="txtAmount" 
+                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Dollar Amount</asp:Label>
+                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" 
+                            style="text-align:right" OnTextChanged="txtAmount_TextChanged" AutoPostBack="true"/>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:RequiredFieldValidator runat="server" ID="rfvAmount" ControlToValidate="txtAmount"
+                            CssClass="text-danger" ErrorMessage="Please supply a Dollar Amount value." />
+                        <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount"
+                            CssClass="text-danger" ErrorMessage="Currency values only. For example, $123.45"
+                            ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$" />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- GL Code -->
+        <asp:Panel ID="pnlGLCode" runat="server" Visible="false">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label ID="labGLCode" runat="server" AssociatedControlID="ddlGLCode" 
+                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Income Account</asp:Label>
+                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:DropDownList runat="server" ID="ddlGLCode" CssClass="form-control"></asp:DropDownList>
+                    </div>
+                    <div class="col-md-1 col-xs-3">
+                        <asp:Button ID="btnSplit" runat="server" Text="Split" CssClass="btn btn-default col-xs-12" Visible="false"
+                            Enabled="true" OnClick="btnSplit_Click" CausesValidation="false" ToolTip="Divide the deposit into multiple Accounts" />
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:RequiredFieldValidator ID="rfvGLCode" runat="server" InitialValue="" ControlToValidate="ddlGLCode"
+                            CssClass="text-danger" ErrorMessage="Please select a General Ledger Code from the list"></asp:RequiredFieldValidator>
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- Account Split -->
+        <asp:Panel ID="pnlDepSplit" runat="server" Visible="false">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-offset-0 col-xs-12">
+ 
+                        <div class="col-xs-12">
+                        <asp:GridView ID="gvDepSplit" runat="server"
+                            CssClass="table table-striped table-hover"
+                            ItemType="Portal11.Models.GLCodeSplitRow"
+                            AutoGenerateColumns="false"
+                            AllowPaging="false"
+                            OnRowDataBound="gvDepSplit_RowDataBound">
+
+                            <SelectedRowStyle CssClass="success" />
+
+                            <EmptyDataTemplate>
+                                <table>
+                                    <tr>
+                                        <td>There are no Splits for this Request</td>
+                                    </tr>
+                                </table>
+                            </EmptyDataTemplate>
+                            <Columns>
+                                <asp:TemplateField Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="txtTotalRows" runat="server" Text='<%# Bind("TotalRows") %>' />
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="txtSelectedProjectClassID" runat="server" Text='<%# Bind("SelectedProjectClassID") %>' />
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="txtSelectedGLCodeID" runat="server" Text='<%# Bind("SelectedGLCodeID") %>' />
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Project Class">
+                                    <ItemTemplate>
+                                        <asp:DropDownList ID="ddlSplitProjectClass" runat="server" CssClass="form-control"></asp:DropDownList>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Account">
+                                    <ItemTemplate>
+                                        <asp:DropDownList ID="ddlSplitGLCode" runat="server" CssClass="form-control"></asp:DropDownList>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right" >
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" Text='<%# Bind("Amount") %>' 
+                                            style="text-align:right" OnTextChanged="txtSplitAmount_TextChanged" AutoPostBack="true"/>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control"  Text='<%# Bind("Note") %>'/>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Row Actions">
+                                    <ItemTemplate>
+                                        <asp:Button ID="btnSplitAdd" runat="server" Text="Add" CssClass="btn btn-default"
+                                            OnClick="btnSplitAdd_Click" CausesValidation="false" />
+                                        <asp:Button ID="btnSplitRemove" runat="server" Text="Rem" CssClass="btn btn-default"
+                                            OnClick="btnSplitRemove_Click" CausesValidation="false" />
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                        </div>
+                    </div>
+                    <div class="text-danger col-xs-offset-1 col-xs-11">
+                        <asp:Literal ID="litSplitError" runat="server" Visible="false" 
+                            Text="Each split expense row must have a selected Account and a valid Dollar Amount" />
+                    </div>
+                </div>
             </div>
         </asp:Panel>
 
@@ -428,6 +514,7 @@
 
         <!-- "Scratch" storage used during form processing -->
         <asp:Literal ID="litSavedCommand" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedDefaultProjectClassID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedDepID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedEntityEnum" runat="server" Visible="false" />
         <asp:Literal ID="litSavedPersonEnum" runat="server" Visible="false" />

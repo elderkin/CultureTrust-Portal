@@ -4,9 +4,19 @@ On the Staff Dashboard, the Next Reviewer filter in the Search panel is reorgani
 On the Staff Dashboard, there is a "Review" button on each row to begin a Review of that Request.
 On the Staff Dashboard, the Portal now returns to the same page within the list of requests when you finish reviewing a Request. 
 On the Staff Dashboard, the Portal now displays the number of the page within the list of requests.
+
 There is a new "Staff Note" field for each Request. It is displayed only when an IC edits a request and when a staff member (FD, TD, TE) reviews a request. The staff member can add text to the Staff Note, which is saved when the Request is approved.
 Deposits of Checks and EFTs now allow both Deposit and Expense GL Codes.
+
 On the Project Dashboard, the Request Status filter in the Search panel now refers to "Unsubmitted" Requests rather than "Awaiting Project Staff" Requests.
+
+On the Edit Expense Request page, the types of Requests are reordered. "Contractor Invoice" comes first and "Paycheck" is renamed "Payroll."
+On the Edit Expense Request page, the Payment Method now follows the Expense Account.
+
+On the Main Admin page, the "Email Parameters" option is now called "Edit Portal Parameters."
+On the Edit Portal Parameters page, there is a new "Disable Logins" option to prevent logins by any non-Administrator users.
+
+For Deposit Requests, requests now allow the dollar amount to be "split" across many Income and Expense Accounts.
 
 Version 1.4
 

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.UI;
 
 namespace Portal11.Logic
 {
@@ -17,7 +18,7 @@ namespace Portal11.Logic
             string val = HttpContext.Current.Request.QueryString[PortalConstants.QSCommand]; // Fetch the Command, if it is present
             if (val == null || val == "")                                // If == the Query String is missing
             {
-                LogError.LogQueryStringError("GetCommand", "Unable to find Query String in search of Command"); // Fatal error
+                LogError.LogQueryStringError(GetPageName(), "Unable to find Query String in GetCommand"); // Fatal error
             }
             return val;                                                 // Return Command to caller
         }
@@ -59,12 +60,12 @@ namespace Portal11.Logic
                 HttpCookie projectInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CProjectInfo]; // Find the Project Info cookie
                 if (projectInfoCookie == null)
                 {
-                    LogError.LogQueryStringError("GetProjectID", "Unable to find Query String or ProjectInfoCookie in search of Project ID"); // Fatal error
+                    LogError.LogQueryStringError(GetPageName(), "Unable to find Query String or ProjectInfoCookie in GetProjectID"); // Fatal error
                     return val;                                         // Never actually get here...
                 }
                 val.String = projectInfoCookie[PortalConstants.CProjectID]; // Fetch Project ID from cookie
                 if (val.String == "")                                   // If == no Project ID in cookie, which is strange
-                    LogError.LogInternalError("GetProjectID", "ProjectInfoCookie does not contain a Project ID value"); // Fatal error
+                    LogError.LogInternalError(GetPageName(), "ProjectInfoCookie does not contain a Project ID value"); // Fatal error
             }
             return ConvertID(val.String);                               // Convert to int and return
         }
@@ -79,12 +80,12 @@ namespace Portal11.Logic
                 HttpCookie projectInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CProjectInfo]; // Find the Project Info cookie
                 if (projectInfoCookie == null)
                 {
-                    LogError.LogQueryStringError("GetProjectName", "Unable to find Query String or ProjectInfoCookie in search of Project Name"); // Fatal error
+                    LogError.LogQueryStringError(GetPageName(), "Unable to find Query String or ProjectInfoCookie in GetProjectName"); // Fatal error
                     return val;                                         // Never actually get here...
                 }
                 val = projectInfoCookie[PortalConstants.CProjectName];  // Fetch Project Name from cookie
                 if (val == "")                                          // If == no Project Name in cookie, which is strange
-                    LogError.LogInternalError("GetProjectName", "ProjectInfoCookie does not contain a Project Name value"); // Fatal error
+                    LogError.LogInternalError(GetPageName(), "ProjectInfoCookie does not contain a Project Name value in GetProjectName"); // Fatal error
             }
             return val;                                                 // Project Name from whatever source
         }
@@ -94,12 +95,12 @@ namespace Portal11.Logic
         public static string GetUserID()
         {
             string val = HttpContext.Current.Request.QueryString[PortalConstants.QSUserID]; // Fetch the User ID, if it is present
-            if (val == null || val == "")                               // If == the Query String is missing
+            if (string.IsNullOrEmpty(val))                               // If true the Query String is missing
             {
                 HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Find the User Info cookie
                 if (userInfoCookie == null)
                 {
-                    LogError.LogQueryStringError("GetUserID", "Unable to find Query String or UserInfoCookie in search of User ID"); // Fatal error
+                    LogError.LogQueryStringError(GetPageName(), "Unable to find Query String or UserInfoCookie in GetUserID"); // Fatal error
                     return val;                                         // Never actually get here...
                 }
                 val = userInfoCookie[PortalConstants.CUserID];          // Fetch User ID from cookie
@@ -118,9 +119,19 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogQueryStringError("ConvertID", String.Format("Invalid Query String 'ID' value of '{0}'", val.String)); // Log fatal error
+                LogError.LogQueryStringError(GetPageName(), String.Format("Invalid Query String 'ID' value of '{0}' in ConvertID", val.String)); // Log fatal error
             }
             return val;
+        }
+
+        // Fetch the name of the current page for use in error messages
+
+        static string GetPageName()
+        {
+            Page p = (Page)HttpContext.Current.CurrentHandler;          // Find the object that describes the current page
+            if (p != null)                                              // If != something there to look at
+                return p.AppRelativeVirtualPath;                        // Find the path to the current page
+            return "name unkown";                                       // Else return a marker
         }
     }
 }
