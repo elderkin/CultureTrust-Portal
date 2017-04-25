@@ -508,7 +508,7 @@
                 OnClick="btnSubmit_Click" ToolTip="Save this Deposit Request, submit it for approval and return to the Dashboard" />
             <asp:Button ID="btnRevise" runat="server" Text="Revise" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnRevise_Click" ToolTip="Make this returned Deposit Request editable and begin editing it" Visible="false" />
-            <asp:Button ID="btnShowHistory" runat="server" Text="Show Hist" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+            <asp:Button ID="btnShowHistory" runat="server" Text="History" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnShowHistory_Click" CausesValidation="false" ToolTip="List the changes that this Deposit Request has gone through" Visible="false" />
         </div>
 

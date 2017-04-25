@@ -207,6 +207,7 @@ namespace Portal11.Models
         public decimal Amount { get; set; }
         public ExpState CurrentState { get; set; }
         public string CurrentStateDesc { get; set; }
+        public const int StateColumn = 4;
         public string Owner { get; set; }
         public const int OwnerColumn = 5;
         public string Target { get; set; }

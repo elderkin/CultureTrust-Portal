@@ -354,14 +354,29 @@ namespace Portal11.Rqsts
 
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Carefully convert back into enumeration type
-                if (StateActions.UserRoleToApproveRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
-                    e.Row.Cells[StaffExpViewRow.OwnerColumn].Font.Bold = true; // Bold Status cell.
 
                 // See if the row is Rush
 
-                label = (Label)e.Row.FindControl("lblRush");                    // Find the label control that contains Rush in this row
-                if (label.Text == "True")                                       // If == this record is Rush
-                    e.Row.ForeColor = Color.Red;                                // Use color to indicate Rush status
+                label = (Label)e.Row.FindControl("lblRush");                // Find the label control that contains Rush in this row
+                if (label.Text == "True")                                   // If == this record is Rush
+                    e.Row.ForeColor = Color.Red;                            // Use color to indicate Rush status
+
+                // See if user can approve row
+
+                if (StateActions.UserRoleToApproveRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
+                {
+                    e.Row.Cells[StaffExpViewRow.OwnerColumn].Font.Bold = true; // Bold Status cell.
+
+                    // If row is waiting for FD for the second time, highlight it
+
+                    if (StateActions.NextReviewIsSecondFD(state))           // If true next review is second FD review
+                    {
+                        //e.Row.Cells[StaffExpViewRow.StateColumn].ForeColor = Color.Purple; // Use color to indicate this condition
+                        //e.Row.Cells[StaffExpViewRow.StateColumn].Font.Bold = true; // Also make it bold, since purple doesn't show up very well
+                        e.Row.ForeColor = Color.Purple;                     // Make the whole row purple
+                        e.Row.Font.Bold = true;                             // Make the whole row bold
+                    }
+                }
             }
             return;
         }

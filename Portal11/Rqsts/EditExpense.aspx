@@ -758,7 +758,7 @@
                         <div class="checkbox text-danger" >
                             <asp:CheckBoxList ID="cblDeliveryInstructions" runat="server" Style="margin-left: 20px; margin-bottom: 10px">
                                 <asp:ListItem Text="Rush" Value="Rush" data-toggle="tooltip"
-                                    title="Please process this request as quickly as possible"></asp:ListItem>
+                                    title="Please be aware that by checking this box, CultureWorks staff may, at their discretion, charge you a rush payment fee as stated in the User Manual on the CultureTrust website."></asp:ListItem>
                             </asp:CheckBoxList>
                         </div>
                     </div>
@@ -910,7 +910,7 @@
                 OnClick="btnSubmit_Click" ToolTip="Save this Expense Request, submit it for approval and return to the Dashboard" />
             <asp:Button ID="btnRevise" runat="server" Text="Revise" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnRevise_Click" ToolTip="Make this returned Expense Request editable and begin editing it" Visible="false" />
-            <asp:Button ID="btnShowHistory" runat="server" Text="Show Hist" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+            <asp:Button ID="btnShowHistory" runat="server" Text="History" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnShowHistory_Click" CausesValidation="false" ToolTip="List the changes that this Expense Request has gone through" Visible="false" />
         </div>
 

@@ -210,7 +210,7 @@
     <Content Include="Admin\EditGrant.aspx" />
     <Content Include="Admin\EmailParameters.aspx" />
     <Content Include="Admin\Main.aspx" />
-    <Content Include="Admin\EditPortalParameters.aspx" />
+    <Content Include="Admin\EditAdvancedOptions.aspx" />
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
     <Content Include="App_Readme\Elmah.SqlServer.txt" />
     <Content Include="App_Readme\Elmah.txt" />
@@ -538,12 +538,12 @@
     <Compile Include="Admin\Main.aspx.designer.cs">
       <DependentUpon>Main.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Admin\EditPortalParameters.aspx.cs">
-      <DependentUpon>EditPortalParameters.aspx</DependentUpon>
+    <Compile Include="Admin\EditAdvancedOptions.aspx.cs">
+      <DependentUpon>EditAdvancedOptions.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\EditPortalParameters.aspx.designer.cs">
-      <DependentUpon>EditPortalParameters.aspx</DependentUpon>
+    <Compile Include="Admin\EditAdvancedOptions.aspx.designer.cs">
+      <DependentUpon>EditAdvancedOptions.aspx</DependentUpon>
     </Compile>
     <Compile Include="ErrorLog\DatabaseError.aspx.cs">
       <DependentUpon>DatabaseError.aspx</DependentUpon>

@@ -1,4 +1,11 @@
-﻿Version 1.5
+﻿Version 1.6
+
+On the Staff Dashboard, Approved Requests are highlighted in purple for the Finance Director.
+On the Admin page, "Portal Parameters" are now "Advanced Options."
+The "Show Hist" button is now named "History."
+On the Edit Expense page, the "Rush" checkbox now has a new flyover help message.
+
+Version 1.5
 
 On the Staff Dashboard, the Next Reviewer filter in the Search panel is reorganized to include "Unsubmitted," "Completed," and "Returned" checkboxes.
 On the Staff Dashboard, there is a "Review" button on each row to begin a Review of that Request.

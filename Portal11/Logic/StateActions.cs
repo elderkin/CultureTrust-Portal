@@ -498,6 +498,15 @@ namespace Portal11.Logic
             }
         }
 
+        // See if the FD is the next reviewer. This little thing is here to keep all state-related logic in this class.
+
+        public static bool NextReviewIsSecondFD (ExpState state)
+        {
+            if (state == ExpState.Approved)                             // If == FD is next reviewer
+                return true;                                            // Let the caller know
+            return false;
+        }
+
         // Write current state variables for a row. If the caller supplies an DepHistory row, record the new stae there as well.
 
         public static void SetNewAppState(App app, AppState newState, string userID, AppHistory hist = null)
