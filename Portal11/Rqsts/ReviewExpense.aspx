@@ -557,7 +557,7 @@
                 OnClick="btnApprove_Click" CausesValidation="false" ToolTip="Advance this Expense Request to the next stage" />
             <asp:Button ID="btnReturn" runat="server" Text="Return" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnReturn_Click" ToolTip="Disapprove this Expense Request and return it to the Project Director with a Review Note" />
-            <asp:Button ID="btnHistory" runat="server" Text="Show Hist" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+            <asp:Button ID="btnHistory" runat="server" Text="History" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnHistory_Click" CausesValidation="false" ToolTip="View the history of this Expense Request" />
         </div>
 

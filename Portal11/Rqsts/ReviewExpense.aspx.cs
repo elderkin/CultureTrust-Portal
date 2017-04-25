@@ -155,7 +155,7 @@ namespace Portal11.Rqsts
             return;
         }
 
-        // Package the work of the Save so that Submit and Revise can do it as well.
+        // Package the work of the Save so that Submit and Return can do it as well.
         //  1) Fetch the Exp row to be updated.
         //  2) Create a new ExpHistory row and fill it.
         //  3) Update the Exp row with new State and Return Note.
@@ -168,7 +168,7 @@ namespace Portal11.Rqsts
                 try
                 {
                     int expID = Convert.ToInt32(litSavedExpID.Text);            // Fetch ID of this Exp
-                    Exp toUpdate = context.Exps.Find(expID);                        // Fetch the Exp row that we want to update
+                    Exp toUpdate = context.Exps.Find(expID);                    // Fetch the Exp row that we want to update
                     ExpHistory hist = new ExpHistory();                         // Get a place to build a new Request History row
                     hist.ReturnNote = toUpdate.ReturnNote;                      // Preserve former value of the note
                     toUpdate.ReturnNote = txtReturnNote.Text;                   // Fetch updated content of the note, if any
