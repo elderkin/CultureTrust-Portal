@@ -104,6 +104,16 @@ namespace Portal11.Rqsts
 
         protected void btnApprove_Click(object sender, EventArgs e)
         {
+
+            // If the Return Note field is non-blank, the user has probably pressed "Approve" by accident. What they probably want
+            // is "Return." So report an error if Return Note is non-blank. But don't erase - the user might still want to press "Return."
+
+            if (txtReturnNote.Text != "")                           // If != then text is erroneously present
+            {
+                litDangerMessage.Text = PortalConstants.ReturnNoteError; // Report the error
+                Page.MaintainScrollPositionOnPostBack = false;      // Scrool back to top of page where error message lives
+                return;                                             // Go back for more punishment
+            } 
             AppState currentState = EnumActions.ConvertTextToAppState(litSavedState.Text); // Pull ToString version; convert to enum type
             AppReviewType newAppReviewType = EnumActions.ConvertTextToAppReviewType(rdoReviewType.SelectedValue); // Convert selection to enum
             AppState nextState = StateActions.FindNextState(currentState, newAppReviewType ); // Now what?

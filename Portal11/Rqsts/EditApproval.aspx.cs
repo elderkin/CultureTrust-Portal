@@ -232,7 +232,7 @@ namespace Portal11.Rqsts
 
                     AppHistory hist = new AppHistory();               // Get a place to build a new History row
                     StateActions.CopyPreviousState(toRevise, hist, "Revised"); // Create a History log row from "old" version of Request
- //                    hist.ReturnNote = toRevise.ReturnNote;          // Save the Note from the Returned Rqst
+//                    hist.ReturnNote = toRevise.ReturnNote;          // Save the Return Note from the Returned Rqst
 
                     //  3) Change the State of the Rqst from "Returned" to "Unsubmitted," erase the ReturnNote comments and save it.
 

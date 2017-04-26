@@ -106,6 +106,16 @@ namespace Portal11.Rqsts
 
         protected void btnApprove_Click(object sender, EventArgs e)
         {
+
+            // If the Return Note field is non-blank, the user has probably pressed "Approve" by accident. What they probably want
+            // is "Return." So report an error if Return Note is non-blank. But don't erase - the user might still want to press "Return."
+
+            if (txtReturnNote.Text != "")                           // If != then text is erroneously present
+            {
+                litDangerMessage.Text = PortalConstants.ReturnNoteError; // Report the error
+                Page.MaintainScrollPositionOnPostBack = false;      // Scroll back to top of page where error message lives
+                return;                                             // Go back for more punishment
+            }
             ExpState currentState = EnumActions.ConvertTextToExpState(litSavedState.Text); // Pull ToString version; convert to enum type
             ExpState nextState = StateActions.FindNextState(currentState); // Now what?
             int projectID = new int(); string projectName = "";
@@ -170,8 +180,8 @@ namespace Portal11.Rqsts
                     int expID = Convert.ToInt32(litSavedExpID.Text);            // Fetch ID of this Exp
                     Exp toUpdate = context.Exps.Find(expID);                    // Fetch the Exp row that we want to update
                     ExpHistory hist = new ExpHistory();                         // Get a place to build a new Request History row
-                    hist.ReturnNote = toUpdate.ReturnNote;                      // Preserve former value of the note
                     toUpdate.ReturnNote = txtReturnNote.Text;                   // Fetch updated content of the note, if any
+                    hist.ReturnNote = txtReturnNote.Text;                       // Preserve this note in the History trail
                     toUpdate.StaffNote = txtStaffNote.Text;                     // Fetch updated content of this note, if any
                     StateActions.CopyPreviousState(toUpdate, hist, verb);       // Create a Request History log row from "old" version of Request
                     StateActions.SetNewExpState(toUpdate, nextState, userInfoCookie[PortalConstants.CUserID], hist);

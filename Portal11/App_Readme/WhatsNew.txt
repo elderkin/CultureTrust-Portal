@@ -1,4 +1,8 @@
-﻿Version 1.6
+﻿Version 1.7 - A minor release to fix a bug
+
+On the Review Approval, Review Deposit, and Review Expense pages, entering text in the Review Note field and then pressing the Approve button reports an error.
+
+Version 1.6
 
 On the Staff Dashboard, Approved Requests are highlighted in purple for the Finance Director.
 On the Admin page, "Portal Parameters" are now "Advanced Options."
