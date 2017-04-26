@@ -1397,6 +1397,7 @@ namespace Portal11.Models
             EventSupporting = "Supporting",
             ForeColor = "#18bc9c",
             ReadmeDir = "~/App_Readme/",
+            ReturnNoteError = "You have entered text in the Return Note field and pressed the Approve button. The Return Note can only contain text when the Return button is pressed.",
             SupportingDir = "~/Supporting/",
             SupportingTempFlag = "T",
             WhatsNewName = "WhatsNew.txt";
