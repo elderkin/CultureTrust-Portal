@@ -53,6 +53,7 @@ namespace Portal11.Rqsts
                         btnReturn.Enabled = false;                      // Cannot "Return" the Exp
                         litDangerMessage.Text = "You can view this Expense Request, but you cannot approve it."; // Explain that to user
                     }
+                    btnViewLink.Enabled = false;                        // Kludge to get the View button disabled until row selected
 
                     // Stash these parameters into invisible literals on the current page.
 
@@ -70,17 +71,18 @@ namespace Portal11.Rqsts
 
         protected void lstSupporting_SelectedIndexChanged(object sender, EventArgs e)
         {
-            btnView.Enabled = true;
+            btnViewLink.Enabled = true; btnViewLink.Visible = true;
+            btnViewLink.NavigateUrl = SupportingActions.ViewDocUrl((ListBox)sender); // Formulate URL to launch viewer page
             return;
         }
 
-        protected void EDHistoryView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvEDHistory_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
-                EDHistoryView.PageIndex = e.NewPageIndex;             // Propagate the desired page index
+                gvEDHistory.PageIndex = e.NewPageIndex;             // Propagate the desired page index
                 LoadAllExpHistorys();                                  // Re-fill the GridView control
-                EDHistoryView.SelectedIndex = -1;                     // No row currently selected
+                gvEDHistory.SelectedIndex = -1;                     // No row currently selected
             }
             return;
         }
@@ -88,11 +90,11 @@ namespace Portal11.Rqsts
         // View a Supporting Document We replicate the logic from the EditExpense page and download the selected Supporting Document file.
         // This case is simpler than EditExpense because all the Docs are "permanent," described in SupportingDoc rows.
 
-        protected void btnView_Click(object sender, EventArgs e)
-        {
-            SupportingActions.ViewDoc(lstSupporting, litDangerMessage); // Do the heavy lifting
-            return;
-        }
+        //protected void btnView_Click(object sender, EventArgs e)
+        //{
+        //    SupportingActions.ViewDoc(lstSupporting, litDangerMessage); // Do the heavy lifting
+        //    return;
+        //}
 
         // User clicked Cancel. This is easy: Just head back to the StaffDashboard.
 
@@ -432,7 +434,7 @@ namespace Portal11.Rqsts
 
         void LoadAllExpHistorys()
         {
-            NavigationActions.LoadAllExpHistorys(Convert.ToInt32(litSavedExpID.Text), EDHistoryView); // Fill the list from the database
+            NavigationActions.LoadAllExpHistorys(Convert.ToInt32(litSavedExpID.Text), gvEDHistory); // Fill the list from the database
             return;
         }
 

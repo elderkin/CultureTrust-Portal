@@ -130,6 +130,7 @@ namespace Portal11.Logic
             switch (currentState)
             {
                 case ExpState.UnsubmittedByInternalCoordinator:
+                case ExpState.AwaitingInternalCoordinator:
                     return ProjectRole.InternalCoordinator;
                 case ExpState.UnsubmittedByProjectStaff:
                     return ProjectRole.ProjectStaff;
@@ -217,6 +218,8 @@ namespace Portal11.Logic
                 case ExpState.Paid:
                 case ExpState.Returned:
                     return UserRole.Project;
+                case ExpState.AwaitingInternalCoordinator:
+                    return UserRole.InternalCoordinator;
                 case ExpState.AwaitingTrustDirector:
                     return UserRole.TrustDirector;
                 case ExpState.AwaitingFinanceDirector:
@@ -246,7 +249,9 @@ namespace Portal11.Logic
                     HttpCookie projInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CProjectInfo]; // Fetch project info cookie for current project
                     ProjectRole projRole = EnumActions.ConvertTextToProjectRole(projInfoCookie[PortalConstants.CProjectRole]); // Fetch role
                     if (projRole == ProjectRole.ProjectDirector)    // If == this is a Project Director - the only role that can approve anything
-                        return true;                                // Report that User can apporve Exp
+                        return true;                                // Report that User can apporve App
+                    else
+                        return false;                               // No other project roles can approve App
                 }
                 return true;
             }
@@ -264,7 +269,9 @@ namespace Portal11.Logic
                     HttpCookie projInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CProjectInfo]; // Fetch project info cookie for current project
                     ProjectRole projRole = EnumActions.ConvertTextToProjectRole(projInfoCookie[PortalConstants.CProjectRole]); // Fetch role
                     if (projRole == ProjectRole.ProjectDirector)    // If == this is a Project Director - the only role that can approve anything
-                        return true;                                // Report that User can apporve Exp
+                        return true;                                // Report that User can apporve Dep
+                    else
+                        return false;                               // No other project roles can approve Dep
                 }
                 return true;
             }
@@ -275,7 +282,7 @@ namespace Portal11.Logic
         {
             HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Fetch user info cookie for current user
             UserRole userRole = EnumActions.ConvertTextToUserRole(userInfoCookie[PortalConstants.CUserRole]); //Fetch user role, convert to enum
-            if (userRole == UserRoleToApproveRequest(expState))         // If == the specified role can approve the Exp
+            if (userRole == UserRoleToApproveRequest(expState))     // If == the specified role can approve the Exp
             {
                 if (userRole == UserRole.Project)                   // If == this is a Project user. Need another check
                 {
@@ -283,8 +290,10 @@ namespace Portal11.Logic
                     ProjectRole projRole = EnumActions.ConvertTextToProjectRole(projInfoCookie[PortalConstants.CProjectRole]); // Fetch role
                     if (projRole == ProjectRole.ProjectDirector)    // If == this is a Project Director - the only role that can approve anything
                         return true;                                // Report that User can apporve Exp
+                    else
+                        return false;                               // No other project roles can approve Exp
                 }
-                return true;
+                return true;                                        // It's staff and they can approve
             }
             return false;                                           // Otherwise the specified role cannot approve the Exp
         }
@@ -473,10 +482,12 @@ namespace Portal11.Logic
                     return ExpState.AwaitingProjectDirector;
                 case ExpState.UnsubmittedByProjectDirector:
                 case ExpState.AwaitingProjectDirector:
-                    return ExpState.AwaitingTrustDirector;
-                case ExpState.AwaitingTrustDirector:
+                    return ExpState.AwaitingInternalCoordinator;
+                case ExpState.AwaitingInternalCoordinator:
                     return ExpState.AwaitingFinanceDirector;
                 case ExpState.AwaitingFinanceDirector:
+                    return ExpState.AwaitingTrustDirector;
+                case ExpState.AwaitingTrustDirector:
                     return ExpState.AwaitingTrustExecutive;
                 case ExpState.AwaitingTrustExecutive:
                     return ExpState.Approved;

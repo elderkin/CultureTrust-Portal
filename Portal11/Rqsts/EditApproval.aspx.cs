@@ -188,13 +188,13 @@ namespace Portal11.Rqsts
             SupportingActions.ViewDoc(lstSupporting, litDangerMessage);
             return;
         }
-        protected void EDHistoryView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvEDHistory_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
-                EDHistoryView.PageIndex = e.NewPageIndex;             // Propagate the desired page index
-                NavigationActions.LoadAllAppHistorys(Convert.ToInt32(litSavedAppID.Text), EDHistoryView); // Fill the list from the database
-                EDHistoryView.SelectedIndex = -1;                     // No row currently selected
+                gvEDHistory.PageIndex = e.NewPageIndex;             // Propagate the desired page index
+                NavigationActions.LoadAllAppHistorys(Convert.ToInt32(litSavedAppID.Text), gvEDHistory); // Fill the list from the database
+                gvEDHistory.SelectedIndex = -1;                     // No row currently selected
             }
             return;
         }
@@ -335,7 +335,7 @@ namespace Portal11.Rqsts
 
         protected void btnShowHistory_Click(object sender, EventArgs e)
         {
-            NavigationActions.LoadAllAppHistorys(Convert.ToInt32(litSavedAppID.Text), EDHistoryView); // Fill the list from the database
+            NavigationActions.LoadAllAppHistorys(Convert.ToInt32(litSavedAppID.Text), gvEDHistory); // Fill the list from the database
             return;
         }
 

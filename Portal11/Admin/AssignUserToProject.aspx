@@ -50,14 +50,14 @@
             <div class="col-md-10 col-xs-12">
 
                 <!-- Code assumes that ProjectID is the first column of this grid -->
-                <asp:GridView ID="AssignUserToProjectView" runat="server"
+                <asp:GridView ID="gvAssignUserToProject" runat="server"
                     CssClass="table table-striped table-hover"
-                    ItemType="Portal11.Models.AssignUserToProjectViewRow"
+                    ItemType="Portal11.Models.rowAssignUserToProject"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="10"
-                    OnRowDataBound="AssignUserToProjectView_RowDataBound"
-                    OnSelectedIndexChanged="AssignUserToProjectView_SelectedIndexChanged"
-                    OnPageIndexChanging="AssignUserToProjectView_PageIndexChanging">
+                    OnRowDataBound="gvAssignUserToProject_RowDataBound"
+                    OnSelectedIndexChanged="gvAssignUserToProject_SelectedIndexChanged"
+                    OnPageIndexChanging="gvAssignUserToProject_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 

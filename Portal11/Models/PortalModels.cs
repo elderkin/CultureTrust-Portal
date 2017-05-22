@@ -7,9 +7,9 @@ using System.Drawing;
 namespace Portal11.Models
 {
 
-    // One row of the GridView named AllPortalUsers, used by ListPortalUsers
+    // One row of the GridView named PortalUsers, used by ListPortalUsers
 
-    public class AllPortalUsersRow
+    public class rowPortalUsers
     {
         public string UserID { get; set; }
         public const int RowIDCell = 0;
@@ -23,9 +23,9 @@ namespace Portal11.Models
         public const int InactiveColumn = 7;
     }
 
-    // One row of the GridView named AllPortalUsers, used by ListPortalUsers
+    // One row of the GridView named gvProjects, used by ListProjects
 
-    public class AllProjectsRow
+    public class rowProjects
     {
         public string Code { get; set; }
         public string Name { get; set; }
@@ -37,11 +37,12 @@ namespace Portal11.Models
         public int TotalRequests { get; set; }
         public string Inactive { get; set; }
         public const int InactiveColumn = 8;
+        public string ProjectID { get; set; }
     }
 
     // One row of the GridView named AssignProjectView, used by AssignUserToProject
 
-    public class AssignUserToProjectViewRow
+    public class rowAssignUserToProject
     {
         public string RowID { get; set; }
         public ProjectRole ProjectRole { get; set; }
@@ -52,9 +53,9 @@ namespace Portal11.Models
         public const int DescriptionLength = 40;
     }
 
-    // One row of the GridView named EDHistoryView, used by EditDeposit, EditRequest, ReviewDeposit, and ReviewRequest
+    // One row of the GridView named gvEDHistory, used by EditDeposit, EditRequest, ReviewDeposit, and ReviewRequest
 
-    public class EDHistoryViewRow
+    public class rowEDHistory
     {
         public DateTime Date { get; set; }
         public string FormerStatus { get; set; }
@@ -66,7 +67,7 @@ namespace Portal11.Models
 
     // One row of the GridView named ExpenseSplit, used by EditExpense
 
-    public class GLCodeSplitRow
+    public class rowGLCodeSplit
     {
         public int TotalRows { get; set; }
         public string SelectedProjectClassID { get; set; }
@@ -86,9 +87,55 @@ namespace Portal11.Models
         public bool Error { get; set; }
     }
 
-    // One row of the GridView named AllAppView, used by ProjectDashboard
+    // One row of the GridView named gvListProjectClasses, used by ListProjectMetadata
 
-    public class ProjectAppViewRow
+    public class rowListProjectClass
+    {
+        public int ProjectClassID { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public bool CreatedFromMaster { get; set; }
+        public bool Default { get; set; }
+    }
+
+    // One row of the GridView named gvListProjectEntitys, used by ListProjectMetadata
+
+    public class rowListProjectEntity
+    {
+        public int ProjectEntityID { get; set; }
+        public int EntityID { get; set; }
+        public string Name { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public string EntityRole { get; set; }
+    }
+
+    // One row of the GridView named gvListProjectPersons, used by ListProjectMetadata
+
+    public class rowListProjectPerson
+    {
+        public int ProjectPersonID { get; set; }
+        public int PersonID { get; set; }
+        public string Name { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public string PersonRole { get; set; }
+    }
+
+    // One row of the GridView named gvListProjectUsers, used by ListProjectMetadata
+
+    public class rowListProjectUser
+    {
+        public int ProjectUserID { get; set; }
+        public string UserID { get; set; }
+        public string Name { get; set; }
+        public string ProjectRole { get; set; }
+    }
+
+    // One row of the GridView named gvAllAppView, used by ProjectDashboard
+
+    public class rowProjectAppView
     {
         public string RowID { get; set; }
         public const int RowIDCell = 0;
@@ -103,9 +150,9 @@ namespace Portal11.Models
         public bool Archived { get; set; }
     }
 
-    // One row of the GridView named AllDepView, used by ProjectDashboard
+    // One row of the GridView named gvAllDepView, used by ProjectDashboard
 
-    public class ProjectDepViewRow
+    public class rowProjectDepView
     {
         public string RowID { get; set; }
         public const int RowIDCell = 0;
@@ -122,9 +169,9 @@ namespace Portal11.Models
         public bool Archived { get; set; }
     }
 
-    // One row of the GridView named AllExpView, used by ProjectDashboard
+    // One row of the GridView named gvAllExpView, used by ProjectDashboard
 
-    public class ProjectExpViewRow
+    public class rowProjectExpView
     {
         public string RowID { get; set; }
         public DateTime CurrentTime { get; set; }
@@ -163,9 +210,9 @@ namespace Portal11.Models
         public int Count { get; set; }
     }
 
-    // One row of the GridView named StaffDepView, used by StaffDashboard
+    // One row of the GridView named gvStaffApp, used by StaffDashboard
 
-    public class StaffAppViewRow
+    public class rowStaffApp
     {
         public string RowID { get; set; }
         public DateTime CurrentTime { get; set; }
@@ -181,7 +228,7 @@ namespace Portal11.Models
         public bool Archived { get; set; }
     }
 
-    public class StaffDepViewRow
+    public class rowStaffDep
     {
         public string RowID { get; set; }
         public DateTime CurrentTime { get; set; }
@@ -196,9 +243,9 @@ namespace Portal11.Models
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
     }
-    // One row of the GridView named StaffExpView, used by StaffDashboard
+    // One row of the GridView named gvStaffExp, used by StaffDashboard
 
-    public class StaffExpViewRow
+    public class rowStaffExp
     {
         public string RowID { get; set; }
         public DateTime CurrentTime { get; set; }
@@ -694,7 +741,9 @@ namespace Portal11.Models
         [Description("Error During Processing")]
         Error,
         [Description("Reserved For Future Use")]
-        ReservedForFutureUse
+        ReservedForFutureUse,
+        [Description("Awaiting Internal Coordinator")]
+        AwaitingInternalCoordinator
     }
     // Each type of Expense fills different fields in the Expense object. This mapping is complicated and expressed in code.
     public enum ExpType
@@ -1207,6 +1256,7 @@ namespace Portal11.Models
             QSCommandCopy = "Copy",
             QSCommandEdit = "Edit",
             QSCommandFirst = "First",
+            QSCommandList = "List",
             QSCommandMenu = "Menu",
             QSCommandNew = "New",
             QSCommandReview = "Review",
@@ -1221,6 +1271,7 @@ namespace Portal11.Models
             QSGLCodeID = "GLCodeID",
             QSGrantID = "GrantID",
             QSMethod = "Method",
+            QSMIME = "MIME",
             QSPageName = "PageName",
             QSPersonID = "PersonID",
             QSProjectID = "ProjectID",
@@ -1229,11 +1280,13 @@ namespace Portal11.Models
             QSRememberEmail = "RememberEmail",
             QSRequestID = "RequestID",
             QSReturn = "Return",
+            QSServerFile = "ServerFile",
             QSSeverity = "Severity",
             QSStatus = "Status",
             QSSuccess = "Success",
             QSVendorID = "VendorID",
             QSVendorName = "VendorName",
+            QSUserFile = "UserFile",
             QSUserID = "UserID";
 
         // LoginCookie stores information from the login process, like their email address
@@ -1428,6 +1481,7 @@ namespace Portal11.Models
             URLEditVendor = "~/Admin/EditVendor",
             URLErrorDatabase = "~/ErrorLog/DatabaseError.aspx",
             URLErrorFatal = "~/ErrorLog/FatalError.aspx",
+            URLListProjectMetadata = "~/Lists/ListProjectMetadata.aspx",
             URLLogin = "~/Account/Login",
             URLLoginDispatch = "~/Account/LoginDispatch",
             URLProjectDashboard = "~/Proj/ProjectDashboard",
@@ -1441,7 +1495,8 @@ namespace Portal11.Models
             URLSelectProjectClass = "~/Select/SelectProjectClass",
             URLSelectUser = "~/Select/SelectUser",
             URLSelectVendor = "~/Select/SelectVendor",
-            URLStaffDashboard = "~/Staff/StaffDashboard";
+            URLStaffDashboard = "~/Staff/StaffDashboard",
+            URLViewDoc = "~/Proj/ViewDoc";
 
         // Names of radio buttons in the Source of Funds panel used by EditDeposit and EditExpense
 

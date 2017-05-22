@@ -36,6 +36,7 @@ namespace Portal11.Rqsts
                 // Find the User's role on the Project
 
                 HttpCookie projectInfoCookie = Request.Cookies[PortalConstants.CProjectInfo]; // Find the Project Info cookie
+                //TODO Check for missing cookie
                 string projRole = projectInfoCookie[PortalConstants.CProjectRole]; // Fetch user's Project Role from cookie
                 if (projRole == "")                                     // If == that's blank. We have an error
                     LogError.LogQueryStringError("EditExpense", "Unable to find Project Role in Project Info Cookie. User does not have a project"); // Fatal error
@@ -552,13 +553,13 @@ namespace Portal11.Rqsts
             return;
         }
 
-        protected void EDHistoryView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvEDHistory_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
-                EDHistoryView.PageIndex = e.NewPageIndex;             // Propagate the desired page index
-                NavigationActions.LoadAllExpHistorys(Convert.ToInt32(litSavedExpID.Text), EDHistoryView); // Fill the list from the database
-                EDHistoryView.SelectedIndex = -1;                     // No row currently selected
+                gvEDHistory.PageIndex = e.NewPageIndex;             // Propagate the desired page index
+                NavigationActions.LoadAllExpHistorys(Convert.ToInt32(litSavedExpID.Text), gvEDHistory); // Fill the list from the database
+                gvEDHistory.SelectedIndex = -1;                     // No row currently selected
             }
             return;
         }
@@ -708,7 +709,7 @@ namespace Portal11.Rqsts
 
         protected void btnShowHistory_Click(object sender, EventArgs e)
         {
-            NavigationActions.LoadAllExpHistorys(Convert.ToInt32(litSavedExpID.Text), EDHistoryView); // Fill the list from the database
+            NavigationActions.LoadAllExpHistorys(Convert.ToInt32(litSavedExpID.Text), gvEDHistory); // Fill the list from the database
             return;
         }
 
@@ -1451,7 +1452,7 @@ namespace Portal11.Rqsts
         {
             int totalRows = gvExpSplit.Rows.Count + ((RowToAdd == -1) ? 0 : 1) - ((RowToRemove == -1) ? 0 : 1); // Calculate final row count. Cute, eh?
 
-            List<GLCodeSplitRow> rows = new List<GLCodeSplitRow>(); // A list of rows for the refreshed gridview control
+            List<rowGLCodeSplit> rows = new List<rowGLCodeSplit>(); // A list of rows for the refreshed gridview control
             for (int i = 0; i < gvExpSplit.Rows.Count; i++)  // Cycle through existing rows, one-by-one
             {
                 if (i != RowToRemove)                               // If != this is not the row to skip, so press on
@@ -1461,7 +1462,7 @@ namespace Portal11.Rqsts
                     TextBox txtSplitAmount = (TextBox)gvExpSplit.Rows[i].FindControl("txtSplitAmount"); // Find the text box within gridview row
                     TextBox txtSplitNote = (TextBox)gvExpSplit.Rows[i].FindControl("txtSplitNote"); // Find the text box within gridview row
 
-                    GLCodeSplitRow row = new GLCodeSplitRow()       // Create container for us to build up a row
+                    rowGLCodeSplit row = new rowGLCodeSplit()       // Create container for us to build up a row
                     {
                         TotalRows = totalRows,                      // Note row count of gridview to help RowDataBound get cute
                         SelectedGLCodeID = ddlSplitGLCode.SelectedValue, // Spot the selected row of the drop down list, if any. This is the GLCode ID
@@ -1473,7 +1474,7 @@ namespace Portal11.Rqsts
 
                     if (i == RowToAdd)                              // If == we're at the right point to add a new row, as requested
                     {
-                        GLCodeSplitRow addedrow = new GLCodeSplitRow();   // Create an empty row
+                        rowGLCodeSplit addedrow = new rowGLCodeSplit();   // Create an empty row
                         rows.Add(addedrow);                         // Add it to the list
                     }
                 }
@@ -1520,8 +1521,8 @@ namespace Portal11.Rqsts
 
                 // Case 1) This request has never had splits before.
 
-                List<GLCodeSplitRow> rows = new List<GLCodeSplitRow>(); // Create a list of rows for the gridview
-                GLCodeSplitRow row = new GLCodeSplitRow()               // Prime the first row of the grid from "parent" fields of the page
+                List<rowGLCodeSplit> rows = new List<rowGLCodeSplit>(); // Create a list of rows for the gridview
+                rowGLCodeSplit row = new rowGLCodeSplit()               // Prime the first row of the grid from "parent" fields of the page
                 {
                     TotalRows = 1,                                      // This is the only row in the grid
                     SelectedGLCodeID = ddlGLCode.SelectedValue,         // Copy the selected GL Code, if any, from the ddl

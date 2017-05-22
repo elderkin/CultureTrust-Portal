@@ -39,6 +39,8 @@ namespace Portal11.Admin
                 litSavedUserID.Text = userID;                               // Remember the selected user's ID
                 litSavedFullName.Text = fullName;                           // Also remember user's full name
 
+                gvAssignUserToProject.PageSize = CookieActions.FindGridViewRows(); // Find number of rows per page from cookie
+
                 LoadProjectView();                                          // Fill the grid
             }
         }
@@ -51,22 +53,22 @@ namespace Portal11.Admin
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
 
-        protected void AssignUserToProjectView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvAssignUserToProject_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this Project";            // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AssignUserToProjectView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvAssignUserToProject, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
             }
         }
 
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected.
 
-        protected void AssignUserToProjectView_SelectedIndexChanged(object sender, EventArgs e)
+        protected void gvAssignUserToProject_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Label label = (Label)AssignUserToProjectView.SelectedRow.Cells[1].FindControl("lblProjectRole");
+            Label label = (Label)gvAssignUserToProject.SelectedRow.Cells[1].FindControl("lblProjectRole");
             // Find the label control that contains Project Role of User on this Project
             ProjectRole r = EnumActions.ConvertTextToProjectRole(label.Text); // Convert string back into enum datatype
             AdjustButtons(r);                                               // Turn on the appropriate buttons, based on role
@@ -74,13 +76,13 @@ namespace Portal11.Admin
 
         // Deal with pagination of the Grid View controls
 
-        protected void AssignUserToProjectView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvAssignUserToProject_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                AssignUserToProjectView.PageIndex = e.NewPageIndex;         // Propagate the desired page index
+                gvAssignUserToProject.PageIndex = e.NewPageIndex;         // Propagate the desired page index
                 LoadProjectView();                                          // Fill the grid
-                AssignUserToProjectView.SelectedIndex = -1;                 // No row currently selected
+                gvAssignUserToProject.SelectedIndex = -1;                 // No row currently selected
             }
         }
 
@@ -127,7 +129,7 @@ namespace Portal11.Admin
 
         void ChangeAssociation(ProjectRole role)
         {
-            Label label = (Label)AssignUserToProjectView.SelectedRow.Cells[0].FindControl("lblRowID");
+            Label label = (Label)gvAssignUserToProject.SelectedRow.Cells[0].FindControl("lblRowID");
             // Find the label control that contains Project ID
             string p = label.Text;                                          // Extract the text of the control, which is Project ID
             if (p == "")                                                    // If == value is missing. That's an error
@@ -172,10 +174,10 @@ namespace Portal11.Admin
 
                 //  3) Craft a list for the gridview, with one row for each project (our first list) and extras from the second list.
 
-                List<AssignUserToProjectViewRow> rows = new List<AssignUserToProjectViewRow>(); // Create an empty list for the GridView control
+                List<rowAssignUserToProject> rows = new List<rowAssignUserToProject>(); // Create an empty list for the GridView control
                 foreach (var p in projs)                                // Fill the list row-by-row
                 {
-                    AssignUserToProjectViewRow row = new AssignUserToProjectViewRow();  // Instantiate empty row all ready to fill
+                    rowAssignUserToProject row = new rowAssignUserToProject();  // Instantiate empty row all ready to fill
                     row.RowID = p.ProjectID.ToString();                 // Fill the part of the row that's always there
                     row.Name = p.Name;
                     row.Description = p.Description;
@@ -212,12 +214,12 @@ namespace Portal11.Admin
                 // to provide a little more clarity.
 
                 if (litSavedFullName.Text != "")                        // If != there is a useful full name available
-                    AssignUserToProjectView.Columns[5].HeaderText = "'" + litSavedFullName.Text + "' Role"; // Provide a meaningful column header
+                    gvAssignUserToProject.Columns[5].HeaderText = "'" + litSavedFullName.Text + "' Role"; // Provide a meaningful column header
 
-                AssignUserToProjectView.DataSource = rows;                 // Give it to the GridView control
-                AssignUserToProjectView.DataBind();                        // And display it
+                gvAssignUserToProject.DataSource = rows;                 // Give it to the GridView control
+                gvAssignUserToProject.DataBind();                        // And display it
 
-                NavigationActions.EnableGridViewNavButtons(AssignUserToProjectView); // Enable appropriate nav buttons based on page count
+                NavigationActions.EnableGridViewNavButtons(gvAssignUserToProject); // Enable appropriate nav buttons based on page count
             }
         }
 

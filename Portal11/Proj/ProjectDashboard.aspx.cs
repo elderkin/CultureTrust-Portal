@@ -342,7 +342,7 @@ namespace Portal11.Proj
                 AppState state = EnumActions.ConvertTextToAppState(label.Text); // Carefully convert back into enumeration type
 
                 if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
-                    e.Row.Cells[ProjectAppViewRow.CurrentStateDescRow].Font.Bold = true; // Bold the Status cell of this row
+                    e.Row.Cells[rowProjectAppView.CurrentStateDescRow].Font.Bold = true; // Bold the Status cell of this row
             }
             return;
         }
@@ -363,7 +363,7 @@ namespace Portal11.Proj
                 DepState state = EnumActions.ConvertTextToDepState(label.Text); // Carefully convert back into enumeration type
 
                 if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
-                    e.Row.Cells[ProjectDepViewRow.CurrentStateDescRow].Font.Bold = true; // Bold Status cell.
+                    e.Row.Cells[rowProjectDepView.CurrentStateDescRow].Font.Bold = true; // Bold Status cell.
             }
             return;
         }
@@ -384,7 +384,7 @@ namespace Portal11.Proj
                 ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Carefully convert back into enumeration type
 
                 if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
-                    e.Row.Cells[ProjectExpViewRow.CurrentStateDescRow].Font.Bold = true; // Bold Status cell.
+                    e.Row.Cells[rowProjectExpView.CurrentStateDescRow].Font.Bold = true; // Bold Status cell.
 
                 // See if the row is Rush
 
@@ -597,6 +597,12 @@ namespace Portal11.Proj
                 case ExpState.AwaitingProjectDirector:
                     {
                         if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == user is a Project Director, can Review
+                            btnExpReview.Enabled = true;
+                        break;
+                    }
+                case ExpState.AwaitingInternalCoordinator:
+                    {
+                        if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == user is an Internal Coordinator, can Review
                             btnExpReview.Enabled = true;
                         break;
                     }
@@ -1097,7 +1103,7 @@ namespace Portal11.Proj
 
                 // From this list of Apps, build a list of rows for the gvAllApp GridView
 
-                List<ProjectAppViewRow> rows = new List<ProjectAppViewRow>(); // Create an empty list for the GridView control
+                List<rowProjectAppView> rows = new List<rowProjectAppView>(); // Create an empty list for the GridView control
                 foreach (var r in apps)                                 // Fill the list row-by-row
                 {
                     bool useRow = false;                                // Assume that we skip this row
@@ -1135,7 +1141,7 @@ namespace Portal11.Proj
 
                     if (useRow)                                         // If true. checkboxes indicate that we should use the row
                     {
-                        ProjectAppViewRow row = new ProjectAppViewRow()     // Empty row all ready to fill
+                        rowProjectAppView row = new rowProjectAppView()     // Empty row all ready to fill
                         {
                             RowID = r.AppID.ToString(),                     // Convert ID from int to string for easier retrieval later
                             CurrentTime = r.CurrentTime,                    // When request was last updated
@@ -1221,7 +1227,7 @@ namespace Portal11.Proj
 
                 // From this list of Deps, build a list of rows for the gvAllExp GridView
 
-                List<ProjectDepViewRow> rows = new List<ProjectDepViewRow>(); // Create an empty list for the GridView control
+                List<rowProjectDepView> rows = new List<rowProjectDepView>(); // Create an empty list for the GridView control
                 foreach (var r in deps)                                 // Fill the list row-by-row
                 {
                     bool useRow = false;                                // Assume that we skip this row
@@ -1255,7 +1261,7 @@ namespace Portal11.Proj
 
                     if (useRow)                                         // If true. checkboxes indicate that we should use the row
                     {
-                        ProjectDepViewRow row = new ProjectDepViewRow()     // Empty row all ready to fill
+                        rowProjectDepView row = new rowProjectDepView()     // Empty row all ready to fill
                         {
                             RowID = r.DepID.ToString(),                     // Convert ID from int to string for easier retrieval later
                             CurrentTime = r.CurrentTime,                    // When request was last updated
@@ -1379,7 +1385,7 @@ namespace Portal11.Proj
 
                 // From this list of Exps, build a list of rows for the gvAllExp GridView
 
-                List<ProjectExpViewRow> rows = new List<ProjectExpViewRow>(); // Create an empty list for the GridView control
+                List<rowProjectExpView> rows = new List<rowProjectExpView>(); // Create an empty list for the GridView control
                 foreach (var r in exps)                                // Fill the list row-by-row
                 {
                     bool useRow = false;                                // Assume that we skip this row
@@ -1393,6 +1399,7 @@ namespace Portal11.Proj
                                 useRow = true;                          // Process the row, don't skip it
                             break;
 
+                        case ExpState.AwaitingInternalCoordinator:
                         case ExpState.AwaitingFinanceDirector:
                         case ExpState.AwaitingTrustDirector:
                         case ExpState.AwaitingTrustExecutive:
@@ -1418,7 +1425,7 @@ namespace Portal11.Proj
 
                     if (useRow)                                         // If true. checkboxes indicate that we should use the row
                     {
-                        ProjectExpViewRow row = new ProjectExpViewRow()   // Empty row all ready to fill
+                        rowProjectExpView row = new rowProjectExpView()   // Empty row all ready to fill
                         {
                             RowID = r.ExpID.ToString(),                    // Convert ID from int to string for easier retrieval later
                             CurrentTime = r.CurrentTime,                    // When request was last updated
