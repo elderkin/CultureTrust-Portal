@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace Portal11.Logic
@@ -419,96 +420,108 @@ namespace Portal11.Logic
 
         public static void ViewDoc(ListBox lst, Literal dan)
         {
-            string sdIDstring = lst.SelectedValue;                  // Fetch the Value of the Selected row, if any
-            ListItem item = lst.SelectedItem;                       // Fetch the Selected row
-            if (sdIDstring == "" || item == null)                   // If == no row selected, that's an error
+            string sourceFileName = ""; int sourceFileLength = 0; string sourceMIME = ""; string destFileName = "";
+
+            ViewDocPrep(lst, out sourceFileName, out sourceFileLength, out sourceMIME, out destFileName); // Hit the database to find these values
+
+            try
             {
-                dan.Text = "Please select a Supporting Document to Download";
+                string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
+
+                //  2) Command the server to download the file to the browser
+
+                HttpContext.Current.Response.Clear();
+                HttpContext.Current.Response.ClearHeaders();
+                HttpContext.Current.Response.ClearContent();                // Just download the file and let user figure it out
+                HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + destFileName + "\"");
+                // Name of file after download
+                HttpContext.Current.Response.AddHeader("Content-Length", sourceFileLength.ToString());
+                HttpContext.Current.Response.Flush();
+                HttpContext.Current.Response.TransmitFile(serverRoot + sourceFileName); // Name of source file on server /Supporting directory
+                HttpContext.Current.Response.End();                         // Download that baby
                 return;
             }
+            catch (Exception ex)
+            {
+                Exception inner = ex.InnerException;
+                if (ex.Message == "Thread was being aborted." && ex.InnerException == null) // If == Response.End has thrown an unhandled event
+                    return;                                                 // This is its normal exit. We can continue.
+                else
+                {
+                    LogError.LogSupportingDocumentError(ex, "ViewDoc", "Unable to download and view Supporting Document"); // Log error
+                    dan.Text = "Unable to download Supporting Document: " + destFileName; // Display the offending document
+                    return;                                                 // This failed, but press on no matter what
+                }
+            }
+        }
+
+        // A row in the supportinc document list has been selected. Formulate a (complicated) URL that can go into the "View" button
+        // to open the doc in a new window.
+
+        public static string ViewDocUrl(ListBox lst)
+        {
+            string sourceFileName = ""; int sourceFileLength = 0; string sourceMIME = ""; string destFileName = "";
+
+            ViewDocPrep(lst, out sourceFileName, out sourceFileLength, out sourceMIME, out destFileName); // Hit the database to find these values
+
+            return PortalConstants.URLViewDoc + "?" + PortalConstants.QSServerFile + "=" + sourceFileName + "&" +
+                    PortalConstants.QSMIME + "=" + sourceMIME + "&" + PortalConstants.QSUserFile + "=" + destFileName;
+        }
+
+        // Given a ListItem in the Supporting Document list, fetch the name, length, and MIME type of the supporting document file.
+        // In this context, "source file" means the file on the server's /Supporting directory where the user's original file was copied.
+
+        static void ViewDocPrep(ListBox lst, out string sourceFileName, out int sourceFileLength, out string sourceMIME, out string destFileName)
+        {
+            ListItem item = lst.SelectedItem;                       // Fetch the Selected row
+            if (item == null)                                       // If there is no selected row, we never should have gotten here
+                LogError.LogInternalError("ViewDocPrep", "No supporting document row selected in list.");
+            string sdIDstring = lst.SelectedValue;                  // Fetch the Value of the Selected row. This identifies the supporting doc
 
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
-                try
+
+                //  Figure out whether the Supporting Doc is temporary or permanent
+
+                if (sdIDstring.Substring(0, PortalConstants.SupportingTempFlag.Length) == PortalConstants.SupportingTempFlag)
+                // If == this entry has a corresponding row in Temp table.
                 {
-                    string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
-                    string sourceFileName = ""; int sourceFileLength = 0; string destFileName=""; string sourceMIME = "";
 
-                    //  Figure out whether the Supporting Doc is temporary or permanent
+                    //  1A) If temporary, get details from the SupportingDocTemp row
+                    //  The Value contains the letter "T" plus the ID of the row in the SupportingDocTemp table
 
-                    if (sdIDstring.Substring(0, PortalConstants.SupportingTempFlag.Length) == PortalConstants.SupportingTempFlag)
-                        // If == this entry has a corresponding row in Temp table.
-                    {
+                    int sdtID = Convert.ToInt32(sdIDstring.Substring(PortalConstants.SupportingTempFlag.Length,
+                                                sdIDstring.Length - PortalConstants.SupportingTempFlag.Length));
+                    // Remove the "T" and extract row ID
+                    SupportingDocTemp sdt = context.SupportingDocTemps.Find(sdtID); // Use the ID to fetch that database row
+                    if (sdt == null)                                        // If == couldn't find the row
+                        LogError.LogInternalError("ViewDocPrep", "RequestSupportingTempID from selected GridView row not found in database");
+                    // Log fatal error
 
-                        //  1A) If temporary, get details from the SupportingDocTemp row
-                        //  The Value contains the letter "T" plus the ID of the row in the SupportingDocTemp table
-
-                        int sdtID = Convert.ToInt32(sdIDstring.Substring(PortalConstants.SupportingTempFlag.Length,
-                                                    sdIDstring.Length - PortalConstants.SupportingTempFlag.Length)); 
-                            // Remove the "T" and extract row ID
-                        SupportingDocTemp sdt = context.SupportingDocTemps.Find(sdtID); // Use the ID to fetch that database row
-                        if (sdt == null)                                        // If == couldn't find the row
-                            LogError.LogInternalError("ViewDoc", "RequestSupportingTempID from selected GridView row not found in database"); 
-                                                                                // Log fatal error
-
-                        sourceFileName = sdt.FileName;                          // Source of the download - a temporary file
-                        sourceFileLength = sdt.FileLength;
-                        sourceMIME = sdt.MIME;                                  // Remember file type
-                        destFileName = item.Text;                               // Pull the file name from the ListBox row, where it was displayed
-                    }
-                    else                                                        // This entry has a corresponding row in the RqstSupporting table
-                    {
-
-                        //  1B) If permanent, get details from the RqstSupporting row
-                        //  The Value just contains the ID of the row in the RqstSupporting table
-
-                        int sdID = Convert.ToInt32(sdIDstring);                 // Convert RqstSupporting row ID
-                        SupportingDoc sd = context.SupportingDocs.Find(sdID);   // Use the ID to fetch that database row
-                        if (sd == null)                                         // If == couldn't find the row
-                            LogError.LogInternalError("ViewDoc", "RequestSupportingID from selected GridView row not found in database"); 
-                                                                                // Log fatal error
-
-                        sourceFileName = sd.SupportingDocID.ToString() + Path.GetExtension(sd.FileName); // Formulate source of the download
-                        sourceFileLength = sd.FileLength;
-                        sourceMIME = sd.MIME;                                   // Remember file type
-                        destFileName = sd.FileName;
-                    }
-
-                    //  2) Command the server to download the file to the browser
-
-                    //if (sourceMIME == "application/pdf")                        // If == the supporting document is a PDF file
-                    //{
-                    //    string pdfName = serverRoot + sourceFileName;
-                    //    HttpContext.Current.Response.ContentType = sourceMIME;  // Ask the browser to view the PDF file
-                    //    HttpContext.Current.Response.Write($"<script>window.open('{pdfName}','_blank');</script>");
-                    //}
-                    //else
-                    //{
-
-                        HttpContext.Current.Response.Clear();
-                        HttpContext.Current.Response.ClearHeaders();
-                        HttpContext.Current.Response.ClearContent();                // Just download the file and let user figure it out
-                        HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + destFileName + "\"");
-                        // Name of file after download
-                        HttpContext.Current.Response.AddHeader("Content-Length", sourceFileLength.ToString());
-                        HttpContext.Current.Response.Flush();
-                        HttpContext.Current.Response.TransmitFile(serverRoot + sourceFileName); // Name of source file on server /Supporting directory
-                        HttpContext.Current.Response.End();                             // Download that baby
-                    //}
+                    sourceFileName = sdt.FileName;                          // Source of the download - a temporary file
+                    sourceFileLength = sdt.FileLength;                      // Report file length
+                    sourceMIME = sdt.MIME;                                  // Report file type
+                    destFileName = item.Text;                               // Pull the file name from the ListBox row, where it was displayed
                 }
-                catch (Exception ex)
+                else
                 {
-                    Exception inner = ex.InnerException;
-                    if (ex.Message == "Thread was being aborted." && ex.InnerException == null) // If == Response.End has thrown an unhandled event
-                        return;                                                    // This is its normal exit. We can continue.
-                    else
-                    {
-                        LogError.LogSupportingDocumentError(ex, "ViewDoc", "Unable to download and view Supporting Document"); // Log error
-                        dan.Text = "Unable to download Supporting Document: " + item.Text; // Display the offending document
-                        return;                                                   // This failed, but press on no matter what
-                    }
+
+                    //  1B) If permanent, get details from the RqstSupporting row
+                    //  The Value just contains the ID of the row in the RqstSupporting table
+
+                    int sdID = Convert.ToInt32(sdIDstring);                 // Convert RqstSupporting row ID
+                    SupportingDoc sd = context.SupportingDocs.Find(sdID);   // Use the ID to fetch that database row
+                    if (sd == null)                                         // If == couldn't find the row
+                        LogError.LogInternalError("ViewDocPrep", "RequestSupportingID from selected GridView row not found in database");
+                    // Log fatal error
+
+                    sourceFileName = sd.SupportingDocID.ToString() + Path.GetExtension(sd.FileName); // Formulate source of the download
+                    sourceFileLength = sd.FileLength;                       // Report file length
+                    sourceMIME = sd.MIME;                                   // Report file type
+                    destFileName = sd.FileName;                             // Report user's original name for the file
                 }
             }
+            return;
         }
     }
 }

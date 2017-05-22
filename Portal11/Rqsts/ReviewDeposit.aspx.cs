@@ -69,13 +69,13 @@ namespace Portal11.Rqsts
             return;
         }
 
-        protected void EDHistoryView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvEDHistory_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
-                EDHistoryView.PageIndex = e.NewPageIndex;             // Propagate the desired page index
+                gvEDHistory.PageIndex = e.NewPageIndex;             // Propagate the desired page index
                 LoadAllDepHistorys();                                  // Re-fill the GridView control
-                EDHistoryView.SelectedIndex = -1;                     // No row currently selected
+                gvEDHistory.SelectedIndex = -1;                     // No row currently selected
             }
             return;
         }
@@ -356,7 +356,7 @@ namespace Portal11.Rqsts
 
         void LoadAllDepHistorys()
         {
-            NavigationActions.LoadAllDepHistorys(Convert.ToInt32(litSavedDepID.Text), EDHistoryView); // Fill the list from the database
+            NavigationActions.LoadAllDepHistorys(Convert.ToInt32(litSavedDepID.Text), gvEDHistory); // Fill the list from the database
             return;
         }
 

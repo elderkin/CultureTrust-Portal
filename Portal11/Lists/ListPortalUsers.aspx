@@ -43,13 +43,13 @@
         <div class="row">
             <div class="col-xs-12">
 
-                <asp:GridView ID="AllPortalUsersView" runat="server"
+                <asp:GridView ID="gvPortalUsers" runat="server"
                     CssClass="table table-striped table-hover"
-                    ItemType="Portal11.Models.AllPortalUsersRow"
+                    ItemType="Portal11.Models.rowPortalUsers"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="25"
-                    OnPageIndexChanging="AllPortalUsersView_PageIndexChanging"
-                    OnRowDataBound="AllPortalUsersView_RowDataBound">
+                    OnPageIndexChanging="gvPortalUsers_PageIndexChanging"
+                    OnRowDataBound="gvPortalUsers_RowDataBound">
 
                     <HeaderStyle HorizontalAlign="Center" />
 

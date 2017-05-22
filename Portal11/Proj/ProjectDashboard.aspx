@@ -225,7 +225,7 @@
                 <!-- Code assumes that RowID is the first column of this grid -->
                 <asp:GridView ID="gvAllApp" runat="server"
                     CssClass="table table-striped table-hover"
-                    ItemType="Portal11.Models.ProjectAppViewRow"
+                    ItemType="Portal11.Models.rowProjectAppView"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="25"
                     OnRowDataBound="gvAllApp_RowDataBound"
@@ -334,7 +334,7 @@
                 <!-- Code assumes that RowID is the first column of this grid -->
                 <asp:GridView ID="gvAllDep" runat="server"
                     CssClass="table table-striped table-hover"
-                    ItemType="Portal11.Models.ProjectDepViewRow"
+                    ItemType="Portal11.Models.rowProjectDepView"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="25"
                     OnRowDataBound="gvAllDep_RowDataBound"
@@ -447,7 +447,7 @@
                 <!-- Code assumes that RowID is the first column of this grid -->
                 <asp:GridView ID="gvAllExp" runat="server"
                     CssClass="table table-striped table-hover"
-                    ItemType="Portal11.Models.ProjectExpViewRow"
+                    ItemType="Portal11.Models.rowProjectExpView"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="25"
                     OnRowDataBound="gvAllExp_RowDataBound"

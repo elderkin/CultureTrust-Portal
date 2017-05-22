@@ -46,9 +46,9 @@ namespace Portal11.Rqsts
                 RestoreCheckboxes();                                        // Read cookie, restore checkbox settings, fill DDLs
 
                 int rows = CookieActions.FindGridViewRows();                // Find number of rows per page from cookie
-                StaffAppView.PageSize = rows;                               // Adjust each GridView accordingly
-                StaffDepView.PageSize = rows;
-                StaffExpView.PageSize = rows;
+                gvStaffApp.PageSize = rows;                               // Adjust each GridView accordingly
+                gvStaffDep.PageSize = rows;
+                gvStaffExp.PageSize = rows;
 
                 LoadAllApps(RestorePageIndex(PortalConstants.CStaffPIApp)); // Load the grid view of Approvals and reposition
                 LoadAllDeps(RestorePageIndex(PortalConstants.CStaffPIDep)); // Load the grid view of Deposits and reposition
@@ -279,7 +279,7 @@ namespace Portal11.Rqsts
 
         // Flip a page of the grid view control
 
-        protected void StaffAppView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvStaffApp_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
@@ -289,7 +289,7 @@ namespace Portal11.Rqsts
             return;
         }
 
-        protected void StaffDepView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvStaffDep_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
@@ -299,7 +299,7 @@ namespace Portal11.Rqsts
             return;
         }
 
-        protected void StaffExpView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvStaffExp_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
@@ -312,7 +312,7 @@ namespace Portal11.Rqsts
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
 
-        protected void StaffAppView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvStaffApp_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
@@ -323,12 +323,12 @@ namespace Portal11.Rqsts
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 AppState state = EnumActions.ConvertTextToAppState(label.Text); // Carefully convert back into enumeration type
                 if (StateActions.UserRoleToApproveRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
-                    e.Row.Cells[StaffAppViewRow.OwnerColumn].Font.Bold = true; // Bold Status cell.
+                    e.Row.Cells[rowStaffApp.OwnerColumn].Font.Bold = true; // Bold Status cell.
             }
             return;
         }
 
-        protected void StaffDepView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvStaffDep_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
@@ -339,12 +339,12 @@ namespace Portal11.Rqsts
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 DepState state = EnumActions.ConvertTextToDepState(label.Text); // Carefully convert back into enumeration type
                 if (StateActions.UserRoleToApproveRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
-                    e.Row.Cells[StaffDepViewRow.OwnerColumn].Font.Bold = true; // Bold Status cell.
+                    e.Row.Cells[rowStaffDep.OwnerColumn].Font.Bold = true; // Bold Status cell.
             }
             return;
         }
 
-        protected void StaffExpView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvStaffExp_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
@@ -365,14 +365,14 @@ namespace Portal11.Rqsts
 
                 if (StateActions.UserRoleToApproveRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
                 {
-                    e.Row.Cells[StaffExpViewRow.OwnerColumn].Font.Bold = true; // Bold Status cell.
+                    e.Row.Cells[rowStaffExp.OwnerColumn].Font.Bold = true; // Bold Status cell.
 
                     // If row is waiting for FD for the second time, highlight it
 
                     if (StateActions.NextReviewIsSecondFD(state))           // If true next review is second FD review
                     {
-                        //e.Row.Cells[StaffExpViewRow.StateColumn].ForeColor = Color.Purple; // Use color to indicate this condition
-                        //e.Row.Cells[StaffExpViewRow.StateColumn].Font.Bold = true; // Also make it bold, since purple doesn't show up very well
+                        //e.Row.Cells[rowStaffExp.StateColumn].ForeColor = Color.Purple; // Use color to indicate this condition
+                        //e.Row.Cells[rowStaffExp.StateColumn].Font.Bold = true; // Also make it bold, since purple doesn't show up very well
                         e.Row.ForeColor = Color.Purple;                     // Make the whole row purple
                         e.Row.Font.Bold = true;                             // Make the whole row bold
                     }
@@ -398,11 +398,11 @@ namespace Portal11.Rqsts
             //          ((GridView)sender).UniqueID +                     //  to the GridView control that invoked us
             //          "', 'Select$" + e.Row.RowIndex.ToString() + "')\", " + // Command is: Select the current row
             //          PortalConstants.SingleClickTimeout.ToString() + ")"; // and delay by this much
-            // Result: javascript:setTimeout("__doPostBack('ctl100$MainContent$StaffAppView', 'Select$3')", 300)
+            // Result: javascript:setTimeout("__doPostBack('ctl100$MainContent$gvStaffApp', 'Select$3')", 300)
             //string clicker = "__doPostBack('" +                                // Postback a command
             //          ((GridView)sender).UniqueID +                     //  to the GridView control that invoked us
             //          "', 'Select$" + e.Row.RowIndex.ToString() + "')"; // Select this row
-            //// Result: __doPostBack('ctl100$MainContent$StaffAppView', 'Select$3')
+            //// Result: __doPostBack('ctl100$MainContent$gvStaffApp', 'Select$3')
             //e.Row.Attributes["onclick"] = clicker;                      // Assign this command to single click
 
             // To implement double click, find a button (name supplied by caller) that we have hidden in the row.
@@ -423,7 +423,7 @@ namespace Portal11.Rqsts
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected. This code assumes that
         // cell lblCurrentState contains the enum value (not enum description) of the CurrentState and cell btnxxxDblClick contains RowID.
 
-        //protected void StaffAppView_SelectedIndexChanged(object sender, EventArgs e)
+        //protected void gvStaffApp_SelectedIndexChanged(object sender, EventArgs e)
         //{
         //    Label label = (Label)((GridView)sender).SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
         //    AppState state = EnumActions.ConvertTextToAppState(label.Text);     // Convert back into enumeration type
@@ -437,7 +437,7 @@ namespace Portal11.Rqsts
         //    return;
         //}
 
-        //protected void StaffDepView_SelectedIndexChanged(object sender, EventArgs e)
+        //protected void gvStaffDep_SelectedIndexChanged(object sender, EventArgs e)
         //{
         //    Label label = (Label)((GridView)sender).SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
         //    DepState state = EnumActions.ConvertTextToDepState(label.Text); // Convert back into enumeration type
@@ -456,7 +456,7 @@ namespace Portal11.Rqsts
         //    return;
         //}
 
-        //protected void StaffExpView_SelectedIndexChanged(object sender, EventArgs e)
+        //protected void gvStaffExp_SelectedIndexChanged(object sender, EventArgs e)
         //{
         //    Label label = (Label)((GridView)sender).SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
         //    ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Convert back into enumeration type
@@ -517,17 +517,17 @@ namespace Portal11.Rqsts
 
         //protected void btnAppReview_Click(object sender, EventArgs e)
         //{
-        //    DispatchReview(((Button)StaffAppView.SelectedRow.FindControl("btnAppDblClick")).Text, PortalConstants.URLReviewApproval); // Dispatch to Review
+        //    DispatchReview(((Button)gvStaffApp.SelectedRow.FindControl("btnAppDblClick")).Text, PortalConstants.URLReviewApproval); // Dispatch to Review
         //}
 
         //protected void btnDepReview_Click(object sender, EventArgs e)
         //{
-        //    DispatchReview(((Button)StaffDepView.SelectedRow.FindControl("btnDepDblClick")).Text, PortalConstants.URLReviewDeposit); // Dispatch to Review
+        //    DispatchReview(((Button)gvStaffDep.SelectedRow.FindControl("btnDepDblClick")).Text, PortalConstants.URLReviewDeposit); // Dispatch to Review
         //}
 
         //protected void btnExpReview_Click(object sender, EventArgs e)
         //{
-        //    DispatchReview(((Button)StaffExpView.SelectedRow.FindControl("btnExpDblClick")).Text, PortalConstants.URLReviewExpense); // Dispatch to Review
+        //    DispatchReview(((Button)gvStaffExp.SelectedRow.FindControl("btnExpDblClick")).Text, PortalConstants.URLReviewExpense); // Dispatch to Review
         //}
 
         // Code that is common to all "Review" buttons and double clicks. If the Request ID is sensible, redirect to the Review page.
@@ -606,9 +606,9 @@ namespace Portal11.Rqsts
 
                 List<App> apps = context.Apps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
 
-                // From this list of Rqsts, build a list of rows for the StaffAppView GridView based on the selection criteria provided by the user.
+                // From this list of Rqsts, build a list of rows for the gvStaffApp GridView based on the selection criteria provided by the user.
 
-                List<StaffAppViewRow> rows = new List<StaffAppViewRow>();   // Create the empty list
+                List<rowStaffApp> rows = new List<rowStaffApp>();   // Create the empty list
                 foreach (var a in apps)
                 {
                     bool useRow = false;                                    // Assume we're not interested in the row
@@ -705,7 +705,7 @@ namespace Portal11.Rqsts
                         }
                         if (useRow)                                         // If true passed the second screen
                         {
-                            StaffAppViewRow row = new StaffAppViewRow()
+                            rowStaffApp row = new rowStaffApp()
                             {                                               // Empty row all ready to fill
                                 RowID = a.AppID.ToString(),                 // Convert ID from int to string for easier retrieval later
                                 ProjectName = a.Project.Name,               // Fetch project name
@@ -726,14 +726,14 @@ namespace Portal11.Rqsts
                     }
                 }
 
-                StaffAppView.DataSource = rows;                             // Give it to the GridView control
-                StaffAppView.PageIndex = pageIndex;                         // Position to the requested page
-                StaffAppView.DataBind();                                    // And get it in gear
+                gvStaffApp.DataSource = rows;                             // Give it to the GridView control
+                gvStaffApp.PageIndex = pageIndex;                         // Position to the requested page
+                gvStaffApp.DataBind();                                    // And get it in gear
 
                 // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
 
-                NavigationActions.EnableGridViewNavButtons(StaffAppView);   // Enable appropriate nav buttons based on page count
-                StaffAppView.SelectedIndex = -1;                            // No selected row any more
+                NavigationActions.EnableGridViewNavButtons(gvStaffApp);   // Enable appropriate nav buttons based on page count
+                gvStaffApp.SelectedIndex = -1;                            // No selected row any more
                 litSelectedAppRow.Text = "";                                // No selected row remembered (for double click)
             }
             return;
@@ -827,7 +827,7 @@ namespace Portal11.Rqsts
 
                 // From this list of Rqsts, build a list of rows for the StaffDeptView GridView based on the selection criteria provided by the user.
 
-                List<StaffDepViewRow> rows = new List<StaffDepViewRow>();   // Create the empty list
+                List<rowStaffDep> rows = new List<rowStaffDep>();   // Create the empty list
                 foreach (var d in deps)
                 {
                     bool useRow = false;                                    // Assume we're not interested in the row
@@ -926,7 +926,7 @@ namespace Portal11.Rqsts
                         }
                         if (useRow)                                         // If true passed the second screen
                         {
-                            StaffDepViewRow row = new StaffDepViewRow()
+                            rowStaffDep row = new rowStaffDep()
                             {                                               // Empty row all ready to fill
                                 RowID = d.DepID.ToString(),                 // Convert ID from int to string for easier retrieval later
                                 ProjectName = d.Project.Name,               // Fetch project name
@@ -947,14 +947,14 @@ namespace Portal11.Rqsts
                     }
                 }
 
-                StaffDepView.DataSource = rows;                             // Give it to the GridView control
-                StaffDepView.PageIndex = pageIndex;                         // Position to the requested page
-                StaffDepView.DataBind();                                    // And get it in gear
+                gvStaffDep.DataSource = rows;                             // Give it to the GridView control
+                gvStaffDep.PageIndex = pageIndex;                         // Position to the requested page
+                gvStaffDep.DataBind();                                    // And get it in gear
 
                 // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
 
-                NavigationActions.EnableGridViewNavButtons(StaffDepView);   // Enable appropriate nav buttons based on page count
-                StaffDepView.SelectedIndex = -1;                            // No selected row any more
+                NavigationActions.EnableGridViewNavButtons(gvStaffDep);   // Enable appropriate nav buttons based on page count
+                gvStaffDep.SelectedIndex = -1;                            // No selected row any more
                 litSelectedDepRow.Text = "";                                // No selected row remembered (for double click)
             }
             return;
@@ -1048,7 +1048,7 @@ namespace Portal11.Rqsts
 
                 // From this list of Rqsts, build a list of rows for the AllRqstView GridView based on the selection criteria provided by the user.
 
-                List<StaffExpViewRow> rows = new List<StaffExpViewRow>();   // Create the empty list
+                List<rowStaffExp> rows = new List<rowStaffExp>();   // Create the empty list
                 foreach (var r in exps)
                 {
                     bool useRow = false;                                    // Assume we're not interested in the row
@@ -1120,6 +1120,12 @@ namespace Portal11.Rqsts
                                             useRow = true;
                                         break;
                                     }
+                                case ExpState.AwaitingInternalCoordinator:
+                                    {
+                                        if (ckRInternalCoordinator.Checked)
+                                            useRow = true;
+                                        break;
+                                    }
                                 case ExpState.AwaitingTrustDirector:
                                     {
                                         if (ckRTrustDirector.Checked)
@@ -1162,7 +1168,7 @@ namespace Portal11.Rqsts
                         }
                         if (useRow)                                         // If true passed the second screen
                         {
-                            StaffExpViewRow row = new StaffExpViewRow()
+                            rowStaffExp row = new rowStaffExp()
                             {          // Empty row all ready to fill
                                 RowID = r.ExpID.ToString(),                 // Convert ID from int to string for easier retrieval later
                                 ProjectName = r.Project.Name,               // Fetch project name
@@ -1198,14 +1204,14 @@ namespace Portal11.Rqsts
                         }
                     }
                 }
-                StaffExpView.DataSource = rows;                             // Give it to the GridView control
-                StaffExpView.PageIndex = pageIndex;                         // Position to the requested page
-                StaffExpView.DataBind();                                    // And get it in gear
+                gvStaffExp.DataSource = rows;                             // Give it to the GridView control
+                gvStaffExp.PageIndex = pageIndex;                         // Position to the requested page
+                gvStaffExp.DataBind();                                    // And get it in gear
 
                 // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
 
-                NavigationActions.EnableGridViewNavButtons(StaffExpView);   // Enable appropriate nav buttons based on page count
-                StaffExpView.SelectedIndex = -1;                            // No selected row any more
+                NavigationActions.EnableGridViewNavButtons(gvStaffExp);   // Enable appropriate nav buttons based on page count
+                gvStaffExp.SelectedIndex = -1;                            // No selected row any more
                 litSelectedExpRow.Text = "";                                // No selected row remembered (for double click)
             }
             return;
@@ -1574,9 +1580,9 @@ namespace Portal11.Rqsts
         void SaveStaffPageIndexes()
         {
             HttpCookie staffPageIndexCookie = new HttpCookie(PortalConstants.CStaffPageIndexes);
-            staffPageIndexCookie[PortalConstants.CStaffPIApp] = StaffAppView.PageIndex.ToString(); // Copy App gridview value
-            staffPageIndexCookie[PortalConstants.CStaffPIDep] = StaffDepView.PageIndex.ToString(); // Copy Dep gridview value
-            staffPageIndexCookie[PortalConstants.CStaffPIExp] = StaffExpView.PageIndex.ToString(); // Copy Exp gridview value
+            staffPageIndexCookie[PortalConstants.CStaffPIApp] = gvStaffApp.PageIndex.ToString(); // Copy App gridview value
+            staffPageIndexCookie[PortalConstants.CStaffPIDep] = gvStaffDep.PageIndex.ToString(); // Copy Dep gridview value
+            staffPageIndexCookie[PortalConstants.CStaffPIExp] = gvStaffExp.PageIndex.ToString(); // Copy Exp gridview value
 
             Response.Cookies.Add(staffPageIndexCookie);                 // Store a new cookie
         }

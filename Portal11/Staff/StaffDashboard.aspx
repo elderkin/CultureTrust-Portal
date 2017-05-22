@@ -252,13 +252,13 @@
                     <div class="col-xs-12">
 
                         <!-- Code assumes that RowID is the first column of this grid -->
-                        <asp:GridView ID="StaffAppView" runat="server"
+                        <asp:GridView ID="gvStaffApp" runat="server"
                             CssClass="table table-striped table-hover" 
-                            ItemType="Portal11.Models.StaffAppViewRow"
+                            ItemType="Portal11.Models.rowStaffApp"
                             AutoGenerateColumns="false"
                             AllowPaging="true" PageSize="10"
-                            OnRowDataBound="StaffAppView_RowDataBound"
-                            OnPageIndexChanging="StaffAppView_PageIndexChanging">
+                            OnRowDataBound="gvStaffApp_RowDataBound"
+                            OnPageIndexChanging="gvStaffApp_PageIndexChanging">
 
                             <SelectedRowStyle CssClass="success" />
                             <HeaderStyle HorizontalAlign="Center" />
@@ -279,7 +279,7 @@
                                     CssClass="btn btn-sm btn-default"></asp:Button>
                                 <asp:Label runat="server" >
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    Page <%# StaffAppView.PageIndex+1 %> of <%# StaffAppView.PageCount %>
+                                    Page <%# gvStaffApp.PageIndex+1 %> of <%# gvStaffApp.PageCount %>
                                 </asp:Label>
                             </PagerTemplate>
 
@@ -377,13 +377,13 @@
                     <div class="col-xs-12">
 
                         <!-- Code assumes that RowID is the first column of this grid -->
-                        <asp:GridView ID="StaffDepView" runat="server"
+                        <asp:GridView ID="gvStaffDep" runat="server"
                             CssClass="table table-striped table-hover"
-                            ItemType="Portal11.Models.StaffDepViewRow"
+                            ItemType="Portal11.Models.rowStaffDep"
                             AutoGenerateColumns="false"
                             AllowPaging="true" PageSize="10"
-                            OnRowDataBound="StaffDepView_RowDataBound"
-                            OnPageIndexChanging="StaffDepView_PageIndexChanging">
+                            OnRowDataBound="gvStaffDep_RowDataBound"
+                            OnPageIndexChanging="gvStaffDep_PageIndexChanging">
 
                             <SelectedRowStyle CssClass="success" />
 
@@ -403,7 +403,7 @@
                                     CssClass="btn btn-sm btn-default"></asp:Button>
                                 <asp:Label runat="server" >
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    Page <%# StaffDepView.PageIndex+1 %> of <%# StaffDepView.PageCount %>
+                                    Page <%# gvStaffDep.PageIndex+1 %> of <%# gvStaffDep.PageCount %>
                                 </asp:Label>
                             </PagerTemplate>
 
@@ -502,13 +502,13 @@
                     <div class="col-xs-12">
 
                         <!-- Code assumes that RowID is the first column of this grid -->
-                        <asp:GridView ID="StaffExpView" runat="server"
+                        <asp:GridView ID="gvStaffExp" runat="server"
                             CssClass="table table-striped table-hover"
-                            ItemType="Portal11.Models.StaffExpViewRow"
+                            ItemType="Portal11.Models.rowStaffExp"
                             AutoGenerateColumns="false"
                             AllowPaging="true" PageSize="10"
-                            OnRowDataBound="StaffExpView_RowDataBound"
-                            OnPageIndexChanging="StaffExpView_PageIndexChanging">
+                            OnRowDataBound="gvStaffExp_RowDataBound"
+                            OnPageIndexChanging="gvStaffExp_PageIndexChanging">
 
                             <SelectedRowStyle CssClass="success" />
 
@@ -528,7 +528,7 @@
                                     CssClass="btn btn-sm btn-default"></asp:Button>
                                 <asp:Label runat="server" >
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    Page <%# StaffExpView.PageIndex+1 %> of <%# StaffExpView.PageCount %>
+                                    Page <%# gvStaffExp.PageIndex+1 %> of <%# gvStaffExp.PageCount %>
                                 </asp:Label>
                             </PagerTemplate>
 

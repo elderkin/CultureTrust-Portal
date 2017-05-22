@@ -230,7 +230,7 @@
                         <div class="col-xs-12" style="padding-left:0">
                         <asp:GridView ID="gvDepSplit" runat="server"
                             CssClass="table table-striped table-hover"
-                            ItemType="Portal11.Models.GLCodeSplitRow"
+                            ItemType="Portal11.Models.rowGLCodeSplit"
                             AutoGenerateColumns="false"
                             AllowPaging="false">
 
@@ -250,16 +250,16 @@
                                             Text='<%# Bind("SelectedProjectClassID") %>' Enabled="false"></asp:TextBox>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right" >
-                                    <ItemTemplate>
-                                        <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" 
-                                            Text='<%# Bind("Amount") %>' style="text-align:right" Enabled="false"></asp:TextBox>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Account">
                                     <ItemTemplate>
                                         <asp:TextBox ID="txtSplitGLCode" runat="server" CssClass="form-control" 
                                             Text='<%# Bind("SelectedGLCodeID") %>' Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right" >
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" 
+                                            Text='<%# Bind("Amount") %>' style="text-align:right" Enabled="false"></asp:TextBox>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
@@ -336,12 +336,12 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
 
                     <!-- Code assumes that RowID is the first column of this grid -->
-                    <asp:GridView ID="EDHistoryView" runat="server"
+                    <asp:GridView ID="gvEDHistory" runat="server"
                         CssClass="table table-striped table-hover"
-                        ItemType="Portal11.Models.EDHistoryViewRow"
+                        ItemType="Portal11.Models.rowEDHistory"
                         AutoGenerateColumns="false"
                         AllowPaging="true" PageSize="20"
-                        OnPageIndexChanging="EDHistoryView_PageIndexChanging">
+                        OnPageIndexChanging="gvEDHistory_PageIndexChanging">
 
                         <SelectedRowStyle CssClass="success" />
 

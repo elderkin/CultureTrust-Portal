@@ -283,13 +283,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.CheckBox ckAFull;
         
         /// <summary>
-        /// StaffAppView control.
+        /// gvStaffApp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView StaffAppView;
+        protected global::System.Web.UI.WebControls.GridView gvStaffApp;
         
         /// <summary>
         /// btnDepCollapse control.
@@ -364,13 +364,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.CheckBox ckDPledge;
         
         /// <summary>
-        /// StaffDepView control.
+        /// gvStaffDep control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView StaffDepView;
+        protected global::System.Web.UI.WebControls.GridView gvStaffDep;
         
         /// <summary>
         /// btnExpCollapse control.
@@ -454,13 +454,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.CheckBox ckEPEXCard;
         
         /// <summary>
-        /// StaffExpView control.
+        /// gvStaffExp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView StaffExpView;
+        protected global::System.Web.UI.WebControls.GridView gvStaffExp;
         
         /// <summary>
         /// litSavedUserRole control.

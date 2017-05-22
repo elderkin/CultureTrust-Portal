@@ -59,12 +59,12 @@ namespace Portal11.Logic
             return;
         }
 
-        // Fill a particular GridView - EDHistoryView - with rows from the EDHistory table. Unusually, this GridView is used identically
+        // Fill a particular GridView - gvEDHistory - with rows from the EDHistory table. Unusually, this GridView is used identically
         // by four pages, so filling it is factored here.
 
-        public static void LoadAllAppHistorys(int appID, GridView EDHistoryView)
+        public static void LoadAllAppHistorys(int appID, GridView gvEDHistory)
         {
-            EDHistoryView.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
+            gvEDHistory.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var query = from edh in context.AppHistorys
@@ -73,11 +73,11 @@ namespace Portal11.Logic
                             select edh;
 
                 List<AppHistory> edhs = query.ToList();                  // Fetch the available histories
-                List<EDHistoryViewRow> rows = new List<EDHistoryViewRow>(); // Create the empty list
+                List<rowEDHistory> rows = new List<rowEDHistory>(); // Create the empty list
 
                 foreach (var r in edhs)                                 // Cycle through the rows returned by the query
                 {
-                    EDHistoryViewRow row = new EDHistoryViewRow()       // Convert a row of the EDHistory table to a row of the GridView
+                    rowEDHistory row = new rowEDHistory()       // Convert a row of the EDHistory table to a row of the GridView
                     {
                         Date = r.HistoryTime,
                         FormerStatus = EnumActions.GetEnumDescription(r.PriorAppState),
@@ -89,17 +89,17 @@ namespace Portal11.Logic
                     rows.Add(row);                                      // Add the filled-in row to the list of rows
                 }
 
-                EDHistoryView.DataSource = rows;                        // Give it to the GridView cnorol
-                EDHistoryView.DataBind();                               // And display it
+                gvEDHistory.DataSource = rows;                        // Give it to the GridView cnorol
+                gvEDHistory.DataBind();                               // And display it
 
-                NavigationActions.EnableGridViewNavButtons(EDHistoryView); // Enable appropriate nav buttons based on page count
+                NavigationActions.EnableGridViewNavButtons(gvEDHistory); // Enable appropriate nav buttons based on page count
             }
             return;
         }
 
-        public static void LoadAllDepHistorys(int depID, GridView EDHistoryView)
+        public static void LoadAllDepHistorys(int depID, GridView gvEDHistory)
         {
-            EDHistoryView.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
+            gvEDHistory.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var query = from edh in context.DepHistorys
@@ -108,11 +108,11 @@ namespace Portal11.Logic
                             select edh;
 
                 List<DepHistory> edhs = query.ToList();                  // Fetch the available histories
-                List<EDHistoryViewRow> rows = new List<EDHistoryViewRow>(); // Create the empty list
+                List<rowEDHistory> rows = new List<rowEDHistory>(); // Create the empty list
 
                 foreach (var r in edhs)                                 // Cycle through the rows returned by the query
                 {
-                    EDHistoryViewRow row = new EDHistoryViewRow()       // Convert a row of the EDHistory table to a row of the GridView
+                    rowEDHistory row = new rowEDHistory()       // Convert a row of the EDHistory table to a row of the GridView
                     {
                         Date = r.HistoryTime,
                         FormerStatus = EnumActions.GetEnumDescription(r.PriorDepState),
@@ -124,17 +124,17 @@ namespace Portal11.Logic
                     rows.Add(row);                                      // Add the filled-in row to the list of rows
                 }
 
-                EDHistoryView.DataSource = rows;                        // Give it to the GridView cnorol
-                EDHistoryView.DataBind();                               // And display it
+                gvEDHistory.DataSource = rows;                        // Give it to the GridView cnorol
+                gvEDHistory.DataBind();                               // And display it
 
-                NavigationActions.EnableGridViewNavButtons(EDHistoryView); // Enable appropriate nav buttons based on page count
+                NavigationActions.EnableGridViewNavButtons(gvEDHistory); // Enable appropriate nav buttons based on page count
             }
             return;
         }
 
-        public static void LoadAllExpHistorys(int expID, GridView EDHistoryView)
+        public static void LoadAllExpHistorys(int expID, GridView gvEDHistory)
         {
-            EDHistoryView.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
+            gvEDHistory.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var query = from edh in context.ExpHistorys
@@ -143,11 +143,11 @@ namespace Portal11.Logic
                             select edh;
 
                 List<ExpHistory> edhs = query.ToList();                  // Fetch the available histories
-                List<EDHistoryViewRow> rows = new List<EDHistoryViewRow>(); // Create the empty list
+                List<rowEDHistory> rows = new List<rowEDHistory>(); // Create the empty list
 
                 foreach (var r in edhs)                                 // Cycle through the rows returned by the query
                 {
-                    EDHistoryViewRow row = new EDHistoryViewRow()       // Convert a row of the EDHistory table to a row of the GridView
+                    rowEDHistory row = new rowEDHistory()       // Convert a row of the EDHistory table to a row of the GridView
                     {
                         Date = r.HistoryTime,
                         FormerStatus = EnumActions.GetEnumDescription(r.PriorExpState),
@@ -159,10 +159,10 @@ namespace Portal11.Logic
                     rows.Add(row);                                      // Add the filled-in row to the list of rows
                 }
 
-                EDHistoryView.DataSource = rows;                        // Give it to the GridView cnorol
-                EDHistoryView.DataBind();                               // And display it
+                gvEDHistory.DataSource = rows;                        // Give it to the GridView cnorol
+                gvEDHistory.DataBind();                               // And display it
 
-                NavigationActions.EnableGridViewNavButtons(EDHistoryView); // Enable appropriate nav buttons based on page count
+                NavigationActions.EnableGridViewNavButtons(gvEDHistory); // Enable appropriate nav buttons based on page count
             }
             return;
         }

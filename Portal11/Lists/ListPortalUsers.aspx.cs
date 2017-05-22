@@ -23,14 +23,14 @@ namespace Portal11.Lists
                 // If the page before us has left a Query String with a status message, find it and display it
 
                 NavigationActions.ProcessSeverityStatus(litSuccessMessage, litDangerMessage);
-                AllPortalUsersView.PageSize = CookieActions.FindGridViewRows(); // Set number of rows per page in grid
+                gvPortalUsers.PageSize = CookieActions.FindGridViewRows(); // Set number of rows per page in grid
                 LoadUserView();                                         // Fill the grid
             }
         }
 
         // Fires as each row of the GridView gets loaded.
 
-        protected void AllPortalUsersView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvPortalUsers_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
@@ -40,13 +40,13 @@ namespace Portal11.Lists
             return;
         }
 
-        protected void AllPortalUsersView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvPortalUsers_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
-                AllPortalUsersView.PageIndex = e.NewPageIndex;          // Propagate the desired page index
+                gvPortalUsers.PageIndex = e.NewPageIndex;          // Propagate the desired page index
                 LoadUserView();                                         // Fill the grid
-                AllPortalUsersView.SelectedIndex = -1;                  // No row currently selected
+                gvPortalUsers.SelectedIndex = -1;                  // No row currently selected
             }
 
         }
@@ -87,10 +87,10 @@ namespace Portal11.Lists
 
                 // From this list of Deps, build a list of rows for the AllExpView GridView
 
-                List<AllPortalUsersRow> rows = new List<AllPortalUsersRow>(); // Create an empty list for the GridView control
+                List<rowPortalUsers> rows = new List<rowPortalUsers>(); // Create an empty list for the GridView control
                 foreach (var r in users)                                 // Fill the list row-by-row
                 {
-                    AllPortalUsersRow row = new AllPortalUsersRow()     // Empty row all ready to fill
+                    rowPortalUsers row = new rowPortalUsers()     // Empty row all ready to fill
                     {
                         UserID = r.Id,                                  // Convert ID from int to string for easier retrieval later, if needed
                         FullName = r.FullName,
@@ -104,14 +104,14 @@ namespace Portal11.Lists
                     rows.Add(row);                                      // Add the filled-in row to the list of rows
                 }
 
-                AllPortalUsersView.DataSource = rows;                   // Give it to the GridView control
-                AllPortalUsersView.DataBind();                          // And display it
+                gvPortalUsers.DataSource = rows;                   // Give it to the GridView control
+                gvPortalUsers.DataBind();                          // And display it
 
                 // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
 
-                AllPortalUsersView.Columns[AllPortalUsersRow.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
+                gvPortalUsers.Columns[rowPortalUsers.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
 
-                NavigationActions.EnableGridViewNavButtons(AllPortalUsersView); // Enable appropriate nav buttons based on page count
+                NavigationActions.EnableGridViewNavButtons(gvPortalUsers); // Enable appropriate nav buttons based on page count
             }
         }
 

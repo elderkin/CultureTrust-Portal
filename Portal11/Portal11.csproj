@@ -222,9 +222,11 @@
     <Content Include="Images\LoginIcon-640x480.jpg" />
     <Content Include="Lists\ImportProjectBalances.aspx" />
     <Content Include="Lists\ListPortalUsers.aspx" />
+    <Content Include="Lists\ListProjectMetadata.aspx" />
     <Content Include="Lists\ListProjects.aspx" />
     <Content Include="Proj\EditProjectClass.aspx" />
     <Content Include="Proj\TestModal.aspx" />
+    <Content Include="Proj\ViewDoc.aspx" />
     <Content Include="Rqsts\EditApproval.aspx" />
     <Content Include="Rqsts\EditDeposit.aspx" />
     <Content Include="Rqsts\EditExpense.aspx" />
@@ -252,9 +254,6 @@
     <Content Include="App_Readme\WhatsNew.txt" />
     <None Include="Properties\PublishProfiles\cultureworksfoundry.org - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\Production - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\proto1 - Web Deploy.pubxml">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Properties\PublishProfiles\stage - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Proj\ProjectDashboard.aspx" />
@@ -591,6 +590,13 @@
     <Compile Include="Lists\ListPortalUsers.aspx.designer.cs">
       <DependentUpon>ListPortalUsers.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Lists\ListProjectMetadata.aspx.cs">
+      <DependentUpon>ListProjectMetadata.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Lists\ListProjectMetadata.aspx.designer.cs">
+      <DependentUpon>ListProjectMetadata.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Lists\ListProjects.aspx.cs">
       <DependentUpon>ListProjects.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -623,6 +629,13 @@
     </Compile>
     <Compile Include="Proj\TestModal.aspx.designer.cs">
       <DependentUpon>TestModal.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Proj\ViewDoc.aspx.cs">
+      <DependentUpon>ViewDoc.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Proj\ViewDoc.aspx.designer.cs">
+      <DependentUpon>ViewDoc.aspx</DependentUpon>
     </Compile>
     <Compile Include="Rqsts\EditApproval.aspx.cs">
       <DependentUpon>EditApproval.aspx</DependentUpon>
