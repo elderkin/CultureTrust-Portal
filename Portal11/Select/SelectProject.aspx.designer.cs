@@ -85,13 +85,13 @@ namespace Portal11.Staff {
         protected global::System.Web.UI.WebControls.Panel pnlAllProject;
         
         /// <summary>
-        /// AllProjectView control.
+        /// gvAllProject control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView AllProjectView;
+        protected global::System.Web.UI.WebControls.GridView gvAllProject;
         
         /// <summary>
         /// pnlUserProject control.
@@ -103,13 +103,13 @@ namespace Portal11.Staff {
         protected global::System.Web.UI.WebControls.Panel pnlUserProject;
         
         /// <summary>
-        /// UserProjectView control.
+        /// gvUserProject control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView UserProjectView;
+        protected global::System.Web.UI.WebControls.GridView gvUserProject;
         
         /// <summary>
         /// btnCancel control.

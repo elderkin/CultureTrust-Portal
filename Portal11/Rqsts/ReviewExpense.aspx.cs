@@ -22,14 +22,16 @@ namespace Portal11.Rqsts
         {
             if (!Page.IsPostBack)
             {
-                QSValue expID = QueryStringActions.GetRequestID();      // Fetch the Expense ID
-                string cmd = Request.QueryString[PortalConstants.QSCommand]; // Fetch the command
-                string ret = Request.QueryString[PortalConstants.QSReturn]; // Fetch the return page
-                if (expID.Int == 0 || cmd != PortalConstants.QSCommandReview || ret == "") // If null or blank, this form invoked incorrectly
-                    LogError.LogQueryStringError("ReviewExpense", "Invalid Query String 'Command' or 'ExpID'"); // Log fatal error
 
-                HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Fetch user info cookie for current user
-                litSavedUserRole.Text = userInfoCookie[PortalConstants.CUserRole]; //Fetch user role, save for later
+                // Fetch information about current user. Do first to catch missing user login.
+
+                string userID, userRole;
+                QueryStringActions.GetUserIDandRole(out userID, out userRole); //Fetch user ID and role
+                litSavedUserID.Text = userID; litSavedUserRole.Text = userRole; // Save for later
+
+                QSValue expID = QueryStringActions.GetRequestID();      // Fetch the Expense ID
+                string cmd = QueryStringActions.GetCommand();           // Fetch the command
+                string ret = QueryStringActions.GetReturn();            // Fetch the return page
 
                 // Fetch the Exp row and fill the page
 
@@ -174,7 +176,6 @@ namespace Portal11.Rqsts
 
         private void SaveExp(ExpState nextState, string verb, out int projectID, out string projectName)
         {
-            HttpCookie userInfoCookie = Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 try
@@ -186,8 +187,7 @@ namespace Portal11.Rqsts
                     hist.ReturnNote = txtReturnNote.Text;                       // Preserve this note in the History trail
                     toUpdate.StaffNote = txtStaffNote.Text;                     // Fetch updated content of this note, if any
                     StateActions.CopyPreviousState(toUpdate, hist, verb);       // Create a Request History log row from "old" version of Request
-                    StateActions.SetNewExpState(toUpdate, nextState, userInfoCookie[PortalConstants.CUserID], hist);
-                                                                                // Write down our current State and authorship
+                    StateActions.SetNewExpState(toUpdate, nextState, litSavedUserID.Text, hist); // Write down our current State and authorship
                     context.ExpHistorys.Add(hist);                              // Save new ExpHistory row
                     context.SaveChanges();                                      // Commit the Add and Modify
                     projectID = (int)toUpdate.ProjectID;                        // Report Project ID to caller

@@ -35,9 +35,10 @@ namespace Portal11.Models
         public const int GridViewRowsMaximum = 100;                     // Can't go bigger than this
         public int LoginCount { get; set; }                             // Number of successful logins
         public DateTime LastLogin { get; set; }                         // Time of last successful login
-        public bool NoEmailOnApprove { get; set; }                      // Don't Send Project Director email when request is approved
-        public bool NoEmailOnReturn { get; set; }                       // Don't Send Project Director email when request is returned
-        public bool NoEmailOnRefer { get; set; }                        // Don't Send Project Director email when request is referred for approval
+        public bool NoEmailOnApprove { get; set; }                      // Don't Send Project Director email when request is approved (not implemented)
+        public bool NoEmailOnReturn { get; set; }                       // Don't Send Project Director email when request is returned (not implemented)
+        public bool NoEmailOnRefer { get; set; }                        // Don't send user email when request is referred for approval
+        public bool NoEmailOnRushSubmit { get; set; }                   // Don't send user email when rush request is submitted
 
         // End of new fields
         //// Define names of user roles

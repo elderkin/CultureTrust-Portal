@@ -30,8 +30,8 @@ namespace Portal11.Admin
                 litSavedProjectID.Text = projectID.String;                  // Save it in an easier spot to find
                 litProjectName.Text = QueryStringActions.GetProjectName();  // Display Project Name from Query String or ProjectInfoCookie
 
-                LoadProjectEntityView(projectID.String);                    // Fill the left grid
-                LoadAllEntityView(projectID.String);                        // Fill the right grid
+                LoadgvProjectEntity(projectID.String);                    // Fill the left grid
+                LoadgvAllEntity(projectID.String);                        // Fill the right grid
             }
         }
 
@@ -39,77 +39,77 @@ namespace Portal11.Admin
 
         protected void btnAllEntitySearch_Click(object sender, EventArgs e)
         {
-            LoadAllEntityView(litSavedProjectID.Text);                      // Fill list, reacting to user-supplied search string
+            LoadgvAllEntity(litSavedProjectID.Text);                      // Fill list, reacting to user-supplied search string
         }
 
         protected void rdoEntityRole_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LoadProjectEntityView(litSavedProjectID.Text);                  // Fill list, reacting to role button click
-            LoadAllEntityView(litSavedProjectID.Text);                      // Fill the right grid
+            LoadgvProjectEntity(litSavedProjectID.Text);                  // Fill list, reacting to role button click
+            LoadgvAllEntity(litSavedProjectID.Text);                      // Fill the right grid
         }
 
         protected void btnProjectEntitySearch_Click(object sender, EventArgs e)
         {
-            LoadProjectEntityView(litSavedProjectID.Text);                  // Fill list, reacting to user-supplied search string
+            LoadgvProjectEntity(litSavedProjectID.Text);                  // Fill list, reacting to user-supplied search string
         }
 
         // Deal with pagination of the Grid View controls
 
-        protected void AllEntityView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvAllEntity_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                AllEntityView.PageIndex = e.NewPageIndex;                 // Propagate the desired page index
-                LoadAllEntityView(litSavedProjectID.Text);                // Reload the grid view control
-                AllEntityView.SelectedIndex = -1;                         // No row currently selected
+                gvAllEntity.PageIndex = e.NewPageIndex;                 // Propagate the desired page index
+                LoadgvAllEntity(litSavedProjectID.Text);                // Reload the grid view control
+                gvAllEntity.SelectedIndex = -1;                         // No row currently selected
             }
         }
 
-        protected void ProjectEntityView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvProjectEntity_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                ProjectEntityView.PageIndex = e.NewPageIndex;             // Propagate the desired page index
-                LoadProjectEntityView(litSavedProjectID.Text);            // Reload the grid view control
-                ProjectEntityView.SelectedIndex = -1;                     // No row currently selected
+                gvProjectEntity.PageIndex = e.NewPageIndex;             // Propagate the desired page index
+                LoadgvProjectEntity(litSavedProjectID.Text);            // Reload the grid view control
+                gvProjectEntity.SelectedIndex = -1;                     // No row currently selected
             }
         }
 
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
 
-        protected void AllEntityView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvAllEntity_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this Entity";            // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AllEntityView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvAllEntity, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
             }
         }
 
-        protected void ProjectEntityView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvProjectEntity_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this Entity";            // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.ProjectEntityView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvProjectEntity, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
             }
         }
 
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected.
 
-        protected void AllEntityView_SelectedIndexChanged(object sender, EventArgs e)
+        protected void gvAllEntity_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnAdd.Enabled = true;                                          // We can move from All Entitys to Project Entitys
         }
 
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected.
 
-        protected void ProjectEntityView_SelectedIndexChanged(object sender, EventArgs e)
+        protected void gvProjectEntity_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnRemove.Enabled = true;                                      // We can move from Project Entitys to All Entitys
         }
@@ -119,7 +119,7 @@ namespace Portal11.Admin
 
         protected void btnAdd_Click(object sender, EventArgs e)
         {
-            Label label = (Label)AllEntityView.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains EntityID
+            Label label = (Label)gvAllEntity.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains EntityID
             if (label.Text == "")                                           // If == there is no ID value. That's an error.
                 LogError.LogQueryStringError("AssignEntity", "EntityID not found in selected GridView row"); // Log fatal error
 
@@ -138,10 +138,10 @@ namespace Portal11.Admin
                     };
                     context.ProjectEntitys.Add(pe);                         // Add this new row
                     context.SaveChanges();
-                    LoadAllEntityView(litSavedProjectID.Text);              // Refresh the lists
-                    LoadProjectEntityView(litSavedProjectID.Text);
+                    LoadgvAllEntity(litSavedProjectID.Text);              // Refresh the lists
+                    LoadgvProjectEntity(litSavedProjectID.Text);
 
-                    AllEntityView.SelectedIndex = -1;                       // Unselect all rows
+                    gvAllEntity.SelectedIndex = -1;                       // Unselect all rows
                     btnAdd.Enabled = false; btnRemove.Enabled = false;      // Nothing selected anymore so buttons are turned off
                     litSuccessMessage.Text = "Successfully added '" + EnumActions.GetEnumDescription(selectedRole) + "' to Project";
                     litDangerMessage.Text = null;                           // Report success to user
@@ -158,7 +158,7 @@ namespace Portal11.Admin
 
         protected void btnRemove_Click(object sender, EventArgs e)
         {
-            Label label = (Label)ProjectEntityView.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains ProjectEntityID
+            Label label = (Label)gvProjectEntity.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains ProjectEntityID
             if (label.Text == "")                                           // If == there is no ID value. That's an error.
                 LogError.LogQueryStringError("AssignEntity", "ProjectEntityID not found in selected GridView row"); // Log fatal error
 
@@ -173,10 +173,10 @@ namespace Portal11.Admin
                     context.ProjectEntitys.Attach(pe);                      // Don't query it, but just connect to the relevant row
                     context.ProjectEntitys.Remove(pe);                      // Delete that row
                     context.SaveChanges();
-                    LoadAllEntityView(litSavedProjectID.Text);              // Refresh the lists
-                    LoadProjectEntityView(litSavedProjectID.Text);
+                    LoadgvAllEntity(litSavedProjectID.Text);              // Refresh the lists
+                    LoadgvProjectEntity(litSavedProjectID.Text);
 
-                    ProjectEntityView.SelectedIndex = -1;                   // Unselect all rows
+                    gvProjectEntity.SelectedIndex = -1;                   // Unselect all rows
                     btnAdd.Enabled = false; btnRemove.Enabled = false;      // Nothing selected anymore so buttons are turned off
                     litSuccessMessage.Text = "Successfully removed Entity from Project"; litDangerMessage.Text = null; // Report success to user
                 }
@@ -203,10 +203,10 @@ namespace Portal11.Admin
                         (p.EntityRole == selectedRole)));                   // for the selected role
 
                     context.SaveChanges();
-                    LoadAllEntityView(projectIDText);                       // Refresh the lists
-                    LoadProjectEntityView(projectIDText);
+                    LoadgvAllEntity(projectIDText);                       // Refresh the lists
+                    LoadgvProjectEntity(projectIDText);
 
-                    AllEntityView.SelectedIndex = -1; ProjectEntityView.SelectedIndex = -1; // Unselect all rows
+                    gvAllEntity.SelectedIndex = -1; gvProjectEntity.SelectedIndex = -1; // Unselect all rows
                     btnAdd.Enabled = false; btnRemove.Enabled = false;    // Nothing selected anymore so buttons are turned off
                     litSuccessMessage.Text = "Successfuly removed all Entitys from Project"; // Report success to user
                 }
@@ -221,7 +221,7 @@ namespace Portal11.Admin
 
         protected void btnDone_Click(object sender, EventArgs e)
         {
-            if (ProjectEntityView.Rows.Count == 0)                      // If == no Entitys are assigned to this Project
+            if (gvProjectEntity.Rows.Count == 0)                      // If == no Entitys are assigned to this Project
             {
                 litDangerMessage.Text = "The Project must have at least one Entity assigned to it in this role."; // Display the error
                 return;
@@ -231,7 +231,7 @@ namespace Portal11.Admin
 
         // Fetch all the Entitys on this project and load them into a GridView
 
-        void LoadProjectEntityView(string projectIDText)
+        void LoadgvProjectEntity(string projectIDText)
         {
             string selectedValue = rdoEntityRole.SelectedValue;         // Pull value of selected radio button
             if (selectedValue != "")                                    // If != a radio button is selected
@@ -253,10 +253,10 @@ namespace Portal11.Admin
 
                     List<ProjectEntity> pps = context.ProjectEntitys.AsExpandable().Where(pred).OrderBy(p => p.Entity.Name).ToList(); // Query, exclude, sort and make list
 
-                    ProjectEntityView.DataSource = pps;                     // Give it to the GridView cnorol
-                    ProjectEntityView.DataBind();                           // And display it
+                    gvProjectEntity.DataSource = pps;                     // Give it to the GridView cnorol
+                    gvProjectEntity.DataBind();                           // And display it
 
-                    NavigationActions.EnableGridViewNavButtons(ProjectEntityView); // Enable appropriate nav buttons based on page count
+                    NavigationActions.EnableGridViewNavButtons(gvProjectEntity); // Enable appropriate nav buttons based on page count
 
                     btnRemoveAll.Enabled = true;                            // Assume that there are rows here which could be removed
                     if (pps.Count() == 0)                                   // If == there are no rows displayed here
@@ -268,7 +268,7 @@ namespace Portal11.Admin
         // Fetch all the Entitys and load them into a GridView. In the process, filter out all of the Entitys that are already
         // associated with this project in the currently selected category.
 
-        void LoadAllEntityView(string projectIDText)
+        void LoadgvAllEntity(string projectIDText)
         {
             string selectedValue = rdoEntityRole.SelectedValue;         // Pull value of selected radio button
             EntityRole selectedRole = EntityRole.DepositEntity;                // An arbitrary default falue. There should always be a button chosen
@@ -298,10 +298,10 @@ namespace Portal11.Admin
 
                 List<Entity> ps = context.Entitys.AsExpandable().Where(pred).Except(queryPE).OrderBy(p => p.Name).ToList(); // Query, exclude,sort and make list
 
-                AllEntityView.DataSource = ps;                          // Give it to the GridView cnorol
-                AllEntityView.DataBind();                               // And display it
+                gvAllEntity.DataSource = ps;                          // Give it to the GridView cnorol
+                gvAllEntity.DataBind();                               // And display it
 
-                NavigationActions.EnableGridViewNavButtons(AllEntityView); // Enable appropriate nav buttons based on page count
+                NavigationActions.EnableGridViewNavButtons(gvAllEntity); // Enable appropriate nav buttons based on page count
             }
         }
     }

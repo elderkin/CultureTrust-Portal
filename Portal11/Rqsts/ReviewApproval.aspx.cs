@@ -20,14 +20,16 @@ namespace Portal11.Rqsts
         {
             if (!Page.IsPostBack)
             {
-                QSValue appID = QueryStringActions.GetRequestID();      // Fetch the Request ID
-                string cmd = Request.QueryString[PortalConstants.QSCommand]; // Fetch the command
-                string ret = Request.QueryString[PortalConstants.QSReturn]; // Fetch the return page
-                if (appID.Int == 0 || cmd != PortalConstants.QSCommandReview || ret == "") // If null or blank, this form invoked incorrectly
-                    LogError.LogQueryStringError("ReviewApproval", "Invalid Query String 'Command' or 'RequestID'"); // Log fatal error
 
-                HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Fetch user info cookie for current user
-                litSavedUserRole.Text = userInfoCookie[PortalConstants.CUserRole]; //Fetch user role, save for later
+                // Fetch information about current user. Do first to catch missing user login.
+
+                string userID, userRole;
+                QueryStringActions.GetUserIDandRole(out userID, out userRole); //Fetch user ID and role
+                litSavedUserID.Text = userID; litSavedUserRole.Text = userRole; // Save for later
+
+                QSValue appID = QueryStringActions.GetRequestID();      // Fetch the Request ID
+                string cmd = QueryStringActions.GetCommand();           // Fetch the command
+                string ret = QueryStringActions.GetReturn();            // Fetch the return page
 
                 // Fetch the App row and fill the page
 
@@ -67,7 +69,8 @@ namespace Portal11.Rqsts
 
         protected void lstSupporting_SelectedIndexChanged(object sender, EventArgs e)
         {
-            btnView.Enabled = true;
+            btnViewLink.Enabled = true; btnViewLink.Visible = true;
+            btnViewLink.NavigateUrl = SupportingActions.ViewDocUrl((ListBox)sender); // Formulate URL to launch viewer page
             return;
         }
 
@@ -85,11 +88,11 @@ namespace Portal11.Rqsts
         // View a Supporting Document We replicate the logic from the EditApproval page and download the selected Supporting Document file.
         // This case is simpler than EditApproval because all the Docs are "permanent," described in SupportingDoc rows.
 
-        protected void btnView_Click(object sender, EventArgs e)
-        {
-            SupportingActions.ViewDoc(lstSupporting, litDangerMessage); // Do the heavy lifting
-            return;
-        }
+        //protected void btnView_Click(object sender, EventArgs e)
+        //{
+        //    SupportingActions.ViewDoc(lstSupporting, litDangerMessage); // Do the heavy lifting
+        //    return;
+        //}
 
         // User clicked Cancel. This is easy: Just head back to the StaffDashboard.
 
@@ -169,7 +172,6 @@ namespace Portal11.Rqsts
 
         private void SaveApp(AppState nextState, string verb, out int projectID, out string projectName)
         {
-            HttpCookie userInfoCookie = Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 try
@@ -182,7 +184,7 @@ namespace Portal11.Rqsts
                     hist.ReturnNote = txtReturnNote.Text;                       // Preserve this note in the History trail
                     toUpdate.StaffNote = txtStaffNote.Text;                     // Fetch updated content of this note, if any
                     StateActions.CopyPreviousState(toUpdate, hist, verb);       // Create a Request History log row from "old" version of Request
-                    StateActions.SetNewAppState(toUpdate, nextState, userInfoCookie[PortalConstants.CUserID], hist); // Write down our current State and authorship
+                    StateActions.SetNewAppState(toUpdate, nextState, litSavedUserID.Text, hist); // Write down our current State and authorship
                     context.AppHistorys.Add(hist);                              // Save new AppHistory row
                     context.SaveChanges();                                      // Commit the Add and Modify
                     projectID = (int)toUpdate.ProjectID;                        // Report project ID to caller

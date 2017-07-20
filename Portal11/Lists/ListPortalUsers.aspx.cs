@@ -24,7 +24,7 @@ namespace Portal11.Lists
 
                 NavigationActions.ProcessSeverityStatus(litSuccessMessage, litDangerMessage);
                 gvPortalUsers.PageSize = CookieActions.FindGridViewRows(); // Set number of rows per page in grid
-                LoadUserView();                                         // Fill the grid
+                LoadgvPortalUser();                                         // Fill the grid
             }
         }
 
@@ -45,7 +45,7 @@ namespace Portal11.Lists
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
                 gvPortalUsers.PageIndex = e.NewPageIndex;          // Propagate the desired page index
-                LoadUserView();                                         // Fill the grid
+                LoadgvPortalUser();                                         // Fill the grid
                 gvPortalUsers.SelectedIndex = -1;                  // No row currently selected
             }
 
@@ -53,17 +53,17 @@ namespace Portal11.Lists
 
         protected void chkInactive_CheckedChanged(object sender, EventArgs e)
         {
-            LoadUserView();                                             // Refresh the grid
+            LoadgvPortalUser();                                             // Refresh the grid
         }
 
         protected void btnUserSearch_Click(object sender, EventArgs e)
         {
-            LoadUserView();                                             // Refresh the grid
+            LoadgvPortalUser();                                             // Refresh the grid
         }
 
         // Fetch all the Portal Users and load them into a GridView
 
-        void LoadUserView()
+        void LoadgvPortalUser()
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {

@@ -29,8 +29,7 @@
             <section id="loginForm">
                 <div class="form-horizontal">
                     <h3>Please Login</h3>
-                           
-                    <br /> &nbsp;
+
                     <p class="text-success">
                         <asp:Literal runat="server" ID="litSuccessMessage" />
                     </p>
@@ -39,11 +38,11 @@
                     </p>
                     <div class="form-group">
                         <div class="row">
-                            <asp:Label runat="server" AssociatedControlID="Email" CssClass="col-md-offset-0 col-md-2 col-xs-offset-1 control-label">Email</asp:Label>
+                            <asp:Label runat="server" AssociatedControlID="Email" CssClass="col-md-offset-0 col-md-3 col-xs-offset-1 control-label">Email</asp:Label>
                             <div class="col-md-offset-0 col-md-7 col-xs-offset-1 col-xs-11 ">
                                 <asp:TextBox runat="server" ID="Email" CssClass="form-control" TextMode="Email" />
                             </div>
-                            <div class="col-md-offset-2 col-xs-offset-1 col-xs-11 ">
+                            <div class="col-md-offset-3 col-xs-offset-1 col-xs-11 ">
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="Email"
                                     CssClass="text-danger" ErrorMessage="The email field is required." />
                             </div>
@@ -52,7 +51,7 @@
 
                     <div class="form-group">
                         <div class="row">
-                            <asp:Label runat="server" AssociatedControlID="Password" CssClass="col-md-offset-0 col-md-2 col-xs-offset-1 control-label">Password</asp:Label>
+                            <asp:Label runat="server" AssociatedControlID="Password" CssClass="col-md-offset-0 col-md-3 col-xs-offset-1 control-label">Password</asp:Label>
                             <div class="col-md-offset-0 col-md-7 col-xs-offset-1 col-xs-11">
                                 <asp:TextBox runat="server" ID="Password" TextMode="Password" CssClass="form-control" />
                             </div>
@@ -66,7 +65,7 @@
 
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-md-offset-2 col-xs-offset-1 col-xs-2">
+                            <div class="col-md-offset-3 col-xs-offset-1 col-xs-2">
                                 <asp:Button runat="server" OnClick="LogIn" Text="Log in" CssClass="btn btn-primary" />
                             </div>
                              <div class="col-xs-offset-1 col-xs-3">
@@ -78,8 +77,8 @@
                     <asp:Panel runat="server" ID="pnlRememberMe" Visible="false">
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-md-offset-2 col-xs-offset-1 col-xs-7">
-                                <div class="checkbox">
+                            <div class="col-md-offset-4 col-xs-offset-1 col-xs-4">
+                                <div class="checkbox col-xs-2">
                                     <asp:CheckBox runat="server" ID="RememberMe" />
                                     <asp:Label runat="server" AssociatedControlID="RememberMe">Remember me?</asp:Label>
                                 </div>
@@ -91,8 +90,8 @@
                    <asp:Panel runat="server" ID="pnlRememberEmail" Visible="true">
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-md-offset-2 col-xs-offset-1 col-xs-7">
-                                <div class="checkbox">
+                            <div class="col-md-offset-3 col-xs-offset-1 col-xs-8">
+                                <div class="checkbox col-xs-12">
                                     <asp:CheckBox runat="server" ID="ckRememberEmail" />
                                     <asp:Label runat="server" AssociatedControlID="ckRememberEmail">Remember email?</asp:Label>
                                 </div>
@@ -104,13 +103,13 @@
                     <asp:Panel runat="server" ID="pnlVersion" Visible="false">
                     <div class="form-group">
                         <div class="row">
-                            <asp:Label runat="server" AssociatedControlID="txtVersion" CssClass="col-md-offset-0 col-md-2 col-xs-offset-1 control-label">Version</asp:Label>
+                            <asp:Label runat="server" AssociatedControlID="txtVersion" CssClass="col-md-offset-0 col-md-3 col-xs-offset-1 control-label">Version</asp:Label>
                             <div class="col-md-offset-0 col-md-6 col-xs-offset-1 col-xs-11">
                                 <asp:TextBox runat="server" ID="txtVersion" ReadOnly="true" CssClass="form-control" />
                             </div>
                         </div>
                         <div class="row">
-                            <asp:Label runat="server" AssociatedControlID="txtBuild" CssClass="col-md-offset-0 col-md-2 col-xs-offset-1 control-label">Build</asp:Label>
+                            <asp:Label runat="server" AssociatedControlID="txtBuild" CssClass="col-md-offset-0 col-md-3 col-xs-offset-1 control-label">Build</asp:Label>
                             <div class="col-md-offset-0 col-md-6 col-xs-offset-1 col-xs-11">
                                 <asp:TextBox runat="server" ID="txtBuild" ReadOnly="true" CssClass="form-control" />
                             </div>

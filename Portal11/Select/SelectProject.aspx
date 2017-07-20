@@ -52,14 +52,14 @@
             <div class="col-md-10 col-xs-12">
 
                 <!-- Code assumes that ProjectID is the first column of this grid -->
-                <asp:GridView ID="AllProjectView" runat="server"
+                <asp:GridView ID="gvAllProject" runat="server"
                     CssClass="table table-striped table-hover"
-                    ItemType="Portal11.Models.SelectProjectAllViewRow"
+                    ItemType="Portal11.Models.rowSelectProjectAllView"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="10"
-                    OnRowDataBound="AllProjectView_RowDataBound"
+                    OnRowDataBound="gvAllProject_RowDataBound"
                     OnSelectedIndexChanged="ProjectView_SelectedIndexChanged"
-                    OnPageIndexChanging="AllProjectView_PageIndexChanging">
+                    OnPageIndexChanging="gvAllProject_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 
@@ -129,14 +129,14 @@
             <div class="col-md-7 col-xs-12">
 
                 <!-- Code assumes that ProjectID is the first column of this grid -->
-                <asp:GridView ID="UserProjectView" runat="server"
+                <asp:GridView ID="gvUserProject" runat="server"
                     CssClass="table table-striped table-hover"
-                    ItemType="Portal11.Models.SelectProjectUserViewRow"
+                    ItemType="Portal11.Models.rowSelectProjectUserView"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="10"
-                    OnRowDataBound="UserProjectView_RowDataBound"
+                    OnRowDataBound="gvUserProject_RowDataBound"
                     OnSelectedIndexChanged="ProjectView_SelectedIndexChanged"
-                    OnPageIndexChanging="UserProjectView_PageIndexChanging">
+                    OnPageIndexChanging="gvUserProject_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 

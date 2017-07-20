@@ -85,13 +85,13 @@ namespace Portal11.Select {
         protected global::System.Web.UI.WebControls.Panel pnlAllEntity;
         
         /// <summary>
-        /// AllEntityView control.
+        /// gvAllEntity control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView AllEntityView;
+        protected global::System.Web.UI.WebControls.GridView gvAllEntity;
         
         /// <summary>
         /// btnCancel control.

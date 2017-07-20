@@ -25,6 +25,10 @@ namespace Portal11.Rqsts
             if (!Page.IsPostBack)
             {
 
+                // Find the User's role on the Project. In the process, make sure user is logged in.
+
+                string projRole = QueryStringActions.GetProjectRole();  // Fetch user's Project Role from cookie
+
                 // Fetch and validate the four Query String parameters. Carefully convert the integer parameters to integers.
 
                 string userID = QueryStringActions.GetUserID();         // First parameter - User ID. If absent, check UserInfoCookie
@@ -32,20 +36,13 @@ namespace Portal11.Rqsts
                 QSValue depID = QueryStringActions.GetRequestID();      // Third parameter - Deposit ID. If absent, must be a New command
                 string cmd = QueryStringActions.GetCommand();           // Fourth parameter - Command. Must be present
 
-                // Find the User's role on the Project
-
-                HttpCookie projectInfoCookie = Request.Cookies[PortalConstants.CProjectInfo]; // Find the Project Info cookie
-                string projRole = projectInfoCookie[PortalConstants.CProjectRole]; // Fetch user's Project Role from cookie
-                if (projRole == "")                                     // If == that's blank. We have an error
-                    LogError.LogQueryStringError("EditDeposit", "Unable to find Project Role in Project Info Cookie. User does not have a project"); // Fatal error
-
                 // Stash these parameters into invisible literals on the current page.
 
-                litSavedUserID.Text = userID;
-                litSavedProjectID.Text = projectID.String;
-                litSavedDepID.Text = "";                                // Assume New or Copy - do not modify an existing row, but add a new one
                 litSavedCommand.Text = cmd;
+                litSavedDepID.Text = "";                                // Assume New or Copy - do not modify an existing row, but add a new one
+                litSavedProjectID.Text = projectID.String;
                 litSavedProjectRole.Text = projRole;                    // Save in a faster spot for later
+                litSavedUserID.Text = userID;
 
                 SupportingActions.CleanupTemp(userID, litDangerMessage); // Cleanup supporting docs from previous executions for this user
 
@@ -390,7 +387,8 @@ namespace Portal11.Rqsts
 
         protected void lstSupporting_SelectedIndexChanged(object sender, EventArgs e)
         {
-            btnView.Enabled = true;
+            btnViewLink.Enabled = true; btnViewLink.Visible = true;
+            btnViewLink.NavigateUrl = SupportingActions.ViewDocUrl((ListBox)sender); // Formulate URL to launch viewer page
             if (litSavedCommand.Text == PortalConstants.QSCommandView) // If == it is a View command
                 Page.Title = "View Deposit Request";                // Reset the page title. Don't know why it changed, but just reset it
             else
@@ -408,11 +406,11 @@ namespace Portal11.Rqsts
 
         // View a selection from the Supporting Listbox. This is a request to download the selected doc.
 
-        protected void btnView_Click(object sender, EventArgs e)
-        {
-            SupportingActions.ViewDoc(lstSupporting, litDangerMessage);
-            return;
-        }
+        //protected void btnView_Click(object sender, EventArgs e)
+        //{
+        //    SupportingActions.ViewDoc(lstSupporting, litDangerMessage);
+        //    return;
+        //}
         protected void gvEDHistory_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle

@@ -36,26 +36,26 @@ namespace Portal11.Admin
                     LogError.LogQueryStringError("SelectUser", "Missing Query String 'Command'"); // Log fatal error
 
                 litSavedCommand.Text = cmd;                             // Remember the command that invoked this page
-                UserView.PageSize = CookieActions.FindGridViewRows();   // Find number of rows per page from cookie
-                LoadUserView();                                         // Fill the grid
+                gvPortalUser.PageSize = CookieActions.FindGridViewRows();   // Find number of rows per page from cookie
+                LoadgvPortalUser();                                         // Fill the grid
             }
         }
 
         protected void btnUserSearch_Click(object sender, EventArgs e)
         {
-            LoadUserView();                                              // Refresh the grid using updated search criteria
+            LoadgvPortalUser();                                              // Refresh the grid using updated search criteria
         }
 
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
 
-        protected void UserView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvPortalUser_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)            // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this User";            // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.UserView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvPortalUser, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
 
                 Label inactiveLabel = (Label)e.Row.FindControl("lblInactive");
@@ -66,20 +66,20 @@ namespace Portal11.Admin
 
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected.
 
-        protected void UserView_SelectedIndexChanged(object sender, EventArgs e)
+        protected void gvPortalUser_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnSelectx.Enabled = true;                                  // With a row selected, we can act on a Select button click
         }
 
         // Deal with pagination of the Grid View controls
 
-        protected void UserView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvPortalUser_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
-                UserView.PageIndex = e.NewPageIndex;                    // Propagate the desired page index
-                LoadUserView();                                         // Fill the grid
-                UserView.SelectedIndex = -1;                            // No row currently selected
+                gvPortalUser.PageIndex = e.NewPageIndex;                    // Propagate the desired page index
+                LoadgvPortalUser();                                         // Fill the grid
+                gvPortalUser.SelectedIndex = -1;                            // No row currently selected
             }
         }
 
@@ -94,12 +94,12 @@ namespace Portal11.Admin
 
         protected void btnSelect_Click(object sender, EventArgs e)
         {
-            Label label = (Label)UserView.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains User ID
+            Label label = (Label)gvPortalUser.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains User ID
             string userID = label.Text;                                 // Extract the text of the control, which is User ID
             if (userID == "")
                 LogError.LogInternalError("SelectUser", "UserID not found in selected GridView row"); // Log fatal error
 
-            label = (Label)UserView.SelectedRow.Cells[1].FindControl("lblFullName"); // Find the label control that contains User Name
+            label = (Label)gvPortalUser.SelectedRow.Cells[1].FindControl("lblFullName"); // Find the label control that contains User Name
             string fullName = label.Text;                               // Pull the full name of the user out as well
 
             switch (litSavedCommand.Text)                               // Break out by the command that our caller wants us to execute
@@ -139,12 +139,12 @@ namespace Portal11.Admin
 
         protected void chkInactive_CheckedChanged(object sender, EventArgs e)
         {
-            LoadUserView();                                             // Reload the list based on the new un/checked value
+            LoadgvPortalUser();                                             // Reload the list based on the new un/checked value
         }
 
         // Fetch all the Users and load them into a GridView
 
-        void LoadUserView()
+        void LoadgvPortalUser()
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -164,14 +164,14 @@ namespace Portal11.Admin
                     pred = pred.And(p => p.UserRole == UserRole.Project); // Select only Project users
 
                 List<ApplicationUser> users = context.Users.AsExpandable().Where(pred).OrderBy(p => p.FullName).ToList(); // Query, sort and make list
-                UserView.DataSource = users;                            // Give it to the GridView control
-                UserView.DataBind();                                    // And display it
+                gvPortalUser.DataSource = users;                            // Give it to the GridView control
+                gvPortalUser.DataBind();                                    // And display it
 
                 // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
 
-                UserView.Columns[ApplicationUser.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
+                gvPortalUser.Columns[ApplicationUser.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
 
-                NavigationActions.EnableGridViewNavButtons(UserView);   // Enable appropriate nav buttons based on page count
+                NavigationActions.EnableGridViewNavButtons(gvPortalUser);   // Enable appropriate nav buttons based on page count
             }
         }
     }

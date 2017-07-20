@@ -55,14 +55,14 @@
             <div class="col-md-7 col-xs-12">
 
                 <!-- Code assumes that GLCodeID is the first column of this grid -->
-                <asp:GridView ID="GLCodeView" runat="server"
+                <asp:GridView ID="gvGLCode" runat="server"
                     CssClass="table table-striped table-hover"
                     ItemType="Portal11.Models.GLCode"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="10"
-                    OnRowDataBound="GLCodeView_RowDataBound"
-                    OnSelectedIndexChanged="GLCodeView_SelectedIndexChanged"
-                    OnPageIndexChanging="GLCodeView_PageIndexChanging">
+                    OnRowDataBound="gvGLCode_RowDataBound"
+                    OnSelectedIndexChanged="gvGLCode_SelectedIndexChanged"
+                    OnPageIndexChanging="gvGLCode_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 

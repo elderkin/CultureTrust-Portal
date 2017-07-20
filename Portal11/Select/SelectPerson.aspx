@@ -48,14 +48,14 @@
             <div class="col-md-7 col-xs-12">
 
                 <!-- Code assumes that PersonID is the first column of this grid -->
-                <asp:GridView ID="PersonView" runat="server"
+                <asp:GridView ID="gvPerson" runat="server"
                     CssClass="table table-striped table-hover"
                     ItemType="Portal11.Models.Person"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="10"
-                    OnRowDataBound="PersonView_RowDataBound"
-                    OnSelectedIndexChanged="PersonView_SelectedIndexChanged"
-                    OnPageIndexChanging="PersonView_PageIndexChanging">
+                    OnRowDataBound="gvPerson_RowDataBound"
+                    OnSelectedIndexChanged="gvPerson_SelectedIndexChanged"
+                    OnPageIndexChanging="gvPerson_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 

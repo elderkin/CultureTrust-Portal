@@ -38,18 +38,13 @@ namespace Portal11.Staff
 
                 NavigationActions.ProcessSeverityStatus(litSuccessMessage, litDangerMessage);
 
-                string cmd = Request.QueryString[PortalConstants.QSCommand];  // Look on the query string that invoked this page. Find the command.
-
-                // Fetch and save the Command query string
-
-                if (cmd == "")                                              // No command. We are invoked incorrectly.
-                    LogError.LogQueryStringError("SelectProject", "Missing Query String 'Command'"); // Log fatal error
-
-                litSavedCommand.Text = cmd;                                 // Remember the command that invoked this page
-
-                // Fetch and save the UserID and ProjectSelector from the UserInfoCookie
+                // Fetch and save information from the UserInfoCookie
 
                 HttpCookie userInfoCookie = Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie, if any
+                if (userInfoCookie == null)                                 // If == missing User Info cookie. Need to login
+                    Response.Redirect(PortalConstants.URLLogin + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger + "&" +
+                        PortalConstants.QSStatus + "=Please log in before using Portal"); // Go login
+
                 string userID = userInfoCookie[PortalConstants.CUserID];    // Fetch ID of current user
                 string projectSelector = userInfoCookie[PortalConstants.CUserProjectSelector]; // Fetch project selector of current user
                 string role = userInfoCookie[PortalConstants.CUserRole];    // Fetch role of this user
@@ -58,6 +53,11 @@ namespace Portal11.Staff
                 litSavedUserID.Text = userID;                               // Save for later
                 litSavedProjectSelector.Text = projectSelector;             // Save for later
                 litSavedRole.Text = role;                                   // Save for later
+
+                string cmd = Request.QueryString[PortalConstants.QSCommand];  // Look on the query string that invoked this page. Find the command.
+                if (string.IsNullOrEmpty(cmd))                              // If true no command. We are invoked incorrectly.
+                    LogError.LogQueryStringError("SelectProject", "Missing Query String 'Command'"); // Log fatal error
+                litSavedCommand.Text = cmd;                                 // Remember the command that invoked this page
 
                 // Tweak the page based on whether we working "All" or "User" search
 
@@ -75,8 +75,8 @@ namespace Portal11.Staff
                 if (cmd == PortalConstants.QSCommandEdit)                   // If == we are selecting a Project to edit
                     btnNew.Enabled = true;                                  // Offer the opportunity to create a new Project
 
-                AllProjectView.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
-                UserProjectView.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
+                gvAllProject.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
+                gvUserProject.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
                 LoadProjectView();                                          // Fill the grid
             }
         }
@@ -89,13 +89,13 @@ namespace Portal11.Staff
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
 
-        protected void AllProjectView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvAllProject_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this Project";            // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AllProjectView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvAllProject, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
 
                 //Label rowIDLabel = (Label)e.Row.FindControl("lblRowID");    // Find the ProjectID
@@ -117,13 +117,13 @@ namespace Portal11.Staff
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
 
-        protected void UserProjectView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvUserProject_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this Project";            // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.UserProjectView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvUserProject, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
 
                 Label countLabel = (Label)e.Row.FindControl("lblCount");    // Find the Count
@@ -146,25 +146,25 @@ namespace Portal11.Staff
 
         // Deal with pagination of the Grid View controls
 
-        protected void AllProjectView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvAllProject_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                AllProjectView.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
+                gvAllProject.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
                 LoadProjectView();                                          // Fill the grid
-                AllProjectView.SelectedIndex = -1;                          // No row currently selected
+                gvAllProject.SelectedIndex = -1;                          // No row currently selected
             }
         }
 
         // Deal with pagination of the Grid View controls
 
-        protected void UserProjectView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvUserProject_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                UserProjectView.PageIndex = e.NewPageIndex;                 // Propagate the desired page index
+                gvUserProject.PageIndex = e.NewPageIndex;                 // Propagate the desired page index
                 LoadProjectView();                                          // Fill the grid
-                UserProjectView.SelectedIndex = -1;                         // No row currently selected
+                gvUserProject.SelectedIndex = -1;                         // No row currently selected
             }
         }
 
@@ -190,13 +190,13 @@ namespace Portal11.Staff
             Label name = new Label();
             if (litSavedProjectSelector.Text == PortalConstants.CUserProjectAll) // If == we're working an "All" search
             {
-                projID = (Label)AllProjectView.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains ProjectID
-                name = (Label)AllProjectView.SelectedRow.Cells[1].FindControl("lblName"); // Find the label control that contains Project Name
+                projID = (Label)gvAllProject.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains ProjectID
+                name = (Label)gvAllProject.SelectedRow.Cells[1].FindControl("lblName"); // Find the label control that contains Project Name
             }
             else                                                            // We're working on a "User" search
             {
-                projID = (Label)UserProjectView.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains RqstID
-                name = (Label)UserProjectView.SelectedRow.Cells[1].FindControl("lblName"); // Find the label control that contains Project Name
+                projID = (Label)gvUserProject.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains RqstID
+                name = (Label)gvUserProject.SelectedRow.Cells[1].FindControl("lblName"); // Find the label control that contains Project Name
             }
             string projectID = projID.Text;                                 // Extract the text of the control, which is ProjectID as a string
             if (projectID == "")
@@ -323,10 +323,10 @@ namespace Portal11.Staff
                     // Include that number in the grid.
 
                     UserRole role = EnumActions.ConvertTextToUserRole(litSavedRole.Text); // Get UserRole into numeric form
-                    List<SelectProjectAllViewRow> rows = new List<SelectProjectAllViewRow>(); // Create an empty list for the GridView control
+                    List<rowSelectProjectAllView> rows = new List<rowSelectProjectAllView>(); // Create an empty list for the GridView control
                     foreach (var p in projs)                                // Process the list of projects row-by-row
                     {
-                        SelectProjectAllViewRow row = new SelectProjectAllViewRow();    // Instantiate empty row all ready to fill
+                        rowSelectProjectAllView row = new rowSelectProjectAllView();    // Instantiate empty row all ready to fill
                         row.ProjectID = p.ProjectID.ToString();             // Fill the part of the row that's always there
                         row.Code = p.Code;
                         row.Name = p.Name;
@@ -366,14 +366,14 @@ namespace Portal11.Staff
                         rows.Add(row);                                      // Add the filled-in row to the list of rows
                     }
 
-                    AllProjectView.DataSource = rows;                       // Give it to the GridView control
-                    AllProjectView.DataBind();                              // And display it
+                    gvAllProject.DataSource = rows;                       // Give it to the GridView control
+                    gvAllProject.DataBind();                              // And display it
 
                     // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
 
-                    AllProjectView.Columns[SelectProjectAllViewRow.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
+                    gvAllProject.Columns[rowSelectProjectAllView.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
 
-                    NavigationActions.EnableGridViewNavButtons(AllProjectView); // Enable appropriate nav buttons based on page count
+                    NavigationActions.EnableGridViewNavButtons(gvAllProject); // Enable appropriate nav buttons based on page count
                 }
                 else                                                        // We're working a "User" search
                 {
@@ -391,10 +391,10 @@ namespace Portal11.Staff
 
                     UserRole role = EnumActions.ConvertTextToUserRole(litSavedRole.Text); // Get UserRole into numeric form
 
-                    List<SelectProjectUserViewRow> rows = new List<SelectProjectUserViewRow>(); // Create an empty list for the GridView control
+                    List<rowSelectProjectUserView> rows = new List<rowSelectProjectUserView>(); // Create an empty list for the GridView control
                     foreach (var p in projs)                                // Process the list of projects row-by-row
                     {
-                        SelectProjectUserViewRow row = new SelectProjectUserViewRow(); // Instantiate empty row all ready to fill
+                        rowSelectProjectUserView row = new rowSelectProjectUserView(); // Instantiate empty row all ready to fill
                         row.ProjectID = p.ProjectID.ToString();             // Fill the part of the row that's always there
                         row.Name = p.Project.Name;
                         row.Description = p.Project.Description;
@@ -439,10 +439,10 @@ namespace Portal11.Staff
                         }
                     }
 
-                    UserProjectView.DataSource = rows;                      // Give it to the GridView cnorol
-                    UserProjectView.DataBind();                             // And display it
+                    gvUserProject.DataSource = rows;                      // Give it to the GridView cnorol
+                    gvUserProject.DataBind();                             // And display it
 
-                    NavigationActions.EnableGridViewNavButtons(UserProjectView); // Enable appropriate nav buttons based on page count
+                    NavigationActions.EnableGridViewNavButtons(gvUserProject); // Enable appropriate nav buttons based on page count
 
                 }
             }

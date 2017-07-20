@@ -35,26 +35,26 @@ namespace Portal11.Select
                     LogError.LogQueryStringError("SelectPerson", "Missing Query String 'Command'"); // Log fatal error
 
                 litSavedCommand.Text = cmd;                                 // Remember the command that invoked this page
-                PersonView.PageSize = CookieActions.FindGridViewRows();     // Find number of rows per page from cookie
-                LoadPersonView();                                           // Fill the grid
+                gvPerson.PageSize = CookieActions.FindGridViewRows();     // Find number of rows per page from cookie
+                LoadgvPerson();                                           // Fill the grid
             }
         }
 
         protected void btnPersonSearch_Click(object sender, EventArgs e)
         {
-            LoadPersonView();                                              // Refresh the grid using updated search criteria
+            LoadgvPerson();                                              // Refresh the grid using updated search criteria
         }
 
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
 
-        protected void PersonView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvPerson_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this Person";            // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.PersonView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvPerson, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
 
                 Label inactiveLabel = (Label)e.Row.FindControl("lblInactive");
@@ -65,20 +65,20 @@ namespace Portal11.Select
 
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected.
 
-        protected void PersonView_SelectedIndexChanged(object sender, EventArgs e)
+        protected void gvPerson_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnSelect.Enabled = true;                                           // With a row selected, we can act on a button click
         }
 
         // Deal with pagination of the Grid View controls
 
-        protected void PersonView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvPerson_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                PersonView.PageIndex = e.NewPageIndex;                     // Propagate the desired page index
-                LoadPersonView();                                          // Fill the grid
-                PersonView.SelectedIndex = -1;                             // No row currently selected
+                gvPerson.PageIndex = e.NewPageIndex;                     // Propagate the desired page index
+                LoadgvPerson();                                          // Fill the grid
+                gvPerson.SelectedIndex = -1;                             // No row currently selected
             }
         }
 
@@ -93,7 +93,7 @@ namespace Portal11.Select
 
         protected void btnSelect_Click(object sender, EventArgs e)
         {
-            Label label = (Label)PersonView.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains RqstID
+            Label label = (Label)gvPerson.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains RqstID
             string PersonID = label.Text;                                  // Extract the text of the control, which is RqstID
             if (PersonID == "")
                 LogError.LogQueryStringError("SelectPerson", string.Format(
@@ -113,12 +113,12 @@ namespace Portal11.Select
 
         protected void chkInactive_CheckedChanged(object sender, EventArgs e)
         {
-            LoadPersonView();                                              // Reload the list based on the new un/checked value
+            LoadgvPerson();                                              // Reload the list based on the new un/checked value
         }
 
         // Fetch all the Persons and load them into a GridView
 
-        void LoadPersonView()
+        void LoadgvPerson()
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -135,13 +135,13 @@ namespace Portal11.Select
                 pred = pred.And(p => p.FranchiseKey == franchiseKey);   // Only for this Franchise
 
                 List<Person> persons = context.Persons.AsExpandable().Where(pred).OrderBy(p => p.Name).ToList(); // Query, sort and make list
-                PersonView.DataSource = persons;                        // Give it to the GridView control
-                PersonView.DataBind();                                  // And display it
+                gvPerson.DataSource = persons;                        // Give it to the GridView control
+                gvPerson.DataBind();                                  // And display it
 
                 // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
 
-                PersonView.Columns[Person.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
-                NavigationActions.EnableGridViewNavButtons(PersonView); // Enable appropriate nav buttons based on page count
+                gvPerson.Columns[Person.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
+                NavigationActions.EnableGridViewNavButtons(gvPerson); // Enable appropriate nav buttons based on page count
             }
         }
     }

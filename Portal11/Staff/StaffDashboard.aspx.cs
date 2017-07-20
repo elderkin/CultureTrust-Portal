@@ -29,24 +29,17 @@ namespace Portal11.Rqsts
 
                 NavigationActions.ProcessSeverityStatus(litSuccessMessage, litDangerMessage);
 
-                HttpCookie userInfoCookie = Request.Cookies[PortalConstants.CUserInfo]; // Find the User Info cookie
-                if (userInfoCookie == null)                                 // If == cookie is missing. Invoked incorrectly
-                {
-                    LogError.LogInternalError("StaffDashboard", "UserInfoCookie is null"); // Log fatal error
-                }
-                litSavedUserRole.Text = userInfoCookie[PortalConstants.CUserRole];  // Fetch User Role from cookie and stash
+                litSavedUserRole.Text = QueryStringActions.GetUserRole();   // Fetch User Role from UserInfo cookie and stash
 
                 // Make adjustments for Auditor role
 
                 if (litSavedUserRole.Text == UserRole.Auditor.ToString())   // If == this is an Auditor
-                {
                     pnlNextReviewer.Enabled = false;                        // Next Review is irrelevant, so dim the check boxes
-                }
 
                 RestoreCheckboxes();                                        // Read cookie, restore checkbox settings, fill DDLs
 
                 int rows = CookieActions.FindGridViewRows();                // Find number of rows per page from cookie
-                gvStaffApp.PageSize = rows;                               // Adjust each GridView accordingly
+                gvStaffApp.PageSize = rows;                                 // Adjust each GridView accordingly
                 gvStaffDep.PageSize = rows;
                 gvStaffExp.PageSize = rows;
 
@@ -1195,7 +1188,7 @@ namespace Portal11.Rqsts
                                 if (r.Person.Name != null)
                                     row.Target = r.Person.Name;
                             }
-                            row.Summary = r.Summary;
+//                            row.Summary = r.Summary;
 
                             if (r.Archived)                                     // If true row is Archived
                                 row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed

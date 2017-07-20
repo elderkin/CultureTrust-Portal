@@ -48,14 +48,14 @@
             <div class="col-md-7 col-xs-12">
 
                 <!-- Code assumes that ProjectClassID is the first column of this grid -->
-                <asp:GridView ID="ProjectClassView" runat="server"
+                <asp:GridView ID="gvProjectClass" runat="server"
                     CssClass="table table-striped table-hover"
                     ItemType="Portal11.Models.ProjectClass"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="10"
-                    OnRowDataBound="ProjectClassView_RowDataBound"
-                    OnSelectedIndexChanged="ProjectClassView_SelectedIndexChanged"
-                    OnPageIndexChanging="ProjectClassView_PageIndexChanging">
+                    OnRowDataBound="gvProjectClass_RowDataBound"
+                    OnSelectedIndexChanged="gvProjectClass_SelectedIndexChanged"
+                    OnPageIndexChanging="gvProjectClass_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 

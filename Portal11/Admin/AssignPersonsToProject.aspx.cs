@@ -29,8 +29,8 @@ namespace Portal11.Admin
                 litSavedProjectID.Text = projectID.String;                  // Save it in an easier spot to find
                 litProjectName.Text = QueryStringActions.GetProjectName();  // Display Project Name from Query String or ProjectInfoCookie
                 
-                LoadProjectPersonView(projectID.String);                    // Fill the left grid
-                LoadAllPersonView(projectID.String);                        // Fill the right grid
+                LoadgvProjectPerson(projectID.String);                    // Fill the left grid
+                LoadgvAllPerson(projectID.String);                        // Fill the right grid
             }
         }
 
@@ -38,77 +38,77 @@ namespace Portal11.Admin
 
         protected void btnAllPersonSearch_Click(object sender, EventArgs e)
         {
-            LoadAllPersonView(litSavedProjectID.Text);                      // Fill list, reacting to user-supplied search string
+            LoadgvAllPerson(litSavedProjectID.Text);                      // Fill list, reacting to user-supplied search string
         }
 
         protected void rdoPersonRole_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LoadProjectPersonView(litSavedProjectID.Text);                  // Fill list, reacting to role button click
-            LoadAllPersonView(litSavedProjectID.Text);                      // Fill the right grid
+            LoadgvProjectPerson(litSavedProjectID.Text);                  // Fill list, reacting to role button click
+            LoadgvAllPerson(litSavedProjectID.Text);                      // Fill the right grid
         }
 
         protected void btnProjectPersonSearch_Click(object sender, EventArgs e)
         {
-            LoadProjectPersonView(litSavedProjectID.Text);                  // Fill list, reacting to user-supplied search string
+            LoadgvProjectPerson(litSavedProjectID.Text);                  // Fill list, reacting to user-supplied search string
         }
 
         // Deal with pagination of the Grid View controls
 
-        protected void AllPersonView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvAllPerson_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                AllPersonView.PageIndex = e.NewPageIndex;                 // Propagate the desired page index
-                LoadAllPersonView(litSavedProjectID.Text);                // Reload the grid view control
-                AllPersonView.SelectedIndex = -1;                         // No row currently selected
+                gvAllPerson.PageIndex = e.NewPageIndex;                 // Propagate the desired page index
+                LoadgvAllPerson(litSavedProjectID.Text);                // Reload the grid view control
+                gvAllPerson.SelectedIndex = -1;                         // No row currently selected
             }
         }
 
-        protected void ProjectPersonView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvProjectPerson_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                ProjectPersonView.PageIndex = e.NewPageIndex;             // Propagate the desired page index
-                LoadProjectPersonView(litSavedProjectID.Text);            // Reload the grid view control
-                ProjectPersonView.SelectedIndex = -1;                     // No row currently selected
+                gvProjectPerson.PageIndex = e.NewPageIndex;             // Propagate the desired page index
+                LoadgvProjectPerson(litSavedProjectID.Text);            // Reload the grid view control
+                gvProjectPerson.SelectedIndex = -1;                     // No row currently selected
             }
         }
 
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
 
-        protected void AllPersonView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvAllPerson_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this Person";            // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AllPersonView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvAllPerson, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
             }
         }
 
-        protected void ProjectPersonView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvProjectPerson_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this Person";            // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.ProjectPersonView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvProjectPerson, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
             }
         }
 
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected.
 
-        protected void AllPersonView_SelectedIndexChanged(object sender, EventArgs e)
+        protected void gvAllPerson_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnAdd.Enabled = true;                                          // We can move from All Persons to Project Persons
         }
 
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected.
 
-        protected void ProjectPersonView_SelectedIndexChanged(object sender, EventArgs e)
+        protected void gvProjectPerson_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnRemove.Enabled = true;                                      // We can move from Project Persons to All Persons
         }
@@ -118,7 +118,7 @@ namespace Portal11.Admin
 
         protected void btnAdd_Click(object sender, EventArgs e)
         {
-            Label label = (Label)AllPersonView.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains PersonID
+            Label label = (Label)gvAllPerson.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains PersonID
             if (label.Text == "")                                           // If == there is no ID value. That's an error.
                 LogError.LogQueryStringError("AssignPerson", "PersonID not found in selected GridView row"); // Log fatal error
 
@@ -137,10 +137,10 @@ namespace Portal11.Admin
                     };
                     context.ProjectPersons.Add(pe);                         // Add this new row
                     context.SaveChanges();
-                    LoadAllPersonView(litSavedProjectID.Text);              // Refresh the lists
-                    LoadProjectPersonView(litSavedProjectID.Text);
+                    LoadgvAllPerson(litSavedProjectID.Text);              // Refresh the lists
+                    LoadgvProjectPerson(litSavedProjectID.Text);
 
-                    AllPersonView.SelectedIndex = -1;                       // Unselect all rows
+                    gvAllPerson.SelectedIndex = -1;                       // Unselect all rows
                     btnAdd.Enabled = false; btnRemove.Enabled = false;    // Nothing selected anymore so buttons are turned off
                     litSuccessMessage.Text = "Successfully added '" + EnumActions.GetEnumDescription(selectedRole) + "' to Project";
                     litDangerMessage.Text = null;                           // Report success to user
@@ -157,7 +157,7 @@ namespace Portal11.Admin
 
         protected void btnRemove_Click(object sender, EventArgs e)
         {
-            Label label = (Label)ProjectPersonView.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains ProjectPersonID
+            Label label = (Label)gvProjectPerson.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains ProjectPersonID
             if (label.Text == "")                                           // If == there is no ID value. That's an error.
                 LogError.LogQueryStringError("AssignPerson", "ProjectPersonID not found in selected GridView row"); // Log fatal error
 
@@ -172,10 +172,10 @@ namespace Portal11.Admin
                     context.ProjectPersons.Attach(pe);                      // Don't query it, but just connect to the relevant row
                     context.ProjectPersons.Remove(pe);                      // Delete that row
                     context.SaveChanges();
-                    LoadAllPersonView(litSavedProjectID.Text);              // Refresh the lists
-                    LoadProjectPersonView(litSavedProjectID.Text);
+                    LoadgvAllPerson(litSavedProjectID.Text);              // Refresh the lists
+                    LoadgvProjectPerson(litSavedProjectID.Text);
 
-                    ProjectPersonView.SelectedIndex = -1;                   // Unselect all rows
+                    gvProjectPerson.SelectedIndex = -1;                   // Unselect all rows
                     btnAdd.Enabled = false; btnRemove.Enabled = false;    // Nothing selected anymore so buttons are turned off
                     litSuccessMessage.Text = "Successfully removed Person from Project"; litDangerMessage.Text = null; // Report success to user
                 }
@@ -202,10 +202,10 @@ namespace Portal11.Admin
                                                             (p.PersonRole == selectedRole))); // For the selected role
 
                     context.SaveChanges();
-                    LoadAllPersonView(projectIDText);                       // Refresh the lists
-                    LoadProjectPersonView(projectIDText);
+                    LoadgvAllPerson(projectIDText);                       // Refresh the lists
+                    LoadgvProjectPerson(projectIDText);
 
-                    AllPersonView.SelectedIndex = -1; ProjectPersonView.SelectedIndex = -1; // Unselect all rows
+                    gvAllPerson.SelectedIndex = -1; gvProjectPerson.SelectedIndex = -1; // Unselect all rows
                     btnAdd.Enabled = false; btnRemove.Enabled = false;    // Nothing selected anymore so buttons are turned off
                     litSuccessMessage.Text = "Successfuly removed all Persons from Project"; // Report success to user
                 }
@@ -220,7 +220,7 @@ namespace Portal11.Admin
 
         protected void btnDone_Click(object sender, EventArgs e)
         {
-            if (ProjectPersonView.Rows.Count == 0)                      // If == no Persons are assigned to this Project
+            if (gvProjectPerson.Rows.Count == 0)                      // If == no Persons are assigned to this Project
             {
                 litDangerMessage.Text = "The Project must have at least one Person assigned to it in this role."; // Display the error
                 return;
@@ -230,7 +230,7 @@ namespace Portal11.Admin
 
         // Fetch all the Persons on this project and load them into a GridView
 
-        void LoadProjectPersonView(string projectIDText)
+        void LoadgvProjectPerson(string projectIDText)
         {
             string selectedValue = rdoPersonRole.SelectedValue;         // Pull value of selected radio button
             if (selectedValue != "")                                    // If != a radio button is selected
@@ -253,15 +253,15 @@ namespace Portal11.Admin
                     List<ProjectPerson> pps = context.ProjectPersons.AsExpandable().Where(pred).OrderBy(p => p.Person.Name).ToList(); // Query, exclude, sort and make list
 
                     if (selectedRole == PersonRole.Contractor)              // If == we are being asked for Contractors
-                        ProjectPersonView.Columns[PortalConstants.ProjectPersonViewW9Column].Visible = true; // Display W-9 information
+                        gvProjectPerson.Columns[PortalConstants.gvProjectPersonW9Column].Visible = true; // Display W-9 information
                     else
-                        ProjectPersonView.Columns[PortalConstants.ProjectPersonViewW9Column].Visible = false; // Do not display W-9 information
+                        gvProjectPerson.Columns[PortalConstants.gvProjectPersonW9Column].Visible = false; // Do not display W-9 information
 
-                    ProjectPersonView.DataSource = pps;                     // Give it to the GridView cnorol
-                    ProjectPersonView.DataBind();                           // And display it
+                    gvProjectPerson.DataSource = pps;                     // Give it to the GridView cnorol
+                    gvProjectPerson.DataBind();                           // And display it
 
 
-                    NavigationActions.EnableGridViewNavButtons(ProjectPersonView); // Enable appropriate nav buttons based on page count
+                    NavigationActions.EnableGridViewNavButtons(gvProjectPerson); // Enable appropriate nav buttons based on page count
 
                     btnRemoveAll.Enabled = true;                            // Assume that there are rows here which could be removed
                     if (pps.Count() == 0)                                   // If == there are no rows displayed here
@@ -273,7 +273,7 @@ namespace Portal11.Admin
         // Fetch all the Persons and load them into a GridView. In the process, filter out all of the Persons that are already
         // associated with this project in the currently selected category.
 
-        void LoadAllPersonView(string projectIDText)
+        void LoadgvAllPerson(string projectIDText)
         {
             string selectedValue = rdoPersonRole.SelectedValue;         // Pull value of selected radio button
             PersonRole selectedRole = PersonRole.Contractor;            // An arbitrary default falue. There should always be a button chosen
@@ -304,14 +304,14 @@ namespace Portal11.Admin
                 List<Person> ps = context.Persons.AsExpandable().Where(pred).Except(queryPE).OrderBy(p => p.Name).ToList(); // Query, exclude,sort and make list
 
                 if (selectedRole == PersonRole.Contractor)              // If == we are being asked for Contractors
-                    AllPersonView.Columns[PortalConstants.AllPersonViewW9Column].Visible = true; // Display W-9 information
+                    gvAllPerson.Columns[PortalConstants.gvAllPersonW9Column].Visible = true; // Display W-9 information
                 else
-                    AllPersonView.Columns[PortalConstants.AllPersonViewW9Column].Visible = false; // Do not display W-9 information
+                    gvAllPerson.Columns[PortalConstants.gvAllPersonW9Column].Visible = false; // Do not display W-9 information
 
-                AllPersonView.DataSource = ps;                          // Give it to the GridView cnorol
-                AllPersonView.DataBind();                               // And display it
+                gvAllPerson.DataSource = ps;                          // Give it to the GridView cnorol
+                gvAllPerson.DataBind();                               // And display it
 
-                NavigationActions.EnableGridViewNavButtons(AllPersonView); // Enable appropriate nav buttons based on page count
+                NavigationActions.EnableGridViewNavButtons(gvAllPerson); // Enable appropriate nav buttons based on page count
             }
         }
     }

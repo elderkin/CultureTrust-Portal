@@ -76,13 +76,13 @@ namespace Portal11.Select {
         protected global::System.Web.UI.WebControls.Panel pnlPerson;
         
         /// <summary>
-        /// PersonView control.
+        /// gvPerson control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView PersonView;
+        protected global::System.Web.UI.WebControls.GridView gvPerson;
         
         /// <summary>
         /// btnCancel control.
