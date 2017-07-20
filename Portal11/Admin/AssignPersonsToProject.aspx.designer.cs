@@ -76,13 +76,13 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.Panel pnlProjectPerson;
         
         /// <summary>
-        /// ProjectPersonView control.
+        /// gvProjectPerson control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView ProjectPersonView;
+        protected global::System.Web.UI.WebControls.GridView gvProjectPerson;
         
         /// <summary>
         /// rdoPersonRole control.
@@ -166,13 +166,13 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.Panel pnlAllPerson;
         
         /// <summary>
-        /// AllPersonView control.
+        /// gvAllPerson control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView AllPersonView;
+        protected global::System.Web.UI.WebControls.GridView gvAllPerson;
         
         /// <summary>
         /// litSavedProjectID control.

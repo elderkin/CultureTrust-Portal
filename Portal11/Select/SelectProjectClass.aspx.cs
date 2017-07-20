@@ -34,26 +34,26 @@ namespace Portal11.Select
                 //    LogError.LogQueryStringError("EditProjectClasses", "Missing Query String 'Command'"); // Log fatal error
 
                 litSavedCommand.Text = PortalConstants.QSCommandEdit;       // Always Edit, at least for now
-                ProjectClassView.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
-                LoadProjectClassView();                                     // Fill the grid
+                gvProjectClass.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
+                LoadgvProjectClass();                                     // Fill the grid
             }
         }
 
         protected void btnProjectClassSearch_Click(object sender, EventArgs e)
         {
-            LoadProjectClassView();                                         // Refresh the grid using updated search criteria
+            LoadgvProjectClass();                                         // Refresh the grid using updated search criteria
         }
 
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
 
-        protected void ProjectClassView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvProjectClass_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this Project Class";       // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.ProjectClassView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvProjectClass, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
 
                 Label inactiveLabel = (Label)e.Row.FindControl("lblInactive");
@@ -64,20 +64,20 @@ namespace Portal11.Select
 
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected.
 
-        protected void ProjectClassView_SelectedIndexChanged(object sender, EventArgs e)
+        protected void gvProjectClass_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnSelect.Enabled = true;                                       // With a row selected, we can act on a button click
         }
 
         // Deal with pagination of the Grid View controls
 
-        protected void ProjectClassView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvProjectClass_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                ProjectClassView.PageIndex = e.NewPageIndex;                // Propagate the desired page index
-                LoadProjectClassView();                                     // Fill the grid
-                ProjectClassView.SelectedIndex = -1;                        // No row currently selected
+                gvProjectClass.PageIndex = e.NewPageIndex;                // Propagate the desired page index
+                LoadgvProjectClass();                                     // Fill the grid
+                gvProjectClass.SelectedIndex = -1;                        // No row currently selected
             }
         }
 
@@ -92,7 +92,7 @@ namespace Portal11.Select
 
         protected void btnSelect_Click(object sender, EventArgs e)
         {
-            Label label = (Label)ProjectClassView.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains RqstID
+            Label label = (Label)gvProjectClass.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains RqstID
             string ProjectClassID = label.Text;                             // Extract the text of the control, which is RqstID
             if (ProjectClassID == "")
                 LogError.LogQueryStringError("EditProjectClasses", string.Format(
@@ -112,12 +112,12 @@ namespace Portal11.Select
 
         protected void chkInactive_CheckedChanged(object sender, EventArgs e)
         {
-            LoadProjectClassView();                                         // Reload the list based on the new un/checked value
+            LoadgvProjectClass();                                         // Reload the list based on the new un/checked value
         }
 
         // Fetch all the ProjectClasses and load them into a GridView
 
-        void LoadProjectClassView()
+        void LoadgvProjectClass()
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -141,14 +141,14 @@ namespace Portal11.Select
                 pred = pred.And(p => p.ProjectID == projIDint);             // Restrict search to Project Classes for current project
 
                 List<ProjectClass> projs = context.ProjectClasses.AsExpandable().Where(pred).OrderBy(p => p.Name).ToList(); // Query, sort and make list
-                ProjectClassView.DataSource = projs;                        // Give it to the GridView control
-                ProjectClassView.DataBind();                                // And display it
+                gvProjectClass.DataSource = projs;                        // Give it to the GridView control
+                gvProjectClass.DataBind();                                // And display it
 
                 // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
 
-                ProjectClassView.Columns[ProjectClass.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
+                gvProjectClass.Columns[ProjectClass.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
 
-                NavigationActions.EnableGridViewNavButtons(ProjectClassView); // Enable appropriate nav buttons based on page count
+                NavigationActions.EnableGridViewNavButtons(gvProjectClass); // Enable appropriate nav buttons based on page count
             }
         }
     }

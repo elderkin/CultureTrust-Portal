@@ -37,7 +37,7 @@ namespace Portal11.Select
                     LogError.LogQueryStringError("SelectEntity", "Missing Query String 'Command'"); // Log fatal error
                 litSavedCommand.Text = cmd;                                 // Remember the command that invoked this page
 
-                AllEntityView.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
+                gvAllEntity.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
                 LoadEntityView();                                           // Fill the grid
             }
         }
@@ -50,13 +50,13 @@ namespace Portal11.Select
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
 
-        protected void AllEntityView_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvAllEntity_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 e.Row.Attributes["onmouseover"] = "this.style.cursor='pointer';"; // When pointer is over a row, change the pointer
                 e.Row.ToolTip = "Click to select this Entity";            // Establish tool tip during flyover
-                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.AllEntityView, "Select$" + e.Row.RowIndex);
+                e.Row.Attributes["onclick"] = this.Page.ClientScript.GetPostBackClientHyperlink(this.gvAllEntity, "Select$" + e.Row.RowIndex);
                 // Mark the row "Selected" on a click. That will fire SelectedIndexChanged
 
                 Label inactiveLabel = (Label)e.Row.FindControl("lblInactive");
@@ -67,20 +67,20 @@ namespace Portal11.Select
 
         // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected. Shared by both controls.
 
-        protected void AllEntityView_SelectedIndexChanged(object sender, EventArgs e)
+        protected void gvAllEntity_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnSelect.Enabled = true;                                       // With a row selected, we can act on a button click
         }
 
         // Deal with pagination of the Grid View controls
 
-        protected void AllEntityView_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void gvAllEntity_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                AllEntityView.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
+                gvAllEntity.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
                 LoadEntityView();                                          // Fill the grid
-                AllEntityView.SelectedIndex = -1;                          // No row currently selected
+                gvAllEntity.SelectedIndex = -1;                          // No row currently selected
             }
         }
 
@@ -102,8 +102,8 @@ namespace Portal11.Select
 
         protected void btnSelect_Click(object sender, EventArgs e)
         {
-            Label entID = (Label)AllEntityView.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains EntityID
-            Label name = (Label)AllEntityView.SelectedRow.Cells[1].FindControl("lblName"); // Find the label control that contains Entity Name
+            Label entID = (Label)gvAllEntity.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains EntityID
+            Label name = (Label)gvAllEntity.SelectedRow.Cells[1].FindControl("lblName"); // Find the label control that contains Entity Name
             string entityID = entID.Text;                                   // Extract the text of the control, which is EntityID as a string
             if (entityID == "")
                 LogError.LogQueryStringError("SelectEntity", $"EntityID '{entityID}' from selected GridView row is missing"); // Log fatal error
@@ -140,14 +140,14 @@ namespace Portal11.Select
                     pred = pred.And(p => p.Name.Contains(search));      // Only Entitys whose name match our search criteria
 
                 List<Entity> ents = context.Entitys.AsExpandable().Where(pred).OrderBy(p => p.Name).ToList(); // Query, sort and make list
-                AllEntityView.DataSource = ents;                        // Give it to the GridView control
-                AllEntityView.DataBind();                               // And display it
+                gvAllEntity.DataSource = ents;                        // Give it to the GridView control
+                gvAllEntity.DataBind();                               // And display it
 
                 // As a flourish, if the "Include Inactive" checkbox is not checked, do not display the Inactive column
 
-                AllEntityView.Columns[Entity.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
+                gvAllEntity.Columns[Entity.InactiveColumn].Visible = chkInactive.Checked; // If checked, column is visible
 
-                NavigationActions.EnableGridViewNavButtons(AllEntityView); // Enable appropriate nav buttons based on page count
+                NavigationActions.EnableGridViewNavButtons(gvAllEntity); // Enable appropriate nav buttons based on page count
             }
         }
     }

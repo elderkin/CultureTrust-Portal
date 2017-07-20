@@ -50,14 +50,14 @@
             <div class="col-md-7 col-xs-12">
 
                 <!-- Code assumes that VendorID is the first column of this grid -->
-                <asp:GridView ID="AllVendorView" runat="server"
+                <asp:GridView ID="gvAllVendor" runat="server"
                     CssClass="table table-striped table-hover"
                     ItemType="Portal11.Models.Vendor"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="10"
-                    OnRowDataBound="AllVendorView_RowDataBound"
-                    OnSelectedIndexChanged="AllVendorView_SelectedIndexChanged"
-                    OnPageIndexChanging="AllVendorView_PageIndexChanging">
+                    OnRowDataBound="gvAllVendor_RowDataBound"
+                    OnSelectedIndexChanged="gvAllVendor_SelectedIndexChanged"
+                    OnPageIndexChanging="gvAllVendor_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 

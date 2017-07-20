@@ -199,7 +199,7 @@ namespace Portal11.Logic
             litSuccess.Text = null; litDanger.Text = null;          // Assume neither will be used
 
             string severity = HttpContext.Current.Request.QueryString[PortalConstants.QSSeverity]; // Fetch severity, if any
-            if (severity == null || severity == "")                 // If null or blank, no severity therefore no message to display
+            if (string.IsNullOrEmpty(severity))                     // If null or blank, no severity therefore no message to display
                 return;
 
             switch (severity)                                       // Choose which literal to fill based on message severity
@@ -210,6 +210,8 @@ namespace Portal11.Logic
                 case PortalConstants.QSDanger:
                     litDanger.Text = HttpContext.Current.Request.QueryString[PortalConstants.QSStatus];
                     break;
+                default:                                            // Anything else is an error, but just ignore it
+                    break;                              
             }
             return;
         }

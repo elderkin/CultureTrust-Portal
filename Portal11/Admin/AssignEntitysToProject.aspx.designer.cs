@@ -76,13 +76,13 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.Panel pnlProjectEntity;
         
         /// <summary>
-        /// ProjectEntityView control.
+        /// gvProjectEntity control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView ProjectEntityView;
+        protected global::System.Web.UI.WebControls.GridView gvProjectEntity;
         
         /// <summary>
         /// rdoEntityRole control.
@@ -166,13 +166,13 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.Panel pnlAllEntity;
         
         /// <summary>
-        /// AllEntityView control.
+        /// gvAllEntity control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView AllEntityView;
+        protected global::System.Web.UI.WebControls.GridView gvAllEntity;
         
         /// <summary>
         /// litSavedProjectID control.

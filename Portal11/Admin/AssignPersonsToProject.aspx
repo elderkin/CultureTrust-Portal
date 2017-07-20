@@ -55,14 +55,14 @@
                     <asp:Panel ID="pnlProjectPerson" runat="server">
 
                         <!-- Code assumes that ProjectPersonID is the first column of this grid -->
-                        <asp:GridView ID="ProjectPersonView" runat="server"
+                        <asp:GridView ID="gvProjectPerson" runat="server"
                             CssClass="table table-striped table-hover"
                             ItemType="Portal11.Models.ProjectPerson"
                             AutoGenerateColumns="false"
                             AllowPaging="true" PageSize="25"
-                            OnRowDataBound="ProjectPersonView_RowDataBound"
-                            OnSelectedIndexChanged="ProjectPersonView_SelectedIndexChanged"
-                            OnPageIndexChanging="ProjectPersonView_PageIndexChanging">
+                            OnRowDataBound="gvProjectPerson_RowDataBound"
+                            OnSelectedIndexChanged="gvProjectPerson_SelectedIndexChanged"
+                            OnPageIndexChanging="gvProjectPerson_PageIndexChanging">
 
                             <SelectedRowStyle CssClass="success" />
 
@@ -189,14 +189,14 @@
                 <div class="col-xs-12">
                     <asp:Panel ID="pnlAllPerson" runat="server">
                         <!-- Code assumes that PersonID is the first column of this grid -->
-                        <asp:GridView ID="AllPersonView" runat="server"
+                        <asp:GridView ID="gvAllPerson" runat="server"
                             CssClass="table table-striped table-hover"
                             ItemType="Portal11.Models.Person"
                             AutoGenerateColumns="false"
                             AllowPaging="true" PageSize="25"
-                            OnRowDataBound="AllPersonView_RowDataBound"
-                            OnSelectedIndexChanged="AllPersonView_SelectedIndexChanged"
-                            OnPageIndexChanging="AllPersonView_PageIndexChanging">
+                            OnRowDataBound="gvAllPerson_RowDataBound"
+                            OnSelectedIndexChanged="gvAllPerson_SelectedIndexChanged"
+                            OnPageIndexChanging="gvAllPerson_PageIndexChanging">
 
                             <SelectedRowStyle CssClass="success" />
 

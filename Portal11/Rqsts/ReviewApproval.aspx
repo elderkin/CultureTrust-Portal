@@ -115,8 +115,10 @@
                         <asp:ListBox runat="server" ID="lstSupporting" CssClass="form-control" Rows="2" SelectionMode="Single"
                             OnSelectedIndexChanged="lstSupporting_SelectedIndexChanged" AutoPostBack="true" />
                     </div>
-                    <asp:Button ID="btnView" runat="server" Text="View" CssClass="btn btn-default col-xs-1"
-                        Enabled="false" OnClick="btnView_Click" CausesValidation="false" ToolTip="Download the selected Supporting Document" />
+<%--                    <asp:Button ID="btnView" runat="server" Text="View" CssClass="btn btn-default col-xs-1"
+                        Enabled="false" OnClick="btnView_Click" CausesValidation="false" ToolTip="Download the selected Supporting Document" />--%>
+                    <asp:HyperLink ID="btnViewLink" runat="server" CssClass="btn btn-default col-xs-1" Enabled="false" ToolTip="Select a row then click here to view the document"
+                        NavigateUrl="overwrite from code behind" Text="View" Target="_blank" />
                 </div>
             </div>
         </asp:Panel>
@@ -231,6 +233,7 @@
         <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedReviewType" runat="server" Visible="false" />
         <asp:Literal ID="litSavedState" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedUserRole" runat="server" Visible="false" />
 
     </div>

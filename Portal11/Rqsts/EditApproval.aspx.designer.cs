@@ -130,13 +130,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.FileUpload fupUpload;
         
         /// <summary>
-        /// btnView control.
+        /// btnViewLink control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnView;
+        protected global::System.Web.UI.WebControls.HyperLink btnViewLink;
         
         /// <summary>
         /// btnRem control.

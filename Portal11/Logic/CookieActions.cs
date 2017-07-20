@@ -25,10 +25,10 @@ namespace Portal11.Logic
             }
             catch (NullReferenceException)
             {
-                                                                            // Just continue in spite of the error
+                // Just continue in spite of the error
             }
             return;
-            }
+        }
 
         public static void DeleteUserInfoCookie()
         {
@@ -43,7 +43,7 @@ namespace Portal11.Logic
             }
             catch (NullReferenceException)
             {
-                                                                            // Just continue in spite of the error
+                // Just continue in spite of the error
             }
             return;
         }
@@ -51,7 +51,7 @@ namespace Portal11.Logic
         public static void DeleteProjectInfoCookie()
         {
             try
-            { 
+            {
                 if (HttpContext.Current.Request.Cookies[PortalConstants.CProjectInfo] != null)  // if != stale Project cookie currently exists, delete it
                 {
                     HttpCookie staleCookie = new HttpCookie(PortalConstants.CProjectInfo); // Fetch stale cookie (from last user login)
@@ -61,7 +61,7 @@ namespace Portal11.Logic
             }
             catch (NullReferenceException)
             {
-                                                                            // Just continue in spite of the error
+                // Just continue in spite of the error
             }
             return;
         }
@@ -69,7 +69,7 @@ namespace Portal11.Logic
         public static void DeleteCheckboxCookies()
         {
             try
-            { 
+            {
                 if (HttpContext.Current.Request.Cookies[PortalConstants.CProjectCheckboxes] != null) // If != stale Project Checkboxes cookie currently exists, delete it
                 {
                     HttpCookie staleCookie = new HttpCookie(PortalConstants.CProjectCheckboxes); // Fetch stale cookie
@@ -85,19 +85,20 @@ namespace Portal11.Logic
             }
             catch (NullReferenceException)
             {
-                                                                            // Just continue in spite of the error
+                // Just continue in spite of the error
             }
             return;
         }
 
         // Look in the UserInfoCookie to find a value for number of rows per GridView control. Lots of range checks and boundary conditions
+
         public static int FindGridViewRows()
         {
             try
             {
                 HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Fetch cookie, if it exists
                 if (userInfoCookie != null)                                 // If != cookie exists
-                { 
+                {
                     int value = Convert.ToInt32(userInfoCookie[PortalConstants.CUserGridViewRows]); // Ask cookie for value
                     if ((value >= ApplicationUser.GridViewRowsMinimum) && (value <= ApplicationUser.GridViewRowsMaximum)) // If true, value from cookie is in range
                         return value;                                       // Give "legal" value to caller
@@ -105,9 +106,28 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                                                                            // Just continue in spite of the error
+                // Just continue in spite of the error
             }
             return ApplicationUser.GridViewRowsDefault;                     // Cookie value not available. Return default value
+        }
+
+        // Pick out ProjectRole from cookie. If its missing, force user to login
+
+        public static string FindProjectRole()
+        {
+            HttpCookie projectInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CProjectInfo]; // Find the Project Info cookie
+            if (projectInfoCookie != null)                                      // If != ProjectInfoCookie is present
+            {
+                string projRole = projectInfoCookie[PortalConstants.CProjectRole]; // Fetch ProjectRole from ProjectInfo cookie
+                if (!string.IsNullOrEmpty(projRole))                            // If false ProjectRole is present
+                    return projRole;
+            }
+
+            // We get here only if the ProjectInfo cookie is missing. This means that user has arrived here without logging in
+
+            HttpContext.Current.Response.Redirect(PortalConstants.URLLogin + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger + "&" +
+                PortalConstants.QSStatus + "=Please log in before using Portal");
+            return "";
         }
 
         // Make a ProjectInfoCookie to describe the current User's relationship with their selected project.  Two versions

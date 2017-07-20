@@ -570,6 +570,7 @@
         <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedRush" runat="server" Visible="false" />
         <asp:Literal ID="litSavedState" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedUserRole" runat="server" Visible="false" />
 
     </div>

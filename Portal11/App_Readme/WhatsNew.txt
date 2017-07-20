@@ -1,4 +1,11 @@
-﻿Version 1.8
+﻿Version 1.9
+
+There is a new parameter, {4}, in emails. This parameter substitutes the name of the recipient of the email.
+There is a new Email Option, "Send Email to me when a rush request is submitted". If unchecked, the Portal will not send the user a copy of the "Broadcast" email on the submission of a Rush request. Note that
+the user will still receive an email when the rush request reaches them for review.
+All Edit Request and Review Request functions now View an Attachment within the browser, if possible. 
+ 
+Version 1.8
 
 On the Admin page, List Projects now has an option to select a project and dump its metadata, including all requests.
 On the Review Expense page, once a supporting document has been selected from the list, clicking the View button attempts to open the document in a new browser tab.

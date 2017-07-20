@@ -33,48 +33,20 @@ namespace Portal11.Proj
 
                 NavigationActions.ProcessSeverityStatus(litSuccessMessage, litDangerMessage);
 
-                // Pick out UserID and ProjectID and Role from query string or cookie
+                litSavedUserID.Text = QueryStringActions.GetUserID();   // Track down User ID and save in a "faster" place for later reference
 
-                string userID = Request.QueryString[PortalConstants.QSUserID];  // First check the Query String and find the User
-                if (string.IsNullOrEmpty(userID))                       // If true UserID not specified. Check cookie.
-                {
-                    HttpCookie userInfoCookie = Request.Cookies[PortalConstants.CUserInfo]; // Find the User Info cookie
-                    if (userInfoCookie == null)                         // If == the cookie is missing
-                        LogError.LogInternalError("ProjectDashboard", "Missing UserInfoCookie"); // Fatal error
+                QSValue projID = QueryStringActions.GetProjectID();     // Look on the query string for Project ID
+                litSavedProjectID.Text = projID.String;                 // Save in a faster spot for later
 
-                    userID = userInfoCookie[PortalConstants.CUserID];   // Fetch UserID from cookie
-                    if (userID == "")                                   // If == that's blank, too. Now we have an error
-                        LogError.LogQueryStringError("ProjectDashboard", "Unable to find UserID in Query String or UserID Cookie. User is not logged in"); // Fatal error
-                }
-                litSavedUserID.Text = userID;                           // Save in a "faster" place for later reference
-
-                string projID = Request.QueryString[PortalConstants.QSProjectID]; // Look on the query string for Project ID
-                HttpCookie projectInfoCookie = Request.Cookies[PortalConstants.CProjectInfo]; // Find the Project Info cookie
-                if (projectInfoCookie == null)                          // If == ProjectInfoCookie is null
-                    LogError.LogInternalError("ProjectDashboard", "Missing ProjectInfoCookie"); // Fatal error
-
-                if (string.IsNullOrEmpty(projID))                       // If true Project ID not specified as Query String. Check cookie
-                {
-                    projID = projectInfoCookie[PortalConstants.CProjectID]; // Fetch ProjectID from cookie
-                    if (projID == "")                                   // If == that's blank, too. Now we have an error
-                        LogError.LogQueryStringError("ProjectDashboard", "Unable to find ProjectID in Query String or Project Info Cookie. User does not have a project"); // Fatal error
-                }
-                litSavedProjectID.Text = projID;                        // Save in a faster spot for later
-                int projIDint = Convert.ToInt32(projID);                // Produce int version of this key
-
-                string projRole = projectInfoCookie[PortalConstants.CProjectRole]; // Fetch user's Project Role from cookie
-                if (projRole == "")                                     // If == that's blank. We have an error
-                    LogError.LogQueryStringError("ProjectDashboard", "Unable to find Project Role in Project Info Cookie. User does not have a project"); // Fatal error
-                litSavedProjectRole.Text = projRole;                    // Save in a faster spot for later
+                litSavedProjectRole.Text = CookieActions.FindProjectRole(); // Track down role and save in a faster spot for later
 
                 // Fill project-specific date and amount fields at the top of the page.
 
                 using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                 {
-                    Project proj = context.Projects.Find(projIDint);    // Fetch target project by ID
+                    Project proj = context.Projects.Find(projID.Int);   // Fetch target project by ID
                     if (proj == null)                                   // If == couldn't find the project
-                        LogError.LogInternalError("ProjectDashboard", string.Format("Unable to find ProjectID '{0}' in database", 
-                            projIDint)); // Fatal error
+                        LogError.LogInternalError("ProjectDashboard", $"Unable to find ProjectID '{projID.Int}' in database"); // Fatal error
 
                     litBalance.Text = proj.BalanceDate.ToString("MM/dd/yyyy");
                     litCurrentFunds.Text = proj.CurrentFunds.ToString("C");

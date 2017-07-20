@@ -50,14 +50,14 @@
             <div class="col-md-7 col-xs-12">
 
                 <!-- Code assumes that EntityID is the first column of this grid -->
-                <asp:GridView ID="AllEntityView" runat="server"
+                <asp:GridView ID="gvAllEntity" runat="server"
                     CssClass="table table-striped table-hover"
                     ItemType="Portal11.Models.Entity"
                     AutoGenerateColumns="false"
                     AllowPaging="true" PageSize="10"
-                    OnRowDataBound="AllEntityView_RowDataBound"
-                    OnSelectedIndexChanged="AllEntityView_SelectedIndexChanged"
-                    OnPageIndexChanging="AllEntityView_PageIndexChanging">
+                    OnRowDataBound="gvAllEntity_RowDataBound"
+                    OnSelectedIndexChanged="gvAllEntity_SelectedIndexChanged"
+                    OnPageIndexChanging="gvAllEntity_PageIndexChanging">
 
                     <SelectedRowStyle CssClass="success" />
 

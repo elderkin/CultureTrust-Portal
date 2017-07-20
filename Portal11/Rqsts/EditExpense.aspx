@@ -799,8 +799,10 @@
                                 CssClass="hidden" />
                             <div id="btnAdd" class="btn btn-default col-md-2 col-xs-3">Add</div>
                         </asp:Panel>
-                        <asp:Button ID="btnView" runat="server" Text="View" CssClass="btn btn-default col-md-2 col-xs-offset-1 col-xs-3"
-                            Enabled="false" OnClick="btnView_Click" CausesValidation="false" ToolTip="Download the selected Supporting Document" />
+<%--                        <asp:Button ID="btnView" runat="server" Text="View" CssClass="btn btn-default col-md-2 col-xs-offset-1 col-xs-3"
+                            Enabled="false" OnClick="btnView_Click" CausesValidation="false" ToolTip="Download the selected Supporting Document" />--%>
+                        <asp:HyperLink ID="btnViewLink" runat="server" CssClass="btn btn-default col-md-2 col-xs-offset-1 col-xs-3" Enabled="false" ToolTip="Select a row then click here to view the document"
+                            NavigateUrl="overwrite from code behind" Text="View" Target="_blank" />
                         <asp:Button ID="btnRem" runat="server" Text="Remove" CssClass="btn btn-default col-md-2 col-xs-offset-1 col-xs-3"
                             Enabled="false" OnClick="btnRemove_Click" CausesValidation="false" ToolTip="Remove the selected Supporting Document from the Expense Request" />
                     </div>

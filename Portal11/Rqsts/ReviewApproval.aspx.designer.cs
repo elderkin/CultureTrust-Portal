@@ -175,13 +175,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.ListBox lstSupporting;
         
         /// <summary>
-        /// btnView control.
+        /// btnViewLink control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnView;
+        protected global::System.Web.UI.WebControls.HyperLink btnViewLink;
         
         /// <summary>
         /// pnlNotes control.
@@ -344,6 +344,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSavedState;
+        
+        /// <summary>
+        /// litSavedUserID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedUserID;
         
         /// <summary>
         /// litSavedUserRole control.

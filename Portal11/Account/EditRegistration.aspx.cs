@@ -93,6 +93,9 @@ namespace Portal11.Account
 
                         else if (item.Value == "EmailOnRefer")             // If == load option from database
                             item.Selected = !existingUser.NoEmailOnRefer;  // Load checkbox from database
+
+                        else if (item.Value == "EmailOnRushSubmit")        // If == load option from database
+                            item.Selected = !existingUser.NoEmailOnRushSubmit; // Load checkbox from database
                     }
 
                     txtLoginCount.Text = existingUser.LoginCount.ToString();
@@ -197,6 +200,9 @@ namespace Portal11.Account
 
                         else if (item.Value == "EmailOnRefer")              // If == load option from checkbox
                             existingUser.NoEmailOnRefer = !item.Selected;   // Unload checkbox to database
+
+                        else if (item.Value == "EmailOnRushSubmit")         // If == load option from checkbox
+                            existingUser.NoEmailOnRushSubmit = !item.Selected; // Unload checkbox to database
                     }
 
                     userMgr.Update(existingUser);                           // Write changes to database

@@ -55,14 +55,14 @@
                     <asp:Panel ID="pnlProjectEntity" runat="server">
 
                         <!-- Code assumes that ProjectEntityID is the first column of this grid -->
-                        <asp:GridView ID="ProjectEntityView" runat="server"
+                        <asp:GridView ID="gvProjectEntity" runat="server"
                             CssClass="table table-striped table-hover"
                             ItemType="Portal11.Models.ProjectEntity"
                             AutoGenerateColumns="false"
                             AllowPaging="true" PageSize="25"
-                            OnRowDataBound="ProjectEntityView_RowDataBound"
-                            OnSelectedIndexChanged="ProjectEntityView_SelectedIndexChanged"
-                            OnPageIndexChanging="ProjectEntityView_PageIndexChanging">
+                            OnRowDataBound="gvProjectEntity_RowDataBound"
+                            OnSelectedIndexChanged="gvProjectEntity_SelectedIndexChanged"
+                            OnPageIndexChanging="gvProjectEntity_PageIndexChanging">
 
                             <SelectedRowStyle CssClass="success" />
 
@@ -185,14 +185,14 @@
                 <div class="col-xs-12">
                     <asp:Panel ID="pnlAllEntity" runat="server">
                         <!-- Code assumes that EntityID is the first column of this grid -->
-                        <asp:GridView ID="AllEntityView" runat="server"
+                        <asp:GridView ID="gvAllEntity" runat="server"
                             CssClass="table table-striped table-hover"
                             ItemType="Portal11.Models.Entity"
                             AutoGenerateColumns="false"
                             AllowPaging="true" PageSize="25"
-                            OnRowDataBound="AllEntityView_RowDataBound"
-                            OnSelectedIndexChanged="AllEntityView_SelectedIndexChanged"
-                            OnPageIndexChanging="AllEntityView_PageIndexChanging">
+                            OnRowDataBound="gvAllEntity_RowDataBound"
+                            OnSelectedIndexChanged="gvAllEntity_SelectedIndexChanged"
+                            OnPageIndexChanging="gvAllEntity_PageIndexChanging">
 
                             <SelectedRowStyle CssClass="success" />
 

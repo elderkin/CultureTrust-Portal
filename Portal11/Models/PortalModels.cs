@@ -7,39 +7,6 @@ using System.Drawing;
 namespace Portal11.Models
 {
 
-    // One row of the GridView named PortalUsers, used by ListPortalUsers
-
-    public class rowPortalUsers
-    {
-        public string UserID { get; set; }
-        public const int RowIDCell = 0;
-        public string FullName { get; set; }
-        public string Email { get; set; }
-        public string UserRoleDesc { get; set; }
-        public string Administrator { get; set; }
-        public int LoginCount { get; set; }
-        public DateTime LastLogin { get; set; }
-        public string Inactive { get; set; }
-        public const int InactiveColumn = 7;
-    }
-
-    // One row of the GridView named gvProjects, used by ListProjects
-
-    public class rowProjects
-    {
-        public string Code { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public DateTime CreatedTime { get; set; }
-        public DateTime BalanceDate { get; set; }
-        public string CurrentFunds { get; set; }
-        public string ProjectDirector { get; set; }
-        public int TotalRequests { get; set; }
-        public string Inactive { get; set; }
-        public const int InactiveColumn = 8;
-        public string ProjectID { get; set; }
-    }
-
     // One row of the GridView named AssignProjectView, used by AssignUserToProject
 
     public class rowAssignUserToProject
@@ -78,7 +45,7 @@ namespace Portal11.Models
 
     // One row of the GridView named ImportCSV, used by ImportProjectBalance
 
-    public class ImportCSVRow
+    public class rowImportCSV
     {
         public string ProjectCode { get; set; }
         public string BalanceDate { get; set; }
@@ -131,6 +98,39 @@ namespace Portal11.Models
         public string UserID { get; set; }
         public string Name { get; set; }
         public string ProjectRole { get; set; }
+    }
+
+    // One row of the GridView named PortalUsers, used by ListPortalUsers
+
+    public class rowPortalUsers
+    {
+        public string UserID { get; set; }
+        public const int RowIDCell = 0;
+        public string FullName { get; set; }
+        public string Email { get; set; }
+        public string UserRoleDesc { get; set; }
+        public string Administrator { get; set; }
+        public int LoginCount { get; set; }
+        public DateTime LastLogin { get; set; }
+        public string Inactive { get; set; }
+        public const int InactiveColumn = 7;
+    }
+
+    // One row of the GridView named gvProjects, used by ListProjects
+
+    public class rowProjects
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public DateTime BalanceDate { get; set; }
+        public string CurrentFunds { get; set; }
+        public string ProjectDirector { get; set; }
+        public int TotalRequests { get; set; }
+        public string Inactive { get; set; }
+        public const int InactiveColumn = 8;
+        public string ProjectID { get; set; }
     }
 
     // One row of the GridView named gvAllAppView, used by ProjectDashboard
@@ -188,9 +188,9 @@ namespace Portal11.Models
         public bool Rush { get; set; }
     }
 
-    // One row of the GridViews named AllProjectView, used by SelectProject
+    // One row of the GridViews named gvAllProject, used by SelectProject
 
-    public class SelectProjectAllViewRow
+    public class rowSelectProjectAllView
     {
         public string ProjectID { get; set; }
         public string Inactive { get; set; }
@@ -201,7 +201,7 @@ namespace Portal11.Models
         public const int InactiveColumn = 5;
     }
 
-    public class SelectProjectUserViewRow
+    public class rowSelectProjectUserView
     {
         public string ProjectID { get; set; }
         public string Name { get; set; }
@@ -258,7 +258,7 @@ namespace Portal11.Models
         public string Owner { get; set; }
         public const int OwnerColumn = 5;
         public string Target { get; set; }
-        public string Summary { get; set; }
+//        public string Summary { get; set; }
         public string Description { get; set; }
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
@@ -267,13 +267,13 @@ namespace Portal11.Models
 
     // One row of the GridView named UserProjectView, used by AssignUserToProject
 
-    public class UserProjectViewRow
-    {
-        public int ProjectID { get; set; }
-        public ProjectRole ProjectRole { get; set; }
-        public string ProjectName { get; set; }
-        public string ProjectDescription { get; set; }
-    }
+    //public class rowUserProjectView
+    //{
+    //    public int ProjectID { get; set; }
+    //    public ProjectRole ProjectRole { get; set; }
+    //    public string ProjectName { get; set; }
+    //    public string ProjectDescription { get; set; }
+    //}
 
     // How the Expensed materials get delivered
 
@@ -680,9 +680,8 @@ namespace Portal11.Models
         [DataType(DataType.MultilineText)]
         public string StaffNote { get; set; }
 
-        //TODO: Delete Summary
-        [StringLength(30)]
-        public string Summary { get; set; }                 // A free text name for the Expense
+//        [StringLength(30)]
+//        public string Summary { get; set; }                 // A free text name for the Expense
 
         //TODO: Delete URL?
         public string URL { get; set; }                     // For the item in a Purchase Order
@@ -1455,10 +1454,10 @@ namespace Portal11.Models
             SupportingTempFlag = "T",
             WhatsNewName = "WhatsNew.txt";
         public const int
-            AllPersonViewW9Column = 3,
+            gvAllPersonW9Column = 3,
             SingleClickTimeout = 400,
             MaxSupportingFileSize = 6000000,
-            ProjectPersonViewW9Column = 3;
+            gvProjectPersonW9Column = 3;
 
         // URLs of key pages. Expressed here so if their names change, it only has to be changed here
 
