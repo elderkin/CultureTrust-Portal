@@ -146,6 +146,7 @@
         <!-- "Scratch" storage used during form processing -->
         <asp:Literal ID="litSavedCommand" runat="server" Visible="false" />
         <asp:Literal ID="litSavedEntityID" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
 
     </div>

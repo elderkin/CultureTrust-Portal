@@ -58,19 +58,19 @@
                         <h4>Filter: Next Reviewer</h4>
                 <div class="panel-body" style="min-height: 100px; max-height: 100px; padding-top: 0px;">
                     <div class="checkbox" style="padding-top: 0px;">
-                        <asp:CheckBox ID="ckRFinanceDirector" runat="server" Text="Finance Director" CssClass="col-xs-7" Checked="true"
+                        <asp:CheckBox ID="ckRCommunityDirector" runat="server" Text="Community Director" CssClass="col-xs-7" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckRUnsubmitted" runat="server" Text="Unsubmitted" CssClass="col-xs-5" Checked="false"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckRInternalCoordinator" runat="server" Text="Internal Coord" CssClass="col-xs-7" Checked="true"
+                        <asp:CheckBox ID="ckRFinanceDirector" runat="server" Text="Finance Director" CssClass="col-xs-7" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckRCompleted" runat="server" Text="Completed" CssClass="col-xs-5" Checked="false"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckRTrustDirector" runat="server" Text="Trust Director" CssClass="col-xs-7" Checked="true"
+                        <asp:CheckBox ID="ckRInternalCoordinator" runat="server" Text="Internal Coord" CssClass="col-xs-7" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                         <asp:CheckBox ID="ckRReturned" runat="server" Text="Returned" CssClass="col-xs-5" Checked="false"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckRTrustExecutive" runat="server" Text="Trust Executive" CssClass="col-xs-7" Checked="true"
+                        <asp:CheckBox ID="ckRPresident" runat="server" Text="President" CssClass="col-xs-7" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                     </div>
                 </div>
@@ -177,6 +177,7 @@
                 </div>
             </div>
 
+            <%-- Person Name --%>
             <div class="panel panel-default col-md-4 col-xs-6" style="margin-bottom: 2px;">
                 <h4>Filter: Person Name</h4>
                 <div class="panel-body" style="min-height: 100px; max-height: 100px; padding-top: 0px;">
@@ -189,6 +190,7 @@
                 </div>
             </div>
 
+            <%-- GL Code --%>
             <div class="panel panel-default col-md-4 col-xs-6" style="margin-bottom: 2px;">
                 <h4>Filter: General Ledger Code</h4>
                 <div class="panel-body" style="min-height: 100px; max-height: 100px; padding-top: 0px;">
@@ -224,15 +226,15 @@
 
         <div class="panel panel-success">
             <div class="panel-heading">
-                <asp:LinkButton ID="btnAppCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnAppCollapse_Click"
+                <asp:LinkButton ID="btnAppCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnAppCollapse_Click" Visible="false"
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
                 </asp:LinkButton>
-                <asp:LinkButton ID="btnAppExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnAppExpand_Click" Visible="false">
+                <asp:LinkButton ID="btnAppExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnAppExpand_Click" Visible="true">
                     <span class="glyphicon glyphicon-chevron-down"></span>
                 </asp:LinkButton>
                 <strong>Approval Requests</strong>
             </div>
-            <asp:Panel ID="pnlApp" runat="server">
+            <asp:Panel ID="pnlApp" runat="server" Visible="false">
                 <br />
 
                 <div class="row">
@@ -300,7 +302,7 @@
                                 <asp:BoundField DataField="Description" HeaderText="Description" />
                                 <asp:TemplateField>
                                     <ItemTemplate>
-                                        <asp:Button ID="btnAppGridReview" runat="server" CssClass="btn btn-xs btn-primary" Text="Review"
+                                        <asp:Button ID="btnAppGridReview" runat="server" CssClass="btn btn-xs btn-primary" Text="Review" ToolTip="Click to review this request"
                                             OnClick="btnAppGridReview_Click" CausesValidation="false" />
                                     </ItemTemplate>
                                 </asp:TemplateField>
@@ -318,6 +320,11 @@
                                 <asp:TemplateField HeaderText="Archived" Visible="false">
                                     <ItemTemplate>
                                         <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>' ></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Project ID" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblProjectID" runat="server" Text='<%# Bind("ProjectID") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -425,13 +432,8 @@
                                 <asp:BoundField DataField="Description" HeaderText="Description" />
                                 <asp:TemplateField>
                                     <ItemTemplate>
-                                        <asp:Button ID="btnDepGridReview" runat="server" CssClass="btn btn-xs btn-primary" Text="Review"
+                                        <asp:Button ID="btnGridReview" runat="server" CssClass="btn btn-xs btn-primary" Text="Review"
                                             OnClick="btnDepGridReview_Click" CausesValidation="false" />
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Status" Visible="false">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblCurrentState" runat="server" Text='<%# Bind("CurrentState") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Archived" Visible="false">
@@ -439,10 +441,25 @@
                                         <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Project ID" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblProjectID" runat="server" Text='<%# Bind("ProjectID") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Request ID" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblRequestID" runat="server" Text='<%# Bind("RequestID") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Row Actions" Visible="false">
                                     <ItemTemplate>
-                                        <asp:Button ID="btnDepDblClick" runat="server" Text='<%# Bind("RowID") %>' CssClass="btn btn-default"
+                                        <asp:Button ID="btnDepDblClick" runat="server" CssClass="btn btn-default"
                                             OnClick="btnDepDblClick_Click" CausesValidation="false" />
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Status" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblCurrentState" runat="server" Text='<%# Bind("CurrentState") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -551,7 +568,7 @@
                                 <asp:BoundField DataField="Description" HeaderText="Description" />
                                 <asp:TemplateField>
                                     <ItemTemplate>
-                                        <asp:Button ID="btnExpGridReview" runat="server" CssClass="btn btn-xs btn-primary" Text="Review"
+                                        <asp:Button ID="btnGridReview" runat="server" CssClass="btn btn-xs btn-primary" Text="Review"
                                             OnClick="btnExpGridReview_Click" CausesValidation="false" />
                                     </ItemTemplate>
                                 </asp:TemplateField>
@@ -576,6 +593,11 @@
                                             OnClick="btnExpDblClick_Click" CausesValidation="false" />
                                     </ItemTemplate>
                                 </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Project ID" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblProjectID" runat="server" Text='<%# Bind("ProjectID") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
                             </Columns>
                         </asp:GridView>
 
@@ -597,6 +619,7 @@
     </div>
     <%--End of form-horizontal--%>
     <!-- "Scratch" storage used during form processing -->
+    <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
     <asp:Literal ID="litSavedUserRole" runat="server" Visible="false" />
     <asp:Literal ID="litSelectedAppRow" runat="server" Visible="false" />
     <asp:Literal ID="litSelectedDepRow" runat="server" Visible="false" />

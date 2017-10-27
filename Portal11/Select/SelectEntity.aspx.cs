@@ -19,6 +19,7 @@ namespace Portal11.Select
         //
         // Query string inputs are:
         //  Command - "Edit"
+        //  Return - Propagated from caller
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -29,15 +30,9 @@ namespace Portal11.Select
 
                 NavigationActions.ProcessSeverityStatus(litSuccessMessage, litDangerMessage);
 
-                string cmd = Request.QueryString[PortalConstants.QSCommand];  // Look on the query string that invoked this page. Find the command.
-
-                // Fetch and save the Command query string
-
-                if (cmd == "")                                              // No command. We are invoked incorrectly.
-                    LogError.LogQueryStringError("SelectEntity", "Missing Query String 'Command'"); // Log fatal error
-                litSavedCommand.Text = cmd;                                 // Remember the command that invoked this page
-
-                gvAllEntity.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
+                litSavedCommand.Text = QueryStringActions.GetCommand();     // Look on the query string that invoked this page. Find the command.
+                litSavedReturn.Text = QueryStringActions.GetReturn();       // Find the caller's return address
+                gvAllEntity.PageSize = CookieActions.GetGridViewRows();    // Find number of rows per page from cookie
                 LoadEntityView();                                           // Fill the grid
             }
         }
@@ -78,9 +73,9 @@ namespace Portal11.Select
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
-                gvAllEntity.PageIndex = e.NewPageIndex;                  // Propagate the desired page index
-                LoadEntityView();                                          // Fill the grid
-                gvAllEntity.SelectedIndex = -1;                          // No row currently selected
+                gvAllEntity.PageIndex = e.NewPageIndex;                 // Propagate the desired page index
+                LoadEntityView();                                       // Fill the grid
+                gvAllEntity.SelectedIndex = -1;                         // No row currently selected
             }
         }
 
@@ -88,14 +83,17 @@ namespace Portal11.Select
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
-            NavigationActions.NextPage("");
+//            NavigationActions.NextPage("");
+            Response.Redirect(litSavedReturn.Text);                     
         }
 
         // New button. Invoke Edit Entity to create a new Entity
 
         protected void btnNew_Click(object sender, EventArgs e)
         {
-            Response.Redirect(PortalConstants.URLEditEntity + "?" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew);
+            Response.Redirect(PortalConstants.URLEditEntity 
+                      + "?" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew
+                      + "&" + PortalConstants.QSReturn + "=" + litSavedReturn.Text);
         }
 
         // Select button pushed to select a Entity. Dispatch to the page associated with the Command query string parameter - EditEntity.
@@ -108,9 +106,11 @@ namespace Portal11.Select
             if (entityID == "")
                 LogError.LogQueryStringError("SelectEntity", $"EntityID '{entityID}' from selected GridView row is missing"); // Log fatal error
 
-            Response.Redirect(PortalConstants.URLEditEntity + "?" + PortalConstants.QSEntityID + "=" + entityID + "&" +
-                                            PortalConstants.QSEntityName + "=" + name.Text + "&" +
-                                            PortalConstants.QSCommand + "=" + litSavedCommand.Text);
+            Response.Redirect(PortalConstants.URLEditEntity 
+                      + "?" + PortalConstants.QSEntityID + "=" + entityID 
+                      + "&" + PortalConstants.QSEntityName + "=" + name.Text 
+                      + "&" + PortalConstants.QSCommand + "=" + litSavedCommand.Text
+                      + "&" + PortalConstants.QSReturn + "=" + litSavedReturn.Text);
 
         }
 

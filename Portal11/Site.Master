@@ -119,6 +119,7 @@
         <div class="container body-content">
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
+
             <hr />
             <footer>
                 <p>Copyright &copy; <%: DateTime.Now.Year %> - CultureWorks Greater Philadelphia</p>

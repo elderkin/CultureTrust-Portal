@@ -113,7 +113,7 @@ namespace Portal11.Rqsts
 
             if (txtReturnNote.Text != "")                           // If != then text is erroneously present
             {
-                litDangerMessage.Text = PortalConstants.ReturnNoteError; // Report the error
+                litDangerMessage.Text = PortalConstants.ReturnNotePresent; // Report the error
                 Page.MaintainScrollPositionOnPostBack = false;      // Scrool back to top of page where error message lives
                 return;                                             // Go back for more punishment
             } 
@@ -125,7 +125,7 @@ namespace Portal11.Rqsts
             SaveApp(nextState, "Advanced", out projectID, out projectName); // Update App; write new History row
 
             string emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
-                StateActions.UserRoleToApproveRequest(nextState),   // Who is in this role
+                StateActions.UserRoleToProcessRequest(nextState),   // Who is in this role
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has a name
                 EnumActions.GetEnumDescription(RequestType.Approval), // This is an Approval Request
@@ -145,7 +145,7 @@ namespace Portal11.Rqsts
             int projectID = new int(); string projectName = "";
             SaveApp(AppState.Returned, "Returned", out projectID, out projectName); // Update App; write new History row
             string emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
-                StateActions.UserRoleToApproveRequest(AppState.Returned), // Who is in this role
+                StateActions.UserRoleToProcessRequest(AppState.Returned), // Who is in this role
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has a name
                 EnumActions.GetEnumDescription(RequestType.Approval), // This is an Approval Request

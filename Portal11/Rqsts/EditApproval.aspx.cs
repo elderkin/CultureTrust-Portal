@@ -10,6 +10,15 @@ namespace Portal11.Rqsts
 {
     public partial class EditApproval : System.Web.UI.Page
     {
+
+        // Communication from Project Dashboard is through Query Strings:
+        //      UserID - the database ID of the Project Director making these changes (Required)
+        //      ProjectID - the database ID of the Project that owns this request (Required)
+        //      ProjectRole - the role of the user on this project (Optional. ProjectInfo cookie used as backup.)
+        //      RequestID - the database ID of the existing request, if any, to process
+        //      Command - "New," "Copy," "Edit," "View," or "Revise" (Required)
+        //      Return - name of the page to invoke on completion (Required)
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!Page.IsPostBack)
@@ -17,7 +26,7 @@ namespace Portal11.Rqsts
 
                 // Find the User's role on the Project. In the process, make sure user is logged in.
 
-                string projRole = QueryStringActions.GetProjectRole();  // Fetch user's Project Role from cookie
+                string projRole = QueryStringActions.GetProjectRole();  // Fetch user's Project Role from query string or cookie
 
                 // Fetch and validate the four Query String parameters. Carefully convert the integer parameters to integers.
 
@@ -25,6 +34,7 @@ namespace Portal11.Rqsts
                 QSValue projectID = QueryStringActions.GetProjectID();  // Second parameter - Project ID. If absent, check ProjectInfoCookie
                 QSValue appID = QueryStringActions.GetRequestID();      // Third parameter - Approval ID. If absent, must be New command
                 string cmd = QueryStringActions.GetCommand();           // Fourth parameter - Command. Must be present
+                string ret = QueryStringActions.GetReturn();            // Fifth parameter - Return. Must be present
 
                 // Stash these parameters into invisible literals on the current page.
 
@@ -33,6 +43,7 @@ namespace Portal11.Rqsts
                 litSavedProjectID.Text = projectID.String;
                 litSavedProjectRole.Text = projRole;                    // Save in a faster spot for later
                 litSavedUserID.Text = userID;
+                litSavedReturn.Text = ret;
 
                 SupportingActions.CleanupTemp(userID, litDangerMessage); // Cleanup supporting docs from previous executions for this user
 
@@ -201,7 +212,7 @@ namespace Portal11.Rqsts
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(PortalConstants.URLProjectDashboard);
+            Response.Redirect(litSavedReturn.Text);
             return;
         }
 
@@ -209,7 +220,7 @@ namespace Portal11.Rqsts
         // To "Revise," we: 
         //  1) Get a copy of the Request
         //  2) Create a History row to audit this change.
-        //  3) Change the State of the Request from "Returned" to "Under Construction," erase the ReturnNote comments and save it.
+        //  3) Change the State of the Request from "Returned" to "Under Construction," propagate the ReturnNote comments and save it.
         //  4) Call this page back and invoke the "Edit" command for an existing Approval.
 
         protected void btnRevise_Click(object sender, EventArgs e)
@@ -230,7 +241,7 @@ namespace Portal11.Rqsts
 
                     AppHistory hist = new AppHistory();               // Get a place to build a new History row
                     StateActions.CopyPreviousState(toRevise, hist, "Revised"); // Create a History log row from "old" version of Request
-//                    hist.ReturnNote = toRevise.ReturnNote;          // Save the Return Note from the Returned Rqst
+                    hist.ReturnNote = toRevise.ReturnNote;          // Save the Return Note from the Returned Rqst
 
                     //  3) Change the State of the Rqst from "Returned" to "Unsubmitted," erase the ReturnNote comments and save it.
 
@@ -250,7 +261,8 @@ namespace Portal11.Rqsts
                 Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
                             + PortalConstants.QSRequestID + "=" + Request.QueryString[PortalConstants.QSRequestID] + "&"
-                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit); // Start with an existing App
+                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with an existing App
+                            + PortalConstants.QSReturn + "=" + litSavedReturn.Text); // Propagate return address
             }
         }
 
@@ -267,11 +279,12 @@ namespace Portal11.Rqsts
 
             // Now go back to Dashboard
 
-            Response.Redirect(PortalConstants.URLProjectDashboard + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
+            Response.Redirect(litSavedReturn.Text + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
                                                   + PortalConstants.QSStatus + "=Approval Request saved");
         }
 
         // Submit button clicked. Save what we've been working on, set the Approval state to "Submitted," then go back to the dashboard.
+        // The Return Note is blank on the "normal" path through this code. But if the request was Revised or Returned, a Return Note may still be present. Erase it now.
 
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
@@ -286,6 +299,7 @@ namespace Portal11.Rqsts
                 return;                                             // Back for more punishment
             }
 
+            txtReturnNote.Text = "";                                // Erase the Return Note, if any
             int savedAppID = SaveApp();                             // Do the heavy lifting to save the current Approval
             if (savedAppID == 0)                                    // If == SaveApp encountered an error. Go no further
                 LogError.LogInternalError("EditApproval", "Unable to save Approval before Submitting"); // Fatal error
@@ -310,7 +324,7 @@ namespace Portal11.Rqsts
                     context.SaveChanges();                              // Update the App, create the AppHistory
 
                     emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
-                        StateActions.UserRoleToApproveRequest(nextState), // Who is in this role
+                        StateActions.UserRoleToProcessRequest(nextState), // Who is in this role
                         toSubmit.ProjectID,                             // Request is associated with this project
                         toSubmit.Project.Name,                          // Project has this name (for parameter substitution)
                         EnumActions.GetEnumDescription(RequestType.Approval), // This is an Approval Request
@@ -325,7 +339,7 @@ namespace Portal11.Rqsts
 
             // Now go back to Dashboard
 
-            Response.Redirect(PortalConstants.URLProjectDashboard + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
+            Response.Redirect(litSavedReturn.Text + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
                                                   + PortalConstants.QSStatus + "=Approval Request submitted." + emailSent);
         }
 

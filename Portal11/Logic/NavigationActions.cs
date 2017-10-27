@@ -64,7 +64,7 @@ namespace Portal11.Logic
 
         public static void LoadAllAppHistorys(int appID, GridView gvEDHistory)
         {
-            gvEDHistory.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
+            gvEDHistory.PageSize = CookieActions.GetGridViewRows();  // Set number of rows per page in grid
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var query = from edh in context.AppHistorys
@@ -99,7 +99,7 @@ namespace Portal11.Logic
 
         public static void LoadAllDepHistorys(int depID, GridView gvEDHistory)
         {
-            gvEDHistory.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
+            gvEDHistory.PageSize = CookieActions.GetGridViewRows();  // Set number of rows per page in grid
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var query = from edh in context.DepHistorys
@@ -134,7 +134,7 @@ namespace Portal11.Logic
 
         public static void LoadAllExpHistorys(int expID, GridView gvEDHistory)
         {
-            gvEDHistory.PageSize = CookieActions.FindGridViewRows();  // Set number of rows per page in grid
+            gvEDHistory.PageSize = CookieActions.GetGridViewRows();  // Set number of rows per page in grid
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 var query = from edh in context.ExpHistorys

@@ -21,6 +21,34 @@ namespace Portal11.Logic
             return val;                                                 // Return Command to caller
         }
 
+        // Carefully process the EntityID Query String, returning a string and int value. If missing provide an value of zero
+
+        public static QSValue GetEntityID()
+        {
+            QSValue val = new QSValue();
+            val.String = HttpContext.Current.Request.QueryString[PortalConstants.QSEntityID]; // Fetch the Entity ID, if it is present
+            if (string.IsNullOrEmpty(val.String))                       // If true the Query String is missing
+            {
+                val.Int = 0;
+                return val;
+            }
+            return ConvertID(val.String);                               // Convert Query String to int and return
+        }
+
+        // Carefully process the PersonID Query String, returning a string and int value. If missing provide an value of zero
+
+        public static QSValue GetPersonID()
+        {
+            QSValue val = new QSValue();
+            val.String = HttpContext.Current.Request.QueryString[PortalConstants.QSPersonID]; // Fetch the Person ID, if it is present
+            if (string.IsNullOrEmpty(val.String))                       // If true the Query String is missing
+            {
+                val.Int = 0;
+                return val;
+            }
+            return ConvertID(val.String);                               // Convert Query String to int and return
+        }
+
         // Carefully process the ProjectID Query String, returning a string and int value. If absent, check ProjectInfoCookie. If missing or bad, log error.
 
         public static QSValue GetProjectID()
@@ -65,21 +93,16 @@ namespace Portal11.Logic
             return val;                                                 // Project Name from whatever source
         }
 
-        // Carefully find the Project Role value in the ProjectInfoCookie. If missing or bad, log error.
+        // Carefully find the Project Role value in the ProjectRole query string. If missing, look in ProjectInfoCookie. If missing or bad, log error.
 
         public static string GetProjectRole()
         {
-            HttpCookie projectInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CProjectInfo]; // Find the Project Info cookie
-            if (projectInfoCookie == null)                              // If == no cookie. User is not logged in
-            {
-                HttpContext.Current.Response.Redirect(PortalConstants.URLLogin + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger + "&" +
-                    PortalConstants.QSStatus + "=Please log in before using Portal");
-                return "";                                              // Never actually get here...
-            }
-            string val = projectInfoCookie[PortalConstants.CProjectRole]; // Fetch Project Role from cookie
-            if (string.IsNullOrEmpty(val))                              // If true no Project Role in cookie, which is strange
-                LogError.LogInternalError(GetPageName(), "ProjectInfoCookie does not contain a Project Role value in GetProjectRole"); // Fatal error
-            
+            string val = HttpContext.Current.Request.QueryString[PortalConstants.QSProjectRole]; // Fetch the Project Role, if it is present
+            if (string.IsNullOrEmpty(val))                              // If true the Query String is missing
+                val = CookieActions.GetProjectRole();                   // Else, look for it in the ProjectInfo cookie
+                if (string.IsNullOrEmpty(val))                          // If true, cookie did not supply value. That's an error
+                    LogError.LogInternalError(GetPageName(), "Neither Query String nor ProjectInfoCookie contain a Project Role value in GetProjectRole"); 
+                                                                        // Fatal error
             return val;                                                 // Project Role
         }
 

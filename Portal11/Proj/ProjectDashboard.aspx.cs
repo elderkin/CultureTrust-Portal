@@ -17,7 +17,7 @@ namespace Portal11.Proj
     {
 
         // We've got two separate pages here, one for Deposits and one for Expenses. The result is a lot of code in this module.
-        // Page_Load goes first. Then all the routines for Deposits, in top-to-bottom order on the page. Then the same for Expenses.
+        // Page_Load goes first. Then all the routines for Approvals, in top-to-bottom order on the page. Then the same for Deposits and Expenses.
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -38,7 +38,7 @@ namespace Portal11.Proj
                 QSValue projID = QueryStringActions.GetProjectID();     // Look on the query string for Project ID
                 litSavedProjectID.Text = projID.String;                 // Save in a faster spot for later
 
-                litSavedProjectRole.Text = CookieActions.FindProjectRole(); // Track down role and save in a faster spot for later
+                litSavedProjectRole.Text = QueryStringActions.GetProjectRole(); // Track down role and save in a faster spot for later
 
                 // Fill project-specific date and amount fields at the top of the page.
 
@@ -56,11 +56,13 @@ namespace Portal11.Proj
 
                 if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a InternalCoordinator. Powerful
                     btnDepNew.Enabled = true;                           // Allow them to create a new Deposit
+                else
+                    btnAppNew.Enabled = false;                          // Only IC can create a new Approval Request
 
                 RestoreCheckboxes();                                    // Restore more recent checkbox settings from a cookie
 
-                int rows = CookieActions.FindGridViewRows();            // Find number of rows per page from cookie
-                gvAllApp.PageSize = rows;                             // Adjust grids accordingly
+                int rows = CookieActions.GetGridViewRows();            // Find number of rows per page from cookie
+                gvAllApp.PageSize = rows;                               // Adjust grids accordingly
                 gvAllDep.PageSize = rows;
                 gvAllExp.PageSize = rows;
 
@@ -453,9 +455,9 @@ namespace Portal11.Proj
                         }
                         break;
                     }
-                case AppState.AwaitingTrustDirector:
+                case AppState.AwaitingCommunityDirector:
                 case AppState.AwaitingFinanceDirector:
-                case AppState.AwaitingTrustExecutive:
+                case AppState.AwaitingPresident:
                 case AppState.Returned:
                     {
                         break;                                      // The button setup is just fine. No editing or deleting here
@@ -474,8 +476,6 @@ namespace Portal11.Proj
 
         protected void gvAllDep_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Label label = (Label)gvAllDep.SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
-            DepState state = EnumActions.ConvertTextToDepState(label.Text); // Carefully convert back into enumeration type
             btnDepArchive.Enabled = false;
             btnDepCopy.Enabled = false;                                 // Assume a powerless user
             btnDepDelete.Enabled = false;                               // and turn off all buttons
@@ -484,40 +484,83 @@ namespace Portal11.Proj
             btnDepReview.Enabled = false;
             btnDepView.Enabled = true;                                  // Everybody can View any Request
 
-            if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If == User is a Project Staff. Powerless.
-                return;
+            // Build up some context for the next set of decisions
 
-            if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == User is a Project Director
+            DepState state = EnumActions.ConvertTextToDepState(((Label)gvAllDep.SelectedRow.FindControl("lblCurrentState")).Text); // Carefully find state of row
+            bool archived = EnumActions.ConvertTextToBool(((Label)gvAllDep.SelectedRow.FindControl("lblArchived")).Text); // Carefully find Archived flag of row
+            ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Carefully find Project Role of user
+
+            switch(projectRole)
             {
-                // Note: Project Director cannot copy a Deposit Request - only IC can do that
-                if (state == DepState.AwaitingProjectDirector)          // If == the Request is waiting our action
-                {
-                    btnDepReview.Enabled = true;                        // A Project Director can review this Request
-                }
-                else if (state == DepState.DepositComplete)             // If == the Request is complete; could be archived
-                {
-                    Label archivedLabel = (Label)gvAllDep.SelectedRow.FindControl("lblArchived"); // Find the label control that contains Archived
-                    if (archivedLabel.Text == "False")                  // If == not currently archived.
-                        btnDepArchive.Enabled = true;                   // Light Archive button. Can't archive if already archived
-                }
-                return;                                                 // Otherwise, Project Director is powerless
-            }
-
-            if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a Project InternalCoordinator. Powerful
-            {
-                btnDepCopy.Enabled = true;                              // No match what state, we can copy the request
-                if (state == DepState.UnsubmittedByInternalCoordinator) // If == the Request is under construction by us
-                {
-                    btnDepDelete.Enabled = true;                        // Turn on other buttons
-                    btnDepEdit.Enabled = true;                          // that make sense in this state
-
-                }
-                else if (state == DepState.DepositComplete)             // If == the Request is complete; could be archived
-                {
-                    Label archivedLabel = (Label)gvAllDep.SelectedRow.FindControl("lblArchived"); // Find the label control that contains Archived
-                    if (archivedLabel.Text == "False")                  // If == not currently archived.
-                        btnDepArchive.Enabled = true;                   // Light Archive button. Can't archive if already archived
-                }
+                case ProjectRole.InternalCoordinator:
+                    {
+                        btnDepCopy.Enabled = true;                      // No matter what state, IC can copy the request
+                        switch (state)
+                        {
+                            case DepState.UnsubmittedByInternalCoordinator:
+                                {
+                                    btnDepEdit.Enabled = true;          // In mid-revision, IC can continue editing
+                                    break;
+                                }
+                            case DepState.Returned:
+                                {
+                                    btnDepReview.Enabled = true;        // IC can Review a Returned request
+                                    break;
+                                }
+                            case DepState.DepositComplete:
+                                {
+                                    if (!archived)                      // If false row not archived (yet)
+                                        btnDepArchive.Enabled = true;   // Allow it to be archived
+                                    break;
+                                }
+                            default:
+                                break;                                  // IC is powerless for all other states
+                        }
+                        break;
+                    }
+                case ProjectRole.ProjectDirector:
+                    {
+                        switch (state)
+                        {
+                            case DepState.AwaitingProjectDirector:      // PD can review a submitted request
+                            case DepState.RevisedByFinanceDirector:     // PD can review request that FD has revised
+                                {
+                                    btnDepReview.Enabled = true;
+                                    break;
+                                }
+                            case DepState.RevisingByProjectDirector:
+                                {
+                                    btnDepEdit.Enabled = true;          // In mid-revision, PD can continue editing
+                                    break;
+                                }
+                            case DepState.DepositComplete:
+                                {
+                                    if (!archived)                      // If false row not archived (yet)
+                                        btnDepArchive.Enabled = true;   // Allow it to be archived
+                                    break;
+                                }
+                            default:
+                                break;                                  // PD is powerless for all other states
+                        }
+                        break;
+                    }
+                case ProjectRole.RevisingFinanceDirector:
+                    {
+                        //** I don't think we can get here. FD has no access to Project Dashboard **
+                        switch (state)
+                        {
+                            case DepState.RevisingByFinanceDirector:
+                                {
+                                    btnDepEdit.Enabled = true;          // In mid-revision, FD can continue editing
+                                    break;
+                                }
+                            default:
+                                break;                                  // FD is powerless for all other states
+                        }
+                        break;
+                    }
+                default:
+                    break;                                              // Others are powerless - all buttons off
             }
             return;
         }
@@ -528,80 +571,107 @@ namespace Portal11.Proj
 
         protected void gvAllExp_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Label label = (Label)gvAllExp.SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
-            ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Convert back into enumeration type
             btnExpArchive.Enabled = false;
-            btnExpCopy.Enabled = true;                                  // If any Request is selected, the user can always copy it
+            btnExpCopy.Enabled = true;                                  // If any Request is selected, the project user can always copy it
             btnExpDelete.Enabled = false;                               // Assume User cannot Delete Request
             btnExpEdit.Enabled = false;                                 // Assume User cannot Edit Request
             btnExpReview.Enabled = false;                               // Assume User cannot Review Request
             btnExpView.Enabled = true;                                  // If any Request is selected, the user can always view it
 
-            switch (state)
+
+            // Build up some context for the next set of decisions
+
+            ExpState state = EnumActions.ConvertTextToExpState(((Label)gvAllExp.SelectedRow.FindControl("lblCurrentState")).Text); // Carefully find state of row
+            bool archived = EnumActions.ConvertTextToBool(((Label)gvAllExp.SelectedRow.FindControl("lblArchived")).Text); // Carefully find Archived flag of row
+            ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Carefully find Project Role of user
+
+            switch (projectRole)
             {
-                case ExpState.UnsubmittedByInternalCoordinator:
+                case ProjectRole.InternalCoordinator:
                     {
-                        if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == the user is a coordinator
+                        switch (state)
                         {
-                            btnExpDelete.Enabled = true;
-                            btnExpEdit.Enabled = true;
+                            case ExpState.AwaitingInternalCoordinator:
+                            case ExpState.ReturnedToInternalCoordinator:
+                                {
+                                    btnExpReview.Enabled = true;        // IC can Review a Returned request
+                                    break;
+                                }
+                            case ExpState.UnsubmittedByInternalCoordinator:
+                                {
+                                    btnExpDelete.Enabled = true;        // IC can Delete own request
+                                    btnExpEdit.Enabled = true;          // In mid-revision, IC can continue editing
+                                    break;
+                                }
+                            case ExpState.Paid:
+                                {
+                                    if (!archived)                      // If false row not archived (yet)
+                                        btnExpArchive.Enabled = true;   // Allow it to be archived
+                                    break;
+                                }
+                            default:
+                                break;                                  // IC is powerless for all other states
                         }
                         break;
                     }
-                case ExpState.UnsubmittedByProjectDirector:
+                case ProjectRole.ProjectStaff:
                     {
-                        if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == the user is a PD
+                        switch (state)
                         {
-                            btnExpDelete.Enabled = true;
-                            btnExpEdit.Enabled = true;
+                            case ExpState.ReturnedToProjectStaff:
+                                {
+                                    btnExpReview.Enabled = true;        // PS can Review a Returned request
+                                    break;
+                                }
+                            case ExpState.UnsubmittedByProjectStaff:
+                                {
+                                    btnExpDelete.Enabled = true;        // PS can Delete own request
+                                    btnExpEdit.Enabled = true;          // In mid-revision, PS can continue editing
+                                    break;
+                                }
+                            default:
+                                break;                                  // PS is powerless for all other states
                         }
                         break;
                     }
-                case ExpState.UnsubmittedByProjectStaff:
+                case ProjectRole.ProjectDirector:
                     {
-                        if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If == the user is a PS
+                        switch (state)
                         {
-                            btnExpDelete.Enabled = true;
-                            btnExpEdit.Enabled = true;
+                            case ExpState.ReturnedToProjectDirector:    // PD can review a returned request
+                            case ExpState.AwaitingProjectDirector:      // PD can review a submitted request
+                            case ExpState.RevisedByCommunityDirector:   // PD can review a revised request
+                            case ExpState.RevisedByFinanceDirector:
+                            case ExpState.RevisedByInternalCoordinator:
+                            case ExpState.RevisedByPresident:
+                                {
+                                    btnExpReview.Enabled = true;
+                                    break;
+                                }
+                            case ExpState.UnsubmittedByProjectDirector: // PD can edit an unsubmitted request
+                                {
+                                    btnExpDelete.Enabled = true;        // PD can deelte own request
+                                    btnExpEdit.Enabled = true;          // PD can edit own request
+                                    break;
+                                }
+                            case ExpState.RevisingByProjectDirector:    // PD can edit a revising request
+                                {
+                                    btnExpEdit.Enabled = true;          // PD can edit own request
+                                    break;
+                                }
+                            case ExpState.Paid:                         // PD can archive a completed request
+                                {
+                                    if (!archived)                      // If false row not archived (yet)
+                                        btnExpArchive.Enabled = true;   // Allow it to be archived
+                                    break;
+                                }
+                            default:
+                                break;                                  // PD is powerless for all other states
                         }
                         break;
-                    }
-                case ExpState.AwaitingProjectDirector:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == user is a Project Director, can Review
-                            btnExpReview.Enabled = true;
-                        break;
-                    }
-                case ExpState.AwaitingInternalCoordinator:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == user is an Internal Coordinator, can Review
-                            btnExpReview.Enabled = true;
-                        break;
-                    }
-                case ExpState.Paid:
-                    {
-                        if ((litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString())
-                            || litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == the user can Archive
-                        {
-                            Label archivedLabel = (Label)gvAllExp.SelectedRow.FindControl("lblArchived"); // Find the label control that contains Archived
-                            if (archivedLabel.Text == "False")      // If == not currently archived.
-                                btnExpArchive.Enabled = true;       // Light Archive button. Can't archive if already archived
-                        }
-                        break;
-                    }
-                case ExpState.AwaitingTrustDirector:
-                case ExpState.AwaitingFinanceDirector:
-                case ExpState.AwaitingTrustExecutive:
-                case ExpState.Approved:
-                case ExpState.PaymentSent:
-                case ExpState.Returned:
-                    {
-                        break;                                      // The button setup is just fine. No editing or deleting here
                     }
                 default:
-                    LogError.LogInternalError("ProjectDashboard", string.Format("Invalid ExpState '{0}' from database",
-                        state)); // Fatal error
-                    break;
+                    break;                                              // Others are powerless - all buttons off
             }
             return;
         }
@@ -648,7 +718,7 @@ namespace Portal11.Proj
 
         protected void btnAppArchive_Click(object sender, EventArgs e)
         {
-            int appID = QueryStringActions.ConvertID(FetchSelectedRowLabel(gvAllApp)).Int; // Get ready for action with an int version of the App ID
+            int appID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllApp)).Int; // Get ready for action with an int version of the App ID
 
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -681,18 +751,20 @@ namespace Portal11.Proj
 
         protected void btnAppCopy_Click(object sender, EventArgs e)
         {
-            string appID = FetchSelectedRowLabel(gvAllApp);               // Extract the text of the control, which is AppID
+            string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is AppID
             Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + appID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandCopy); // Start with existing request
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandCopy + "&" // Start with existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
         }
 
         // Delete button pressed. We do this here.
 
         protected void btnAppDelete_Click(object sender, EventArgs e)
         {
-            int appID = QueryStringActions.ConvertID(FetchSelectedRowLabel(gvAllApp)).Int; // Get ready for action with an int version of the Exp ID
+            int appID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllApp)).Int; // Get ready for action with an int version of the Exp ID
 
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -728,12 +800,13 @@ namespace Portal11.Proj
 
         protected void btnAppEdit_Click(object sender, EventArgs e)
         {
-            string appID = FetchSelectedRowLabel(gvAllApp);               // Extract the text of the control, which is AppID
+            string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is AppID
             Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + appID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit); // Start with an existing request
-
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with an existing request
+                                              + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
         }
 
         protected void btnAppNew_Click(object sender, EventArgs e)
@@ -743,28 +816,32 @@ namespace Portal11.Proj
 
             Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew); // Start with an empty request
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew + "&" // Start with an empty request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
         }
 
         protected void btnAppReview_Click(object sender, EventArgs e)
         {
-            string appID = FetchSelectedRowLabel(gvAllApp);               // Extract the text of the control, which is DepID
+            string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is DepID
 
             // Unconditionally send Request to ReviewRequest. It is possible that the user does not have the authority to review the Request in
             // its current state. But we'll let ReviewRequest display all the detail for the Dep and then deny editing.
 
             Response.Redirect(PortalConstants.URLReviewApproval + "?" + PortalConstants.QSRequestID + "=" + appID + "&" // Start with an existing request
-                                              + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview + "&" // Review it
-                                              + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview + "&" // Review it
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
         }
 
         protected void btnAppView_Click(object sender, EventArgs e)
         {
-            string appID = FetchSelectedRowLabel(gvAllApp);               // Extract the text of the control, which is AppID
+            string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is AppID
             Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + appID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView); // Start with existing request
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView + "&" // Start with existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
         }
 
         // Start of DEPOSIT section
@@ -773,21 +850,21 @@ namespace Portal11.Proj
 
         protected void btnDepArchive_Click(object sender, EventArgs e)
         {
-            int depID = QueryStringActions.ConvertID(FetchSelectedRowLabel(gvAllDep)).Int; // Get ready for action with an int version of the Dep ID
+            int depID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllDep)).Int; // Get ready for action with an int version of the Dep ID
 
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 try
                 {
-                    Dep toUpdate = context.Deps.Find(depID);            // Fetch Dep row by its key
-                    if (toUpdate == null)
+                    Dep toArchive = context.Deps.Find(depID);            // Fetch Dep row by its key
+                    if (toArchive == null)
                         LogError.LogInternalError("ProjectDashboard", $"Unable to locate DepositID {depID.ToString()} in database");
                     // Log fatal error
 
-                    toUpdate.Archived = true;                           // Mark request as Archived
+                    toArchive.Archived = true;                          // Mark request as Archived
                     DepHistory hist = new DepHistory();                 // Get a place to build a new DepHistory row
-                    StateActions.CopyPreviousState(toUpdate, hist, "Archived"); // Create a DepHistory log row from "old" version of Deposit
-                    StateActions.SetNewDepState(toUpdate, hist.PriorDepState, litSavedUserID.Text, hist);
+                    StateActions.CopyPreviousState(toArchive, hist, "Archived"); // Create a DepHistory log row from "old" version of Deposit
+                    StateActions.SetNewDepState(toArchive, hist.PriorDepState, litSavedUserID.Text, hist);
                     // Write down our current State (which doesn't change here) and authorship
                     context.DepHistorys.Add(hist);                      // Save new DepHistory row
                     context.SaveChanges();                              // Commit the Add or Modify
@@ -805,18 +882,20 @@ namespace Portal11.Proj
         // Copy button pushed. Just dispatch
         protected void btnDepCopy_Click(object sender, EventArgs e)
         {
-            string depID = FetchSelectedRowLabel(gvAllDep);               // Extract the text of the control, which is ExpID
+            string depID = GetSelectedRowID(gvAllDep);               // Extract the text of the control, which is ExpID
             Response.Redirect(PortalConstants.URLEditDeposit + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + depID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandCopy); // Start with existing request
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandCopy + "&" // Start with existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
         }
 
         // Delete button pushed. Clean up all the parts of the Deposit Request including supporting documents and history.
 
         protected void btnDepDelete_Click(object sender, EventArgs e)
         {
-            int depID = QueryStringActions.ConvertID(FetchSelectedRowLabel(gvAllDep)).Int; // Extract the text of the control, which is DepID
+            int depID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllDep)).Int; // Extract the text of the control, which is DepID
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 try
@@ -852,11 +931,13 @@ namespace Portal11.Proj
 
         protected void btnDepEdit_Click(object sender, EventArgs e)
         {
-            string depID = FetchSelectedRowLabel(gvAllDep);               // Extract the text of the control, which is DepID
+            string depID = GetSelectedRowID(gvAllDep);               // Extract the text of the control, which is DepID
             Response.Redirect(PortalConstants.URLEditDeposit + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + depID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit); // Start with an existing request
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with an existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
         }
 
         protected void btnDepNew_Click(object sender, EventArgs e)
@@ -866,39 +947,81 @@ namespace Portal11.Proj
 
             Response.Redirect(PortalConstants.URLEditDeposit + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew); // Start with an empty request
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew + "&" // Start with an empty request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
         }
 
-        // Review Request button clicked. This is a "Staff" function that only the Project Director can access. Dispatch to the ReviewExpense
-        // page.
+        // Review Request button clicked. One of two situations:
+        //  1) The IC is revising a Returned request. This triggers a Revise function, via a dispatch to Edit Deposit. (Unfortunate name overload of "Review".)
+        //  2) The PD is reviewing an Awaiting request. This triggers a Review function. Dispatch to Review Deposit.
 
         protected void btnDepReview_Click(object sender, EventArgs e)
         {
-            string depID = FetchSelectedRowLabel(gvAllDep);               // Extract the text of the control, which is DepID
+            string ID = GetSelectedRowID(gvAllDep);                         // Extract the text of the rowID control, which is DepID
+            DepState currState = EnumActions.ConvertTextToDepState(GetSelectedRowCurrentState(gvAllDep)); // Extract and convert Current State of request
 
-            // Unconditionally send Dep to ReviewRequest. It is possible that the user does not have the authority to review the Dep in
+            if (StateActions.RequestIsReturned(currState))             // If true dispatch to EditDeposit to revise the request
+            {
+                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+                {
+                    try
+                    {
+                        int depID = QueryStringActions.ConvertID(ID).Int;   // Convert to Deposit ID
+                        Dep toRevise = context.Deps.Find(depID);            // Fetch Dep row by its key
+                        if (toRevise == null)
+                            LogError.LogInternalError("ProjectDashboard", $"Unable to locate DepositID {depID.ToString()} in database"); // Log fatal error
+
+                        DepHistory hist = new DepHistory();                 // Get a place to build a new DepHistory row
+                        StateActions.CopyPreviousState(toRevise, hist, "Reviewed"); // Create a DepHistory log row from "old" version of Deposit
+                        StateActions.SetNewDepState(toRevise, StateActions.FindNextState(toRevise.CurrentState, ReviewAction.Revise), litSavedUserID.Text, hist);
+                        // Write down our new state and authorship
+                        context.DepHistorys.Add(hist);                      // Save new DepHistory row
+                        context.SaveChanges();                              // Commit the Add or Modify
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError.LogDatabaseError(ex, "ProjectDashboard",
+                            "Error updating Dep and DepHistory rows");      // Fatal error
+                    }
+                }
+                Response.Redirect(PortalConstants.URLEditDeposit + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text
+                             + "&" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text
+                             + "&" + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text
+                             + "&" + PortalConstants.QSRequestID + "=" + ID // Use selected row's ID
+                             + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandRevise // Revise the returned request
+                             + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+
+            }
+            else                                                    // Otherwise dispatch to ReviewDeposit to review the request
+            {
+
+            // It is possible that the user does not have the authority to review the Dep in
             // its current state. But we'll let ReviewRequest display all the detail for the Dep and then deny editing.
 
-            Response.Redirect(PortalConstants.URLReviewDeposit + "?" + PortalConstants.QSRequestID + "=" + depID + "&" // Start with an existing request
-                                              + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview + "&" // Review it
-                                              + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+            Response.Redirect(PortalConstants.URLReviewDeposit + "?" + PortalConstants.QSRequestID + "=" + ID  // Start with an existing request
+                            + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview // Review it
+                            + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+            }
         }
 
         // View button clicked.
         protected void btnDepView_Click(object sender, EventArgs e)
         {
-            string depID = FetchSelectedRowLabel(gvAllDep);               // Extract the text of the control, which is DepID
+            string depID = GetSelectedRowID(gvAllDep);               // Extract the text of the control, which is DepID
             Response.Redirect(PortalConstants.URLEditDeposit + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + depID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView); // Start with existing request
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView + "&" // Start with existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
         }
 
         // Archive button pressed. Just flip on the Archived flag
 
         protected void btnExpArchive_Click(object sender, EventArgs e)
         {
-            int expID = QueryStringActions.ConvertID(FetchSelectedRowLabel(gvAllExp)).Int; // Get ready for action with an int version of the Exp ID
+            int expID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllExp)).Int; // Get ready for action with an int version of the Exp ID
 
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -931,18 +1054,20 @@ namespace Portal11.Proj
 
         protected void btnExpCopy_Click(object sender, EventArgs e)
         {
-            string expID = FetchSelectedRowLabel(gvAllExp);               // Extract the text of the control, which is ExpID
+            string expID = GetSelectedRowID(gvAllExp);               // Extract the text of the control, which is ExpID
             Response.Redirect(PortalConstants.URLEditExpense + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + expID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandCopy); // Start with existing request
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandCopy + "&" // Start with existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page
         }
 
         // Delete button clicked. Wipe out the Request and it's associated rows and files.
 
         protected void btnExpDelete_Click(object sender, EventArgs e)
         {
-            int expID = QueryStringActions.ConvertID(FetchSelectedRowLabel(gvAllExp)).Int; // Get ready for action with an int version of the Exp ID
+            int expID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllExp)).Int; // Get ready for action with an int version of the Exp ID
 
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -982,11 +1107,13 @@ namespace Portal11.Proj
 
         protected void btnExpEdit_Click(object sender, EventArgs e)
         {
-            string expID = FetchSelectedRowLabel(gvAllExp);               // Extract the text of the control, which is ExpID
+            string expID = GetSelectedRowID(gvAllExp);               // Extract the text of the control, which is ExpID
             Response.Redirect(PortalConstants.URLEditExpense + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + expID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit); // Start with an existing request
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with an existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page
         }
 
         // New Request button has been clicked. Dispatch to Edit Detail
@@ -998,34 +1125,74 @@ namespace Portal11.Proj
             
             Response.Redirect(PortalConstants.URLEditExpense + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew); // Start with an empty request
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew + "&" // Start with an empty request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page
         }
 
-        // Review Request button clicked. This is a "Staff" function that only the Project Director can access. Dispatch to the ReviewExpense
-        // page.
+        // Review Request button clicked. One of two situations:
+        //  1) The originator (IC/PD/PS) is revising a Returned request. This triggers a Revise function, via a dispatch to Edit Expense. (Unfortunate name overload of "Review".)
+        //  2) The PD is reviewing an Awaiting request. This triggers a Review function. Dispatch to Review Expense.
 
         protected void btnExpReview_Click(object sender, EventArgs e)
         {
-            string expID = FetchSelectedRowLabel(gvAllExp);               // Extract the text of the control, which is ExpID
+            string ID = GetSelectedRowID(gvAllExp);                         // Extract the text of the rowID control, which is ExpID
+            ExpState currState = EnumActions.ConvertTextToExpState(GetSelectedRowCurrentState(gvAllExp)); // Extract and convert Current State of request
 
-            // Unconditionally send Exp to ReviewRequest. It is possible that the user does not have the authority to review the exp in
-            // its current state. But we'll let ReviewRequest display all the detail for the Exp and then deny editing.
+            if (StateActions.RequestIsReturned(currState))            // If true dispatch to EditExpense to revise the request
+            {
+                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+                {
+                    try
+                    {
+                        int expID = QueryStringActions.ConvertID(ID).Int;   // Convert to Expense ID
+                        Exp toRevise = context.Exps.Find(expID);            // Fetch Exp row by its key
+                        if (toRevise == null)
+                            LogError.LogInternalError("ProjectDashboard", $"Unable to locate ExpenseID {expID.ToString()} in database"); // Log fatal error
 
-            Response.Redirect(PortalConstants.URLReviewExpense + "?" + PortalConstants.QSRequestID + "=" + expID + "&" // Start with an existing request
-                                              + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview + "&" // Review it
-                                              + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+                        ExpHistory hist = new ExpHistory();                 // Get a place to build a new ExpHistory row
+                        StateActions.CopyPreviousState(toRevise, hist, "Reviewed"); // Create a ExpHistory log row from "old" version of Expense
+                        StateActions.SetNewExpState(toRevise, StateActions.FindNextState(toRevise.CurrentState, ReviewAction.Revise), litSavedUserID.Text, hist);
+                        // Write down our new state and authorship
+                        context.ExpHistorys.Add(hist);                      // Save new ExpHistory row
+                        context.SaveChanges();                              // Commit the Add or Modify
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError.LogDatabaseError(ex, "ProjectDashboard", "Error updating Exp and ExpHistory rows");      // Fatal error
+                    }
+                }
+                Response.Redirect(PortalConstants.URLEditExpense + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text
+                             + "&" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text
+                             + "&" + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text
+                             + "&" + PortalConstants.QSRequestID + "=" + ID // Use selected row's ID
+                             + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandRevise // Revise the returned request
+                             + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
 
+            }
+            else                                                    // Otherwise dispatch to ReviewExpense to review the request
+            {
+
+                // It is possible that the user does not have the authority to review the Exp in
+                // its current state. But we'll let ReviewRequest display all the detail for the Exp and then deny editing.
+
+                Response.Redirect(PortalConstants.URLReviewExpense + "?" + PortalConstants.QSRequestID + "=" + ID  // Start with an existing request
+                                + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview // Review it
+                                + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+            }
         }
 
         // View button clicked. 
 
         protected void btnExpView_Click(object sender, EventArgs e)
         {
-            string expID = FetchSelectedRowLabel(gvAllExp);               // Extract the text of the control, which is ExpID
+            string expID = GetSelectedRowID(gvAllExp);               // Extract the text of the control, which is ExpID
             Response.Redirect(PortalConstants.URLEditExpense + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + expID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView); // Start with existing request
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView + "&" // Start with existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page
         }
 
         // Fetch all of the Requests for this project, subject to further search constraints. Display in a GridView.
@@ -1091,8 +1258,8 @@ namespace Portal11.Proj
 
                         case AppState.AwaitingFinanceDirector:
                         case AppState.AwaitingInternalCoordinator:
-                        case AppState.AwaitingTrustDirector:
-                        case AppState.AwaitingTrustExecutive:
+                        case AppState.AwaitingCommunityDirector:
+                        case AppState.AwaitingPresident:
                             if (ckRAwaitingCWStaff.Checked)             // If true, interested in these states
                                 useRow = true;                          // Process the row, don't skip it
                             break;
@@ -1186,12 +1353,28 @@ namespace Portal11.Proj
                     pred = pred.And(r => r.EntityID == id);                 // Only requests from selected Entity
                 }
 
+                // If a specific GLCode is selected, only select requests for that GLCode
+
+                if (ddlGLCode.SelectedIndex > 0)                            // If > GLCode is selected. Fetch rqsts only for that GLCode
+                {
+                    int id = Convert.ToInt32(ddlGLCode.SelectedValue);      // Convert ID of selected GLCode
+                    pred = pred.And(r => r.GLCodeID == id);                 // Only requests from selected GLCode
+                }
+
                 // If a specific Person is selected, only select requests from that Person
 
                 if (ddlPersonName.SelectedIndex > 0)                        // If > Person is selected. Fetch rqsts only for that Person
                 {
                     int id = Convert.ToInt32(ddlPersonName.SelectedValue);  // Convert ID of selected Person
                     pred = pred.And(r => r.PersonID == id);                 // Only requests from selected Person
+                }
+
+                // If a specific ProjectClass is selected, only select requests from that ProjectClass
+
+                if (ddlProjectClass.SelectedIndex > 0)                      // If > ProjectClass is selected. Fetch rqsts only for that ProjectClass
+                {
+                    int id = Convert.ToInt32(ddlProjectClass.SelectedValue); // Convert ID of selected ProjectClass
+                    pred = pred.And(r => r.ProjectClassID == id);           // Only requests from selected ProjectClass
                 }
 
                 List<Dep> deps = context.Deps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
@@ -1207,12 +1390,15 @@ namespace Portal11.Proj
                     {
                         case DepState.UnsubmittedByInternalCoordinator:
                         case DepState.AwaitingProjectDirector:
+                        case DepState.RevisingByProjectDirector:
+                        case DepState.RevisedByFinanceDirector:
                             if (ckRUnsubmitted.Checked)                 // If true, interested in these states
                                 useRow = true;                          // Process the row, don't skip it
                             break;
 
                         case DepState.AwaitingFinanceDirector:
-                        case DepState.AwaitingTrustDirector:
+                        case DepState.AwaitingCommunityDirector:
+                        case DepState.RevisingByFinanceDirector:
                             if (ckRAwaitingCWStaff.Checked)             // If true, interested in these states
                                 useRow = true;                          // Process the row, don't skip it
                             break;
@@ -1344,12 +1530,28 @@ namespace Portal11.Proj
                     pred = pred.And(r => r.EntityID == id);                 // Only requests from selected Entity
                 }
 
+                // If a specific GLCode is selected, only select requests for that GLCode
+
+                if (ddlGLCode.SelectedIndex > 0)                            // If > GLCode is selected. Fetch rqsts only for that GLCode
+                {
+                    int id = Convert.ToInt32(ddlGLCode.SelectedValue);      // Convert ID of selected GLCode
+                    pred = pred.And(r => r.GLCodeID == id);                 // Only requests from selected GLCode
+                }
+
                 // If a specific Person is selected, only select requests from that Person
 
                 if (ddlPersonName.SelectedIndex > 0)                        // If > Person is selected. Fetch rqsts only for that Person
                 {
                     int id = Convert.ToInt32(ddlPersonName.SelectedValue);  // Convert ID of selected Person
                     pred = pred.And(r => r.PersonID == id);                 // Only requests from selected Person
+                }
+
+                // If a specific ProjectClass is selected, only select requests from that ProjectClass
+
+                if (ddlProjectClass.SelectedIndex > 0)                      // If > ProjectClass is selected. Fetch rqsts only for that ProjectClass
+                {
+                    int id = Convert.ToInt32(ddlProjectClass.SelectedValue); // Convert ID of selected ProjectClass
+                    pred = pred.And(r => r.ProjectClassID == id);           // Only requests from selected ProjectClass
                 }
 
                 List<Exp> exps = context.Exps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList(); 
@@ -1363,20 +1565,29 @@ namespace Portal11.Proj
                     bool useRow = false;                                // Assume that we skip this row
                     switch (r.CurrentState)
                     {
+                        case ExpState.AwaitingProjectDirector:
+                        case ExpState.RevisedByCommunityDirector:
+                        case ExpState.RevisedByFinanceDirector:
+                        case ExpState.RevisedByInternalCoordinator:
+                        case ExpState.RevisedByPresident:
+                        case ExpState.RevisingByProjectDirector:
                         case ExpState.UnsubmittedByInternalCoordinator:
                         case ExpState.UnsubmittedByProjectDirector:
                         case ExpState.UnsubmittedByProjectStaff:
-                        case ExpState.AwaitingProjectDirector:
                             if (ckRUnsubmitted.Checked)                 // If true, interested in these states
                                 useRow = true;                          // Process the row, don't skip it
                             break;
 
-                        case ExpState.AwaitingInternalCoordinator:
-                        case ExpState.AwaitingFinanceDirector:
-                        case ExpState.AwaitingTrustDirector:
-                        case ExpState.AwaitingTrustExecutive:
                         case ExpState.Approved:
+                        case ExpState.AwaitingCommunityDirector:
+                        case ExpState.AwaitingFinanceDirector:
+                        case ExpState.AwaitingInternalCoordinator:
+                        case ExpState.AwaitingPresident:
                         case ExpState.PaymentSent:
+                        case ExpState.RevisingByCommunityDirector:
+                        case ExpState.RevisingByFinanceDirector:
+                        case ExpState.RevisingByInternalCoordinator:
+                        case ExpState.RevisingByPresident:
                             if (ckRAwaitingCWStaff.Checked)             // If true, interested in these states
                                 useRow = true;                          // Process the row, don't skip it
                             break;
@@ -1386,7 +1597,9 @@ namespace Portal11.Proj
                                 useRow = true;                          // Process the row, don't skip it
                             break;
 
-                        case ExpState.Returned:
+                        case ExpState.ReturnedToInternalCoordinator:
+                        case ExpState.ReturnedToProjectDirector:
+                        case ExpState.ReturnedToProjectStaff:
                             if (ckRReturned.Checked)                    // If true, interested in these states
                                 useRow = true;                          // Process the row, don't skip it
                             break;
@@ -1473,14 +1686,22 @@ namespace Portal11.Proj
 
         // A little common fragment that pulls the request ID from the selected row of the GridView control and makes sure it's not blank.
 
-        string FetchSelectedRowLabel(GridView allview)
+        string GetSelectedRowID(GridView allview)
         {
             Label label = (Label)allview.SelectedRow.FindControl("lblRowID"); // Find the label control that contains DepID or ExpID
             string ID = label.Text;                                     // Extract the text of the control, which is ExpID
-            if (ID == "")
-                LogError.LogInternalError("ProjectDashboard", string.Format(
-                    "Unable to find Deposit/Expense ID '{0}' from selected GridView row in database", ID)); // Fatal error
+            if (string.IsNullOrEmpty(ID))                               // If true ID is missing
+                LogError.LogInternalError("ProjectDashboard", $"Unable to find Deposit/Expense ID '{ID}' from selected GridView row in database"); // Fatal error
             return ID;
+        }
+
+        string GetSelectedRowCurrentState(GridView allview)
+        {
+            Label label = (Label)allview.SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains DepID or ExpID
+            string state = label.Text;                                     // Extract the text of the control, which is ExpID
+            if (string.IsNullOrEmpty(state))                               // If true state is missing
+                LogError.LogInternalError("ProjectDashboard", $"Unable to find Current State '{state}' from selected GridView row in database"); // Fatal error
+            return state;
         }
 
         // Fill a Drop Down List with available Entity Names
@@ -1508,8 +1729,39 @@ namespace Portal11.Proj
                     rows.Rows.Add(dr);                               // Add the new row to the data table
                 }
 
-                StateActions.LoadDdl(ddlEntityName, entityID, rows,
+                DdlActions.LoadDdl(ddlEntityName, entityID, rows,
                     "", "-- All Project Entities --", alwaysDisplayLeader: true); // Put the cherry on top
+            }
+            return;
+        }
+
+        // Fill a Drop Down List with available GLCode Names
+
+        void FillGLCodeDDL(int? GLCodeID)
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                string fran = SupportingActions.GetFranchiseKey();  // Fetch current franchise key
+                var query = from gl in context.GLCodes
+                            where !gl.Inactive                    // All active projects
+                                && (gl.FranchiseKey == fran)      // For this franchise
+                            orderby gl.Code
+                            select new { gl.GLCodeID, gl.Code };
+
+                DataTable rows = new DataTable();
+                rows.Columns.Add(PortalConstants.DdlID);
+                rows.Columns.Add(PortalConstants.DdlName);
+
+                foreach (var row in query)
+                {
+                    DataRow dr = rows.NewRow();                      // Build a row from the next query output
+                    dr[PortalConstants.DdlID] = row.GLCodeID;
+                    dr[PortalConstants.DdlName] = row.Code;
+                    rows.Rows.Add(dr);                               // Add the new row to the data table
+                }
+
+                DdlActions.LoadDdl(ddlGLCode, GLCodeID, rows,
+                    " -- Error: No Codes defined in Portal --", "-- All Codes --", alwaysDisplayLeader: true); // Put the cherry on top
             }
             return;
         }
@@ -1539,8 +1791,39 @@ namespace Portal11.Proj
                     rows.Rows.Add(dr);                               // Add the new row to the data table
                 }
 
-                StateActions.LoadDdl(ddlPersonName, personID, rows,
+                DdlActions.LoadDdl(ddlPersonName, personID, rows,
                     "", "-- All Project Persons --", alwaysDisplayLeader: true); // Put the cherry on top
+            }
+            return;
+        }
+
+        // Fill a Drop Down List with available ProjectClasses
+
+        void FillProjectClassDDL(int? projectClassID)
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                int projID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int; // Find ID of current project
+
+                var query = (from pc in context.ProjectClasses
+                             where pc.ProjectID == projID            // This project only
+                             select new { ProjectClassID = pc.ProjectClassID, Name = pc.Name }
+                            ).Distinct().OrderBy(x => x.Name);      // Find all Project Classes for this project
+
+                DataTable rows = new DataTable();
+                rows.Columns.Add(PortalConstants.DdlID);
+                rows.Columns.Add(PortalConstants.DdlName);
+
+                foreach (var row in query)
+                {
+                    DataRow dr = rows.NewRow();                      // Build a row from the next query output
+                    dr[PortalConstants.DdlID] = row.ProjectClassID;
+                    dr[PortalConstants.DdlName] = row.Name;
+                    rows.Rows.Add(dr);                               // Add the new row to the data table
+                }
+
+                DdlActions.LoadDdl(ddlProjectClass, projectClassID, rows,
+                    "", "-- All Project Classes --", alwaysDisplayLeader: true); // Put the cherry on top
             }
             return;
         }
@@ -1564,12 +1847,18 @@ namespace Portal11.Proj
             projectCheckboxesCookie[PortalConstants.CProjectCkRActive] = ckRActive.Checked.ToString();
             projectCheckboxesCookie[PortalConstants.CProjectCkRArchived] = ckRArchived.Checked.ToString();
 
-            int? selection = StateActions.UnloadDdl(ddlEntityName);
+            int? selection = DdlActions.UnloadDdl(ddlEntityName);
             if (selection != null)                                      // If != something is selected
                 projectCheckboxesCookie[PortalConstants.CProjectDdlEntityID] = selection.ToString();
-            selection = StateActions.UnloadDdl(ddlPersonName);
+            selection = DdlActions.UnloadDdl(ddlGLCode);
+            if (selection != null)                                      // If != something is selected
+                projectCheckboxesCookie[PortalConstants.CProjectDdlGLCodeID] = selection.ToString();
+            selection = DdlActions.UnloadDdl(ddlPersonName);
             if (selection != null)                                      // If != something is selected
                 projectCheckboxesCookie[PortalConstants.CProjectDdlPersonID] = selection.ToString();
+            selection = DdlActions.UnloadDdl(ddlProjectClass);
+            if (selection != null)                                      // If != something is selected
+                projectCheckboxesCookie[PortalConstants.CProjectDdlProjectClassID] = selection.ToString();
 
             projectCheckboxesCookie[PortalConstants.CProjectAppVisible] = pnlApp.Visible.ToString();
             projectCheckboxesCookie[PortalConstants.CProjectDepVisible] = pnlDep.Visible.ToString();
@@ -1621,16 +1910,28 @@ namespace Portal11.Proj
                 // Dropdown Lists
 
                 string entityID = projectCheckboxesCookie[PortalConstants.CProjectDdlEntityID];
-                if (entityID == null)                                       // If = cookie doesn't contain an Entity ID; no selection
+                if (entityID == null)                                       // If = cookie doesn't contain an ID; no selection
                     FillEntityDDL(null);                                    // Fill the list, no selection
                 else
                     FillEntityDDL(Convert.ToInt32(entityID));               // Fill the list, highlight selection
 
+                string glCodeID = projectCheckboxesCookie[PortalConstants.CProjectDdlGLCodeID];
+                if (glCodeID == null)                                       // If = cookie doesn't contain an ID; no selection
+                    FillGLCodeDDL(null);                                    // Fill the list, no selection
+                else
+                    FillGLCodeDDL(Convert.ToInt32(glCodeID));               // Fill the list, highlight selection
+
                 string personID = projectCheckboxesCookie[PortalConstants.CProjectDdlPersonID];
-                if (personID == null)                                       // If = cookie doesn't contain an Entity ID; no selection
+                if (personID == null)                                       // If = cookie doesn't contain an ID; no selection
                     FillPersonDDL(null);                                    // Fill the list, no selection
                 else
                     FillPersonDDL(Convert.ToInt32(personID));               // Fill the list, highlight selection
+
+                string projectClassID = projectCheckboxesCookie[PortalConstants.CProjectDdlProjectClassID];
+                if (projectClassID == null)                                 // If = cookie doesn't contain an ID; no selection
+                    FillProjectClassDDL(null);                              // Fill the list, no selection
+                else
+                    FillProjectClassDDL(Convert.ToInt32(projectClassID));   // Fill the list, highlight selection
 
                 // Archive check boxes
 
@@ -1676,7 +1977,9 @@ namespace Portal11.Proj
             else                                                        // Cookie doesn't exist
             {
                 FillEntityDDL(null);                                    // Fill the list, no selection
+                FillGLCodeDDL(null);
                 FillPersonDDL(null);
+                FillProjectClassDDL(null);
             }
         }
     }

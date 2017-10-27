@@ -18,7 +18,7 @@
 
     <div class="row">
         <div class="col-xs-6">
-            <h4>Projects</h4>
+            <h4>Projects (Name or Code)</h4>
         </div>
     </div>
 
@@ -167,6 +167,11 @@
                         <asp:TemplateField HeaderText="ID" Visible="false">
                             <ItemTemplate>
                                 <asp:Label ID="lblRowID" runat="server" Text='<%# Bind("ProjectID") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Project Code">
+                            <ItemTemplate>
+                                <asp:Label ID="lblCode" runat="server" Text='<%# Bind("Code") %>'></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
                          <asp:TemplateField HeaderText="Project Name">

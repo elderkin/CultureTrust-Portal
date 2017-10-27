@@ -418,6 +418,24 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtReturnNote;
         
         /// <summary>
+        /// btnReturnNoteClear control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnReturnNoteClear;
+        
+        /// <summary>
+        /// litReturnNoteError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litReturnNoteError;
+        
+        /// <summary>
         /// pnlStaffNote control.
         /// </summary>
         /// <remarks>
@@ -434,6 +452,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtStaffNote;
+        
+        /// <summary>
+        /// btnStaffNoteClear control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnStaffNoteClear;
         
         /// <summary>
         /// pnlHistory control.
@@ -479,6 +506,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnReturn;
+        
+        /// <summary>
+        /// btnRevise control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnRevise;
         
         /// <summary>
         /// btnHistory control.

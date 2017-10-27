@@ -283,7 +283,7 @@ namespace Portal11.Admin
             string selectedID = ddlProjectDirector.SelectedValue;       // See what was selected from the drop down list
             if (selectedID != "")                                       // If != something was selected
             {
-                StateActions.ChangeProjectRole(projID, selectedID, ProjectRole.ProjectDirector); // Do the heavy lifting
+                RoleActions.ChangeProjectRole(projID, selectedID, ProjectRole.ProjectDirector); // Do the heavy lifting
             }
             return;
         }

@@ -36,7 +36,7 @@ namespace Portal11.Admin
                     LogError.LogQueryStringError("SelectUser", "Missing Query String 'Command'"); // Log fatal error
 
                 litSavedCommand.Text = cmd;                             // Remember the command that invoked this page
-                gvPortalUser.PageSize = CookieActions.FindGridViewRows();   // Find number of rows per page from cookie
+                gvPortalUser.PageSize = CookieActions.GetGridViewRows();   // Find number of rows per page from cookie
                 LoadgvPortalUser();                                         // Fill the grid
             }
         }

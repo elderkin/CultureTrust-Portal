@@ -12,18 +12,25 @@ namespace Portal11.Admin
         {
             // Create a new Person, Edit an existing Person. Communication from Person menu is through Query Strings:
             //      Command - "New" or "Edit" (Required)
-            //      PersonID - the database ID of the Person that owns this Request. If absent, invoke Select Person to find the Person.
+            //      UserID - the ID of the user making this request (optional)
+            //      PersonID - the database ID of the Person to be edited. If absent, invoke Select Entity to find the Entity.
+            //      ProjectID - propagated to caller
+            //      Return - the URL to which we return when processing is complete. If blank, we return to the Admin page. (required)
+            //      Return2 - the caller's caller. We propagate this - feels shakey (optional)
+            // If we are invoked from AssignEntitysToProject, we have more Query Strings, ProjectID and ProjectName. These are propagated through
+            // if we pass control back there.
 
             if (!Page.IsPostBack)
             {
                 string userID = QueryStringActions.GetUserID();             // Fetch User ID. If absent, check UserInfoCookie
-                int personID = Convert.ToInt32(Request.QueryString[PortalConstants.QSPersonID]); // Fetch the PersonID, if present
+                QSValue personID = QueryStringActions.GetPersonID();        // Fetch the PersonID, if present
                 string cmd = Request.QueryString[PortalConstants.QSCommand];    // Fetch the command
+                litSavedReturn.Text = QueryStringActions.GetReturn();       // Fetch the return page name and save for later
 
                 // Stash these parameters into invisible literals on the current page.
 
                 litSavedUserID.Text = userID;
-                litSavedPersonID.Text = personID.ToString();
+                litSavedPersonID.Text = personID.String;
                 litSavedCommand.Text = cmd;
 
                 SupportingActions.CleanupTemp(userID, litDangerMessage);    // Cleanup supporting docs from previous executions for this user
@@ -32,10 +39,10 @@ namespace Portal11.Admin
 
                 switch (cmd)
                 {
-                    case PortalConstants.QSCommandNew:                  // Process a "New" command. Create new, empty Person for editing
+                    case PortalConstants.QSCommandNew:                      // Process a "New" command. Create new, empty Person for editing
                         {
                             // We don't have to "fill" any of the controls on the page, just use them in their initial state.
-                            this.Title = "New Person";                  // Show that we are creating a new Employee
+                            this.Title = "New Person";                      // Show that we are creating a new Employee
                             //litSuccessMessage.Text = "New Person is ready to edit";
                             break;
                         }
@@ -44,23 +51,24 @@ namespace Portal11.Admin
 
                             // If PersonID is blank, we don't know which Person to Edit. Invoke SelectPerson page to figure that out and come back here.
 
-                            if (personID == 0)                            // If == Query String was absent. Go find which Person then come back here
+                            if (personID.Int == 0)                          // If == Query String was absent. Go find which Person then come back here
                             {
-                                Response.Redirect(PortalConstants.URLSelectPerson + "?" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit);
+                                Response.Redirect(PortalConstants.URLSelectPerson
+                                          + "?" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit
+                                          + "=" + PortalConstants.QSReturn + "=" + litSavedReturn.Text);
                             }
 
                             // Fetch the row from the database. Fill in the panels using data rom the existing request. Lotta work!
                             litSuccessMessage.Text = "Selected Person is ready to edit";
                             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                             {
-                                Person toEdit = context.Persons.Find(personID); // Fetch Person row by its key
+                                Person toEdit = context.Persons.Find(personID.Int); // Fetch Person row by its key
                                 if (toEdit == null)
                                 {
-                                    LogError.LogInternalError("EditPerson", string.Format("Unable to find PersonID '{0}' in database",
-                                        personID.ToString()));                // Fatal error
+                                    LogError.LogInternalError("EditPerson", $"Unable to find PersonID '{personID.String}' in database"); // Fatal error
                                 }
                                 LoadPanels(toEdit);                         // Fill in the visible panels from the request
-                                SupportingActions.LoadDocs(RequestType.Person, personID, lstSupporting, litDangerMessage); // Do the heavy lifting
+                                SupportingActions.LoadDocs(RequestType.Person, personID.Int, lstSupporting, litDangerMessage); // Do the heavy lifting
                             }
                             break;
                         }
@@ -107,7 +115,7 @@ namespace Portal11.Admin
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(PortalConstants.URLAdminMain);                        // Back to the barn. Nothing to save.
+            ReturnToCaller("");                                             // Leave with the guy that brung us (without status)
         }
 
         // Save button clicked. "Save" means that we unload all the controls for the Person into a database row. 
@@ -152,9 +160,28 @@ namespace Portal11.Admin
                     LogError.LogDatabaseError(ex, "EditPerson", "Error updating Person row"); // Fatal error
                 }
             }
-            // Now go back to Dashboard
-            Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                                + PortalConstants.QSStatus + "=Person saved");
+            ReturnToCaller("Person saved");                                 // Report success on the way out
+        }
+
+        // Return to the "caller", propagating query string parameters
+
+        void ReturnToCaller(string status)
+        {
+            string running = litSavedReturn.Text + "?" + PortalConstants.QSNull; // Fetch the Return URL. That's our destination. At least one parameter
+
+            if (!string.IsNullOrEmpty(status))                              // If false, propagate status
+                running += "&" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess
+                         + "&" + PortalConstants.QSStatus + "=" + status;   // Tack on Severity and Status query strings
+
+            string proj = Request.QueryString[PortalConstants.QSProjectID]; // Fetch ProjectID query string, if present
+            if (!string.IsNullOrEmpty(proj))                                // If false propagate ProjectID
+                running += "&" + PortalConstants.QSProjectID + "=" + proj;  // Propagate Project ID
+
+            string ret2 = Request.QueryString[PortalConstants.QSReturn2];   // Fetch Return2 parameter, if present
+            if (!string.IsNullOrEmpty(ret2))                                // If false parameter present, propagate it
+                running += "&" + PortalConstants.QSReturn + "=" + ret2;     // Propagate caller's return
+
+            Response.Redirect(running);                                     // Return to the "caller" with QS parameters
         }
 
         // Move values from the Person record into the Page.

@@ -1,4 +1,19 @@
-﻿Version 1.9
+﻿Version 1.10
+
+The role "Trust Director" is now called "Community Director." The role "Trust Executive" is now called "President."
+On Project Dashboard, search filters are now available for GL Code and Project Class. These filters do not find GL Codes or Project Classes in split requests.
+On the Select Project page, you can now search by project name or project code.
+On the Edit Deposit and Edit Expense pages, the lists of Entities and Persons now have a "New" button to assign new entities/persons to the project.
+On the Assign Entitys to Project page, there is now a "New" button to add new entities.
+On the Assign Persons to Project page, there is now a "New" button to add new persons.
+Reviewers (i.e., Project Director, Community Director, Finance Director, etc) can still "Return" a request, but can now also "Revise" a request. Revising allows the reviewer to make substantitive changes to the request before submitting it back to the prior reviewer.
+Clicking the "History" button displays the history of the request. Clicking the "History" button a second time removes the display. The "History" button is now visible when editing a request.
+The name of a Supporting Document file cannot contain a pound sign character ('#'). (Browsers cannot process such a file name to view the file.)
+The text boxes for various notes - Note, Staff Note, Return Note - are larger. There is a "Clear" button on each field, if you can edit the field.
+On a "Returned" Deposit or Expense request, the "Review" button on the Project Dashboard now initiaties a "Revise" function. You do not need to "View" the Request in order to revise it.
+On the Project Dashboard and Staff Dashboard, the panel for Approval Requests now begins "closed" rather than "open." The "New" button, which creates new Approval Requests, is now disabled.
+
+Version 1.9
 
 There is a new parameter, {4}, in emails. This parameter substitutes the name of the recipient of the email.
 There is a new Email Option, "Send Email to me when a rush request is submitted". If unchecked, the Portal will not send the user a copy of the "Broadcast" email on the submission of a Rush request. Note that

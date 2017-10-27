@@ -42,21 +42,6 @@ namespace Portal11.Rqsts
                         LogError.LogInternalError("ReviewExpense", string.Format(
                             "Invalid ExpID value '{0}' could not be found in database", expID.String)); // Log fatal error
 
-                    EnablePanels(exp.ExpType);                          // Make the relevant panels visible
-                    LoadPanels(exp);                                    // Move values from record to page
-
-                    // See if this user has the role to Approve the Exp in its current state. If not, just let them view the Exp
-
-                    if (!StateActions.UserCanApproveRequest(exp.CurrentState)) // If false user can not Approve this Exp. Disable functions
-                    {
-                        txtReturnNote.Enabled = false;                  // Can see this note but not edit it
-                        txtStaffNote.Enabled = false;                   // Can see this note but not edit it
-                        btnApprove.Enabled = false;                     // Cannot "Approve" the Exp
-                        btnReturn.Enabled = false;                      // Cannot "Return" the Exp
-                        litDangerMessage.Text = "You can view this Expense Request, but you cannot approve it."; // Explain that to user
-                    }
-                    btnViewLink.Enabled = false;                        // Kludge to get the View button disabled until row selected
-
                     // Stash these parameters into invisible literals on the current page.
 
                     litSavedCommand.Text = cmd;
@@ -64,6 +49,34 @@ namespace Portal11.Rqsts
                     litSavedProjectID.Text = exp.ProjectID.ToString();
                     litSavedReturn.Text = ret;
                     litSavedRush.Text = exp.Rush.ToString();            // Whether or not it is a rush request
+                    litSavedSubmitProjectRole.Text = exp.SubmitProjectRole.ToString(); // Project Role that submitted request
+
+                    // If the user is actually in the process of revising this request, the Dashboard comes here anyway to keep the dashboard processing from getting too complex.
+                    // All we have to do is act like the user pressed the "Revise" button and dispatch to Edit Deposit.
+
+                    if (StateActions.RequestIsRevising(exp.CurrentState)) // If true, this request is being revised
+                        DispatchRevise();                               // Break out of this stream of processing
+
+                    // Load Exp fields into the page
+
+                    EnablePanels(exp.ExpType);                          // Make the relevant panels visible
+                    LoadPanels(exp);                                    // Move values from record to page
+
+                    // See if this user has the role to Approve the Exp in its current state. If not, just let them view the Exp
+
+                    if (!StateActions.UserCanApproveRequest(exp.CurrentState)) // If false user can not Approve this Exp. Disable functions
+                    {
+                        txtReturnNote.Enabled = false; btnReturnNoteClear.Visible = false; // Can see this note but not edit it
+                        txtStaffNote.Enabled = false; btnStaffNoteClear.Visible = false; // Can see this note but not edit it
+                        btnApprove.Enabled = false;                     // Cannot "Approve" the Exp
+                        btnReturn.Enabled = false;                      // Cannot "Return" the Exp
+                        litDangerMessage.Text = "You can view this Expense Request, but you cannot approve it."; // Explain that to user
+                    }
+                    else if (!StateActions.UserCanReviseRequest(exp.CurrentState)) // If false user cannot Revise this Dep. Disable function
+                    {
+                        btnRevise.Enabled = false;                      // Cannot "Revise" the Exp
+                    }
+                    btnViewLink.Enabled = false;                        // Kludge to get the View button disabled until row selected
                 }
             }
             return;
@@ -78,25 +91,27 @@ namespace Portal11.Rqsts
             return;
         }
 
+        protected void btnReturnNoteClear_Click(object sender, EventArgs e)
+        {
+            txtReturnNote.Text = "";
+            litReturnNoteError.Visible = false;                     // Hide the error message, if any
+        }
+
+        protected void btnStaffNoteClear_Click(object sender, EventArgs e)
+        {
+            txtStaffNote.Text = "";
+        }
+
         protected void gvEDHistory_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
             {
                 gvEDHistory.PageIndex = e.NewPageIndex;             // Propagate the desired page index
-                LoadAllExpHistorys();                                  // Re-fill the GridView control
+                NavigationActions.LoadAllExpHistorys(Convert.ToInt32(litSavedExpID.Text), gvEDHistory); // Fill the list from the database
                 gvEDHistory.SelectedIndex = -1;                     // No row currently selected
             }
             return;
         }
-
-        // View a Supporting Document We replicate the logic from the EditExpense page and download the selected Supporting Document file.
-        // This case is simpler than EditExpense because all the Docs are "permanent," described in SupportingDoc rows.
-
-        //protected void btnView_Click(object sender, EventArgs e)
-        //{
-        //    SupportingActions.ViewDoc(lstSupporting, litDangerMessage); // Do the heavy lifting
-        //    return;
-        //}
 
         // User clicked Cancel. This is easy: Just head back to the StaffDashboard.
 
@@ -114,20 +129,20 @@ namespace Portal11.Rqsts
             // If the Return Note field is non-blank, the user has probably pressed "Approve" by accident. What they probably want
             // is "Return." So report an error if Return Note is non-blank. But don't erase - the user might still want to press "Return."
 
-            if (txtReturnNote.Text != "")                           // If != then text is erroneously present
+            if (!string.IsNullOrEmpty(txtReturnNote.Text))          // If false text is erroneously present
             {
-                litDangerMessage.Text = PortalConstants.ReturnNoteError; // Report the error
-                Page.MaintainScrollPositionOnPostBack = false;      // Scroll back to top of page where error message lives
+                litReturnNoteError.Text = PortalConstants.ReturnNotePresent; // Report the error
+                litReturnNoteError.Visible = true;                  // Make the message visible
                 return;                                             // Go back for more punishment
             }
             ExpState currentState = EnumActions.ConvertTextToExpState(litSavedState.Text); // Pull ToString version; convert to enum type
-            ExpState nextState = StateActions.FindNextState(currentState); // Now what?
+            ExpState nextState = StateActions.FindNextState(currentState, ReviewAction.Approve); // Now what?
             int projectID = new int(); string projectName = "";
             SaveExp(nextState, "Approved", out projectID, out projectName); // Update Exp; write new History row
 
             string emailSent = EmailActions.SendEmailToReviewer(    // Send email to next reviewer
                 EnumActions.ConvertTextToBool(litSavedRush.Text),   // Whether the request is "rush"
-                StateActions.UserRoleToApproveRequest(nextState),   // Who is in this role
+                StateActions.UserRoleToProcessRequest(nextState),   // Who is in this role
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has this name
                 EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
@@ -144,28 +159,69 @@ namespace Portal11.Rqsts
 
         protected void btnReturn_Click(object sender, EventArgs e)
         {
-            int projectID = new int(); string projectName = "";
-            SaveExp(ExpState.Returned, "Returned", out projectID, out projectName); // Update Exp; write new History row
+            if (string.IsNullOrEmpty(txtReturnNote.Text))          // If true text is missing
+            {
+                litReturnNoteError.Text = PortalConstants.ReturnNoteMissing; // Report the error
+                litReturnNoteError.Visible = true;                  // Make the message visible
+                return;                                             // Go back for more punishment
+            }
+            int projectID = new int(); string projectName = "";     // ** TEMP **
+            ExpState currentState = EnumActions.ConvertTextToExpState(litSavedState.Text); // Pull ToString version; convert to enum type
+            ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedSubmitProjectRole.Text); // Pull string version, convert to enum type
+            SaveExp(StateActions.FindNextState(currentState, ReviewAction.Return, projectRole), "Returned", out projectID, out projectName); // Update Exp; write new History row
 
             string emailSent = EmailActions.SendEmailToReviewer(    // Send email to next reviewer
                 EnumActions.ConvertTextToBool(litSavedRush.Text),   // Whether the request is "rush"
-                StateActions.UserRoleToApproveRequest(ExpState.Returned), // Who is in this role
+                StateActions.UserRoleToProcessRequest(ExpState.ReturnedToProjectDirector), // Who is in this role
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has this name
                 EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
-                EnumActions.GetEnumDescription(ExpState.Returned),  // Here is its next state
+                EnumActions.GetEnumDescription(ExpState.ReturnedToProjectDirector),  // Here is its next state
                 PortalConstants.CEmailDefaultExpenseReturnedSubject, PortalConstants.CEmailDefaultExpenseReturnedBody); // Use this subject and body, if needed
 
             Response.Redirect(litSavedReturn.Text + "?"
                                 + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                + PortalConstants.QSStatus + "=" + "Request Returned to Project Director." + emailSent);
+                                + PortalConstants.QSStatus + "=" + "Request Returned to originator." + emailSent);
         }
 
-        // User pressed History button. Fetch all the ExpHistory rows for this Exp and fill a GridView.
+        // User clicked Revise. Set the state to Revising and save it. Then invoke Edit Expense to make the revisions. No email in this path.
+
+        protected void btnRevise_Click(object sender, EventArgs e)
+        {
+            int projectID = new int(); string projectName = "";
+            ExpState currentState = EnumActions.ConvertTextToExpState(litSavedState.Text); // Pull ToString version; convert to enum type  
+            SaveExp(StateActions.FindNextState(currentState, ReviewAction.Revise), "Revising", out projectID, out projectName); // Update Dep; write new History row
+            DispatchRevise();                                                       // Dispatch to Edit Deposit
+
+        }
+
+        void DispatchRevise()
+        {
+
+            // Find current role and map to the role to be used for editing.
+
+            UserRole userRole = EnumActions.ConvertTextToUserRole(QueryStringActions.GetUserRole()); // Fetch User Role from UserInfo cookie and stash
+            string reviseRole = RoleActions.GetRevisingRole(userRole).ToString(); // Find role that EditExpense should use during edits
+
+            Response.Redirect(PortalConstants.URLEditExpense + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+                                            + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + reviseRole + "&"
+                                            + PortalConstants.QSRequestID + "=" + litSavedExpID.Text + "&"
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandRevise + "&" // Start with an existing request
+                                            + PortalConstants.QSReturn + "=" + litSavedReturn.Text);
+        }
+
+        // User pressed History button. Flip the GridView open or closed.
 
         protected void btnHistory_Click(object sender, EventArgs e)
         {
-            LoadAllExpHistorys();                                      // Fill the grid
+            if (pnlHistory.Visible)                                     // If true the History panel is visible
+                pnlHistory.Visible = false;                             // Make it invisible
+            else
+            {
+                NavigationActions.LoadAllExpHistorys(Convert.ToInt32(litSavedExpID.Text), gvEDHistory); // Fill the list from the database
+                pnlHistory.Visible = true;                              // Make it visible
+            }
             return;
         }
 
@@ -214,11 +270,10 @@ namespace Portal11.Rqsts
             pnlNotes.Visible = true;
             pnlProjectClass.Visible = true;
             pnlReturnNote.Visible = true;
-            if ((litSavedUserRole.Text == UserRole.Project.ToString())
-                || (litSavedUserRole.Text == UserRole.Auditor.ToString()))      // If true, user is a Project Director or Auditor
-                pnlStaffNote.Visible = false;                                   // They don't see Staff Note
+            if (RoleActions.UserRoleIsStaff(EnumActions.ConvertTextToUserRole(litSavedUserRole.Text))) // If true, user is a staff member
+                pnlStaffNote.Visible = true;                                    // Staff users can see it
             else
-                pnlStaffNote.Visible = true;                                    // But Staff users can see it
+                pnlStaffNote.Visible = false;                                   // Others don't see it
             pnlState.Visible = true;
             pnlSupporting.Visible = true;
             switch (type)
@@ -432,12 +487,6 @@ namespace Portal11.Rqsts
             return;
         }
 
-        void LoadAllExpHistorys()
-        {
-            NavigationActions.LoadAllExpHistorys(Convert.ToInt32(litSavedExpID.Text), gvEDHistory); // Fill the list from the database
-            return;
-        }
-
         // We have a full split gridview. Now adjust the operation of the page to process splits
 
         void EnergizeSplit()
@@ -447,6 +496,6 @@ namespace Portal11.Rqsts
             pnlGLCode.Visible = false;                              // Can't see "Expense Account" drop down list any more
             pnlExpenseSplit.Visible = true;                         // Turn on the grid for splits
             return;
-        }      
+        }
     }
 }

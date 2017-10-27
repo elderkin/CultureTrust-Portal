@@ -23,13 +23,15 @@
                 <div class="panel-body">
                     <ul class="list-group" style="margin-bottom:0px;">
                         <li class="list-group-item">
-                            <a runat="server" href="~/Admin/EditEntity?Command=New"  title="Create and describe a new Entity">New Entity</a>
+                            <a runat="server" href="~/Admin/EditEntity?Command=New&Return=~/Admin/Main.aspx"  
+                                title="Create and describe a new Entity">New Entity</a>
                         </li>
                         <li class="list-group-item">
-                            <a runat="server" href="~/Select/SelectEntity?Command=Edit" title="Choose an existing Entity and change its description">Edit Entity</a>
+                            <a runat="server" href="~/Select/SelectEntity?Command=Edit&Return=~/Admin/Main.aspx" 
+                                title="Choose an existing Entity and change its description">Edit Entity</a>
                         </li>
                         <li class="list-group-item">
-                            <a runat="server" href="~/Select/SelectProject.aspx?Command=AssignEntitys" 
+                            <a runat="server" href="~/Select/SelectProject.aspx?Command=AssignEntitys&Return=~/Admin/Main.aspx" 
                                 title="Choose an existing Project and assign Entitys to it">Assign Entitys to Project</a>
                         </li>
                     </ul>
@@ -63,14 +65,15 @@
                 <div class="panel-body">
                     <ul class="list-group" style="margin-bottom:0px;">
                         <li class="list-group-item">
-                            <a runat="server" href="~/Admin/EditPerson.aspx?Command=New" title="Create and describe a new Person">New Person</a>
+                            <a runat="server" href="~/Admin/EditPerson.aspx?Command=New&Return=~/Admin/Main.aspx" 
+                                title="Create and describe a new Person">New Person</a>
                         </li>
                         <li class="list-group-item">
-                            <a runat="server" href="~/Select/SelectPerson.aspx?Command=Edit" 
+                            <a runat="server" href="~/Select/SelectPerson.aspx?Command=Edit&Return=~/Admin/Main.aspx" 
                                 title="Choose an existing Person and change its description">Edit Person</a>
                         </li>
                         <li class="list-group-item">
-                            <a runat="server" href="~/Select/SelectProject.aspx?Command=AssignPersons" 
+                            <a runat="server" href="~/Select/SelectProject.aspx?Command=AssignPersons&Return=~/Admin/Main.aspx" 
                                 title="Choose an existing Project and assign Persons to it">Assign Persons to Project</a>
                         </li>
                     </ul>
@@ -94,11 +97,11 @@
                             <a runat="server" href="~/Select/SelectProject.aspx?Command=Edit" title="Choose an existing Project and change its description">Edit Project</a>
                         </li>
                         <li class="list-group-item">
-                            <a runat="server" href="~/Select/SelectProject.aspx?Command=AssignEntitys" 
+                            <a runat="server" href="~/Select/SelectProject.aspx?Command=AssignEntitys&Return=~/Admin/Main.aspx" 
                                 title="Choose an existing Project and assign Entitys to it">Assign Entitys to Project</a>
                         </li>
                         <li class="list-group-item">
-                            <a runat="server" href="~/Select/SelectProject.aspx?Command=AssignPersons" 
+                            <a runat="server" href="~/Select/SelectProject.aspx?Command=AssignPersons&Return=~/Admin/Main.aspx" 
                                 title="Choose an existing Project and assign Persons to it">Assign Persons to Project</a>
                         </li>
                         <li class="list-group-item">
@@ -162,6 +165,10 @@
                         <li class="list-group-item">
                             <a runat="server" href="~/elmah.axd" title="Open the web page for the ELMAH error log">View Error Log</a>
                         </li>
+<%--                        Next line is temporary--%>
+<%--                        <li class="list-group-item">
+                            <a runat="server" href="~/Proj/TestModal2.aspx" title="Test Modal Dialog Box">Test Modal Dialog Box</a>
+                        </li>--%>
                     </ul>
                 </div>
             </div>

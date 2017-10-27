@@ -11,6 +11,7 @@ namespace Portal11.Rqsts
     public partial class ReviewDeposit : System.Web.UI.Page
     {
         // Review a Deposit Request. Communication from Staff Dashboard is through Query Strings:
+        //      UserRole - the role of the current user, e.g., Project, CD, FD, PR.
         //      RequestID - the database ID of the existing Request to process (Required)
         //      Command - "Review" (Required)
         //      Return - name of the page to invoke on completion
@@ -30,13 +31,28 @@ namespace Portal11.Rqsts
                 string cmd = QueryStringActions.GetCommand();           // Fetch the command
                 string ret = QueryStringActions.GetReturn();            // Fetch the return page
 
-                // Fetch the Dep row and fill the page
+                // Fetch the Dep row
 
                 using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                 {
                     Dep dep = context.Deps.Find(depID.Int);             // Fetch Dep row by its key
                     if (dep == null)
                         LogError.LogInternalError("ReviewDeposit", $"Invalid DepID value '{depID.String}' could not be found in database"); // Log fatal error
+
+                    // Stash these parameters into invisible literals on the current page.
+
+                    litSavedDepID.Text = depID.String;
+                    litSavedCommand.Text = cmd;
+                    litSavedProjectID.Text = dep.ProjectID.ToString();
+                    litSavedReturn.Text = ret;
+
+                    // If the user is actually in the process of revising this request, the Dashboard comes here anyway to keep the dashboard processing from getting too complex.
+                    // All we have to do is act like the user pressed the "Revise" button and dispatch to Edit Deposit.
+
+                    if (StateActions.RequestIsRevising(dep.CurrentState)) // If true, this request is being revised
+                        DispatchRevise();                               // Break out of this stream of processing
+
+                    // Load Dep fields into the page
 
                     EnablePanels(dep.DepType);                          // Make the relevant panels visible
                     LoadPanels(dep);                                    // Move values from record to page
@@ -45,19 +61,17 @@ namespace Portal11.Rqsts
 
                     if (!StateActions.UserCanApproveRequest(dep.CurrentState)) // If false user can not Approve this Dep. Disable functions
                     {
-                        txtReturnNote.Enabled = false;                  // Can see this note but not edit it
-                        txtStaffNote.Enabled = false;                   // Can see this note but not edit it
+                        txtReturnNote.Enabled = false; btnReturnNoteClear.Visible = false; // Can see this note but not edit it
+                        txtStaffNote.Enabled = false; btnStaffNoteClear.Visible = false; // Can see this note but not edit it
                         btnApprove.Enabled = false;                     // Cannot "Approve" the Dep
                         btnReturn.Enabled = false;                      // Cannot "Return" the Dep
+                        btnRevise.Enabled = false;                      // Cannot "Revise" the Dep
                         litDangerMessage.Text = "You can view this Deposit Request, but you cannot approve it."; // Explain that to user
                     }
-
-                    // Stash these parameters into invisible literals on the current page.
-
-                    litSavedDepID.Text = depID.String;
-                    litSavedCommand.Text = cmd;
-                    litSavedProjectID.Text = dep.ProjectID.ToString();
-                    litSavedReturn.Text = ret;
+                    else if (!StateActions.UserCanReviseRequest(dep.CurrentState)) // If false user cannot Revise this Dep. Disable function
+                    {
+                        btnRevise.Enabled = false;                      // Cannot "Revise" the Dep
+                    }
                 }
             }
             return;
@@ -72,25 +86,29 @@ namespace Portal11.Rqsts
             return;
         }
 
+        protected void btnReturnNoteClear_Click(object sender, EventArgs e)
+        {
+            txtReturnNote.Text = "";
+            litReturnNoteError.Visible = false;                     // Hide error message, if any
+            return;
+        }
+
+        protected void btnStaffNoteClear_Click(object sender, EventArgs e)
+        {
+            txtStaffNote.Text = "";
+            return;
+        }
+
         protected void gvEDHistory_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
-            if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
+            if (e.NewPageIndex >= 0)                                // If >= a value that we can handle
             {
                 gvEDHistory.PageIndex = e.NewPageIndex;             // Propagate the desired page index
-                LoadAllDepHistorys();                                  // Re-fill the GridView control
+                NavigationActions.LoadAllDepHistorys(Convert.ToInt32(litSavedDepID.Text), gvEDHistory); // Re-fill the GridView control
                 gvEDHistory.SelectedIndex = -1;                     // No row currently selected
             }
             return;
         }
-
-        // View a Supporting Document We replicate the logic from the EditDeposit page and download the selected Supporting Document file.
-        // This case is simpler than EditDeposit because all the Docs are "permanent," described in SupportingDoc rows.
-
-        //protected void btnView_Click(object sender, EventArgs e)
-        //{
-        //    SupportingActions.ViewDoc(lstSupporting, litDangerMessage); // Do the heavy lifting
-        //    return;
-        //}
 
         // User clicked Cancel. This is easy: Just head back to the StaffDashboard.
 
@@ -108,20 +126,20 @@ namespace Portal11.Rqsts
             // If the Return Note field is non-blank, the user has probably pressed "Approve" by accident. What they probably want
             // is "Return." So report an error if Return Note is non-blank. But don't erase - the user might still want to press "Return."
 
-            if (txtReturnNote.Text != "")                           // If != then text is erroneously present
+            if (!string.IsNullOrEmpty(txtReturnNote.Text))          // If false text is erroneously present
             {
-                litDangerMessage.Text = PortalConstants.ReturnNoteError; // Report the error
-                Page.MaintainScrollPositionOnPostBack = false;      // Scroll back to top of page where error message lives
+                litReturnNoteError.Text = PortalConstants.ReturnNotePresent; // Report the error
+                litReturnNoteError.Visible = true;                  // Make the error message visible
                 return;                                             // Go back for more punishment
             }
             DepState currentState = EnumActions.ConvertTextToDepState(litSavedState.Text); // Pull ToString version; convert to enum type
-            DepState nextState = StateActions.FindNextState(currentState); // Now what?
+            DepState nextState = StateActions.FindNextState(currentState, ReviewAction.Approve); // Now what?
 
             int projectID = new int(); string projectName = "";
             SaveDep(nextState, "Approved", out projectID, out projectName); // Update Dep; write new History row
 
             string emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
-                StateActions.UserRoleToApproveRequest(nextState),   // Who is in this role
+                StateActions.UserRoleToProcessRequest(nextState),   // Who is in this role
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has a name
                 EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
@@ -138,11 +156,18 @@ namespace Portal11.Rqsts
 
         protected void btnReturn_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(txtReturnNote.Text))           // If true the Return Note is missing
+            {
+                litReturnNoteError.Text = PortalConstants.ReturnNoteMissing; // Report the error to the user
+                litReturnNoteError.Visible = true;
+                return;
+            }
             int projectID = new int(); string projectName = "";
-            SaveDep(DepState.Returned, "Returned", out projectID, out projectName); // Update Dep; write new History row
+            DepState currentState = EnumActions.ConvertTextToDepState(litSavedState.Text); // Pull ToString version; convert to enum type
+            SaveDep(StateActions.FindNextState(currentState, ReviewAction.Return), "Returned", out projectID, out projectName); // Update Dep; write new History row
 
             string emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
-                StateActions.UserRoleToApproveRequest(DepState.Returned), // Who is in this role
+                StateActions.UserRoleToProcessRequest(DepState.Returned), // Who is in this role
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has a name
                 EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
@@ -154,11 +179,44 @@ namespace Portal11.Rqsts
                                 + PortalConstants.QSStatus + "=" + "Request returned to Internal Coordinator." + emailSent);
         }
 
+        // User clicked Revise. Set the state to Revising and save it. Then invoke Edit Deposit to make the revisions. No email in this path.
+
+        protected void btnRevise_Click(object sender, EventArgs e)
+        {
+            int projectID = new int(); string projectName = "";
+            DepState currentState = EnumActions.ConvertTextToDepState(litSavedState.Text); // Pull ToString version; convert to enum type
+            SaveDep(StateActions.FindNextState(currentState, ReviewAction.Revise), "Revising", out projectID, out projectName); // Update Dep; write new History row
+            DispatchRevise();                                                       // Dispatch to Edit Deposit
+
+        }
+
+        void DispatchRevise()
+        { 
+            
+            // Find current role and map to the role to be used for editing.
+
+            UserRole userRole = EnumActions.ConvertTextToUserRole(QueryStringActions.GetUserRole()); // Fetch User Role from UserInfo cookie and stash
+            string reviseRole = RoleActions.GetRevisingRole(userRole).ToString(); // Find role that EditDeposit should use during edits
+
+            Response.Redirect(PortalConstants.URLEditDeposit + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+                                            + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + reviseRole + "&"
+                                            + PortalConstants.QSRequestID + "=" + litSavedDepID.Text + "&"
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandRevise + "&" // Start with an existing request
+                                            + PortalConstants.QSReturn + "=" + litSavedReturn.Text);
+        }
+
         // User pressed History button. Fetch all the DepHistory rows for this Dep and fill a GridView.
 
         protected void btnHistory_Click(object sender, EventArgs e)
         {
-            LoadAllDepHistorys();                                      // Fill the grid
+            if (pnlHistory.Visible)                                     // If true the History panel is visible
+                pnlHistory.Visible = false;                             // Make it invisible
+            else
+            {
+                NavigationActions.LoadAllDepHistorys(Convert.ToInt32(litSavedDepID.Text), gvEDHistory); // Fill the grid
+                pnlHistory.Visible = true;                              // Make it visible
+            }
             return;
         }
 
@@ -196,6 +254,8 @@ namespace Portal11.Rqsts
         }
 
         // Based on the selected Deposit Type, enable and disable the appropriate panels on the display.
+        // Note: I know that all of these "static" settings could be done right in the .aspx file. But having it here
+        // is a reminder of what's live on this page.
 
         void EnablePanels(DepType type)
         {
@@ -206,11 +266,10 @@ namespace Portal11.Rqsts
             pnlGLCode.Visible = true;
             pnlNotes.Visible = true;
             pnlReturnNote.Visible = true;
-            if ((litSavedUserRole.Text == UserRole.Project.ToString())
-                || (litSavedUserRole.Text == UserRole.Auditor.ToString()))      // If true, user is a Project Director or Auditor
-                pnlStaffNote.Visible = false;                                   // They don't see Staff Note
+            if (RoleActions.UserRoleIsStaff(EnumActions.ConvertTextToUserRole(litSavedUserRole.Text))) // If true, user is a staff member
+                pnlStaffNote.Visible = true;                                    // Staff users can see it
             else
-                pnlStaffNote.Visible = true;                                    // But Staff users can see it
+                pnlStaffNote.Visible = false;                                   // Others don't see it
             pnlState.Visible = true;
             pnlSupporting.Visible = true;
             switch (type)
@@ -307,11 +366,7 @@ namespace Portal11.Rqsts
 
             txtProjectName.Text = record.Project.Name;
 
-            if (record.CurrentState == DepState.Returned)               // If == the Rqst has been returned, so a Return Note may be present
-            {
-                pnlReturnNote.Visible = true;                           // Make this panel visible
-                txtReturnNote.Text = record.ReturnNote;                 // Copy the text of the Return Note
-            }
+            txtReturnNote.Text = record.ReturnNote;                     // Copy the text of the Return Note, even if blank
 
             switch (record.SourceOfFunds)
             {
@@ -353,12 +408,6 @@ namespace Portal11.Rqsts
 
             SupportingActions.LoadDocs(RequestType.Deposit, record.DepID, lstSupporting, litDangerMessage); // Load them into list box
 
-            return;
-        }
-
-        void LoadAllDepHistorys()
-        {
-            NavigationActions.LoadAllDepHistorys(Convert.ToInt32(litSavedDepID.Text), gvEDHistory); // Fill the list from the database
             return;
         }
 
