@@ -2,7 +2,7 @@
     Inherits="Portal11.Admin.AssignPersonsToProject" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h2><%: Title %> '<asp:Literal runat="server" ID="litProjectName" />'</h2>
+    <h2><%: Title %> <asp:Literal runat="server" ID="litProjectName" /></h2>
     <hr />
 
     <style>
@@ -122,7 +122,7 @@
                                 
                                 OnSelectedIndexChanged="rdoPersonRole_SelectedIndexChanged">
                                 <asp:ListItem Text="Contractor (for Contractor Invoice)" Value="Contractor" Selected="True"></asp:ListItem>
-                                <asp:ListItem Text="Donor (for Deposit)" Value="Donor"></asp:ListItem>
+                                <asp:ListItem Text="Donor/Customer (for Deposit)" Value="Donor"></asp:ListItem>
                                 <asp:ListItem Text="Employee (for Payroll)" Value="Employee"></asp:ListItem>
                                 <asp:ListItem Text="Recipient (for Reimbursement)" Value="Recipient"></asp:ListItem>
                                 <asp:ListItem Text="Responsible Person (for Gift Card)" Value="ResponsiblePerson"></asp:ListItem>
@@ -136,19 +136,27 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <asp:Button ID="btnAdd" runat="server" Text="< Add" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
-                                OnClick="btnAdd_Click" Enabled="false" />
+                                OnClick="btnAdd_Click" Enabled="false" ToolTip="Assign selected person to project in role" />
                         </div>
                         <br />
                         &nbsp;
                         <div class="col-xs-12">
                             <asp:Button ID="btnRemove" runat="server" Text="Remove >" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
-                                OnClick="btnRemove_Click" Enabled="false" />
+                                OnClick="btnRemove_Click" Enabled="false" ToolTip="Remove selected person from project" />
                         </div>
                         <br />
                         &nbsp;
                         <div class="col-xs-12">
                             <asp:Button ID="btnRemoveAll" runat="server" Text="All >>" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
-                                OnClick="btnRemoveAll_Click" Enabled="false" />
+                                OnClick="btnRemoveAll_Click" Enabled="false" ToolTip="Assign all persons to project in role" />
+                        </div>
+                        <br />
+                        &nbsp;
+                        <br />
+                        &nbsp;
+                        <div class="col-xs-12">
+                            <asp:Button ID="btnNew" runat="server" Text="New" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
+                                OnClick="btnNew_Click" Enabled="true" ToolTip="Create a new person" />
                         </div>
                         <br />
                         &nbsp;
@@ -156,7 +164,7 @@
                         &nbsp;
                         <div class="col-xs-12">
                             <asp:Button ID="btnDone" runat="server" Text="Done" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
-                                OnClick="btnDone_Click" Enabled="true" />
+                                OnClick="btnDone_Click" Enabled="true" ToolTip="Exit with no further changes" />
                         </div>
                     </div>
                 </div>
@@ -242,6 +250,7 @@
 
         <!-- "Scratch" storage used during form processing -->
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
 
     </div>
 

@@ -45,14 +45,13 @@
                 <strong>Search Filters</strong>
             </div>
             <asp:Panel ID="pnlSearch" runat="server" Visible="false">
-                <br />
 
             <div class="row">
             <div class="col-xs-12">
 
             <%--Request Status--%>
 
-            <div class="panel panel-default col-md-4 col-xs-6">
+            <div class="panel panel-default col-md-4 col-xs-6" style="margin-bottom: 2px; padding-bottom: 14px;">
                 <div class="panel-body" style="min-height: 110px; max-height: 110px; padding-top: 0px;">
                 <h4>Filter: Request Status</h4>
                     <div class="checkbox">
@@ -69,7 +68,7 @@
             </div>
 
             <%--Date Range--%>
-            <div class="panel panel-default col-md-4 col-xs-6">
+            <div class="panel panel-default col-md-4 col-xs-6" style="margin-bottom: 2px;">
                 <h4>Filter: Date Range</h4>
 
              <div class="panel-body" style="min-height: 110px; max-height: 110px;">
@@ -155,24 +154,9 @@
                 </div>
                 </div>
 
-        <%-- Archived --%>
-
-            <div class="panel panel-default col-md-4 col-xs-6">
-                <h4>Filter: Archive Status</h4>
-                <div class="panel-body" style="min-height: 110px; max-height: 110px;">
-                <div class="checkbox">
-                    <asp:CheckBox ID="ckRActive" runat="server" Text="Show Active Requests" CssClass="col-xs-6" Checked="true"
-                        OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                    <asp:CheckBox ID="ckRArchived" runat="server" Text="Show Archived Requests" CssClass="col-xs-6" Checked="false"
-                        OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                </div>
-                </div>
-            </div>
-
             <%-- Entity (Deposit Entity, Expense Vendor) --%>
 
-            <div class="col-xs-12">
-            <div class="panel panel-default col-md-4 col-xs-6">
+            <div class="panel panel-default col-md-4 col-xs-6" style="margin-bottom: 2px;">
                 <h4>Filter: Entity Name</h4>
                 <div class="panel-body" style="min-height: 110px; max-height: 110px;">
                     <div class="col-xs-12" title="abcdef">
@@ -184,7 +168,21 @@
                 </div>
             </div>
 
-            <div class="panel panel-default col-md-4 col-xs-6">
+            <%-- GL Code --%>
+            <div class="panel panel-default col-md-4 col-xs-6" style="margin-bottom: 2px;">
+                <h4>Filter: General Ledger Code</h4>
+                <div class="panel-body" style="min-height: 110px; max-height: 110px;">
+                    <div class="col-xs-12">
+                        <!-- Fill this control from code-behind -->
+                        <asp:DropDownList runat="server" ID="ddlGLCode" CssClass="form-control"
+                            OnSelectedIndexChanged="SearchCriteriaChanged" AutoPostBack="true">
+                        </asp:DropDownList>
+                    </div>
+                </div>
+            </div>
+
+            <%-- Person Name --%>
+            <div class="panel panel-default col-md-4 col-xs-6" style="margin-bottom: 2px;">
                 <h4>Filter: Person Name</h4>
                 <div class="panel-body" style="min-height: 110px; max-height: 110px;">
                     <div class="col-xs-12">
@@ -195,7 +193,33 @@
                     </div>
                 </div>
             </div>
+
+            <%-- Project Class --%>
+            <div class="panel panel-default col-md-4 col-xs-6" style="margin-bottom: 2px;">
+                <h4>Filter: Project Class</h4>
+                <div class="panel-body" style="min-height: 110px; max-height: 110px;">
+                    <div class="col-xs-12">
+                        <!-- Fill this control from code-behind -->
+                        <asp:DropDownList runat="server" ID="ddlProjectClass" CssClass="form-control"
+                            OnSelectedIndexChanged="SearchCriteriaChanged" AutoPostBack="true">
+                        </asp:DropDownList>
+                    </div>
+                </div>
             </div>
+
+            <%-- Archived --%>
+            <div class="panel panel-default col-md-4 col-xs-6" style="margin-bottom: 2px;">
+                <h4>Filter: Archive Status</h4>
+                <div class="panel-body" style="min-height: 110px; max-height: 110px;">
+                <div class="checkbox">
+                    <asp:CheckBox ID="ckRActive" runat="server" Text="Show Active Requests" CssClass="col-xs-6" Checked="true"
+                        OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                    <asp:CheckBox ID="ckRArchived" runat="server" Text="Show Archived Requests" CssClass="col-xs-6" Checked="false"
+                        OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                </div>
+                </div>
+            </div>
+
 
             </div>
             </div>
@@ -206,16 +230,15 @@
 
         <div class="panel panel-success">
             <div class="panel-heading ">
-                <asp:LinkButton ID="btnAppCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnAppCollapse_Click"
+                <asp:LinkButton ID="btnAppCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnAppCollapse_Click" Visible="false"
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
                 </asp:LinkButton>
-                <asp:LinkButton ID="btnAppExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnAppExpand_Click" Visible="false">
+                <asp:LinkButton ID="btnAppExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnAppExpand_Click" Visible="true">
                     <span class="glyphicon glyphicon-chevron-down"></span>
                 </asp:LinkButton>
                 <strong>Approval Requests</strong>
             </div>
-            <asp:Panel ID="pnlApp" runat="server">
-            <br />
+            <asp:Panel ID="pnlApp" runat="server" Visible="false">
 
 
         <!-- Make a grid of Approval Requests. Allow User to select one for further study. -->
@@ -325,7 +348,6 @@
                 <strong>Deposit Requests</strong>
             </div>
             <asp:Panel ID="pnlDep" runat="server">
-            <br />
 
         <!-- Make a grid of Deposit Requests. Allow User to select one for further study. -->
         <div class="row">
@@ -438,7 +460,6 @@
                 <strong>Expense Requests</strong>
             </div>
             <asp:Panel ID="pnlExp" runat="server">
-            <br />
 
         <!-- Make a grid of equests. Allow User to select one for further study. -->
         <div class="row">

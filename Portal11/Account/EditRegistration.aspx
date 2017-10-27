@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Edit User" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
+﻿<%@ Page Title="Edit Portal User" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true"
     CodeBehind="EditRegistration.aspx.cs" Inherits="Portal11.Account.EditRegistration" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
@@ -90,13 +90,13 @@
                                 title="The User is a Project Director or Project Staff, not a CW staff member"></asp:ListItem>
                             <asp:ListItem Text="Auditor" Value="Auditor" data-toggle="tooltip"
                                 title="Examines, but does not change, Requests"></asp:ListItem>
-                            <asp:ListItem Text="Internal Coordinator" Value="InternalCoordinator" data-toggle="tooltip"
-                                title="Create Requests"></asp:ListItem>
+                            <asp:ListItem Text="Community Director" Value="CommunityDirector" data-toggle="tooltip"
+                                title="Reviews and Approves Requests"></asp:ListItem>
                             <asp:ListItem Text="Finance Director" Value="FinanceDirector" data-toggle="tooltip"
                                 title="Reviews and Approves Requests"></asp:ListItem>
-                            <asp:ListItem Text="Trust Director" Value="TrustDirector" data-toggle="tooltip"
-                                title="Reviews and Approves Requests"></asp:ListItem>
-                            <asp:ListItem Text="Trust Executive" Value="TrustExecutive" data-toggle="tooltip"
+                            <asp:ListItem Text="Internal Coordinator" Value="InternalCoordinator" data-toggle="tooltip"
+                                title="Create Requests"></asp:ListItem>
+                            <asp:ListItem Text="President" Value="President" data-toggle="tooltip"
                                 title="Reviews and Approves Requests"></asp:ListItem>
                         </asp:RadioButtonList>
                     </div>

@@ -2,7 +2,7 @@
     Inherits="Portal11.Admin.AssignEntityToProject" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h2><%: Title %> '<asp:Literal runat="server" ID="litProjectName" />'</h2>
+    <h2><%: Title %> <asp:Literal runat="server" ID="litProjectName" /></h2>
     <hr />
 
     <style>
@@ -132,19 +132,27 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <asp:Button ID="btnAdd" runat="server" Text="< Add" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
-                                OnClick="btnAdd_Click" Enabled="false" />
+                                OnClick="btnAdd_Click" Enabled="false" ToolTip="Assign selected entity to project" />
                         </div>
                         <br />
                         &nbsp;
                         <div class="col-xs-12">
                             <asp:Button ID="btnRemove" runat="server" Text="Remove >" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
-                                OnClick="btnRemove_Click" Enabled="false" />
+                                OnClick="btnRemove_Click" Enabled="false" ToolTip="Remove selected entity from project" />
                         </div>
                         <br />
                         &nbsp;
                         <div class="col-xs-12">
                             <asp:Button ID="btnRemoveAll" runat="server" Text="All >>" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
-                                OnClick="btnRemoveAll_Click" Enabled="false" />
+                                OnClick="btnRemoveAll_Click" Enabled="false" ToolTip="Remove all entities from project" />
+                        </div>
+                        <br />
+                        &nbsp;
+                        <br />
+                        &nbsp;
+                        <div class="col-xs-12">
+                            <asp:Button ID="btnNew" runat="server" Text="New" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
+                                OnClick="btnNew_Click" Enabled="true" ToolTip="Create a new entity" />
                         </div>
                         <br />
                         &nbsp;
@@ -152,7 +160,7 @@
                         &nbsp;
                         <div class="col-xs-12">
                             <asp:Button ID="btnDone" runat="server" Text="Done" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
-                                OnClick="btnDone_Click" Enabled="true" />
+                                OnClick="btnDone_Click" Enabled="true" ToolTip="Exit with no further changes" />
                         </div>
                     </div>
                 </div>
@@ -237,6 +245,7 @@
 
         <!-- "Scratch" storage used during form processing -->
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
 
     </div>
 

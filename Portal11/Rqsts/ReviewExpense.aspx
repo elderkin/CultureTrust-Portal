@@ -452,8 +452,6 @@
                         <asp:ListBox runat="server" ID="lstSupporting" CssClass="form-control" Rows="2" SelectionMode="Single"
                             OnSelectedIndexChanged="lstSupporting_SelectedIndexChanged" AutoPostBack="true" />
                     </div>
-<%--                    <asp:Button ID="btnViewx" runat="server" Text="View" CssClass="btn btn-default col-xs-1"
-                        Enabled="false" OnClick="btnView_Click" CausesValidation="false" ToolTip="Download the selected Supporting Document" />--%>
                     <asp:HyperLink ID="btnViewLink" runat="server" CssClass="btn btn-default col-xs-1" Enabled="false" ToolTip="Select a row then click here to view the document"
                         NavigateUrl="overwrite from code behind" Text="View" Target="_blank" />
                 </div>
@@ -465,8 +463,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Creator Note</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtNotes" runat="server" CssClass="form-control has-success" TextMode="MultiLine" ReadOnly="true"></asp:TextBox>
+                    <div class="col-xs-5">
+                        <asp:TextBox ID="txtNotes" runat="server" CssClass="form-control has-success" TextMode="MultiLine" Rows="6" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -477,11 +475,19 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtReturnNote" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Return Note</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtReturnNote" CssClass="form-control" TextMode="MultiLine" />
+                    <div class="col-xs-5">
+                        <asp:TextBox runat="server" ID="txtReturnNote" CssClass="form-control" TextMode="MultiLine" Rows="6" />
                     </div>
-                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtReturnNote"
-                        CssClass="text-danger" ErrorMessage="Please supply a reason why you are returning the request." />
+                    <div class="col-xs-5">
+                        <asp:Button ID="btnReturnNoteClear" runat="server" Text="Clear" CssClass="btn btn-default col-md-2 col-xs-3"
+                            Enabled="true" OnClick="btnReturnNoteClear_Click" CausesValidation="false" ToolTip="Clear the text of the Return Note" />
+                        <div class="text-danger col-xs-12">
+                            <br />
+                            <asp:Literal ID="litReturnNoteError" runat="server" Visible="false" />
+                        </div>
+                    </div>
+<%--                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtReturnNote"
+                        CssClass="text-danger" ErrorMessage="Please supply a reason why you are returning the request." />--%>
                 </div>
             </div>
         </asp:Panel>
@@ -490,64 +496,65 @@
         <asp:Panel ID="pnlStaffNote" runat="server">
             <div class="form-group">
                 <div class="row">
-                    <asp:Label runat="server" AssociatedControlID="txtStaffNote" CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label" Font-Bold="false">
+                    <asp:Label runat="server" AssociatedControlID="txtStaffNote" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">
                         Staff Note<br />(visible only to other staff)</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtStaffNote" CssClass="form-control" TextMode="MultiLine" />
+                    <div class="col-xs-5">
+                        <asp:TextBox runat="server" ID="txtStaffNote" CssClass="form-control" TextMode="MultiLine" Rows="6"/>
+                    </div>
+                    <div class="col-xs-5">
+                        <asp:Button ID="btnStaffNoteClear" runat="server" Text="Clear" CssClass="btn btn-default col-md-2 col-xs-3"
+                            Enabled="true" OnClick="btnStaffNoteClear_Click" CausesValidation="false" ToolTip="Clear the text of the Staff Note" />
                     </div>
                 </div>
             </div>
         </asp:Panel>
 
         <!-- History Grid -->
-        <asp:Panel ID="pnlHistory" runat="server">
-            <div class="row">
-                <div class="col-md-12 col-sm-12 col-xs-12">
+        <asp:Panel ID="pnlHistory" runat="server" Visible="false">
+            <div class="row col-xs-12" style="margin-bottom:10px">
 
-                    <!-- Code assumes that RowID is the first column of this grid -->
-                    <asp:GridView ID="gvEDHistory" runat="server"
-                        CssClass="table table-striped table-hover"
-                        ItemType="Portal11.Models.rowEDHistory"
-                        AutoGenerateColumns="false"
-                        AllowPaging="true" PageSize="20"
-                        OnPageIndexChanging="gvEDHistory_PageIndexChanging">
+                <!-- Code assumes that RowID is the first column of this grid -->
+                <asp:GridView ID="gvEDHistory" runat="server"
+                    CssClass="table table-striped table-hover"
+                    ItemType="Portal11.Models.rowEDHistory"
+                    AutoGenerateColumns="false"
+                    AllowPaging="true" PageSize="20"
+                    OnPageIndexChanging="gvEDHistory_PageIndexChanging">
 
-                        <SelectedRowStyle CssClass="success" />
+                    <SelectedRowStyle CssClass="success" />
 
-                        <PagerStyle CssClass="active" HorizontalAlign="Center"></PagerStyle>
-                        <PagerTemplate>
-                            <asp:Button ID="ButtonFirst" runat="server" Text="<<" CommandName="Page"
-                                CommandArgument="First"
-                                CssClass="btn btn-sm btn-default"></asp:Button>
-                            <asp:Button ID="ButtonPrev" runat="server" Text="<" CommandName="Page"
-                                CommandArgument="Prev"
-                                CssClass="btn btn-sm btn-default"></asp:Button>
-                            <asp:Button ID="ButtonNext" runat="server" Text=">" CommandName="Page"
-                                CommandArgument="Next"
-                                CssClass="btn btn-sm btn-default"></asp:Button>
-                            <asp:Button ID="ButtonLast" runat="server" Text=">>" CommandName="Page"
-                                CommandArgument="Last" Enabled="false"
-                                CssClass="btn btn-sm btn-default"></asp:Button>
-                        </PagerTemplate>
+                    <PagerStyle CssClass="active" HorizontalAlign="Center"></PagerStyle>
+                    <PagerTemplate>
+                        <asp:Button ID="ButtonFirst" runat="server" Text="<<" CommandName="Page"
+                            CommandArgument="First" CausesValidation="false" 
+                            CssClass="btn btn-sm btn-default"></asp:Button>
+                        <asp:Button ID="ButtonPrev" runat="server" Text="<" CommandName="Page"
+                            CommandArgument="Prev" CausesValidation="false" 
+                            CssClass="btn btn-sm btn-default"></asp:Button>
+                        <asp:Button ID="ButtonNext" runat="server" Text=">" CommandName="Page"
+                            CommandArgument="Next" CausesValidation="false" 
+                            CssClass="btn btn-sm btn-default"></asp:Button>
+                        <asp:Button ID="ButtonLast" runat="server" Text=">>" CommandName="Page"
+                            CommandArgument="Last" CausesValidation="false" Enabled="false"
+                            CssClass="btn btn-sm btn-default"></asp:Button>
+                    </PagerTemplate>
 
-                        <EmptyDataTemplate>
-                            <table>
-                                <tr>
-                                    <td>There are no History entries for this Expense Request</td>
-                                </tr>
-                            </table>
-                        </EmptyDataTemplate>
-                        <Columns>
-                            <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:MM/dd/yyyy}" />
-                            <asp:BoundField DataField="FormerStatus" HeaderText="Former Status" />
-                            <asp:BoundField DataField="EstablishedBy" HeaderText="Established By" />
-                            <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />
-                            <asp:BoundField DataField="ReasonForChange" HeaderText="Reason For Change" />
-                            <asp:BoundField DataField="ReturnNote" HeaderText="Return Note" />
-                        </Columns>
-                    </asp:GridView>
-
-                </div>
+                    <EmptyDataTemplate>
+                        <table>
+                            <tr>
+                                <td>There are no History entries for this Expense Request</td>
+                            </tr>
+                        </table>
+                    </EmptyDataTemplate>
+                    <Columns>
+                        <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:MM/dd/yyyy}" />
+                        <asp:BoundField DataField="FormerStatus" HeaderText="Former Status" />
+                        <asp:BoundField DataField="EstablishedBy" HeaderText="Established By" />
+                        <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />
+                        <asp:BoundField DataField="ReasonForChange" HeaderText="Reason For Change" />
+                        <asp:BoundField DataField="ReturnNote" HeaderText="Return Note" />
+                    </Columns>
+                </asp:GridView>
             </div>
         </asp:Panel>
 
@@ -559,6 +566,8 @@
                 OnClick="btnApprove_Click" CausesValidation="false" ToolTip="Advance this Expense Request to the next stage" />
             <asp:Button ID="btnReturn" runat="server" Text="Return" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnReturn_Click" ToolTip="Disapprove this Expense Request and return it to the Project Director with a Review Note" />
+            <asp:Button ID="btnRevise" runat="server" Text="Revise" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+                OnClick="btnRevise_Click" ToolTip="Edit this Deposit Request to fix problems and return it to the prior reviewer with a Return Note" />
             <asp:Button ID="btnHistory" runat="server" Text="History" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnHistory_Click" CausesValidation="false" ToolTip="View the history of this Expense Request" />
         </div>
@@ -572,6 +581,7 @@
         <asp:Literal ID="litSavedState" runat="server" Visible="false" />
         <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedUserRole" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedSubmitProjectRole" runat="server" Visible="false" />
 
     </div>
 

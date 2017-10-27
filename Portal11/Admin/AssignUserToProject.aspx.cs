@@ -39,7 +39,7 @@ namespace Portal11.Admin
                 litSavedUserID.Text = userID;                               // Remember the selected user's ID
                 litSavedFullName.Text = fullName;                           // Also remember user's full name
 
-                gvAssignUserToProject.PageSize = CookieActions.FindGridViewRows(); // Find number of rows per page from cookie
+                gvAssignUserToProject.PageSize = CookieActions.GetGridViewRows(); // Find number of rows per page from cookie
 
                 LoadProjectView();                                          // Fill the grid
             }
@@ -135,7 +135,7 @@ namespace Portal11.Admin
             if (p == "")                                                    // If == value is missing. That's an error
                 LogError.LogQueryStringError("AssignUserToProject", "ProjectID not found in selected GridView row"); // Log fatal error
 
-            StateActions.ChangeProjectRole(Convert.ToInt32(p), litSavedUserID.Text, role); // Do the heavy lifting
+            RoleActions.ChangeProjectRole(Convert.ToInt32(p), litSavedUserID.Text, role); // Do the heavy lifting
 
             LoadProjectView();                                          // Refresh the grid view
             AdjustButtons(role);                                        // Switch the appropriate buttons on and off
@@ -165,7 +165,7 @@ namespace Portal11.Admin
 
                 List<Project> projs = context.Projects.AsExpandable().Where(pred).OrderBy(p => p.Name).ToList(); // Query, sort and make list
 
-                //  2) Fetch all of the projects this user is assigned to with - there could be many.
+                //  2) Fetch all of the projects this user is assigned to - there could be many.
 
                 var query = from up in context.UserProjects
                             where up.UserID == litSavedUserID.Text

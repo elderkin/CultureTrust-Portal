@@ -237,6 +237,7 @@
         <asp:Literal ID="litSavedPersonEnum" runat="server" Visible="false" />
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedProjectRole" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedStateEnum" runat="server" Visible="false" />
         <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
         <asp:Literal ID="litSupportingDocMin" runat="server" Visible="false" Text="Minimum"></asp:Literal>

@@ -34,7 +34,7 @@ namespace Portal11.Select
                 //    LogError.LogQueryStringError("EditProjectClasses", "Missing Query String 'Command'"); // Log fatal error
 
                 litSavedCommand.Text = PortalConstants.QSCommandEdit;       // Always Edit, at least for now
-                gvProjectClass.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
+                gvProjectClass.PageSize = CookieActions.GetGridViewRows();  // Find number of rows per page from cookie
                 LoadgvProjectClass();                                     // Fill the grid
             }
         }

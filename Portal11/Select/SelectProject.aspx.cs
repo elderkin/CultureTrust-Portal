@@ -8,7 +8,6 @@ using System.Web.UI.WebControls;
 using Portal11.Models;
 using Portal11.Logic;
 using Portal11.ErrorLog;
-using System.Drawing;
 
 namespace Portal11.Staff
 {
@@ -75,8 +74,8 @@ namespace Portal11.Staff
                 if (cmd == PortalConstants.QSCommandEdit)                   // If == we are selecting a Project to edit
                     btnNew.Enabled = true;                                  // Offer the opportunity to create a new Project
 
-                gvAllProject.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
-                gvUserProject.PageSize = CookieActions.FindGridViewRows();  // Find number of rows per page from cookie
+                gvAllProject.PageSize = CookieActions.GetGridViewRows();  // Find number of rows per page from cookie
+                gvUserProject.PageSize = CookieActions.GetGridViewRows();  // Find number of rows per page from cookie
                 LoadProjectView();                                          // Fill the grid
             }
         }
@@ -208,7 +207,8 @@ namespace Portal11.Staff
                     {
                         Response.Redirect(PortalConstants.URLAssignEntitysToProject + "?" + PortalConstants.QSProjectID + "=" + projectID + "&" +
                                                             PortalConstants.QSProjectName + "=" + name.Text + "&" +
-                                                            PortalConstants.QSCommand + "=" + litSavedCommand.Text);
+                                                            PortalConstants.QSCommand + "=" + litSavedCommand.Text + "&" +
+                                                            PortalConstants.QSReturn + "=" + PortalConstants.URLAdminMain); // When done, return to Main page
                         break;
                     }
                 case PortalConstants.QSCommandAssignGrant:
@@ -222,7 +222,8 @@ namespace Portal11.Staff
                     {
                         Response.Redirect(PortalConstants.URLAssignPersonsToProject + "?" + PortalConstants.QSProjectID + "=" + projectID + "&" +
                                                             PortalConstants.QSProjectName + "=" + name.Text + "&" +
-                                                            PortalConstants.QSCommand + "=" + litSavedCommand.Text);
+                                                            PortalConstants.QSCommand + "=" + litSavedCommand.Text + "&" +
+                                                            PortalConstants.QSReturn + "=" + PortalConstants.URLAdminMain); // When done, return to Main page
                         break;
                     }
                 case PortalConstants.QSCommandEdit:
@@ -314,7 +315,7 @@ namespace Portal11.Staff
 
                     string search = txtProject.Text;                        // Fetch the string that the user typed in, if any
                     if (search != "")                                       // If != the search string is not blank, use a Contains clause
-                        pred = pred.And(p => p.Name.Contains(search));      // Only Projects whose name match our search criteria
+                        pred = pred.And(p => p.Name.Contains(search) || p.Code.Contains(search)); // Only Projects whose name or code matches our search criteria
 
                     List<Project> projs = context.Projects.AsExpandable().Where(pred).OrderBy(p => p.Name).ToList(); // Query, sort and make list
 
@@ -381,7 +382,7 @@ namespace Portal11.Staff
                     pred = pred.And(up => up.UserID == litSavedUserID.Text); // Limit search to Projects associated with this User
                     string search = txtProject.Text;                        // Fetch the string that the user typed in, if any
                     if (search != "")                                       // If != the search string is not blank, use a Contains clause
-                        pred = pred.And(up => up.Project.Name.Contains(search)); // Only Projects whose name match our search criteria
+                        pred = pred.And(up => up.Project.Name.Contains(search) || up.Project.Code.Contains(search)); // Only Projects whose name or code match our search criteria
 
                     List<UserProject> projs = context.UserProjects.AsExpandable().Where(pred).OrderBy(up => up.Project.Name).ToList(); // Query, sort and make list
 
@@ -396,6 +397,7 @@ namespace Portal11.Staff
                     {
                         rowSelectProjectUserView row = new rowSelectProjectUserView(); // Instantiate empty row all ready to fill
                         row.ProjectID = p.ProjectID.ToString();             // Fill the part of the row that's always there
+                        row.Code = p.Project.Code;
                         row.Name = p.Project.Name;
                         row.Description = p.Project.Description;
                         row.ProjectRole = EnumActions.GetEnumDescription(p.ProjectRole);
@@ -429,7 +431,7 @@ namespace Portal11.Staff
                                      where exp.ProjectID == p.ProjectID
                                          && !exp.Archived
                                          && ((exp.CurrentState == ExpState.AwaitingProjectDirector)
-                                         || (exp.CurrentState == ExpState.Returned)
+                                         || (exp.CurrentState == ExpState.ReturnedToProjectDirector)
                                          || (exp.CurrentState == ExpState.UnsubmittedByProjectDirector)
                                          || (exp.CurrentState == ExpState.UnsubmittedByProjectStaff))
                                      select exp).Count();

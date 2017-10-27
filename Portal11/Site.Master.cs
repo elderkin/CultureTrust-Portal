@@ -60,7 +60,9 @@ namespace Portal11
                 if ((string)ViewState[AntiXsrfTokenKey] != _antiXsrfTokenValue
                     || (string)ViewState[AntiXsrfUserNameKey] != (Context.User.Identity.Name ?? String.Empty))
                 {
-                    throw new InvalidOperationException("Validation of Anti-XSRF token failed.");
+                    throw new InvalidOperationException("Validation of Anti-XSRF token failed. AntiXsrfTokenKey: " 
+                        + (string)ViewState[AntiXsrfTokenKey] + " AntiXsrfUserNameKey: " + (string)ViewState[AntiXsrfUserNameKey]
+                        + " on page: " + HttpContext.Current.Request.Url.AbsolutePath);
                 }
             }
         }
@@ -128,8 +130,8 @@ namespace Portal11
                         }
                         case UserRole.Auditor:
                         case UserRole.FinanceDirector:
-                        case UserRole.TrustDirector:
-                        case UserRole.TrustExecutive:
+                        case UserRole.CommunityDirector:
+                        case UserRole.President:
                         {
                             mnuHomeStaff.Visible = true;                            // Make appropriate Home menu visible
                             litStaffRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // Show that role in the Navbar, link to Staff Dashboard

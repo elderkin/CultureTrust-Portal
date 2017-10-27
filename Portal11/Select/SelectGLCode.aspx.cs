@@ -34,7 +34,7 @@ namespace Portal11.Select
                     LogError.LogQueryStringError("SelectGLCode", "Missing Query String 'Command'"); // Log fatal error
 
                 litSavedCommand.Text = cmd;                                 // Remember the command that invoked this page
-                gvGLCode.PageSize = CookieActions.FindGridViewRows();     // Find number of rows per page from cookie
+                gvGLCode.PageSize = CookieActions.GetGridViewRows();     // Find number of rows per page from cookie
                 LoadgvGLCode();                                           // Fill the grid
             }
         }

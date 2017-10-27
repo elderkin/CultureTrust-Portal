@@ -168,7 +168,7 @@ namespace Portal11.Admin
             // Current Funds
             record.CurrentFunds = (decimal)ConvertCurrency(txtCurrentFunds.Text); // Carefully convert currency from text to decimal
             // Grant Maker
-            record.GrantMakerID = (int)StateActions.UnloadDdl(ddlGrantMaker); // Carefully pull the Grant Maker ID
+            record.GrantMakerID = (int)DdlActions.UnloadDdl(ddlGrantMaker); // Carefully pull the Grant Maker ID
         }
 
         decimal? ConvertCurrency(string amount)
@@ -203,7 +203,7 @@ namespace Portal11.Admin
                         dr["Name"] = row.Name;
                         grantMakers.Rows.Add(dr);           // Add the new row to the data table
                     }
-                    StateActions.LoadDdl(ddlGrantMaker, grantMakerID, grantMakers, 
+                    DdlActions.LoadDdl(ddlGrantMaker, grantMakerID, grantMakers, 
                         "-- Error: No Grant Makers in database --", "-----------------"); // Put the cherry on top
                 }
             }

@@ -183,7 +183,6 @@ namespace Portal11.Logic
             }
             catch (Exception)
             {
-                LogError.LogInternalError("EnumActions.ConvertTextToProjectRole", $"Unable to parse text '{text}' to ProjectRole enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }

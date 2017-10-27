@@ -44,6 +44,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AjaxControlToolkit, Version=17.1.1.0, Culture=neutral, PublicKeyToken=28f01b0e84b6d53e, processorArchitecture=MSIL">
+      <HintPath>..\packages\AjaxControlToolkit.17.1.1.0\lib\net40\AjaxControlToolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Elmah">
       <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
     </Reference>
@@ -208,7 +212,7 @@
     <Content Include="Admin\EditPerson.aspx" />
     <Content Include="Admin\EditGLCode.aspx" />
     <Content Include="Admin\EditGrant.aspx" />
-    <Content Include="Admin\EmailParameters.aspx" />
+    <Content Include="Admin\Obsolete.aspx" />
     <Content Include="Admin\Main.aspx" />
     <Content Include="Admin\EditAdvancedOptions.aspx" />
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
@@ -224,8 +228,9 @@
     <Content Include="Lists\ListPortalUsers.aspx" />
     <Content Include="Lists\ListProjectMetadata.aspx" />
     <Content Include="Lists\ListProjects.aspx" />
+    <Content Include="Logic\FlowControl.aspx" />
     <Content Include="Proj\EditProjectClass.aspx" />
-    <Content Include="Proj\TestModal.aspx" />
+    <Content Include="Proj\TestModal2.aspx" />
     <Content Include="Proj\ViewDoc.aspx" />
     <Content Include="Rqsts\EditApproval.aspx" />
     <Content Include="Rqsts\EditDeposit.aspx" />
@@ -259,7 +264,6 @@
     <Content Include="Proj\ProjectDashboard.aspx" />
     <Content Include="Admin\EditProject.aspx" />
     <Content Include="Select\SelectVendor.aspx" />
-    <Content Include="Staff\ModalTest.aspx" />
     <Content Include="Rqsts\ReviewExpense.aspx" />
     <Content Include="Select\SelectProject.aspx" />
     <Content Include="Staff\StaffDashboard.aspx" />
@@ -523,12 +527,12 @@
     <Compile Include="Admin\EditGrant.aspx.designer.cs">
       <DependentUpon>EditGrant.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Admin\EmailParameters.aspx.cs">
-      <DependentUpon>EmailParameters.aspx</DependentUpon>
+    <Compile Include="Admin\Obsolete.aspx.cs">
+      <DependentUpon>Obsolete.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\EmailParameters.aspx.designer.cs">
-      <DependentUpon>EmailParameters.aspx</DependentUpon>
+    <Compile Include="Admin\Obsolete.aspx.designer.cs">
+      <DependentUpon>Obsolete.aspx</DependentUpon>
     </Compile>
     <Compile Include="Admin\Main.aspx.cs">
       <DependentUpon>Main.aspx</DependentUpon>
@@ -606,9 +610,17 @@
     </Compile>
     <Compile Include="Logic\CookieActions.cs" />
     <Compile Include="Logic\DateActions.cs" />
+    <Compile Include="Logic\DdlActions.cs" />
     <Compile Include="Logic\EmailActions.cs" />
     <Compile Include="Logic\EnumActions.cs" />
     <Compile Include="Logic\ExceptionActions.cs" />
+    <Compile Include="Logic\FlowControl.aspx.cs">
+      <DependentUpon>FlowControl.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Logic\FlowControl.aspx.designer.cs">
+      <DependentUpon>FlowControl.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Logic\ProjectClassActions.cs" />
     <Compile Include="Logic\QueryStringActions.cs" />
     <Compile Include="Logic\SplitActions.cs" />
@@ -623,12 +635,12 @@
     <Compile Include="Proj\EditProjectClass.aspx.designer.cs">
       <DependentUpon>EditProjectClass.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Proj\TestModal.aspx.cs">
-      <DependentUpon>TestModal.aspx</DependentUpon>
+    <Compile Include="Proj\TestModal2.aspx.cs">
+      <DependentUpon>TestModal2.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Proj\TestModal.aspx.designer.cs">
-      <DependentUpon>TestModal.aspx</DependentUpon>
+    <Compile Include="Proj\TestModal2.aspx.designer.cs">
+      <DependentUpon>TestModal2.aspx</DependentUpon>
     </Compile>
     <Compile Include="Proj\ViewDoc.aspx.cs">
       <DependentUpon>ViewDoc.aspx</DependentUpon>
@@ -767,13 +779,6 @@
     </Compile>
     <Compile Include="Select\SelectVendor.aspx.designer.cs">
       <DependentUpon>SelectVendor.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Staff\ModalTest.aspx.cs">
-      <DependentUpon>ModalTest.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Staff\ModalTest.aspx.designer.cs">
-      <DependentUpon>ModalTest.aspx</DependentUpon>
     </Compile>
     <Compile Include="Rqsts\ReviewExpense.aspx.cs">
       <DependentUpon>ReviewExpense.aspx</DependentUpon>

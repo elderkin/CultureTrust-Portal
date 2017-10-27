@@ -500,6 +500,10 @@
                         <!-- Fill this control from code-behind -->
                         <asp:DropDownList runat="server" ID="ddlEntity" CssClass="form-control"></asp:DropDownList>
                     </div>
+                    <div class="col-md-1 col-xs-3">
+                        <asp:Button ID="btnNewEntity" runat="server" Text="New" CssClass="btn btn-default col-xs-12" Visible="true"
+                            Enabled="true" OnClick="btnNewEntity_Click" CausesValidation="false" ToolTip="Add a new entity to this project. Save changes before pressing this button." />
+                    </div>
                     <div class="col-lg-6 col-md-6 col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlEntity"
                             CssClass="text-danger" ErrorMessage="Please select a Vendor from the list"></asp:RequiredFieldValidator>
@@ -517,6 +521,10 @@
                     <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <!-- Fill this control from code-behind -->
                         <asp:DropDownList runat="server" ID="ddlPerson" CssClass="form-control"></asp:DropDownList>
+                    </div>
+                    <div class="col-md-1 col-xs-3">
+                        <asp:Button ID="btnNewPerson" runat="server" Text="New" CssClass="btn btn-default col-xs-12" Visible="true"
+                            Enabled="true" OnClick="btnNewPerson_Click" CausesValidation="false" ToolTip="Add a new person to this project. Save changes before pressing this button." />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlPerson"
@@ -799,12 +807,13 @@
                                 CssClass="hidden" />
                             <div id="btnAdd" class="btn btn-default col-md-2 col-xs-3">Add</div>
                         </asp:Panel>
-<%--                        <asp:Button ID="btnView" runat="server" Text="View" CssClass="btn btn-default col-md-2 col-xs-offset-1 col-xs-3"
-                            Enabled="false" OnClick="btnView_Click" CausesValidation="false" ToolTip="Download the selected Supporting Document" />--%>
                         <asp:HyperLink ID="btnViewLink" runat="server" CssClass="btn btn-default col-md-2 col-xs-offset-1 col-xs-3" Enabled="false" ToolTip="Select a row then click here to view the document"
                             NavigateUrl="overwrite from code behind" Text="View" Target="_blank" />
                         <asp:Button ID="btnRem" runat="server" Text="Remove" CssClass="btn btn-default col-md-2 col-xs-offset-1 col-xs-3"
                             Enabled="false" OnClick="btnRemove_Click" CausesValidation="false" ToolTip="Remove the selected Supporting Document from the Expense Request" />
+                    </div>
+                    <div class="col-xs-6 text-danger">
+                        <asp:Literal runat="server" ID="litSDError" />
                     </div>
                 </div>
             </div>
@@ -815,9 +824,35 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtNotes" 
-                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Notes</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtNotes" TextMode="MultiLine" CssClass="form-control has-success"></asp:TextBox>
+                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Note</asp:Label>
+                    <div class="col-xs-5">
+                        <asp:TextBox runat="server" ID="txtNotes" TextMode="MultiLine" Rows="6" CssClass="form-control has-success"></asp:TextBox>
+                    </div>
+                    <div class="col-xs-5">
+                        <asp:Button ID="btnNotesClear" runat="server" Text="Clear" CssClass="btn btn-default col-md-2 col-xs-3"
+                            Enabled="true" OnClick="btnNotesClear_Click" CausesValidation="false" ToolTip="Clear the text of the Note" />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- Return Note -->
+        <asp:Panel ID="pnlReturnNote" runat="server" Visible="false">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" AssociatedControlID="txtReturnNote" 
+                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Return Note</asp:Label>
+                    <div class="col-xs-5">
+                        <asp:TextBox runat="server" ID="txtReturnNote" CssClass="form-control" TextMode="MultiLine" Rows="6" Enabled="false" />
+                    </div>
+                    <div class="col-xs-5">
+                        <asp:Button ID="btnReturnNoteClear" runat="server" Text="Clear" CssClass="btn btn-default col-md-2 col-xs-3"
+                            Enabled="true" OnClick="btnReturnNoteClear_Click" CausesValidation="false" ToolTip="Clear the text of the Return Note" />
+                        <div class="col-xs-12">
+                            <br />
+                            <asp:RequiredFieldValidator ID="rfvReturnNote" runat="server" InitialValue="" ControlToValidate="txtReturnNote"
+                                CssClass="text-danger" ErrorMessage="Please supply a reason for revising the request"></asp:RequiredFieldValidator>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -830,30 +865,20 @@
                     <asp:Label runat="server" AssociatedControlID="txtStaffNote" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">
                             Staff Note<br />(visible only to other staff)</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtStaffNote" CssClass="form-control" TextMode="MultiLine" />
+                    <div class="col-xs-5">
+                        <asp:TextBox runat="server" ID="txtStaffNote" CssClass="form-control" TextMode="MultiLine" Rows="6"/>
                     </div>
-                </div>
-            </div>
-        </asp:Panel>
-
-        <!-- Return Note -->
-        <asp:Panel ID="pnlReturnNote" runat="server" Visible="false">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" AssociatedControlID="txtReturnNote" 
-                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Return Note</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtReturnNote" CssClass="form-control" TextMode="MultiLine" ReadOnly="true" />
+                    <div class="col-xs-5">
+                        <asp:Button ID="btnStaffNoteClear" runat="server" Text="Clear" CssClass="btn btn-default col-md-2 col-xs-3"
+                            Enabled="true" OnClick="btnStaffNoteClear_Click" CausesValidation="false" ToolTip="Clear the text of the Staff Note" />
                     </div>
                 </div>
             </div>
         </asp:Panel>
 
         <!-- History Grid -->
-        <asp:Panel ID="pnlHistory" runat="server">
-            <div class="row">
-                <div class="col-md-12 col-sm-12 col-xs-12">
+        <asp:Panel ID="pnlHistory" runat="server" Visible="false">
+            <div class="row col-xs-12" style="margin-bottom:10px">
 
                     <!-- Code assumes that RowID is the first column of this grid -->
                     <asp:GridView ID="gvEDHistory" runat="server"
@@ -868,16 +893,16 @@
                         <PagerStyle CssClass="active" HorizontalAlign="Center"></PagerStyle>
                         <PagerTemplate>
                             <asp:Button ID="ButtonFirst" runat="server" Text="<<" CommandName="Page"
-                                CommandArgument="First"
+                                CommandArgument="First" CausesValidation="false" 
                                 CssClass="btn btn-sm btn-default"></asp:Button>
                             <asp:Button ID="ButtonPrev" runat="server" Text="<" CommandName="Page"
-                                CommandArgument="Prev"
+                                CommandArgument="Prev" CausesValidation="false" 
                                 CssClass="btn btn-sm btn-default"></asp:Button>
                             <asp:Button ID="ButtonNext" runat="server" Text=">" CommandName="Page"
-                                CommandArgument="Next"
+                                CommandArgument="Next" CausesValidation="false" 
                                 CssClass="btn btn-sm btn-default"></asp:Button>
                             <asp:Button ID="ButtonLast" runat="server" Text=">>" CommandName="Page"
-                                CommandArgument="Last" Enabled="false"
+                                CommandArgument="Last" CausesValidation="false" Enabled="false"
                                 CssClass="btn btn-sm btn-default"></asp:Button>
                         </PagerTemplate>
 
@@ -897,33 +922,33 @@
                             <asp:BoundField DataField="ReturnNote" HeaderText="Return Note" />
                         </Columns>
                     </asp:GridView>
-
-                </div>
             </div>
         </asp:Panel>
 
         <!-- Button array -->
-        <div class="row">
+        <div class="row col-xs-12">
             <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-sm-offset-0 col-xs-offset-1 col-xs-2" Enabled="true"
                 OnClick="btnCancel_Click" CausesValidation="false" ToolTip="Return to the Dashboard without saving" />
-            <asp:Button ID="btnSave" runat="server" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
-                OnClick="btnSave_Click" CausesValidation="false" ToolTip="Save this Expense Request and return to the Dashboard" Text="Save"/>
+            <asp:Button ID="btnSave" runat="server" Text="Save" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+                OnClick="btnSave_Click" CausesValidation="false" ToolTip="Save this Expense Request and return to the Dashboard" />
             <asp:Button ID="btnSubmit" runat="server" Text="Submit" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
-                OnClick="btnSubmit_Click" ToolTip="Save this Expense Request, submit it for approval and return to the Dashboard" />
-            <asp:Button ID="btnRevise" runat="server" Text="Revise" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
-                OnClick="btnRevise_Click" ToolTip="Make this returned Expense Request editable and begin editing it" Visible="false" />
+                OnClick="btnSubmit_Click" CausesValidation="true" ToolTip="Save this Expense Request, submit it for approval and return to the Dashboard" />
+<%--            <asp:Button ID="btnRevise" runat="server" Text="Revise" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+                OnClick="btnRevise_Click" ToolTip="Make this returned Expense Request editable and begin editing it" Visible="false" />--%>
             <asp:Button ID="btnShowHistory" runat="server" Text="History" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
-                OnClick="btnShowHistory_Click" CausesValidation="false" ToolTip="List the changes that this Expense Request has gone through" Visible="false" />
+                OnClick="btnShowHistory_Click" CausesValidation="false" ToolTip="List the changes that this Expense Request has gone through" />
         </div>
 
         <!-- "Scratch" storage used during form processing -->
         <asp:Literal ID="litSavedCommand" runat="server" Visible="false" />
         <asp:Literal ID="litSavedDefaultProjectClassID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedEntityEnum" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedEntityPersonFlag" runat="server" Visible="false" />
         <asp:Literal ID="litSavedExpID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedPersonEnum" runat="server" Visible="false" />
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedProjectRole" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedStateEnum" runat="server" Visible="false" />
         <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
         <asp:Literal ID="litSupportingDocMin" runat="server" Visible="false" Text="Minimum"></asp:Literal>
@@ -931,8 +956,8 @@
         </asp:Panel>
     </div>
 
-    <!-- This little style helps us hide the File Upload button. And this piece of Javascript makes the click event of the Add button trigger the click event of the File Upload control. This is
-    because the File Upload control's native button is too ugly, i.e., in a style that's inconsistent with the rest of the pages. -->
+    <%--    This little style helps us hide the File Upload button. And this piece of Javascript makes the click event of the Add button trigger the click event of the File Upload control. This is
+        because the File Upload control's native button is too ugly, i.e., in a style that's inconsistent with the rest of the pages.--%>
 
     <style>
         .hidden {
@@ -947,5 +972,31 @@
 
     </script>
 
+    <%--Modal dialog box to tollboth our path to the Assign Entity To Project Page--%>
+
+    <div ID="divModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title text-success" style="text-align:center">Confirmation</h3>
+                </div>
+                <div class="modal-body">
+                    <h4>This operation will save the current request.</h4>
+                    <h4>Are you sure you want to proceed?</h4>
+                </div>
+                <div class="modal-footer">
+                    <div class="row col-xs-12">
+                    <asp:Button ID="btnModalCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-xs-2" data-dismiss="modal" CausesValidation="false"
+                        ToolTip="Close this window without saving." />
+                    <asp:Button ID="btnModalNo" runat="server" Text="No" CssClass="btn btn-default col-xs-offset-1 col-xs-2" data-dismiss="modal" CausesValidation="false"
+                        ToolTip="Do not proceed." />
+                    <asp:Button ID="btnModalYes" runat="server" Text="Yes" CssClass="btn btn-primary col-xs-offset-1 col-xs-2" CausesValidation="false"
+                        OnClick="btnModalYes_Click" ToolTip="Save the request, then add a new entity or person." />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </asp:Content>

@@ -2,11 +2,7 @@
 using Portal11.Logic;
 using Portal11.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
 namespace Portal11.Admin
 {
@@ -14,19 +10,26 @@ namespace Portal11.Admin
     {
         // Create a new Entity, Edit an existing Entity. Communication from Entity menu is through Query Strings:
         //      Command - "New" or "Edit" (Required)
-        //      EntityID - the database ID of the Entity that owns this Request. If absent, invoke Select Entity to find the Entity.
+        //      UserID - the ID of the user making this request (optional)
+        //      EntityID - the database ID of the Entity to be edited. If absent, invoke Select Entity to find the Entity.
+        //      ProjectID - propagated to caller
+        //      Return - the URL to which we return when processing is complete. If blank, we return to the Admin page. (required)
+        //      Return2 - the caller's caller. We propagate this - feels shakey (optional)
+        // If we are invoked from AssignEntitysToProject, we have more Query Strings, ProjectID and ProjectName. These are propagated through
+        // if we pass control back there.
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!Page.IsPostBack)
             {
                 string userID = QueryStringActions.GetUserID();             // Fetch User ID. If absent, check UserInfoCookie
-                int entityID = Convert.ToInt32(Request.QueryString[PortalConstants.QSEntityID]); // Fetch the EntityID, if present
-                string cmd = Request.QueryString[PortalConstants.QSCommand]; // Fetch the command
+                QSValue entityID = QueryStringActions.GetEntityID();        // Fetch the EntityID, if present
+                string cmd = QueryStringActions.GetCommand();               // Fetch the command
+                litSavedReturn.Text = QueryStringActions.GetReturn();       // Fetch the return page name and save for later
 
                 // Stash these parameters into invisible literals on the current page.
 
                 litSavedUserID.Text = userID;
-                litSavedEntityID.Text = entityID.ToString();
+                litSavedEntityID.Text = entityID.String;
                 litSavedCommand.Text = cmd;
 
                 SupportingActions.CleanupTemp(userID, litDangerMessage);    // Cleanup supporting docs from previous executions for this user
@@ -44,26 +47,25 @@ namespace Portal11.Admin
                         }
                     case PortalConstants.QSCommandEdit:                     // Process an "Edit" command. Read existing request, save it in same row
                         {
-
-                            // If EntityID is blank, we don't know which Entity to Edit. Invoke SelectEntity page to figure that out and come back here.
-
-                            if (entityID == 0)                              // If == Query String was absent. Go find which Entity then come back here
+                            if (entityID.Int == 0)                          // If == Query String was absent. Go find which Entity then come back here
                             {
-                                Response.Redirect(PortalConstants.URLSelectEntity + "?" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit);
+                                Response.Redirect(PortalConstants.URLSelectEntity 
+                                          + "?" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit
+                                          + "=" + PortalConstants.QSReturn + "=" + litSavedReturn.Text);
                             }
 
                             // Fetch the row from the database. Fill in the panels using data rom the existing request. Lotta work!
 
                             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                             {
-                                Entity toEdit = context.Entitys.Find(entityID); // Fetch Entity row by its key
+                                Entity toEdit = context.Entitys.Find(entityID.Int); // Fetch Entity row by its key
                                 if (toEdit == null)
                                 {
                                     LogError.LogInternalError("EditEntity", string.Format("Unable to find EntityID '{0}' in database",
                                         entityID.ToString()));              // Fatal error
                                 }
                                 LoadPanels(toEdit);                         // Fill in the visible panels from the request
-                                SupportingActions.LoadDocs(RequestType.Entity, entityID, lstSupporting, litDangerMessage); // Do the heavy lifting
+                                SupportingActions.LoadDocs(RequestType.Entity, entityID.Int, lstSupporting, litDangerMessage); // Do the heavy lifting
                             }
                             litSuccessMessage.Text = "Selected Entity is ready to edit";
                             break;
@@ -111,14 +113,12 @@ namespace Portal11.Admin
 
         protected void Cancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(PortalConstants.URLAdminMain);                        // Back to the barn. 
+            ReturnToCaller("");                                             // Leave with the guy that brung us (without status)
         }
 
         // Save button clicked. "Save" means that we unload all the controls for the Entity into a database row. 
         // If the Entity is new, we just add a new row. If the Entity already exists, we update it and add a history record to show the edit.
         // We can tell a Entity is new if the Query String doesn't contain a mention of a EntityID AND the literal litSavedEntityID is empty.
-        // On the first such Save, we stash the EntityID of the new Entity into this literal so that a second Save during the same session will find
-        // it and update it, rather than creating a second row.
 
         protected void Save_Click(object sender, EventArgs e)
         {
@@ -156,9 +156,28 @@ namespace Portal11.Admin
                     LogError.LogDatabaseError(ex, "EditEntity", "Error updating Entity row"); // Otherwise, log a Fatal error and don't return here
                 }
             }
+            ReturnToCaller("Entity saved");                                 // Report success on the way out
+        }
 
-            Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                                + PortalConstants.QSStatus + "=Entity saved"); // Back to where we came
+        // Return to the "caller", propagating query string parameters
+
+        void ReturnToCaller(string status)
+        {
+            string running = litSavedReturn.Text + "?" + PortalConstants.QSNull; // Fetch the Return URL. That's our destination. At least one parameter
+
+            if (!string.IsNullOrEmpty(status))                              // If false, propagate status
+                running += "&" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess
+                         + "&" + PortalConstants.QSStatus + "=" + status;   // Tack on Severity and Status query strings
+
+            string proj = Request.QueryString[PortalConstants.QSProjectID]; // Fetch ProjectID query string, if present
+            if (!string.IsNullOrEmpty(proj))                                // If false propagate ProjectID
+                running += "&" + PortalConstants.QSProjectID + "=" + proj;  // Propagate Project ID
+
+            string ret2 = Request.QueryString[PortalConstants.QSReturn2];   // Fetch Return2 parameter, if present
+            if (!string.IsNullOrEmpty(ret2))                                // If false parameter present, propagate it
+                running += "&" + PortalConstants.QSReturn + "=" + ret2;     // Propagate caller's return
+
+            Response.Redirect(running);                                     // Return to the "caller" with QS parameters
         }
 
         // Move values from the Entity record into the Page.

@@ -17,6 +17,10 @@ namespace Portal11.Admin
 
             // This page assigns Persons to a Project in roles of Contractor, Employee, Holder and Recipient. The ProjectPerson table intermediates
             // these relationships.
+            // Query Strings:
+            //    QSPersonRole - role that the caller is interested in selecting (optional)
+            //    QSProjectID = ID of current project
+            //    QSReturn - where to go when we finish
 
             if (!Page.IsPostBack)
             {
@@ -27,10 +31,21 @@ namespace Portal11.Admin
 
                 QSValue projectID = QueryStringActions.GetProjectID();      // Fetch Project ID from Query String or ProjectInfoCookie
                 litSavedProjectID.Text = projectID.String;                  // Save it in an easier spot to find
-                litProjectName.Text = QueryStringActions.GetProjectName();  // Display Project Name from Query String or ProjectInfoCookie
-                
-                LoadgvProjectPerson(projectID.String);                    // Fill the left grid
-                LoadgvAllPerson(projectID.String);                        // Fill the right grid
+                litSavedReturn.Text = QueryStringActions.GetReturn();       // Fetch page our caller wants us to return to
+
+                // If PersonRole is specified, flip the radio button to match
+
+                string personRole = Request.QueryString[PortalConstants.QSPersonRole]; // Fetch Query String, if present
+                if (!string.IsNullOrEmpty(personRole))                      // If false there's something there for us to process
+                {
+                    foreach (ListItem item in rdoPersonRole.Items)
+                    {
+                        item.Selected = (personRole == item.Value);         // If == select the item, if not deselect the item
+                    }
+                }
+
+                LoadgvProjectPerson(projectID.String);                      // Fill the left grid
+                LoadgvAllPerson(projectID.String);                          // Fill the right grid
             }
         }
 
@@ -216,6 +231,17 @@ namespace Portal11.Admin
             }
         }
 
+        // New button clicked. Invoke the New Entity page to - maybe - create a new entity. Then return to this page.
+        // That requires propagating this page's context: ProjectID and ProjectName.
+
+        protected void btnNew_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(PortalConstants.URLEditPerson + "?" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text
+                                                 + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew
+                                                 + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLAssignPersonsToProject // Return to this page
+                                                 + "&" + PortalConstants.QSReturn2 + "=" + litSavedReturn.Text); // But remember who called us
+        }
+
         // Done button clicked. Make sure there is at least one Person assigned to the Project. Then return to the Project Dashboard.
 
         protected void btnDone_Click(object sender, EventArgs e)
@@ -225,7 +251,7 @@ namespace Portal11.Admin
                 litDangerMessage.Text = "The Project must have at least one Person assigned to it in this role."; // Display the error
                 return;
             }
-            Response.Redirect(PortalConstants.URLAdminMain);            // Back to Main Admin page
+            Response.Redirect(litSavedReturn.Text);                 // Back to caller-specified page
         }
 
         // Fetch all the Persons on this project and load them into a GridView

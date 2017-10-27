@@ -23,7 +23,7 @@ namespace Portal11.Lists
                 // If the page before us has left a Query String with a status message, find it and display it
 
                 NavigationActions.ProcessSeverityStatus(litSuccessMessage, litDangerMessage);
-                gvPortalUsers.PageSize = CookieActions.FindGridViewRows(); // Set number of rows per page in grid
+                gvPortalUsers.PageSize = CookieActions.GetGridViewRows(); // Set number of rows per page in grid
                 LoadgvPortalUser();                                         // Fill the grid
             }
         }

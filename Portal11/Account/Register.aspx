@@ -1,4 +1,5 @@
-﻿<%@ Page Title="New User" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Register.aspx.cs" Inherits="Portal11.Account.Register" %>
+﻿<%@ Page Title="New Portal User" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Register.aspx.cs" 
+    Inherits="Portal11.Account.Register" %>
 
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="MainContent">
     <h2><%: Title %></h2>
@@ -121,13 +122,13 @@
                                 title="The User is a Project Director or Project Staff, not a CW staff member"></asp:ListItem>
                             <asp:ListItem Text="Auditor" Value="Auditor" data-toggle="tooltip"
                                 title="Examines, but does not change, Requests"></asp:ListItem>
-                            <asp:ListItem Text="InternalCoordinator" Value="InternalCoordinator" data-toggle="tooltip"
-                                title="Creates Requests"></asp:ListItem>
+                            <asp:ListItem Text="Community Director" Value="CommunityDirector" data-toggle="tooltip"
+                                title="Reviews and Approves Requests"></asp:ListItem>
                             <asp:ListItem Text="Finance Director" Value="FinanceDirector" data-toggle="tooltip"
                                 title="Reviews and Approves Requests"></asp:ListItem>
-                            <asp:ListItem Text="Trust Director" Value="TrustDirector" data-toggle="tooltip"
-                                title="Reviews and Approves Requests"></asp:ListItem>
-                            <asp:ListItem Text="Trust Executive" Value="TrustExecutive" data-toggle="tooltip"
+                            <asp:ListItem Text="InternalCoordinator" Value="InternalCoordinator" data-toggle="tooltip"
+                                title="Creates Requests"></asp:ListItem>
+                            <asp:ListItem Text="President" Value="President" data-toggle="tooltip"
                                 title="Reviews and Approves Requests"></asp:ListItem>
                         </asp:RadioButtonList>
                     </div>

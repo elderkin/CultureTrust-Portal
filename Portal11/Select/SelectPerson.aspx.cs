@@ -19,6 +19,7 @@ namespace Portal11.Select
         //
         // Query string inputs are:
         //  Command - "Edit"
+        //  Return - Propagated from caller
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -29,13 +30,10 @@ namespace Portal11.Select
 
                 NavigationActions.ProcessSeverityStatus(litSuccessMessage, litDangerMessage);
 
-                string cmd = Request.QueryString[PortalConstants.QSCommand]; // Look on the query string that invoked this page. Find the command.
+                litSavedCommand.Text = QueryStringActions.GetCommand();     // Look on the query string that invoked this page. Find the command.
+                litSavedReturn.Text = QueryStringActions.GetReturn();       // Find the caller's return address
 
-                if (cmd == "")                                              // No command. We are invoked incorrectly.
-                    LogError.LogQueryStringError("SelectPerson", "Missing Query String 'Command'"); // Log fatal error
-
-                litSavedCommand.Text = cmd;                                 // Remember the command that invoked this page
-                gvPerson.PageSize = CookieActions.FindGridViewRows();     // Find number of rows per page from cookie
+                gvPerson.PageSize = CookieActions.GetGridViewRows();     // Find number of rows per page from cookie
                 LoadgvPerson();                                           // Fill the grid
             }
         }
@@ -86,29 +84,31 @@ namespace Portal11.Select
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
-            NavigationActions.NextPage("");
+            //            NavigationActions.NextPage("");
+            Response.Redirect(litSavedReturn.Text);
         }
 
+        // New button. Invoke Edit Person to create a new Person
+
+        protected void btnNew_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(PortalConstants.URLEditPerson
+                      + "?" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew
+                      + "&" + PortalConstants.QSReturn + "=" + litSavedReturn.Text);
+        }
         // Select button pushed to select a Person. Pass this to the EditPerson page.
 
         protected void btnSelect_Click(object sender, EventArgs e)
         {
             Label label = (Label)gvPerson.SelectedRow.Cells[0].FindControl("lblRowID"); // Find the label control that contains RqstID
-            string PersonID = label.Text;                                  // Extract the text of the control, which is RqstID
-            if (PersonID == "")
-                LogError.LogQueryStringError("SelectPerson", string.Format(
-                    "PersonID '{0}' from selected GridView row missing", PersonID)); // Log fatal error
+            string personID = label.Text;                                  // Extract the text of the control, which is RqstID
+            if (personID == "")
+                LogError.LogQueryStringError("SelectPerson", $"PersonID '{personID}' from selected GridView row missing"); // Log fatal error
 
-
-            Response.Redirect(PortalConstants.URLEditPerson + "?" + PortalConstants.QSPersonID + "=" + PersonID + "&" +
-                                               PortalConstants.QSCommand + "=" + litSavedCommand.Text);
-        }
-
-        // Create a new Person by invoking EditPerson with a "New" command
-
-        protected void btnNew_Click(object sender, EventArgs e)
-        {
-            Response.Redirect(PortalConstants.URLEditPerson + "?" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew);
+            Response.Redirect(PortalConstants.URLEditPerson
+                      + "?" + PortalConstants.QSPersonID + "=" + personID
+                      + "&" + PortalConstants.QSCommand + "=" + litSavedCommand.Text
+                      + "&" + PortalConstants.QSReturn + "=" + litSavedReturn.Text);
         }
 
         protected void chkInactive_CheckedChanged(object sender, EventArgs e)

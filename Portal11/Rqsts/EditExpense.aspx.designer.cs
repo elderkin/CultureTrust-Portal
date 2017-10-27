@@ -508,6 +508,15 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.DropDownList ddlEntity;
         
         /// <summary>
+        /// btnNewEntity control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnNewEntity;
+        
+        /// <summary>
         /// pnlPerson control.
         /// </summary>
         /// <remarks>
@@ -533,6 +542,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlPerson;
+        
+        /// <summary>
+        /// btnNewPerson control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnNewPerson;
         
         /// <summary>
         /// pnlURL control.
@@ -805,6 +823,15 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Button btnRem;
         
         /// <summary>
+        /// litSDError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSDError;
+        
+        /// <summary>
         /// pnlNotes control.
         /// </summary>
         /// <remarks>
@@ -821,6 +848,51 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtNotes;
+        
+        /// <summary>
+        /// btnNotesClear control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnNotesClear;
+        
+        /// <summary>
+        /// pnlReturnNote control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlReturnNote;
+        
+        /// <summary>
+        /// txtReturnNote control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtReturnNote;
+        
+        /// <summary>
+        /// btnReturnNoteClear control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnReturnNoteClear;
+        
+        /// <summary>
+        /// rfvReturnNote control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvReturnNote;
         
         /// <summary>
         /// pnlStaffNote control.
@@ -841,22 +913,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtStaffNote;
         
         /// <summary>
-        /// pnlReturnNote control.
+        /// btnStaffNoteClear control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlReturnNote;
-        
-        /// <summary>
-        /// txtReturnNote control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtReturnNote;
+        protected global::System.Web.UI.WebControls.Button btnStaffNoteClear;
         
         /// <summary>
         /// pnlHistory control.
@@ -904,15 +967,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Button btnSubmit;
         
         /// <summary>
-        /// btnRevise control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnRevise;
-        
-        /// <summary>
         /// btnShowHistory control.
         /// </summary>
         /// <remarks>
@@ -947,6 +1001,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSavedEntityEnum;
+        
+        /// <summary>
+        /// litSavedEntityPersonFlag control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedEntityPersonFlag;
         
         /// <summary>
         /// litSavedExpID control.
@@ -985,6 +1048,15 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Literal litSavedProjectRole;
         
         /// <summary>
+        /// litSavedReturn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedReturn;
+        
+        /// <summary>
         /// litSavedStateEnum control.
         /// </summary>
         /// <remarks>
@@ -1010,5 +1082,32 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSupportingDocMin;
+        
+        /// <summary>
+        /// btnModalCancel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnModalCancel;
+        
+        /// <summary>
+        /// btnModalNo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnModalNo;
+        
+        /// <summary>
+        /// btnModalYes control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnModalYes;
     }
 }

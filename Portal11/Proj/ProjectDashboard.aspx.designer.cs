@@ -166,6 +166,42 @@ namespace Portal11.Proj {
         protected global::System.Web.UI.WebControls.Calendar calEndingDate;
         
         /// <summary>
+        /// ddlEntityName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlEntityName;
+        
+        /// <summary>
+        /// ddlGLCode control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlGLCode;
+        
+        /// <summary>
+        /// ddlPersonName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlPersonName;
+        
+        /// <summary>
+        /// ddlProjectClass control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlProjectClass;
+        
+        /// <summary>
         /// ckRActive control.
         /// </summary>
         /// <remarks>
@@ -182,24 +218,6 @@ namespace Portal11.Proj {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox ckRArchived;
-        
-        /// <summary>
-        /// ddlEntityName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlEntityName;
-        
-        /// <summary>
-        /// ddlPersonName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlPersonName;
         
         /// <summary>
         /// btnAppCollapse control.

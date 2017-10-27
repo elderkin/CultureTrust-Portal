@@ -33,8 +33,8 @@ namespace Portal11.Account
 //            string status = Request.QueryString[PortalConstants.QSStatus]; // Fetch "Status" Query String, if any
 
             if (cmd == null)                                        // If == there is no command in the Query String.
-                Response.Redirect(PortalConstants.URLDefault + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger + "&" +
-                                                    PortalConstants.QSStatus + "=" + "The LoginDispatch page was reached in error.");
+                Response.Redirect(PortalConstants.URLDefault + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger 
+                          + "&" + PortalConstants.QSStatus + "=" + "The LoginDispatch page was reached in error.");
 
             // All we have is User's email. We need to hit the database to find User ID and Full Name.
 
@@ -70,8 +70,8 @@ namespace Portal11.Account
                     if (portalParameter.DisableLogins)                  // If true logins for non-Administrators are disabled
                     {
                         Context.GetOwinContext().Authentication.SignOut(); // Log them right back out of there
-                        Response.Redirect(PortalConstants.URLLogin + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger + "&" +
-                            PortalConstants.QSStatus + "=Portal logins are temporarily disabled. Please try again later."); // Head back to the login page
+                        Response.Redirect(PortalConstants.URLLogin + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger 
+                                  + "&" + PortalConstants.QSStatus + "=Portal logins are temporarily disabled. Please try again later."); // Head back to the login page
                     }
                 }
 
@@ -158,19 +158,19 @@ namespace Portal11.Account
                         userInfoCookie[PortalConstants.CUserProjectSelector] = PortalConstants.CUserProjectAll; // See all Projects
                         break;
                     }
-                    case UserRole.TrustDirector:
+                    case UserRole.CommunityDirector:
                     {
                         userInfoCookie[PortalConstants.CUserTypeStaff] = "true"; // Note the Staff role in cookie
-                        userInfoCookie[PortalConstants.CUserRole] = UserRole.TrustDirector.ToString(); // Note our specific role
-                        userInfoCookie[PortalConstants.CUserRoleDescription] = EnumActions.GetEnumDescription(UserRole.TrustDirector); // The formatted version
+                        userInfoCookie[PortalConstants.CUserRole] = UserRole.CommunityDirector.ToString(); // Note our specific role
+                        userInfoCookie[PortalConstants.CUserRoleDescription] = EnumActions.GetEnumDescription(UserRole.CommunityDirector); // The formatted version
                         userInfoCookie[PortalConstants.CUserProjectSelector] = PortalConstants.CUserProjectAll; // See all Projects
                         break;
                     }
-                    case UserRole.TrustExecutive:
+                    case UserRole.President:
                     {
                         userInfoCookie[PortalConstants.CUserTypeStaff] = "true"; // Note the Staff role in cookie
-                        userInfoCookie[PortalConstants.CUserRole] = UserRole.TrustExecutive.ToString(); // Note our specific role
-                        userInfoCookie[PortalConstants.CUserRoleDescription] = EnumActions.GetEnumDescription(UserRole.TrustExecutive); // The formatted version
+                        userInfoCookie[PortalConstants.CUserRole] = UserRole.President.ToString(); // Note our specific role
+                        userInfoCookie[PortalConstants.CUserRoleDescription] = EnumActions.GetEnumDescription(UserRole.President); // The formatted version
                         userInfoCookie[PortalConstants.CUserProjectSelector] = PortalConstants.CUserProjectAll; // See all Projects
                         break;
                     }
@@ -219,7 +219,7 @@ namespace Portal11.Account
                     case 0:                                             // Zero projects is a corner case - User unassigned to any Project
                     {
                             Response.Redirect(PortalConstants.URLDefault + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSDanger + "&" +
-                                PortalConstants.QSStatus + "=" + 
+                                              PortalConstants.QSStatus + "=" + 
                                 "You are successfully logged in. However you are not associated with any project. Contact CW Staff.");
                             break;
                     }
@@ -231,7 +231,7 @@ namespace Portal11.Account
                         CookieActions.MakeProjectInfoCookie(loggedInUserProjects[0]); 
 
                         Response.Redirect(PortalConstants.URLProjectDashboard +  "?" + PortalConstants.QSUserID + "=" + userID + "&" +
-                                                            PortalConstants.QSProjectID + "=" + loggedInUserProjects[0].ProjectID.ToString() );
+                                          PortalConstants.QSProjectID + "=" + loggedInUserProjects[0].ProjectID.ToString() );
                         break;
                     }
                     default:                                            // More than one project requires a choice by User
@@ -240,9 +240,9 @@ namespace Portal11.Account
                         //Ask the user to choose which project to work on
 
                         Response.Redirect(PortalConstants.URLSelectProject + "?" + PortalConstants.QSUserID + "=" + userID + "&" +
-                                                            PortalConstants.QSCommand + "=" + PortalConstants.QSCommandUserLogin + "&" +
-                                                            PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&" +
-                                                            PortalConstants.QSStatus + "=" + 
+                                        PortalConstants.QSCommand + "=" + PortalConstants.QSCommandUserLogin + "&" +
+                                        PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&" +
+                                        PortalConstants.QSStatus + "=" + 
                             "You are engaged with more than one Project. Please choose the project you wish to work on.");
                         break;
                     }

@@ -265,6 +265,15 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.Literal litSavedEntityID;
         
         /// <summary>
+        /// litSavedReturn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedReturn;
+        
+        /// <summary>
         /// litSavedUserID control.
         /// </summary>
         /// <remarks>

@@ -204,6 +204,7 @@ namespace Portal11.Models
     public class rowSelectProjectUserView
     {
         public string ProjectID { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ProjectRole { get; set; }
@@ -216,6 +217,7 @@ namespace Portal11.Models
     {
         public string RowID { get; set; }
         public DateTime CurrentTime { get; set; }
+        public string ProjectID { get; set; }
         public string ProjectName { get; set; }
         public string AppTypeDesc { get; set; }
         public string AppReviewType { get; set; }
@@ -230,8 +232,9 @@ namespace Portal11.Models
 
     public class rowStaffDep
     {
-        public string RowID { get; set; }
+        public string RequestID { get; set; }
         public DateTime CurrentTime { get; set; }
+        public string ProjectID { get; set; }
         public string ProjectName { get; set; }
         public string DepTypeDesc { get; set; }
         public decimal Amount { get; set; }
@@ -249,6 +252,7 @@ namespace Portal11.Models
     {
         public string RowID { get; set; }
         public DateTime CurrentTime { get; set; }
+        public string ProjectID { get; set; }
         public string ProjectName { get; set; }
         public string ExpTypeDesc { get; set; }
         public decimal Amount { get; set; }
@@ -367,12 +371,12 @@ namespace Portal11.Models
         UnsubmittedByProjectDirector,
         [Description("Awaiting Project Director")]
         AwaitingProjectDirector,
-        [Description("Awaiting Trust Director")]
-        AwaitingTrustDirector,
+        [Description("Awaiting Community Director")]
+        AwaitingCommunityDirector,
         [Description("Awaiting Finance Director")]
         AwaitingFinanceDirector,
-        [Description("Awaiting Trust Executive")]
-        AwaitingTrustExecutive,
+        [Description("Awaiting President")]
+        AwaitingPresident,
         [Description("Awaiting Internal Coordinator")]
         AwaitingInternalCoordinator,
         [Description("Approved")]
@@ -510,20 +514,26 @@ namespace Portal11.Models
         UnsubmittedByInternalCoordinator = 1,
         [Description("Awaiting Project Director")]
         AwaitingProjectDirector,
-        [Description("Awaiting Trust Director")]
-        AwaitingTrustDirector,
+        [Description("Awaiting Community Director")]
+        AwaitingCommunityDirector,
         [Description("Awaiting Finance Director")]
         AwaitingFinanceDirector,
         [Description("Obsolete")]
         ApprovedReadyToDeposit,
         [Description("Approved/Deposit Complete")]
         DepositComplete,
-        [Description("Returned")]
+        [Description("Returned (IC)")]
         Returned,
         [Description("Error During Processing")]
         Error,
         [Description("Reserved For Future Use")]
-        ReservedForFutureUse
+        ReservedForFutureUse,
+        [Description("Revising (PD)")]
+        RevisingByProjectDirector,
+        [Description("Revising (FD)")]
+        RevisingByFinanceDirector,
+        [Description("Revised by FD")]
+        RevisedByFinanceDirector
     }
 
     // Each type of Deposit fills different fields in the Deposit object. This mapping is complicated and expressed in code.
@@ -694,6 +704,7 @@ namespace Portal11.Models
         public virtual ApplicationUser CurrentUser { get; set; }
         public string SubmitUserID { get; set; }            // The User who originally submitted the Exp. They get notified if it's returned
         public virtual ApplicationUser SubmitUser { get; set; }
+        public ProjectRole SubmitProjectRole { get; set; }  // Project Role of user who submitted the Exp. Revisions are returned to them. 
     }
 
     // The states that the Expense has gone through. Who did what when why to the Request
@@ -723,26 +734,48 @@ namespace Portal11.Models
         UnsubmittedByProjectDirector,
         [Description("Awaiting Project Director")]
         AwaitingProjectDirector,
-        [Description("Awaiting Trust Director")]
-        AwaitingTrustDirector,
+        [Description("Awaiting Community Director")]
+        AwaitingCommunityDirector,
         [Description("Awaiting Finance Director")]
         AwaitingFinanceDirector,
-        [Description("Awaiting Trust Executive")]
-        AwaitingTrustExecutive,
+        [Description("Awaiting President")]
+        AwaitingPresident,
         [Description("Approved/Ready to Pay")]
         Approved,
         [Description("Payment Sent")]
-        PaymentSent,
+        PaymentSent,                                    // Obsolete
         [Description("Paid and Sent")]
         Paid,
-        [Description("Returned")]
-        Returned,
+        [Description("Returned (PD)")]
+        ReturnedToProjectDirector,
         [Description("Error During Processing")]
         Error,
         [Description("Reserved For Future Use")]
         ReservedForFutureUse,
         [Description("Awaiting Internal Coordinator")]
-        AwaitingInternalCoordinator
+        AwaitingInternalCoordinator,
+        [Description("Returned (PS)")]
+        ReturnedToProjectStaff,
+        [Description("Returned (IC)")]
+        ReturnedToInternalCoordinator,
+        [Description("Revising (PD)")]
+        RevisingByProjectDirector,
+        [Description("Revising (IC)")]
+        RevisingByInternalCoordinator,
+        [Description("Revising (FD)")]
+        RevisingByFinanceDirector,
+        [Description("Revising (CD)")]
+        RevisingByCommunityDirector,
+        [Description("Revising (PR)")]
+        RevisingByPresident,
+        [Description("Revised By IC")]
+        RevisedByInternalCoordinator,
+        [Description("Revised By FD")]
+        RevisedByFinanceDirector,
+        [Description("Revised By CD")]
+        RevisedByCommunityDirector,
+        [Description("Revised By PR")]
+        RevisedByPresident,
     }
     // Each type of Expense fills different fields in the Expense object. This mapping is complicated and expressed in code.
     public enum ExpType
@@ -814,7 +847,7 @@ namespace Portal11.Models
         public string Note { get; set; }
     }
 
-    // A Grant from a Grant Maker to a Project
+    // A Grant from a Grant Maker to a Project. Obsolete.
 
     public class Grant
     {
@@ -868,14 +901,14 @@ namespace Portal11.Models
         public string EmailPDReferSubject { get; set; }
         [DataType(DataType.MultilineText)]
         public string EmailPDReferBody { get; set; }
-        public bool EmailTDRefer { get; set; }
-        public string EmailTDReferSubject { get; set; }
+        public bool EmailCDRefer { get; set; }
+        public string EmailCDReferSubject { get; set; }
         [DataType(DataType.MultilineText)]
-        public string EmailTDReferBody { get; set; }
-        public bool EmailTERefer { get; set; }
-        public string EmailTEReferSubject { get; set; }
+        public string EmailCDReferBody { get; set; }
+        public bool EmailPRRefer { get; set; }
+        public string EmailPRReferSubject { get; set; }
         [DataType(DataType.MultilineText)]
-        public string EmailTEReferBody { get; set; }
+        public string EmailPRReferBody { get; set; }
 
         public string EmailPDBroadcastRushSubject { get; set; }
         [DataType(DataType.MultilineText)]
@@ -893,12 +926,12 @@ namespace Portal11.Models
         public string EmailPDRushSubject { get; set; }
         [DataType(DataType.MultilineText)]
         public string EmailPDRushBody { get; set; }
-        public string EmailTDRushSubject { get; set; }
+        public string EmailCDRushSubject { get; set; }
         [DataType(DataType.MultilineText)]
-        public string EmailTDRushBody { get; set; }
-        public string EmailTERushSubject { get; set; }
+        public string EmailCDRushBody { get; set; }
+        public string EmailPRRushSubject { get; set; }
         [DataType(DataType.MultilineText)]
-        public string EmailTERushBody { get; set; }
+        public string EmailPRRushBody { get; set; }
 
         public bool EmailDebug { get; set; }
         public string EmailDebugAddress { get; set; }
@@ -1061,7 +1094,9 @@ namespace Portal11.Models
         public PersonRole PersonRole { get; set; }
     }
 
-    // Classes to connect Users to Projects
+    // Roles that Portal Users can have on Projects. Staff members have no "permanent" roles on projects.
+    // But for the purpose of revising a request, they can have a "temporary" role, which lasts just for
+    // the duration of the editing session
 
     public enum ProjectRole
     {
@@ -1072,7 +1107,13 @@ namespace Portal11.Models
         [Description("Project Staff")]
         ProjectStaff,
         [Description("No Role")]
-        NoRole
+        NoRole,
+        [Description("Revising Community Director")] 
+        RevisingCommunityDirector,
+        [Description("Revising Finance Director")]
+        RevisingFinanceDirector,
+        [Description("Revising President")]
+        RevisingPresident
     }
 
     // The value of a Query String, parsed into string and integer forms
@@ -1115,6 +1156,20 @@ namespace Portal11.Models
         Person,
         [Description("Reserved for Future Use")]
         ReservedForFutureUse
+    }
+
+    // The actions a reviewer can take while reviewing a request
+
+    public enum ReviewAction
+    {
+        [Description("Approve Request")]
+        Approve = 1,
+        [Description("Return Request")]
+        Return,
+        [Description("Revise Request")]
+        Revise,
+        [Description("Submit Request")]
+        Submit
     }
 
     // Whether an Expense/Deposit has a Source of Funds and uses a Project Class. Careful here. Expenses use this as "Source of Funds" while
@@ -1200,10 +1255,10 @@ namespace Portal11.Models
         Project,
         //[Description("Project Director")] //TODO: Can we do without this role?
         //ProjectDirector,
-        [Description("Trust Director")]
-        TrustDirector,
-        [Description("Trust Executive")]
-        TrustExecutive,
+        [Description("Community Director")]
+        CommunityDirector,
+        [Description("President")]
+        President,
         [Description("Undefined")]
         Undefined
     }
@@ -1220,7 +1275,7 @@ namespace Portal11.Models
         None
     }
 
-    // The vendors that Projects want to pay
+    // The vendors that Projects want to pay. Obsolete - replaced by Entity.
 
     public class Vendor
     {
@@ -1259,11 +1314,13 @@ namespace Portal11.Models
             QSCommandMenu = "Menu",
             QSCommandNew = "New",
             QSCommandReview = "Review",
+            QSCommandRevise = "Revise",
             QSCommandView = "View",
             QSCommandUserLogin = "UserLogin",
             QSDanger = "Danger",
             QSEmail = "Email",
             QSEntityID = "EntityID",
+            QSEntityRole = "EntityRole",
             QSEntityName = "EntityName",
             QSErrorText = "ErrorText",
             QSFullName = "FullName",
@@ -1271,14 +1328,18 @@ namespace Portal11.Models
             QSGrantID = "GrantID",
             QSMethod = "Method",
             QSMIME = "MIME",
+            QSNull = "Null",
             QSPageName = "PageName",
             QSPersonID = "PersonID",
+            QSPersonRole = "PersonRole",
             QSProjectID = "ProjectID",
             QSProjectClassID = "ProjectClassID",
+            QSProjectRole = "ProjectRole",
             QSProjectName = "ProjectName",
             QSRememberEmail = "RememberEmail",
             QSRequestID = "RequestID",
             QSReturn = "Return",
+            QSReturn2="Return2",
             QSServerFile = "ServerFile",
             QSSeverity = "Severity",
             QSStatus = "Status",
@@ -1286,7 +1347,8 @@ namespace Portal11.Models
             QSVendorID = "VendorID",
             QSVendorName = "VendorName",
             QSUserFile = "UserFile",
-            QSUserID = "UserID";
+            QSUserID = "UserID",
+            QSUserRole = "UserRole";
 
         // LoginCookie stores information from the login process, like their email address
 
@@ -1335,6 +1397,12 @@ namespace Portal11.Models
             CEmailDefaultExpenseReturnedSubject = "Expense Request returned to you",
             CEmailDefaultExpenseReturnedBody = "An Expense Request has been returned to you during the review process. It is ready for your action.";
 
+        // FlowControlCookie stores information to let us "return" to an earlier page with context.
+
+        public const string
+            CFlowControl = "FlowControlCookie",
+            CReturnURL = "ReturnURL";
+
         // ProjectInfoCookie stores information about the project that the user has selected to work on.
 
         public const string
@@ -1360,7 +1428,9 @@ namespace Portal11.Models
             CProjectToDate = "CProjectToDate",
 
             CProjectDdlEntityID = "CProjectDdlEntityID",
+            CProjectDdlGLCodeID = "CProjectDdlGLCodeID",
             CProjectDdlPersonID = "CProjectDdlPersonID",
+            CProjectDdlProjectClassID = "CProjectDdlProjectClassID",
 
             CProjectAppVisible = "ProjectAppVisible",
             
@@ -1388,8 +1458,8 @@ namespace Portal11.Models
             CStaffCkRInternalCoordinator = "CkRInternalCoordinator",
             CStaffCkRProjectMember = "CkRProjectMember",
             CStaffCkRReturned = "CkRReturned",
-            CStaffCkRTrustDirector = "CkRTrustDirector",
-            CStaffCkRTrustExecutive = "CkRTrustExecutive",
+            CStaffCkRCommunityDirector = "CkRCommunityDirector",
+            CStaffCkRPresident = "CkRPresident",
             CStaffCkRUnsubmitted = "CkRUnsubmitted",
 
             CStaffFromDate = "CStaffFromDate",
@@ -1415,7 +1485,7 @@ namespace Portal11.Models
             CStaffCkDPledge = "CkDPledge",
             CStaffCkDFinanceDirector = "CkDFinanceDirector",
             CStaffCkDProjectMember = "CkDProjectMember",
-            CStaffCkDTrustDirector = "CkDTrustDirector",
+            CStaffCkDCommunityDirector = "CkDCommunityDirector",
 
             CStaffExpVisible = "StaffExpVisible",
             CStaffCkEContractorInvoice = "CkEContractorInvoice",
@@ -1426,8 +1496,8 @@ namespace Portal11.Models
             CStaffCkEVendorInvoice = "CkEVendorInvoice",
             CStaffCkEFinanceDirector = "CkEFinanceDirector",
             CStaffCkEProjectMember = "CkEProjectMember",
-            CStaffCkETrustDirector = "CkETrustDirector",
-            CStaffCkETrustExecutive = "CkETrustExecutive";
+            CStaffCkECommunityDirector = "CkECommunityDirector",
+            CStaffCkEPresident = "CkEPresident";
 
         // This cookie holds the settings of page index values within the gridviews on the Staff Dashbord page
 
@@ -1449,7 +1519,8 @@ namespace Portal11.Models
             EventSupporting = "Supporting",
             ForeColor = "#18bc9c",
             ReadmeDir = "~/App_Readme/",
-            ReturnNoteError = "You have entered text in the Return Note field and pressed the Approve button. The Return Note can only contain text when the Return button is pressed.",
+            ReturnNotePresent = "You have pressed the Approve button with text in the Return Note field. Please press the 'Clear' button next to the Return Note field to proceed.",
+            ReturnNoteMissing = "Please supply a Return Note before pressing the Return button.",
             SupportingDir = "~/Supporting/",
             SupportingTempFlag = "T",
             WhatsNewName = "WhatsNew.txt";
@@ -1480,6 +1551,7 @@ namespace Portal11.Models
             URLEditVendor = "~/Admin/EditVendor",
             URLErrorDatabase = "~/ErrorLog/DatabaseError.aspx",
             URLErrorFatal = "~/ErrorLog/FatalError.aspx",
+            URLFlowControl = "~/Logic/FlowControl.aspx",
             URLListProjectMetadata = "~/Lists/ListProjectMetadata.aspx",
             URLLogin = "~/Account/Login",
             URLLoginDispatch = "~/Account/LoginDispatch",

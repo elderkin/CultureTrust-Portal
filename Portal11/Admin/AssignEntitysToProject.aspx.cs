@@ -18,6 +18,10 @@ namespace Portal11.Admin
 
             // This page assigns Entitys to a Project in roles of Entity and Vendor. The ProjectEntity table intermediates
             // these relationships.
+            // Query Strings:
+            //    QSEntityRole = "ExpenseVendor" for initial setting of radio button. Optional
+            //    QSProjectID = ID of current project
+            //    QSReturn - where to go when we finish
 
             if (!Page.IsPostBack)
             {
@@ -28,10 +32,21 @@ namespace Portal11.Admin
 
                 QSValue projectID = QueryStringActions.GetProjectID();      // Fetch Project ID from Query String or ProjectInfoCookie
                 litSavedProjectID.Text = projectID.String;                  // Save it in an easier spot to find
-                litProjectName.Text = QueryStringActions.GetProjectName();  // Display Project Name from Query String or ProjectInfoCookie
+                litSavedReturn.Text = QueryStringActions.GetReturn();       // Fetch page our caller wants us to return to
 
-                LoadgvProjectEntity(projectID.String);                    // Fill the left grid
-                LoadgvAllEntity(projectID.String);                        // Fill the right grid
+                // If EntityRole is specified and value is ExpenseVendor, flip the radio button from DepositEntity to ExpenseVendor
+
+                string entityRole = Request.QueryString[PortalConstants.QSEntityRole]; // Fetch Query String, if present
+                if (!string.IsNullOrEmpty(entityRole))                      // If false there's something there for us to process
+                {
+                    foreach (ListItem item in rdoEntityRole.Items)
+                    {
+                        item.Selected = (entityRole == item.Value);         // If == set item true, else set item false
+                    }
+                }
+
+                LoadgvProjectEntity(projectID.String);                      // Fill the left grid
+                LoadgvAllEntity(projectID.String);                          // Fill the right grid
             }
         }
 
@@ -217,16 +232,27 @@ namespace Portal11.Admin
             }
         }
 
+        // New button clicked. Invoke the New Entity page to - maybe - create a new entity. Then return to this page.
+        // That requires propagating this page's context: ProjectID and ProjectName.
+
+        protected void btnNew_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(PortalConstants.URLEditEntity + "?" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text
+                                                 + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew
+                                                 + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLAssignEntitysToProject // Return to this page
+                                                 + "&" + PortalConstants.QSReturn2 + "=" + litSavedReturn.Text); // But remember who called us
+        }
+
         // Done button clicked. Make sure there is at least one Entity assigned to the Project. Then return to the Project Dashboard.
 
         protected void btnDone_Click(object sender, EventArgs e)
         {
-            if (gvProjectEntity.Rows.Count == 0)                      // If == no Entitys are assigned to this Project
+            if (gvProjectEntity.Rows.Count == 0)                    // If == no Entitys are assigned to this Project
             {
                 litDangerMessage.Text = "The Project must have at least one Entity assigned to it in this role."; // Display the error
                 return;
             }
-            Response.Redirect(PortalConstants.URLAdminMain);            // Back to Main Admin page
+            Response.Redirect(litSavedReturn.Text);                 // Back to caller-specified page
         }
 
         // Fetch all the Entitys on this project and load them into a GridView

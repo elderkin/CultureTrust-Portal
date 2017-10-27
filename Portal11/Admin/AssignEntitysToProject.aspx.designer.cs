@@ -121,6 +121,15 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.Button btnRemoveAll;
         
         /// <summary>
+        /// btnNew control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnNew;
+        
+        /// <summary>
         /// btnDone control.
         /// </summary>
         /// <remarks>
@@ -182,5 +191,14 @@ namespace Portal11.Admin {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSavedProjectID;
+        
+        /// <summary>
+        /// litSavedReturn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedReturn;
     }
 }

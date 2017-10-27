@@ -76,13 +76,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Panel pnlNextReviewer;
         
         /// <summary>
-        /// ckRFinanceDirector control.
+        /// ckRCommunityDirector control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckRFinanceDirector;
+        protected global::System.Web.UI.WebControls.CheckBox ckRCommunityDirector;
         
         /// <summary>
         /// ckRUnsubmitted control.
@@ -94,13 +94,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.CheckBox ckRUnsubmitted;
         
         /// <summary>
-        /// ckRInternalCoordinator control.
+        /// ckRFinanceDirector control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckRInternalCoordinator;
+        protected global::System.Web.UI.WebControls.CheckBox ckRFinanceDirector;
         
         /// <summary>
         /// ckRCompleted control.
@@ -112,13 +112,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.CheckBox ckRCompleted;
         
         /// <summary>
-        /// ckRTrustDirector control.
+        /// ckRInternalCoordinator control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckRTrustDirector;
+        protected global::System.Web.UI.WebControls.CheckBox ckRInternalCoordinator;
         
         /// <summary>
         /// ckRReturned control.
@@ -130,13 +130,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.CheckBox ckRReturned;
         
         /// <summary>
-        /// ckRTrustExecutive control.
+        /// ckRPresident control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckRTrustExecutive;
+        protected global::System.Web.UI.WebControls.CheckBox ckRPresident;
         
         /// <summary>
         /// txtBeginningDate control.
@@ -461,6 +461,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvStaffExp;
+        
+        /// <summary>
+        /// litSavedUserID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedUserID;
         
         /// <summary>
         /// litSavedUserRole control.

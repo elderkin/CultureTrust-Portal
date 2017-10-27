@@ -45,14 +45,124 @@ namespace Portal11.Logic
                         IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.Administrator.ToString() }); // Add the role (just once)
                         IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.InternalCoordinator.ToString() }); // Add the role (just once)
                         IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.FinanceDirector.ToString() }); // Add the role (just once)
-                        IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.TrustDirector.ToString() }); // Add the role (just once)
-                        IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.TrustExecutive.ToString() }); // Add the role (just once)
+                        IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.CommunityDirector.ToString() }); // Add the role (just once)
+                        IdRoleResult = roleMgr.Create(new IdentityRole { Name = UserRole.President.ToString() }); // Add the role (just once)
                     }
                 }
                 catch (Exception ex)
                 {
                     LogError.LogDatabaseError(ex, "AddRoles", "Error creating new roles in database"); // Fatal error
                 }
+            }
+        }
+
+        // For a Project and a User, change the role of the User on the Project. Lots of permutations here
+
+        public static void ChangeProjectRole(int projID, string userID, ProjectRole newRole)
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                try
+                {
+
+                    //  1A) Delete the UserProject row that describes this User's the current role in the project, if any.
+                    //  Got that? Whatever the User's current role on the Project - Director, Staff or nothing - blow it away
+
+                    context.UserProjects.RemoveRange(context.UserProjects.Where(
+                        up => (up.ProjectID == projID) && (up.UserID == userID))); // Whoosh!
+
+                    //  1B) If the User's new role is Project Director, someone else may be Project Director now. Delete their UserProject row
+
+                    if (newRole == ProjectRole.ProjectDirector)                 // If == User's new role is Project Director
+                    {
+                        context.UserProjects.RemoveRange(context.UserProjects.Where(
+                            up => (up.ProjectID == projID) && (up.ProjectRole == ProjectRole.ProjectDirector))); // Kapow!
+                    }
+
+                    //  2) Add a new UserProject row that describes the desired relationship
+
+                    if (newRole == ProjectRole.ProjectDirector || newRole == ProjectRole.ProjectStaff)
+                    // If == new role requires a UserProject row for this User
+                    {
+                        UserProject toAdd = new UserProject                 // Instantiate and fill a new row
+                        {
+                            ProjectID = projID,
+                            UserID = userID,
+                            ProjectRole = newRole
+                        };
+                        context.UserProjects.Add(toAdd);                    // Store it
+                    }
+                    context.SaveChanges();                                  // Commit the changes
+                }
+                catch (Exception ex)
+                {
+                    LogError.LogDatabaseError(ex, "RoleActions.ChangeProjectRole", "Error writing or deleting UserProject row"); // Fatal error
+                }
+            }
+        }
+
+        // For a user who is reviewing a request, use their UserRole to find a ProjectRole to use for revising the request.
+
+        public static ProjectRole GetRevisingRole(UserRole userRole)
+        {
+            switch (userRole)
+            {
+                case UserRole.CommunityDirector:
+                    return ProjectRole.RevisingCommunityDirector;
+                case UserRole.FinanceDirector:
+                    return ProjectRole.RevisingFinanceDirector;
+                case UserRole.InternalCoordinator:
+                    return ProjectRole.InternalCoordinator;
+                case UserRole.President:
+                    return ProjectRole.RevisingPresident;
+                case UserRole.Project:
+                    return ProjectRole.ProjectDirector;
+                case UserRole.Administrator:
+                case UserRole.Auditor:
+                case UserRole.Undefined:
+                default:
+                    {
+                        LogError.LogInternalError("RoleActions.GetRevisingRole", $"Unexpected UserRole {userRole}. No ProjectRole available"); // Fatal error
+                        return ProjectRole.NoRole;
+                    }
+            }
+        }
+
+        // Determine whether a ProjectRole is a staff member, with all the rights and privileges incumbent on that office
+
+        public static bool ProjectRoleIsStaff(ProjectRole role)
+        {
+            switch (role)
+            {
+                case ProjectRole.InternalCoordinator:
+                case ProjectRole.RevisingCommunityDirector:
+                case ProjectRole.RevisingFinanceDirector:
+                case ProjectRole.RevisingPresident:
+                    return true;
+                case ProjectRole.ProjectDirector:
+                case ProjectRole.ProjectStaff:
+                    return false;
+                default:
+                    {
+                        LogError.LogInternalError("RoleActions.ProjectRoleIsStaff", $"Unexpected ProjectRole {role}."); // Fatal error
+                        return false;
+                    }
+            }
+        }
+
+        // Determine whether a UserRole is a staff member, with all the rights and privileges incumbent on that office
+
+        public static bool UserRoleIsStaff(UserRole role)
+        {
+            switch (role)
+            {
+                case UserRole.CommunityDirector:
+                case UserRole.FinanceDirector:
+                case UserRole.InternalCoordinator:
+                case UserRole.President:
+                    return true;
+                default:
+                    return false;
             }
         }
     }

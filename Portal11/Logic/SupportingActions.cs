@@ -358,6 +358,11 @@ namespace Portal11.Logic
                     //  1) Pull the relevant information out of the FileUpload control.
 
                     string name = fup.PostedFile.FileName;          // Fetch the name of the file to upload
+                    if (name.Contains("#"))                         // If true, the file name contains a character we can't handle
+                    {
+                        dan.Text = "Name of selected file contains a pound sign character ('#') which the Portal cannot process. Please rename the file or choose another file.";
+                        return;
+                    }
                     int length = fup.PostedFile.ContentLength;      // Fetch the length of the file - it might be too big for us
                     if (length > PortalConstants.MaxSupportingFileSize) // If > file is too big to upload
                     {
