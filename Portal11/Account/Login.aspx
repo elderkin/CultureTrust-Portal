@@ -11,7 +11,7 @@
             top: 50%;
             left: 50%;
             margin-left: -300px;
-            margin-top: -250px;
+            margin-top: -200px;
         }
     </style>
     <asp:Panel runat="server" BackImageUrl="~/Images/LoginBackground-1024x768.jpg" Height="100%" Width="100%">

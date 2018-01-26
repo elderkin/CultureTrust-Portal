@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Edit Deposit Request" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="EditDeposit.aspx.cs"
+﻿<%@ Page Title="Edit Deposit Notification" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="EditDeposit.aspx.cs"
     Inherits="Portal11.Rqsts.EditDeposit" MaintainScrollPositionOnPostback="true" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
@@ -42,6 +42,10 @@
                         </asp:RadioButtonList>
                     </div>
                 </div>
+                <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <asp:RequiredFieldValidator runat="server" ControlToValidate="rdoDepType" SetFocusOnError="true"
+                        CssClass="text-danger  col-xs-12" ErrorMessage="Please select a type of the new Request." />
+                </div>
             </div>
         </div>
 
@@ -66,8 +70,8 @@
                         <asp:TextBox runat="server" ID="txtDescription" TextMode="MultiLine" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDescription"
-                            CssClass="text-danger" ErrorMessage="Please supply a Description of the new Request." />
+                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDescription" SetFocusOnError="true"
+                            CssClass="text-danger  col-xs-12" ErrorMessage="Please supply a Description of the new Request." />
                     </div>
                 </div>
             </div>
@@ -115,10 +119,10 @@
                             SelectMonthText="month" />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDateOfDeposit"
-                            CssClass="text-danger" ErrorMessage="Please supply a Date." />
-                        <asp:RegularExpressionValidator ID="valDateOfDeposit" runat="server" ControlToValidate="txtDateOfDeposit"
-                            CssClass="text-danger" ErrorMessage="Date format is dd/mm/yyyy"
+                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDateOfDeposit" SetFocusOnError="true"
+                            CssClass="text-danger  col-xs-12" ErrorMessage="Please supply a Date." />
+                        <asp:RegularExpressionValidator ID="valDateOfDeposit" runat="server" ControlToValidate="txtDateOfDeposit" SetFocusOnError="true"
+                            CssClass="text-danger  col-xs-12" ErrorMessage="Date format is dd/mm/yyyy"
                             ValidationExpression="^([0-9]{1,2})[./-]+([0-9]{1,2})[./-]+([0-9]{2}|[0-9]{4})$">
                         </asp:RegularExpressionValidator>
                     </div>
@@ -187,8 +191,8 @@
                                     Enabled="true" OnClick="btnNewEntity_Click" CausesValidation="false" ToolTip="Add a new entity to this project. Save changes before pressing this button." />
                             </div>
                             <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                                <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlEntity"
-                                    CssClass="text-danger" ErrorMessage="Please select an Entity from the list"></asp:RequiredFieldValidator>
+                                <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlEntity" SetFocusOnError="true"
+                                    CssClass="text-danger  col-xs-12" ErrorMessage="Please select an Entity from the list" />
                             </div>
                         </asp:Panel>
                     </div>
@@ -219,8 +223,8 @@
                                     Enabled="true" OnClick="btnNewPerson_Click" CausesValidation="false" ToolTip="Add a new person to this project. Save changes before pressing this button." />
                             </div>
                             <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                                <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlPerson"
-                                    CssClass="text-danger" ErrorMessage="Please select a Donor or Customer from the list"></asp:RequiredFieldValidator>
+                                <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlPerson" SetFocusOnError="true" 
+                                    CssClass="text-danger  col-xs-12" ErrorMessage="Please select a Donor or Customer from the list" />
                             </div>
 
                         </asp:Panel>
@@ -274,10 +278,10 @@
                             style="text-align:right" OnTextChanged="txtAmount_TextChanged" AutoPostBack="true"/>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:RequiredFieldValidator runat="server" ID="rfvAmount" ControlToValidate="txtAmount"
-                            CssClass="text-danger" ErrorMessage="Please supply a Dollar Amount value." />
-                        <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount"
-                            CssClass="text-danger" ErrorMessage="Currency values only. For example, $123.45"
+                        <asp:RequiredFieldValidator runat="server" ID="rfvAmount" ControlToValidate="txtAmount" SetFocusOnError="true"
+                            CssClass="text-danger  col-xs-12" ErrorMessage="Please supply a Dollar Amount value." />
+                        <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount" SetFocusOnError="true"
+                            CssClass="text-danger  col-xs-12" ErrorMessage="Currency values only. For example, $123.45"
                             ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$" />
                     </div>
                 </div>
@@ -298,8 +302,8 @@
                             Enabled="true" OnClick="btnSplit_Click" CausesValidation="false" ToolTip="Divide the deposit into multiple Accounts" />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:RequiredFieldValidator ID="rfvGLCode" runat="server" InitialValue="" ControlToValidate="ddlGLCode"
-                            CssClass="text-danger" ErrorMessage="Please select a General Ledger Code from the list"></asp:RequiredFieldValidator>
+                        <asp:RequiredFieldValidator ID="rfvGLCode" runat="server" InitialValue="" ControlToValidate="ddlGLCode" SetFocusOnError="true"
+                            CssClass="text-danger  col-xs-12" ErrorMessage="Please select a General Ledger Code from the list" />
                     </div>
                 </div>
             </div>
@@ -405,6 +409,9 @@
                             NavigateUrl="overwrite from code behind" Text="View" Target="_blank" />
                         <asp:Button ID="btnRem" runat="server" Text="Remove" CssClass="btn btn-default col-md-2 col-xs-offset-1 col-xs-3"
                             Enabled="false" OnClick="btnRemove_Click" CausesValidation="false" ToolTip="Remove the selected Supporting Document from the Expense Request" />
+                        <div class="col-xs-12 text-danger">
+                            <asp:Literal ID="litSupportingError" runat="server" Text="Fill from code behind" Visible="false" />
+                        </div>
                     </div>
                     <div class="col-xs-6 text-danger">
                         <asp:Literal runat="server" ID="litSDError" />
@@ -444,8 +451,8 @@
                             Enabled="true" OnClick="btnReturnNoteClear_Click" CausesValidation="false" ToolTip="Clear the text of the Return Note" />
                         <div class="col-xs-12">
                             <br />
-                            <asp:RequiredFieldValidator ID="rfvReturnNote" runat="server" InitialValue="" ControlToValidate="txtReturnNote"
-                                CssClass="text-danger" ErrorMessage="Please supply a reason for revising the request"></asp:RequiredFieldValidator>
+                            <asp:RequiredFieldValidator ID="rfvReturnNote" runat="server" InitialValue="" ControlToValidate="txtReturnNote" SetFocusOnError="true"
+                                CssClass="text-danger  col-xs-12" ErrorMessage="Please supply a reason for revising the request"></asp:RequiredFieldValidator>
                         </div>
                     </div>
                 </div>
@@ -525,7 +532,7 @@
                 OnClick="btnCancel_Click" CausesValidation="false" ToolTip="Return to the Dashboard without saving" />
             <asp:Button ID="btnSave" runat="server" Text="Save" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnSave_Click" CausesValidation="false" ToolTip="Save this Deposit Request and return to the Dashboard"/>
-            <asp:Button ID="btnSubmit" runat="server" Text="Submit" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+            <asp:Button ID="btnSubmit" runat="server" Text="Submit" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true" 
                 OnClick="btnSubmit_Click" ToolTip="Save this Deposit Request, submit it for approval and return to the Dashboard" />
 <%--            <asp:Button ID="btnRevise" runat="server" Text="Revise" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnRevise_Click" ToolTip="Make this returned Deposit Request editable and begin editing it" Visible="false" />--%>

@@ -13,13 +13,28 @@ namespace Portal11.Logic
 
         public static void FillQCA(TextBox quantity, TextBox cost, TextBox amount)
         {
-            if (quantity.Text != "" && cost.Text != "" && amount.Text == "")    // Case 1: Quantity specified, Cost specified, Amount blank
+            if (quantity.Text != "" && cost.Text != "")                         // If true Quantity specified, Cost specified, overwrite Amount
             {
-                int q = ExtensionActions.LoadTxtIntoInt(quantity);              // Convert quantity into int
                 decimal c = ExtensionActions.LoadTxtIntoDecimal(cost);          // Convert cost per item into decimal
-                decimal a = q * c;                                              // Calculate total amount
-                amount.Text = a.ToString("C");                                  // Convert product to text and display
+                int q = ExtensionActions.LoadTxtIntoInt(quantity);              // Convert quantity into int
+                if (c == -1)                                                    // If == conversion routine encountered an error
+                {
+                    amount.Text = "Invalid value";                              // The product is therefore invalid
+                    cost.Focus();                                               // Go back to the first control
+                }
+                else if (q == 0)                                                // If == conversion routine encountered an error
+                {
+                    amount.Text = "Invalid value";                              // The product is therefore invalid
+                    quantity.Focus();                                           // Go back and fix it
+                }                
+                else
+                {
+                    decimal a = q * c;                                          // Calculate total amount
+                    amount.Text = a.ToString("C");                              // Convert product to text and display
+                    cost.Text = c.ToString("C");                                // While we're here, pretty up the amount
+                }
             }
+            return;
         }
 
         // Enable/Disable selected list items in the Payment Methods Radio Button List
@@ -42,7 +57,28 @@ namespace Portal11.Logic
             return;
         }
 
-        // Take a Yes/No enum and set the appropriate button in a Radio Button List and back to enum. This is a special case since neither of
+        // Take a Yes/No/None enum and set the appropriate button in a Radio Button List and back to enum. This is a special case since neither of
+        // the radio buttons may be set
+
+        public static void LoadPOVendorModeIntoRdo(POVendorMode val, RadioButtonList rdo)
+        {
+            if (val == POVendorMode.None)                  // If == no radio button should be set
+                rdo.SelectedIndex = -1;                     // Note no button set
+            else
+                LoadEnumIntoRdo(val, rdo);                  // Now we know a button will be set, so use the simpler case method
+            return;
+        }
+
+        public static POVendorMode LoadRdoIntoPOVendorMode(RadioButtonList rdo)
+        {
+            string selected = rdo.SelectedValue;            // Find which if any radio button is pressed
+            if (selected != "")                             // If != one of the buttons is selected
+                return EnumActions.ConvertTextToPOVendorMode(selected); // Convert string to enum value
+            return POVendorMode.None;
+        }
+
+
+        // Take a Yes/No/None enum and set the appropriate button in a Radio Button List and back to enum. This is a special case since neither of
         // the radio buttons may be set
 
         public static void LoadYesNoIntoRdo(YesNo val, RadioButtonList rdo)
@@ -123,6 +159,44 @@ namespace Portal11.Logic
             if (ex.InnerException == null) return ex;
 
             return ex.InnerException.GetOriginalException();
+        }
+
+        // Adjust the labels on Document's Contract fields and panel visibility based on whether or not we have a multiple. Shared by
+        // EditDocument and ReviewDocument, so it's here.
+
+        public static void SetDocumentContractLabels(RadioButtonList rdoContractFunds, RadioButtonList rdoContractFundsMultiple,
+                                                    Label lblContractFundsMultiple, Label lblContractFundsAmount,
+                                                    Label lblContractFundsNumber, Label lblContractTotal,
+                                                    Panel pnlContractFundsNumber)
+        {
+            bool multiples = rdoContractFundsMultiple.SelectedValue == PortalConstants.CYes; // Single or Multiple?
+
+            if (rdoContractFunds.SelectedValue == PortalConstants.RDOContractReceivingFunds) // If true we are processing receipts
+            {
+                lblContractFundsMultiple.Text = "Multiple Receipts?";
+                if (multiples)
+                {
+                    lblContractFundsAmount.Text = "Recurring Receipt Amount"; // Change label on amount
+                    lblContractFundsNumber.Text = "Number of Receipts";
+                    lblContractTotal.Text = "Total Received";
+                }
+                else
+                    lblContractFundsAmount.Text = "Receipt Amount";
+            }
+            else if (rdoContractFunds.SelectedValue == PortalConstants.RDOContractPayingFunds) // If true we are processing payments
+            {
+                lblContractFundsMultiple.Text = "Multiple Payments?";
+                if (multiples)
+                {
+                    lblContractFundsAmount.Text = "Recurring Payment Amount"; // Change label on amount
+                    lblContractFundsNumber.Text = "Number of Payments";
+                    lblContractTotal.Text = "Total Liability";
+                }
+                else
+                    lblContractFundsAmount.Text = "Payment Amount";
+            }
+            pnlContractFundsNumber.Visible = multiples;     // Turn on/off the panel with NumberOfAmounts and Total fields
+            return;
         }
     }
 }

@@ -30,6 +30,7 @@ namespace Portal11.Models
         public string UpdatedStatus { get; set; }
         public string ReasonForChange { get; set; }
         public string ReturnNote { get; set; }
+        public string HyperLinkTarget { get; set; }
     }
 
     // One row of the GridView named ExpenseSplit, used by EditExpense
@@ -90,6 +91,14 @@ namespace Portal11.Models
         public string PersonRole { get; set; }
     }
 
+    // One row of a list of persons with IDs. Very simple
+
+    public class rowPerson
+    {
+        public int PersonID { get; set; }
+        public string Name { get; set; }
+    }
+
     // One row of the GridView named gvListProjectUsers, used by ListProjectMetadata
 
     public class rowListProjectUser
@@ -133,7 +142,7 @@ namespace Portal11.Models
         public string ProjectID { get; set; }
     }
 
-    // One row of the GridView named gvAllAppView, used by ProjectDashboard
+    // One row of the GridView named gvAllAppView, used by ProjectDashboard. Now obsolete. But also ListMetadata
 
     public class rowProjectAppView
     {
@@ -169,6 +178,23 @@ namespace Portal11.Models
         public bool Archived { get; set; }
     }
 
+    // One row of the GridView named gvAllDocView, used by ProjectDashboard
+
+    public class rowProjectDocView
+    {
+        public string RowID { get; set; }
+        public const int RowIDCell = 0;
+        public DateTime CurrentTime { get; set; }
+        public string DocTypeDesc { get; set; }
+        public string Description { get; set; }
+        public DocState CurrentState { get; set; }
+        public const int CurrentStateCell = 4;
+        public string CurrentStateDesc { get; set; }
+        public const int CurrentStateDescRow = 5;
+        public string ReturnNote { get; set; }
+        public bool Archived { get; set; }
+    }
+
     // One row of the GridView named gvAllExpView, used by ProjectDashboard
 
     public class rowProjectExpView
@@ -186,6 +212,7 @@ namespace Portal11.Models
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
         public bool Rush { get; set; }
+        public UserRole ReviseUserRole { get; set; }        // User Role of user who revised the Exp
     }
 
     // One row of the GridViews named gvAllProject, used by SelectProject
@@ -213,22 +240,22 @@ namespace Portal11.Models
 
     // One row of the GridView named gvStaffApp, used by StaffDashboard
 
-    public class rowStaffApp
-    {
-        public string RowID { get; set; }
-        public DateTime CurrentTime { get; set; }
-        public string ProjectID { get; set; }
-        public string ProjectName { get; set; }
-        public string AppTypeDesc { get; set; }
-        public string AppReviewType { get; set; }
-        public AppState CurrentState { get; set; }
-        public string CurrentStateDesc { get; set; }
-        public string Owner { get; set; }
-        public const int OwnerColumn = 5;
-        public string Description { get; set; }
-        public string ReturnNote { get; set; }
-        public bool Archived { get; set; }
-    }
+    //public class rowStaffApp
+    //{
+    //    public string RowID { get; set; }
+    //    public DateTime CurrentTime { get; set; }
+    //    public string ProjectID { get; set; }
+    //    public string ProjectName { get; set; }
+    //    public string AppTypeDesc { get; set; }
+    //    public string AppReviewType { get; set; }
+    //    public AppState CurrentState { get; set; }
+    //    public string CurrentStateDesc { get; set; }
+    //    public string Owner { get; set; }
+    //    public const int OwnerColumn = 5;
+    //    public string Description { get; set; }
+    //    public string ReturnNote { get; set; }
+    //    public bool Archived { get; set; }
+    //}
 
     public class rowStaffDep
     {
@@ -246,11 +273,30 @@ namespace Portal11.Models
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
     }
+
+    // One row of GridView named gvStaffDoc, used by StaffDashboard
+
+    public class rowStaffDoc
+    {
+        public string RequestID { get; set; }
+        public DateTime CurrentTime { get; set; }
+        public string ProjectID { get; set; }
+        public string ProjectName { get; set; }
+        public string DocTypeDesc { get; set; }
+        public DocState CurrentState { get; set; }
+        public string CurrentStateDesc { get; set; }
+        public string Owner { get; set; }
+        public const int OwnerColumn = 4;
+        public string Description { get; set; }
+        public string ReturnNote { get; set; }
+        public bool Archived { get; set; }
+    }
+
     // One row of the GridView named gvStaffExp, used by StaffDashboard
 
     public class rowStaffExp
     {
-        public string RowID { get; set; }
+        public string RequestID { get; set; }
         public DateTime CurrentTime { get; set; }
         public string ProjectID { get; set; }
         public string ProjectName { get; set; }
@@ -267,6 +313,7 @@ namespace Portal11.Models
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
         public bool Rush { get; set; }
+        public UserRole ReviseUserRole { get; set; }        // User Role of user who revised the Exp
     }
 
     // One row of the GridView named UserProjectView, used by AssignUserToProject
@@ -278,27 +325,6 @@ namespace Portal11.Models
     //    public string ProjectName { get; set; }
     //    public string ProjectDescription { get; set; }
     //}
-
-    // How the Expensed materials get delivered
-
-    public enum DeliveryMode
-    {
-        [Description("Hold for pickup")]
-        Pickup,
-        [Description("Mail to payee")]
-        MailPayee,
-        [Description("Mail to the below address")]
-        MailAddress
-    }
-    public enum PODeliveryMode
-    {
-        [Description("Have the vendor hold this item. I will pick it up.")]
-        Pickup,
-        [Description("Have the item delivered to CultureWorks.")]
-        DeliverCW,
-        [Description("Have the item delivered to the below address.")]
-        DeliverAddress
-    }
 
     // The Approval Request - made by a CW Staff on a Project.
 
@@ -420,6 +446,18 @@ namespace Portal11.Models
         Report,
         [Description("Reserved for Future Use")]
         ReservedForFutureUse
+    }
+
+    // How the Expensed materials get delivered
+
+    public enum DeliveryMode
+    {
+        [Description("Hold for pickup")]
+        Pickup,
+        [Description("Mail to payee")]
+        MailPayee,
+        [Description("Mail to the below address")]
+        MailAddress
     }
 
     // The Deposit - made by a CW Staff on a Project.
@@ -554,6 +592,184 @@ namespace Portal11.Models
         ReservedForFutureUse
     }
 
+    // The Document Request - made by a CW Staff on a Project.
+
+    public class Doc
+    {
+        public int DocID { get; set; }
+        public bool Inactive { get; set; }
+        public bool Archived { get; set; }
+        public DocType DocType { get; set; }                // Will grow to include many types
+        [Required]
+        public int? ProjectID { get; set; }
+        public virtual Project Project { get; set; }
+
+        [Required]
+        public DateTime CreatedTime { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string Description { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string Notes { get; set; }                   // Free-form comments on the Request
+
+        [DataType(DataType.MultilineText)]
+        public string ReturnNote { get; set; }
+
+        [DataType(DataType.MultilineText)]
+        public string StaffNote { get; set; }
+
+        // The CURRENT state of the Request - where it is in the flow right now and who put it in this state
+        [Required]
+        public DocState CurrentState { get; set; }
+        public DateTime CurrentTime { get; set; }
+        // The User who took the most recent action on the Document
+        public string CurrentUserID { get; set; }
+        public virtual ApplicationUser CurrentUser { get; set; }
+        // The User who originally submitted the Deposit. They get notified if it's returned
+        public string SubmitUserID { get; set; }
+        public virtual ApplicationUser SubmitUser { get; set; }
+        public ProjectRole SubmitProjectRole { get; set; }      // Project Role of user who submitted the Doc. Revisions are returned to them.
+
+        // Links to other records
+
+        public int? EntityID { get; set; }
+        public virtual Entity Entity { get; set; }
+        public int? GLCodeID { get; set; }
+        public virtual GLCode GLCode { get; set; }
+        public int? PersonID { get; set; }
+        public virtual Person Person { get; set; }
+        public int? ProjectClassID { get; set; }
+        public virtual ProjectClass ProjectClass { get; set; }
+
+        // Specifics for Document Type - Contract
+
+        public DateTime ContractBeginningDate { get; set; }         // Duration of contract
+        public DateTime ContractEndingDate { get; set; }
+        public YesNo ContractCOIRequired { get; set; }
+        [DataType(DataType.MultilineText)]
+//        public string ContractDetailsOnDeliverables { get; set; }
+        public YesNo ContractDocumentsSigned { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string ContractDocumentsSignedReason { get; set; }
+//        public string ContractDuration { get; set; }
+        public DocContractOtherParty ContractOtherParty { get; set; }
+//        public int? ContractEntityID { get; set; }
+        public DocContractFunds ContractFunds { get; set; }
+        public decimal ContractFundsAmount { get; set; }
+        public YesNo ContractFundsMultiple { get; set; }
+        public int ContractFundsNumber { get; set; }
+//       public int? ContractPersonID { get; set; }
+//        public bool ContractSchedule { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string ContractScheduleDetails { get; set; }
+        public bool ContractVerifyProjectName { get; set; }
+        public bool ContractVerifyCTPresident { get; set; }
+
+    }
+    public enum DocContractFunds
+    {
+        ContractReceivingFunds = 1,
+        ContractPayingFunds,
+        None
+    }
+
+// The states that the Document has gone through. Who did what when why to the Request
+
+public class DocHistory
+    {
+        public int DocHistoryID { get; set; }
+        public int DocID { get; set; }
+        public DocState PriorDocState { get; set; }
+        public DocState NewDocState { get; set; }
+        public DateTime HistoryTime { get; set; }
+        public string HistoryUserID { get; set; }
+        public virtual ApplicationUser HistoryUser { get; set; }
+        public string HistoryNote { get; set; }
+        public string ReturnNote { get; set; }
+        public int? SupportingDocID { get; set; }
+        public string MIME { get; set; }
+        public string FileName { get; set; }
+    }
+
+    public enum DocContractOtherParty
+    {
+        Entity = 1,
+        Person,
+        None
+    }
+
+    // The processing states that a Approval can go through
+
+    public enum DocState
+    {
+        [Description("Unsubmitted (IC)")]
+        UnsubmittedByInternalCoordinator = 1,
+        [Description("Unsubmitted (PS)")]
+        UnsubmittedByProjectStaff,
+        [Description("Unsubmitted (PD)")]
+        UnsubmittedByProjectDirector,
+        [Description("Awaiting Project Director")]
+        AwaitingProjectDirector,
+        [Description("Awaiting Internal Coordinator")]
+        AwaitingInternalCoordinator,
+        [Description("Awaiting Finance Director")]
+        AwaitingFinanceDirector,
+        [Description("Awaiting Community Director")]
+        AwaitingCommunityDirector,
+        [Description("Awaiting President")]
+        AwaitingPresident,
+        [Description("Executed")]
+        Executed,
+        [Description("Returned (PD)")]
+        ReturnedToProjectDirector,
+        [Description("Returned (PS)")]
+        ReturnedToProjectStaff,
+        [Description("Returned (IC)")]
+        ReturnedToInternalCoordinator,
+        [Description("Revising (PD)")]
+        RevisingByProjectDirector,
+        [Description("Revising (IC)")]
+        RevisingByInternalCoordinator,
+        [Description("Revising (FD)")]
+        RevisingByFinanceDirector,
+        [Description("Revising (CD)")]
+        RevisingByCommunityDirector,
+        [Description("Revising (PR)")]
+        RevisingByPresident,
+        [Description("Revised By IC")]
+        RevisedByInternalCoordinator,
+        [Description("Revised By FD")]
+        RevisedByFinanceDirector,
+        [Description("Revised By CD")]
+        RevisedByCommunityDirector,
+        [Description("Revised By PR")]
+        RevisedByPresident,
+        [Description("Error During Processing")]
+        Error,
+        [Description("Reserved For Future Use")]
+        ReservedForFutureUse,
+    }
+
+    // Each type of Document fills different fields in the Doc object. This mapping is complicated and expressed in code.
+
+    public enum DocType
+    {
+        [Description("Contract")]
+        Contract = 1,
+        [Description("Grant Proposal")]
+        Grant,
+        [Description("Certificate of Insurance")]
+        Certificate,
+        [Description("Financial Report")]
+        Financial,
+        [Description("Marketing/Fundraising Campaign")]
+        Campaign,
+        [Description("Reserved for Future Use")]
+        ReservedForFutureUse
+    }
+
+
     // The Entities that Projects receive Deposits from
 
     public class Entity
@@ -671,7 +887,7 @@ namespace Portal11.Models
         public int? PersonID { get; set; }
         public virtual Person Person { get; set; }
 
-        public YesNo POVendorMode { get; set; }             // PO Fulfilment Instructions
+        public POVendorMode POVendorMode { get; set; }     // PO fulfillment Instructions
 
         [Required]
         public int? ProjectID { get; set; }                 // The Project that owns this Request
@@ -705,6 +921,7 @@ namespace Portal11.Models
         public string SubmitUserID { get; set; }            // The User who originally submitted the Exp. They get notified if it's returned
         public virtual ApplicationUser SubmitUser { get; set; }
         public ProjectRole SubmitProjectRole { get; set; }  // Project Role of user who submitted the Exp. Revisions are returned to them. 
+        public UserRole ReviseUserRole { get; set; }        // User Role of user who revised the Exp. This helps us turn Dashboard rows Teal
     }
 
     // The states that the Expense has gone through. Who did what when why to the Request
@@ -811,6 +1028,7 @@ namespace Portal11.Models
         public DateTime LicenseExpiration { get; set; }
 
         public const string LocalFranchiseKey = "Philadelphia";
+        public const string LocalFranchiseEntity = "CultureTrust Greater Philadelphia";
         public int ForceReload { get; set; }        // Recreate database
     }
 
@@ -883,6 +1101,93 @@ namespace Portal11.Models
         public string Email { get; set; }
     }
 
+    // Block of parameters derived by parsing a command-line
+
+    public class ParseParam
+    {
+        public YesNo COI { get; set; }
+        public DocState DocState { get; set; }
+        public DocType DocType { get; set; }
+        public DocContractFunds DocContractFunds { get; set; }
+        public string Recipients { get; set; }
+        public RequestType RequestType { get; set; }
+    }
+
+    // An Expense Request can be paid in a number of ways
+
+    public enum PaymentMethod
+    {
+        [Description("Check")]
+        Check = 1,
+        [Description("CultureTrust Credit Card")]
+        CreditCard,
+        [Description("EFT/Direct Deposit")]
+        EFT,
+        [Description("Request Invoice")]
+        Invoice
+    }
+
+    // A Person, who can take on the role of Contractor, Employee, Responsible, or Recipient on a project-by-project basis
+
+    public class Person
+    {
+        public int PersonID { get; set; }
+        [Required, StringLength(20), Index("FranchiseAndPerson", 1)]
+        public string FranchiseKey { get; set; }
+        public bool Inactive { get; set; }
+        public const int InactiveColumn = 4;                // Column when displayed in GridView
+        [Required, StringLength(100), Index("FranchiseAndPerson", 2, IsUnique = true)]
+        public string Name { get; set; }
+        [StringLength(250), DataType(DataType.MultilineText)]
+        public string Address { get; set; }
+        [StringLength(20)]
+        public string Phone { get; set; }
+        [StringLength(100)]
+        public string Email { get; set; }
+        public string EINSSN { get; set; }
+        public bool W9Present { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string Notes { get; set; }                   // Free-form comments
+        public DateTime CreatedTime { get; set; }
+        public string TriggerReload { get; set; } // Just a dummy to force database recreate and reload
+    }
+
+    // The Person can assume many Roles in a Request. We store a PersonID in the Request, then explain which type of Person it is.
+
+    public enum PersonRole
+    {
+        [Description("Contractor")]
+        Contractor = 1,
+        [Description("Donor")]
+        Donor,
+        [Description("Employee")]
+        Employee,
+        [Description("Responsible Person")]
+        ResponsiblePerson,
+        [Description("Recipient")]
+        Recipient
+    }
+
+    public enum PODeliveryMode
+    {
+        [Description("Have the vendor hold this item. I will pick it up.")]
+        Pickup,
+        [Description("Have the item delivered to CultureWorks.")]
+        DeliverCW,
+        [Description("Have the item delivered to below address.")]
+        DeliverAddress
+    }
+
+    public enum POVendorMode
+    {
+        [Description("Please use SKU/Model# and purchase from this vendor")]
+        No,
+        [Description("Any version of this item will do")]
+        Yes,
+        [Description("None")]
+        None
+    }
+
     // The Parameters that control the entire portal
 
     public class PortalParameter    {
@@ -940,61 +1245,9 @@ namespace Portal11.Models
         public string SupportingDocCurrentSubdirectory { get; set; }
 
         public bool DisableLogins { get; set; }                         // Only for non-Admin accounts
-    }
 
-    // A Person, who can take on the role of Contractor, Employee, Responsible, or Recipient on a project-by-project basis
-
-    public class Person
-    {
-        public int PersonID { get; set; }
-        [Required, StringLength(20), Index("FranchiseAndPerson", 1)]
-        public string FranchiseKey { get; set; }
-        public bool Inactive { get; set; }
-        public const int InactiveColumn = 4;                // Column when displayed in GridView
-        [Required, StringLength(100), Index("FranchiseAndPerson", 2, IsUnique = true)]
-        public string Name { get; set; }
-        [StringLength(250), DataType(DataType.MultilineText)]
-        public string Address { get; set; }
-        [StringLength(20)]
-        public string Phone { get; set; }
-        [StringLength(100)]
-        public string Email { get; set; }
-        public string EINSSN { get; set; }
-        public bool W9Present { get; set; }
         [DataType(DataType.MultilineText)]
-        public string Notes { get; set; }                   // Free-form comments
-        public DateTime CreatedTime { get; set; }
-        public string TriggerReload { get; set; } // Just a dummy to force database recreate and reload
-    }
-
-    // An Expense Request can be paid in a number of ways
-
-    public enum PaymentMethod
-    {
-        [Description("Check")]
-        Check = 1,
-        [Description("CultureTrust Credit Card")]
-        CreditCard,
-        [Description("EFT/Direct Deposit")]
-        EFT,
-        [Description("Request Invoice")]
-        Invoice
-    }
-
-    // The Person can assume many Roles in a Request. We store a PersonID in the Request, then explain which type of Person it is.
-
-    public enum PersonRole
-    {
-        [Description("Contractor")]
-        Contractor = 1,
-        [Description("Donor")]
-        Donor,
-        [Description("Employee")]
-        Employee,
-        [Description("Responsible Person")]
-        ResponsiblePerson,
-        [Description("Recipient")]
-        Recipient
+        public string EmailControlString { get; set; }                  // Parameterized string to control some emails
     }
 
     // The Projects that make the world go 'round
@@ -1132,7 +1385,7 @@ namespace Portal11.Models
         public int RequestHistoryID { get; set; }
         public int RequestID { get; set; }
         public RequestType RequestType { get; set; }
-        public int PriorState { get; set; }                             // Could be AppState, DepState, ExpState
+        public int PriorState { get; set; }                             // Could be DocState, DepState, ExpState
         public int NewState { get; set; }
         public DateTime HistoryTime { get; set; }
         public string HistoryUserID { get; set; }
@@ -1154,6 +1407,8 @@ namespace Portal11.Models
         Entity,
         [Description("Person")]
         Person,
+        [Description("Document Request")]
+        Document,
         [Description("Reserved for Future Use")]
         ReservedForFutureUse
     }
@@ -1253,14 +1508,14 @@ namespace Portal11.Models
         FinanceDirector,
         [Description("Project Member")]
         Project,
-        //[Description("Project Director")] //TODO: Can we do without this role?
-        //ProjectDirector,
         [Description("Community Director")]
         CommunityDirector,
         [Description("President")]
         President,
         [Description("Undefined")]
-        Undefined
+        Undefined,
+        [Description("None")]
+        None = 0
     }
 
     // Simple yes/no question asked via radio buttons.
@@ -1390,6 +1645,14 @@ namespace Portal11.Models
             CEmailDefaultDepositReturnedBody = "A Deposit Request has been returned to you during the review process. It is ready for your action.";
 
         public const string
+            CEmailDefaultDocumentApprovedSubject = "Document Request is ready for your action",
+            CEmailDefaultDocumentApprovedBody = "An Document Request has advanced in the review process. It is ready for your action.",
+            CEmailDefaultDocumentExecutedSubject = "Document Request executed",
+            CEmailDefaultDocumentExecutedBody = "An Document Request has been executed at the conclusion of the review process. It is ready for your action.",
+            CEmailDefaultDocumentReturnedSubject = "Document Request returned to you",
+            CEmailDefaultDocumentReturnedBody = "An Document Request has been returned to you during the review process. It is ready for your action.";
+
+        public const string
             CEmailDefaultExpenseApprovedSubject = "Expense Request is ready for your action",
             CEmailDefaultExpenseApprovedBody = "An Expense Request has advanced in the review process. It is ready for your action.",
             CEmailDefaultExpenseBroadcastSubject = "A rush Expense Request has been submitted for project {0}",
@@ -1439,7 +1702,13 @@ namespace Portal11.Models
             CProjectCkDAwaitingCWStaff = "CkDAwaitingCWStaff",
             CProjectCkDDepositComplete = "CkDDepositComplete",
             CProjectCkDReturned = "CkDReturned",
-            
+
+            CProjectDocVisible = "ProjectDocVisible",
+            CProjectCkOAwaitingProjectStaff = "CkOAwaitingProjectStaff",
+            CProjectCkOAwaitingCWStaff = "CkOAwaitingCWStaff",
+            CProjectCkODepositComplete = "CkODepositComplete",
+            CProjectCkOReturned = "CkOReturned",
+
             CProjectExpVisible = "ProjectExpVisible",
             CProjectCkEAwaitingProjectStaff = "CkEAwaitingProjectStaff",
             CProjectCkEAwaitingCWStaff = "CkEAwaitingCWStaff",
@@ -1473,9 +1742,9 @@ namespace Portal11.Models
             CStaffCkRActive = "CStaffCkRActive",
             CStaffCkRArchived = "CStaffCkRArchived",
 
-            CStaffApprovalsVisible = "StaffApprovalsVisible",
-            CStaffCkAExpress = "CkAExpress",
-            CStaffCkAFull = "CkAFull",
+            //CStaffApprovalsVisible = "StaffApprovalsVisible",
+            //CStaffCkAExpress = "CkAExpress",
+            //CStaffCkAFull = "CkAFull",
 
             CStaffDepositsVisible = "StaffDepositsVisible",
             CStaffCkDCheck = "CkDCheck",
@@ -1486,6 +1755,11 @@ namespace Portal11.Models
             CStaffCkDFinanceDirector = "CkDFinanceDirector",
             CStaffCkDProjectMember = "CkDProjectMember",
             CStaffCkDCommunityDirector = "CkDCommunityDirector",
+
+            CStaffDocumentsVisible = "StaffDocumentsVisible",
+            CStaffCkCContract = "CkCContract",
+            CStaffCkCGrant = "CkCGrant",
+            CStaffCkCCOI = "CkCCOI",
 
             CStaffExpVisible = "StaffExpVisible",
             CStaffCkEContractorInvoice = "CkEContractorInvoice",
@@ -1506,6 +1780,7 @@ namespace Portal11.Models
 
             CStaffPIApp = "StaffPIApp",
             CStaffPIDep = "StaffPIDep",
+            CStaffPIDoc = "StaffPIDoc",
             CStaffPIExp = "StaffPIExp";
 
         // Random constants
@@ -1527,6 +1802,7 @@ namespace Portal11.Models
         public const int
             gvAllPersonW9Column = 3,
             SingleClickTimeout = 400,
+            MaxProjectNameLength1 = 50, MaxProjectNameLength2 = 50,
             MaxSupportingFileSize = 6000000,
             gvProjectPersonW9Column = 3;
 
@@ -1541,6 +1817,7 @@ namespace Portal11.Models
             URLDefault = "~/Default",
             URLEditApproval = "~/Rqsts/EditApproval",
             URLEditDeposit = "~/Rqsts/EditDeposit",
+            URLEditDocument = "~/Rqsts/EditDocument",
             URLEditEntity = "~/Admin/EditEntity",
             URLEditExpense = "~/Rqsts/EditExpense",
             URLEditGLCode = "~/Admin/EditGLCode",
@@ -1558,6 +1835,7 @@ namespace Portal11.Models
             URLProjectDashboard = "~/Proj/ProjectDashboard",
             URLReviewApproval = "~/Rqsts/ReviewApproval",
             URLReviewDeposit = "~/Rqsts/ReviewDeposit",
+            URLReviewDocument = "~/Rqsts/ReviewDocument",
             URLReviewExpense = "~/Rqsts/ReviewExpense",
             URLSelectEntity = "~/Select/SelectEntity",
             URLSelectGLCode = "~/Select/SelectGLCode",
@@ -1568,6 +1846,17 @@ namespace Portal11.Models
             URLSelectVendor = "~/Select/SelectVendor",
             URLStaffDashboard = "~/Staff/StaffDashboard",
             URLViewDoc = "~/Proj/ViewDoc";
+
+        // Names of check boxes in the Contract panel used by EditDocument
+
+        public const string
+            RDOContractEntity = "Entity",
+            RDOContractPerson = "Person",
+            RDOContractReceivingFunds = "ContractReceivingFunds",
+            RDOContractPayingFunds = "ContractPayingFunds",
+            CBLContractProjectName = "ContractProjectName",
+            CBLContractPresident = "ContractPresident",
+            CBLContractSchedule = "ContractSchedule";
 
         // Names of radio buttons in the Source of Funds panel used by EditDeposit and EditExpense
 
@@ -1590,15 +1879,39 @@ namespace Portal11.Models
 //            EmailAddress = "portal@cultureworksphila.org", EmailPassword = "password2016", EmailServer = "mail.cultureworksphila.org",
             POVendorModeYes = "Yes",
             POVendorModeNo = "No",
-            PODeliveryModePickup = "Pickup",
-            PODeliveryModeDeliverCW = "DeliverCW",
-            PODeliveryModeDeliverAddress = "DeliverAddress",
-            DeliveryModePickup = "Pickup",
-            DeliveryModeMailPayee = "MailPayee",
-            DeliveryModeMailAddress = "MailAddress";
+            //PODeliveryModePickup = "Pickup",
+            //PODeliveryModeDeliverCW = "DeliverCW",
+            //PODeliveryModeDeliverAddress = "DeliverAddress",
+            DocumentVerify1Starter = "Project name represented as 'Your Project of ";
 
         public const int
             EmailPort = 587;
 
+
+        // Highlight colors in Dashboards
+
+        public static Color DashboardRevising
+        {
+            get
+            {
+                return Color.Teal;
+            }
+        }
+
+        public static Color DashboardRush
+        {
+            get
+            {
+                return Color.Red;
+            }
+        }
+
+        public static Color DashboardSecondFD
+        {
+            get
+            {
+                return Color.Purple;
+            }
+        }
     }
 }

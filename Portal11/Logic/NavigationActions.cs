@@ -8,7 +8,8 @@ using Microsoft.AspNet.Identity.Owin;
 using Owin;
 using System.Linq;
 using Portal11.Models;
-
+using System.IO;
+using Portal11.ErrorLog;
 
 namespace Portal11.Logic
 {
@@ -126,6 +127,55 @@ namespace Portal11.Logic
 
                 gvEDHistory.DataSource = rows;                        // Give it to the GridView cnorol
                 gvEDHistory.DataBind();                               // And display it
+
+                NavigationActions.EnableGridViewNavButtons(gvEDHistory); // Enable appropriate nav buttons based on page count
+            }
+            return;
+        }
+
+
+        public static void LoadAllDocHistorys(int docID, GridView gvEDHistory)
+        {
+            gvEDHistory.PageSize = CookieActions.GetGridViewRows();  // Set number of rows per page in grid
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                var query = from edh in context.DocHistorys
+                            where edh.DocID == docID
+                            orderby edh.HistoryTime descending
+                            select edh;
+
+                List<DocHistory> edhs = query.ToList();             // Fetch the available histories
+                List<rowEDHistory> rows = new List<rowEDHistory>(); // Create the empty list
+
+                foreach (var r in edhs)                             // Cycle through the rows returned by the query
+                {
+
+                    // If this history row describes a revision to a Supporting Document, build a hyperlink to the previous version of the document.
+                    // Stuff this into the gridview for later use
+
+                    string hyperLinkTarget = "";
+                    if (r.SupportingDocID != null)                 // If != this is a revision of a Supporting Document. Formulate hyperlink
+                    {
+                        hyperLinkTarget = PortalConstants.URLViewDoc + "?" + PortalConstants.QSServerFile + "=" + r.SupportingDocID.ToString() 
+                            + "_" + r.DocHistoryID.ToString() + Path.GetExtension(r.FileName) + "&" +
+                            PortalConstants.QSMIME + "=" + r.MIME + "&" + PortalConstants.QSUserFile + "=" + r.FileName;
+                    }
+                
+                    rowEDHistory row = new rowEDHistory()           // Convert a row of the EDHistory table to a row of the GridView
+                    {
+                        Date = r.HistoryTime,
+                        FormerStatus = EnumActions.GetEnumDescription(r.PriorDocState),
+                        EstablishedBy = r.HistoryUser.FullName,
+                        UpdatedStatus = EnumActions.GetEnumDescription(r.NewDocState),
+                        ReasonForChange = r.HistoryNote,
+                        ReturnNote = r.ReturnNote,
+                        HyperLinkTarget = hyperLinkTarget
+                    };
+                    rows.Add(row);                                  // Add the filled-in row to the list of rows
+                }
+
+                gvEDHistory.DataSource = rows;                      // Give it to the GridView cnorol
+                gvEDHistory.DataBind();                             // And display it
 
                 NavigationActions.EnableGridViewNavButtons(gvEDHistory); // Enable appropriate nav buttons based on page count
             }

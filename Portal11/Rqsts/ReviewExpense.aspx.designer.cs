@@ -526,24 +526,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtDeliveryInstructionsRush;
         
         /// <summary>
-        /// pnlPODeliveryInstructions control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlPODeliveryInstructions;
-        
-        /// <summary>
-        /// txtPODeliveryInstructions control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPODeliveryInstructions;
-        
-        /// <summary>
         /// pnlDeliveryAddress control.
         /// </summary>
         /// <remarks>
@@ -749,6 +731,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSavedExpID;
+        
+        /// <summary>
+        /// litSavedExpType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedExpType;
         
         /// <summary>
         /// litSavedProjectID control.

@@ -60,7 +60,7 @@ namespace Portal11
                 if ((string)ViewState[AntiXsrfTokenKey] != _antiXsrfTokenValue
                     || (string)ViewState[AntiXsrfUserNameKey] != (Context.User.Identity.Name ?? String.Empty))
                 {
-                    throw new InvalidOperationException("Validation of Anti-XSRF token failed. AntiXsrfTokenKey: " 
+                    throw new InvalidOperationException("Validation of Anti-XSRF token failed. AntiXsrfTokenKey: "
                         + (string)ViewState[AntiXsrfTokenKey] + " AntiXsrfUserNameKey: " + (string)ViewState[AntiXsrfUserNameKey]
                         + " on page: " + HttpContext.Current.Request.Url.AbsolutePath);
                 }
@@ -100,11 +100,11 @@ namespace Portal11
                     switch (role)
                     {
                         case UserRole.Administrator:                            // User is an Admin and nothing else
-                        {
-                            litAdminRole.Text = EnumActions.GetEnumDescription(UserRole.Administrator); // Show the Administrator in the Navbar
-                            mnuAdminRole.Visible = true;                        // Switch on the Role menu item, which links to the Admin Main page
-                            break;
-                        }
+                            {
+                                litAdminRole.Text = EnumActions.GetEnumDescription(UserRole.Administrator); // Show the Administrator in the Navbar
+                                mnuAdminRole.Visible = true;                        // Switch on the Role menu item, which links to the Admin Main page
+                                break;
+                            }
                         case UserRole.InternalCoordinator:
                         case UserRole.Project:
                         {
@@ -113,12 +113,20 @@ namespace Portal11
                             if (projectInfoCookie != null)                          // If != the cookie is present
                             {
                                 mnuHomeProject.Visible = true;                      // Make appropriate Home menu visible
-                                                                                    // litProjectRole.Text = projectInfoCookie[PortalConstants.CProjectRoleDescription];
-                                labFullName.ToolTip = projectInfoCookie[PortalConstants.CProjectRoleDescription];
-                                // Load flyover with user role description specific to this project
-                                // mnuProjectRole.Visible = true;                      // Make the menu visible in the Navbar; it links to Project Dashboard
-                                litProjectName.Text = projectInfoCookie[PortalConstants.CProjectName]; // Load literal with project name from cookie
-                                mnuProjectName.Visible = true;                      // Make the menu visible in the Navbar, it also links to Project Dashboard
+                                labFullName.ToolTip = projectInfoCookie[PortalConstants.CProjectRoleDescription]; // Load flyover with user role description
+                                litProjectName.Text = projectInfoCookie[PortalConstants.CProjectName]; // Load project name
+                                mnuProjectName.Visible = true;                      // Make it visible
+
+                                // Deal with very long user names and project names.
+
+                                if ((labFullName.Text.Length + litProjectName.Text.Length) > PortalConstants.MaxProjectNameLength1) // If < names won't fit full size
+                                {
+                                    labFullNameSmall.Text = labFullName.Text;       // Copy text of user name
+                                    labFullNameSmall.ToolTip = labFullName.ToolTip;      // Copy user role description
+                                    mnuFullName.Visible = false; mnuFullNameSmall.Visible = true; // Flip short name on, regular name off
+                                    litProjectNameSmall.Text = litProjectName.Text; // Copy text of project name
+                                    mnuProjectName.Visible = false; mnuProjectNameSmall.Visible = true; // Flip short name on, regular name off
+                                }
                             }
                             else                                                    // Not assigned to a Project - in limbo!
                             {
@@ -132,19 +140,19 @@ namespace Portal11
                         case UserRole.FinanceDirector:
                         case UserRole.CommunityDirector:
                         case UserRole.President:
-                        {
-                            mnuHomeStaff.Visible = true;                            // Make appropriate Home menu visible
-                            litStaffRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // Show that role in the Navbar, link to Staff Dashboard
-                            mnuStaffRole.Visible = true;                            // Switch on the Role menu item
-//                            mnuAdminRole.Visible = false;                           // Don't display both Admin Role and Staff Role
-                            break;
-                        }
+                            {
+                                mnuHomeStaff.Visible = true;                            // Make appropriate Home menu visible
+                                litStaffRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // Show that role in the Navbar, link to Staff Dashboard
+                                mnuStaffRole.Visible = true;                            // Switch on the Role menu item
+                                                                                        //                            mnuAdminRole.Visible = false;                           // Don't display both Admin Role and Staff Role
+                                break;
+                            }
                         default:                                                    // We shouldn't get here, but don't throw errors in the friggin' Navbar
-                        {
-                            litNoProjectRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // No project available. Use "base" role
-                            mnuNoProjectRole.Visible = true;                        // Make menu visible in Navbar; it doesn't link anywhere
-                            break;
-                        }
+                            {
+                                litNoProjectRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // No project available. Use "base" role
+                                mnuNoProjectRole.Visible = true;                        // Make menu visible in Navbar; it doesn't link anywhere
+                                break;
+                            }
                     }
                 }
                 else

@@ -16,14 +16,14 @@ namespace Portal11.Proj
     public partial class ProjectDashboard : System.Web.UI.Page
     {
 
-        // We've got two separate pages here, one for Deposits and one for Expenses. The result is a lot of code in this module.
-        // Page_Load goes first. Then all the routines for Approvals, in top-to-bottom order on the page. Then the same for Deposits and Expenses.
+        // We've got three separate pages here, one for Deposits one for Approvals, and one for Expenses. 
+        // The result is a lot of code in this module.
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!Page.IsPostBack)
             {
-                // Display grids of Expenses and Deposits for a project. Communication is through Query Strings:
+                // Display grids of Deposits, Documents and Expenses for a project. Communication is through Query Strings:
                 //      UserID - the database ID of the Project Director (if missing, use cookie)
                 //      ProjectID - the database ID of the Project whose Requests are to be displayed (if missing, use cookie)
                 //  also
@@ -56,18 +56,18 @@ namespace Portal11.Proj
 
                 if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a InternalCoordinator. Powerful
                     btnDepNew.Enabled = true;                           // Allow them to create a new Deposit
-                else
-                    btnAppNew.Enabled = false;                          // Only IC can create a new Approval Request
 
                 RestoreCheckboxes();                                    // Restore more recent checkbox settings from a cookie
 
                 int rows = CookieActions.GetGridViewRows();            // Find number of rows per page from cookie
-                gvAllApp.PageSize = rows;                               // Adjust grids accordingly
+                //gvAllApp.PageSize = rows;                               // Adjust grids accordingly
                 gvAllDep.PageSize = rows;
+                gvAllDoc.PageSize = rows;
                 gvAllExp.PageSize = rows;
 
-                LoadAllApps();
+                //LoadAllApps();
                 LoadAllDeps();
+                LoadAllDocs();
                 LoadAllExps();                                          // Load the grid view for display
             }
             return;
@@ -186,11 +186,14 @@ namespace Portal11.Proj
 
         protected void SearchCriteriaChanged(object sender, EventArgs e)
         {
-            LoadAllApps();                                              // Reload the GridView using new criteria
-            ResetAppContext();                                          // No selected row, no live buttons
+            //LoadAllApps();                                              // Reload the GridView using new criteria
+            //ResetAppContext();                                          // No selected row, no live buttons
 
             LoadAllDeps();                                              // Reload the GridView using new criteria
             ResetDepContext();                                          // No selected row, no live buttons
+
+            LoadAllDocs();                                              // Reload the GridView using new criteria
+            ResetDocContext();                                          // No selected row, no live buttons
 
             LoadAllExps();                                              // Reload the GridView using new criteria
             ResetExpContext();                                          // No selected row, no live buttons
@@ -201,37 +204,37 @@ namespace Portal11.Proj
 
         // Collapse/Expand the panels of Approvals
 
-        protected void btnAppCollapse_Click(object sender, EventArgs e)
-        {
-            CollapseAppPanel();
-            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
-            return;
-        }
+        //protected void btnAppCollapse_Click(object sender, EventArgs e)
+        //{
+        //    CollapseAppPanel();
+        //    SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+        //    return;
+        //}
 
-        void CollapseAppPanel()
-        {
-            pnlApp.Visible = false;
-            btnAppCollapse.Visible = false;
-            btnAppExpand.Visible = true;
-            return;
-        }
+        //void CollapseAppPanel()
+        //{
+        //    pnlApp.Visible = false;
+        //    btnAppCollapse.Visible = false;
+        //    btnAppExpand.Visible = true;
+        //    return;
+        //}
 
-        protected void btnAppExpand_Click(object sender, EventArgs e)
-        {
-            ExpandAppPanel();
-            LoadAllApps();
-            ResetAppContext();                                          // No selected row, no live buttons
-            SaveCheckboxes();                                           // Save current checkbox settings in a cookie
-            return;
-        }
+        //protected void btnAppExpand_Click(object sender, EventArgs e)
+        //{
+        //    ExpandAppPanel();
+        //    LoadAllApps();
+        //    ResetAppContext();                                          // No selected row, no live buttons
+        //    SaveCheckboxes();                                           // Save current checkbox settings in a cookie
+        //    return;
+        //}
 
-        void ExpandAppPanel()
-        {
-            pnlApp.Visible = true;
-            btnAppCollapse.Visible = true;
-            btnAppExpand.Visible = false;
-            return;
-        }
+        //void ExpandAppPanel()
+        //{
+        //    pnlApp.Visible = true;
+        //    btnAppCollapse.Visible = true;
+        //    btnAppExpand.Visible = false;
+        //    return;
+        //}
 
         // Expand/Collapse panel of Deposits
 
@@ -264,6 +267,40 @@ namespace Portal11.Proj
             pnlDep.Visible = true;
             btnDepCollapse.Visible = true;
             btnDepExpand.Visible = false;
+            return;
+        }
+
+        // Collapse/Expand the panels of Documents
+
+        protected void btnDocCollapse_Click(object sender, EventArgs e)
+        {
+            CollapseDocPanel();
+            SaveCheckboxes();                                               // Save current checkbox settings in a cookie
+            return;
+        }
+
+        void CollapseDocPanel()
+        {
+            pnlDoc.Visible = false;
+            btnDocCollapse.Visible = false;
+            btnDocExpand.Visible = true;
+            return;
+        }
+
+        protected void btnDocExpand_Click(object sender, EventArgs e)
+        {
+            ExpandDocPanel();
+            LoadAllDocs();
+            ResetDocContext();                                          // No selected row, no live buttons
+            SaveCheckboxes();                                           // Save current checkbox settings in a cookie
+            return;
+        }
+
+        void ExpandDocPanel()
+        {
+            pnlDoc.Visible = true;
+            btnDocCollapse.Visible = true;
+            btnDocExpand.Visible = false;
             return;
         }
 
@@ -304,22 +341,22 @@ namespace Portal11.Proj
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button. Also, bold the Status cell if this user can operate on the row.
 
-        protected void gvAllApp_RowDataBound(object sender, GridViewRowEventArgs e)
-        {
-            if (e.Row.RowType == DataControlRowType.DataRow)            // If == this is indeed a row of our GridView control
-            {
-                Common_RowDataBound(sender, e);
+        //protected void gvAllApp_RowDataBound(object sender, GridViewRowEventArgs e)
+        //{
+        //    if (e.Row.RowType == DataControlRowType.DataRow)            // If == this is indeed a row of our GridView control
+        //    {
+        //        Common_RowDataBound(sender, e);
 
-                // See if the Request awaits action by the User. Find the right cell by its ID. The cell contains the text of the AppState enum value. 
+        //        // See if the Request awaits action by the User. Find the right cell by its ID. The cell contains the text of the AppState enum value. 
 
-                Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
-                AppState state = EnumActions.ConvertTextToAppState(label.Text); // Carefully convert back into enumeration type
+        //        Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
+        //        AppState state = EnumActions.ConvertTextToAppState(label.Text); // Carefully convert back into enumeration type
 
-                if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
-                    e.Row.Cells[rowProjectAppView.CurrentStateDescRow].Font.Bold = true; // Bold the Status cell of this row
-            }
-            return;
-        }
+        //        if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
+        //            e.Row.Cells[rowProjectAppView.CurrentStateDescRow].Font.Bold = true; // Bold the Status cell of this row
+        //    }
+        //    return;
+        //}
 
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button. Also, bold the Status cell if this user can operate on the row.
@@ -342,29 +379,52 @@ namespace Portal11.Proj
             return;
         }
 
-        // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
-        // thereby letting us select the row without a Select button
-
-        protected void gvAllExp_RowDataBound(object sender, GridViewRowEventArgs e)
+        protected void gvAllDoc_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)            // If == this is indeed a row of our GridView control
             {
                 Common_RowDataBound(sender, e);
 
-                // See if the Request awaits action by the User. Find the right cell by its ID. The cell contains the text of the DepState enum value.
-                // For Deposits, the only such situation is for a Project Director and a Deposit Request in "Awaiting Project Director" or "Returned" state.
+                // See if the Request awaits action by the User. Find the right cell by its ID. The cell contains the text of the DocState enum value. 
+
+                Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
+                DocState state = EnumActions.ConvertTextToDocState(label.Text); // Carefully convert back into enumeration type
+
+                if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
+                    e.Row.Cells[rowProjectDocView.CurrentStateDescRow].Font.Bold = true; // Bold the Status cell of this row
+            }
+            return;
+        }
+
+        protected void gvAllExp_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)            // If == this is indeed a row of our GridView control
+            {
+                Common_RowDataBound(sender, e);                         // Do the standard hookups
+
+                // See if user is the next to act on this row
 
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Carefully convert back into enumeration type
-
                 if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
                     e.Row.Cells[rowProjectExpView.CurrentStateDescRow].Font.Bold = true; // Bold Status cell.
 
+                // See if the row is in revision by staff
+
+                label = (Label)e.Row.FindControl("lblReviseUserRole");  // Find the label control that contains ReviseUserRole in this row
+                UserRole reviseRole = EnumActions.ConvertTextToUserRole(label.Text); // Carefully convert back into enumeration type
+                if (reviseRole != UserRole.None)                        // If != row is in revision
+                {
+                    ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch Project Role 
+                    if (RoleActions.ProjectRoleIsStaff(projectRole))    // If true user is staff
+                        e.Row.ForeColor = PortalConstants.DashboardRevising; // How about something in a nice teal?
+                }
+
                 // See if the row is Rush
 
-                label = (Label)e.Row.FindControl("lblRush");                // Find the label control that contains Rush in this row
-                if (label.Text == "True")                                   // If == this record is Rush
-                    e.Row.ForeColor = Color.Red;                            // Use color to indicate Rush status
+                label = (Label)e.Row.FindControl("lblRush");            // Find the label control that contains Rush in this row
+                if (label.Text == "True")                               // If == this record is Rush
+                    e.Row.ForeColor = PortalConstants.DashboardRush;    // Use color to indicate Rush status
             }
             return;
         }
@@ -390,89 +450,85 @@ namespace Portal11.Proj
         // the row contains the enum value (not enum desription) of CurrentState. It also assumes that only the New and View buttons are
         // enabled all the time.
 
-        protected void gvAllApp_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Label label = (Label)gvAllApp.SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
-            AppState state = EnumActions.ConvertTextToAppState(label.Text); // Convert back into enumeration type
-            btnAppArchive.Enabled = false;                              // Assume User cannot Archive Request
-            btnAppCopy.Enabled = true;                                  // If any Request is selected, the user can always copy it
-            btnAppDelete.Enabled = false;                               // Assume User cannot Delete Request
-            btnAppEdit.Enabled = false;                                 // Assume User cannot Edit Request
-            btnAppReview.Enabled = false;                               // Assume User cannot Review Request
-            btnAppView.Enabled = true;                                  // If any Request is selected, the user can always view it
+        //protected void gvAllApp_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    Label label = (Label)gvAllApp.SelectedRow.FindControl("lblCurrentState"); // Find the label control that contains Current State
+        //    AppState state = EnumActions.ConvertTextToAppState(label.Text); // Convert back into enumeration type
+        //    btnAppArchive.Enabled = false;                              // Assume User cannot Archive Request
+        //    btnAppCopy.Enabled = true;                                  // If any Request is selected, the user can always copy it
+        //    btnAppDelete.Enabled = false;                               // Assume User cannot Delete Request
+        //    btnAppEdit.Enabled = false;                                 // Assume User cannot Edit Request
+        //    btnAppReview.Enabled = false;                               // Assume User cannot Review Request
+        //    btnAppView.Enabled = true;                                  // If any Request is selected, the user can always view it
 
-            switch (state)
-            {
-                case AppState.UnsubmittedByInternalCoordinator:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == the user is a coordinator
-                        {
-                            btnAppDelete.Enabled = true;
-                            btnAppEdit.Enabled = true;
-                        }
-                        break;
-                    }
-                case AppState.UnsubmittedByProjectDirector:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == the user is a PD
-                        {
-                            btnAppDelete.Enabled = true;
-                            btnAppEdit.Enabled = true;
-                        }
-                        break;
-                    }
-                case AppState.UnsubmittedByProjectStaff:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If == the user is a PS
-                        {
-                            btnAppDelete.Enabled = true;
-                            btnAppEdit.Enabled = true;
-                        }
-                        break;
-                    }
-                case AppState.AwaitingProjectDirector:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == user is a Project Director, can Review
-                            btnAppReview.Enabled = true;
-                        break;
-                    }
-                case AppState.AwaitingInternalCoordinator:
-                    {
-                        if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == the user is a coordinator
-                        {
-                            btnAppReview.Enabled = true;
-                        }
-                        break;
-                    }
-                case AppState.Approved:                             // Maybe Returned too?
-                    {
-                        if ((litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString())
-                            || litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == the user can Archive
-                        {
-                            Label archivedLabel = (Label)gvAllApp.SelectedRow.FindControl("lblArchived"); // Find the label control that contains Archived
-                            if (archivedLabel.Text == "False")      // If == not currently archived.
-                                btnAppArchive.Enabled = true;       // Light Archive button. Can't archive if already archived
-                        }
-                        break;
-                    }
-                case AppState.AwaitingCommunityDirector:
-                case AppState.AwaitingFinanceDirector:
-                case AppState.AwaitingPresident:
-                case AppState.Returned:
-                    {
-                        break;                                      // The button setup is just fine. No editing or deleting here
-                    }
-                default:
-                    LogError.LogInternalError("ProjectDashboard", string.Format("Invalid AppState '{0}' from database",
-                        state)); // Fatal error
-                    break;
-            }
-            return;
-        }
-
-        // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected. This code assumes that only the View buttons are
-        // enabled all the time. Every other button is nuanced based on role. We don't mess with the New button. It works independently of
-        // which Request is selected.
+        //    switch (state)
+        //    {
+        //        case AppState.UnsubmittedByInternalCoordinator:
+        //            {
+        //                if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == the user is a coordinator
+        //                {
+        //                    btnAppDelete.Enabled = true;
+        //                    btnAppEdit.Enabled = true;
+        //                }
+        //                break;
+        //            }
+        //        case AppState.UnsubmittedByProjectDirector:
+        //            {
+        //                if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == the user is a PD
+        //                {
+        //                    btnAppDelete.Enabled = true;
+        //                    btnAppEdit.Enabled = true;
+        //                }
+        //                break;
+        //            }
+        //        case AppState.UnsubmittedByProjectStaff:
+        //            {
+        //                if (litSavedProjectRole.Text == ProjectRole.ProjectStaff.ToString()) // If == the user is a PS
+        //                {
+        //                    btnAppDelete.Enabled = true;
+        //                    btnAppEdit.Enabled = true;
+        //                }
+        //                break;
+        //            }
+        //        case AppState.AwaitingProjectDirector:
+        //            {
+        //                if (litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == user is a Project Director, can Review
+        //                    btnAppReview.Enabled = true;
+        //                break;
+        //            }
+        //        case AppState.AwaitingInternalCoordinator:
+        //            {
+        //                if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == the user is a coordinator
+        //                {
+        //                    btnAppReview.Enabled = true;
+        //                }
+        //                break;
+        //            }
+        //        case AppState.Approved:                             // Maybe Returned too?
+        //            {
+        //                if ((litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString())
+        //                    || litSavedProjectRole.Text == ProjectRole.ProjectDirector.ToString()) // If == the user can Archive
+        //                {
+        //                    Label archivedLabel = (Label)gvAllApp.SelectedRow.FindControl("lblArchived"); // Find the label control that contains Archived
+        //                    if (archivedLabel.Text == "False")      // If == not currently archived.
+        //                        btnAppArchive.Enabled = true;       // Light Archive button. Can't archive if already archived
+        //                }
+        //                break;
+        //            }
+        //        case AppState.AwaitingCommunityDirector:
+        //        case AppState.AwaitingFinanceDirector:
+        //        case AppState.AwaitingPresident:
+        //        case AppState.Returned:
+        //            {
+        //                break;                                      // The button setup is just fine. No editing or deleting here
+        //            }
+        //        default:
+        //            LogError.LogInternalError("ProjectDashboard", string.Format("Invalid AppState '{0}' from database",
+        //                state)); // Fatal error
+        //            break;
+        //    }
+        //    return;
+        //}
 
         protected void gvAllDep_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -499,6 +555,7 @@ namespace Portal11.Proj
                         {
                             case DepState.UnsubmittedByInternalCoordinator:
                                 {
+                                    btnDepDelete.Enabled = true;        // We created it, we can delete it
                                     btnDepEdit.Enabled = true;          // In mid-revision, IC can continue editing
                                     break;
                                 }
@@ -565,9 +622,112 @@ namespace Portal11.Proj
             return;
         }
 
-        // The user has actually clicked on a row. Enable the buttons that only make sense when a row is selected. This code assumes that
-        // the Row contains the enum value (not enum desription) of CurrentState. It also assumes that only the New and View buttons are
-        // enabled all the time.
+        protected void gvAllDoc_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnDocArchive.Enabled = false;
+            btnDocCopy.Enabled = true;                                  // Any request can be copied
+            btnDocDelete.Enabled = false;                               // and turn off all buttons
+            btnDocEdit.Enabled = false;
+            // Leave the New button in its former state
+            btnDocReview.Enabled = false;
+            btnDocView.Enabled = true;                                  // Everybody can View any Request
+
+            // Build up some context for the next set of decisions
+
+            DocState state = EnumActions.ConvertTextToDocState(((Label)gvAllDoc.SelectedRow.FindControl("lblCurrentState")).Text); // Carefully find state of row
+            bool archived = EnumActions.ConvertTextToBool(((Label)gvAllDoc.SelectedRow.FindControl("lblArchived")).Text); // Carefully find Archived flag of row
+            ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Carefully find Project Role of user
+
+            switch (projectRole)
+            {
+                case ProjectRole.InternalCoordinator:
+                    {
+                        switch (state)
+                        {
+                            case DocState.AwaitingInternalCoordinator:
+                            case DocState.ReturnedToInternalCoordinator:
+                                {
+                                    btnDocReview.Enabled = true;        // IC can Review a Returned request
+                                    break;
+                                }
+                            case DocState.UnsubmittedByInternalCoordinator:
+                                {
+                                    btnDocDelete.Enabled = true;        // IC can Delete own request
+                                    btnDocEdit.Enabled = true;          // In mid-revision, IC can continue editing
+                                    break;
+                                }
+                            case DocState.Executed:
+                                {
+                                    if (!archived)                      // If false row not archived (yet)
+                                        btnDocArchive.Enabled = true;   // Allow it to be archived
+                                    break;
+                                }
+                            default:
+                                break;                                  // IC is powerless for all other states
+                        }
+                        break;
+                    }
+                case ProjectRole.ProjectStaff:
+                    {
+                        switch (state)
+                        {
+                            case DocState.ReturnedToProjectStaff:
+                                {
+                                    btnDocReview.Enabled = true;        // PS can Review a Returned request
+                                    break;
+                                }
+                            case DocState.UnsubmittedByProjectStaff:
+                                {
+                                    btnDocDelete.Enabled = true;        // PS can Delete own request
+                                    btnDocEdit.Enabled = true;          // In mid-revision, PS can continue editing
+                                    break;
+                                }
+                            default:
+                                break;                                  // PS is powerless for all other states
+                        }
+                        break;
+                    }
+                case ProjectRole.ProjectDirector:
+                    {
+                        switch (state)
+                        {
+                            case DocState.ReturnedToProjectDirector:    // PD can review a returned request
+                            case DocState.AwaitingProjectDirector:      // PD can review a submitted request
+                            case DocState.RevisedByFinanceDirector:
+                            case DocState.RevisedByCommunityDirector:   // PD can review a revised request
+                            case DocState.RevisedByInternalCoordinator:
+                            case DocState.RevisedByPresident:
+                                {
+                                    btnDocReview.Enabled = true;
+                                    break;
+                                }
+                            case DocState.UnsubmittedByProjectDirector: // PD can edit an unsubmitted request
+                                {
+                                    btnDocDelete.Enabled = true;        // PD can deelte own request
+                                    btnDocEdit.Enabled = true;          // PD can edit own request
+                                    break;
+                                }
+                            case DocState.RevisingByProjectDirector:    // PD can edit a revising request
+                                {
+                                    btnDocEdit.Enabled = true;          // PD can edit own request
+                                    break;
+                                }
+                            case DocState.Executed:                     // PD can archive a completed request
+                                {
+                                    if (!archived)                      // If false row not archived (yet)
+                                        btnDocArchive.Enabled = true;   // Allow it to be archived
+                                    break;
+                                }
+                            default:
+                                break;                                  // PD is powerless for all other states
+                        }
+                        break;
+                    }
+                default:
+                    break;                                              // Others are powerless - all buttons off
+            }
+            return;
+        }
 
         protected void gvAllExp_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -607,6 +767,11 @@ namespace Portal11.Proj
                                 {
                                     if (!archived)                      // If false row not archived (yet)
                                         btnExpArchive.Enabled = true;   // Allow it to be archived
+                                    break;
+                                }
+                            case ExpState.RevisingByInternalCoordinator: // IC can edit a revising request
+                                {
+                                    btnExpEdit.Enabled = true;          // PD can edit own request
                                     break;
                                 }
                             default:
@@ -678,17 +843,15 @@ namespace Portal11.Proj
 
         // Flip a page of the grid view control
 
-        protected void gvAllApp_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        {
-            if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
-            {
-                LoadAllApps(e.NewPageIndex);                            // Reload the grid view control to the specified page
-                ResetAppContext();                                      // No selected row, no live buttons after a page flip
-            }
-            return;
-        }
-
-        // Flip a page of the grid view control
+        //protected void gvAllApp_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        //{
+        //    if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
+        //    {
+        //        LoadAllApps(e.NewPageIndex);                            // Reload the grid view control to the specified page
+        //        ResetAppContext();                                      // No selected row, no live buttons after a page flip
+        //    }
+        //    return;
+        //}
 
         protected void gvAllDep_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
@@ -700,7 +863,15 @@ namespace Portal11.Proj
             return;
         }
 
-        // Flip a page of the grid view control
+        protected void gvAllDoc_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
+            {
+                LoadAllDocs(e.NewPageIndex);                            // Reload the grid view control to the specified page
+                ResetDocContext();                                      // No selected row, no live buttons after a page flip
+            }
+            return;
+        }
 
         protected void gvAllExp_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
@@ -716,133 +887,133 @@ namespace Portal11.Proj
 
         // Archive button pressed. Just flip on the Archived flag
 
-        protected void btnAppArchive_Click(object sender, EventArgs e)
-        {
-            int appID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllApp)).Int; // Get ready for action with an int version of the App ID
+        //protected void btnAppArchive_Click(object sender, EventArgs e)
+        //{
+        //    int appID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllApp)).Int; // Get ready for action with an int version of the App ID
 
-            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-            {
-                try
-                {
-                    App toUpdate = context.Apps.Find(appID);            // Fetch App row by its key
-                    if (toUpdate == null)
-                        LogError.LogInternalError("ProjectDashboard", $"Unable to locate ApprovalID {appID.ToString()} in database");
-                    // Log fatal error
+        //    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+        //    {
+        //        try
+        //        {
+        //            App toUpdate = context.Apps.Find(appID);            // Fetch App row by its key
+        //            if (toUpdate == null)
+        //                LogError.LogInternalError("ProjectDashboard", $"Unable to locate ApprovalID {appID.ToString()} in database");
+        //            // Log fatal error
 
-                    toUpdate.Archived = true;                           // Mark request as Archived
-                    AppHistory hist = new AppHistory();                 // Get a place to build a new AppHistory row
-                    StateActions.CopyPreviousState(toUpdate, hist, "Archived"); // Create a AppHistory log row from "old" version of Approval
-                    StateActions.SetNewAppState(toUpdate, hist.PriorAppState, litSavedUserID.Text, hist);
-                    // Write down our current State (which doesn't change here) and authorship
-                    context.AppHistorys.Add(hist);                      // Save new AppHistory row
-                    context.SaveChanges();                              // Commit the Add or Modify
-                }
-                catch (Exception ex)
-                {
-                    LogError.LogDatabaseError(ex, "ProjectDashboard",
-                        "Error updating App and AppHistory rows");      // Fatal error
-                }
-                SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
-                litSuccessMessage.Text = "Approval Request successfully Archived";    // Let user know we're good
-            }
-        }
+        //            toUpdate.Archived = true;                           // Mark request as Archived
+        //            AppHistory hist = new AppHistory();                 // Get a place to build a new AppHistory row
+        //            StateActions.CopyPreviousState(toUpdate, hist, "Archived"); // Create a AppHistory log row from "old" version of Approval
+        //            StateActions.SetNewAppState(toUpdate, hist.PriorAppState, litSavedUserID.Text, hist);
+        //            // Write down our current State (which doesn't change here) and authorship
+        //            context.AppHistorys.Add(hist);                      // Save new AppHistory row
+        //            context.SaveChanges();                              // Commit the Add or Modify
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            LogError.LogDatabaseError(ex, "ProjectDashboard",
+        //                "Error updating App and AppHistory rows");      // Fatal error
+        //        }
+        //        SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
+        //        litSuccessMessage.Text = "Approval Request successfully Archived";    // Let user know we're good
+        //    }
+        //}
 
-        // Copy button pressed. Simple dispatch to EditApproval.
+        //// Copy button pressed. Simple dispatch to EditApproval.
 
-        protected void btnAppCopy_Click(object sender, EventArgs e)
-        {
-            string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is AppID
-            Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
-                                            + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
-                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
-                                            + PortalConstants.QSRequestID + "=" + appID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandCopy + "&" // Start with existing request
-                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
-        }
+        //protected void btnAppCopy_Click(object sender, EventArgs e)
+        //{
+        //    string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is AppID
+        //    Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+        //                                    + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+        //                                    + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+        //                                    + PortalConstants.QSRequestID + "=" + appID + "&"
+        //                                    + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandCopy + "&" // Start with existing request
+        //                                    + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+        //}
 
-        // Delete button pressed. We do this here.
+        //// Delete button pressed. We do this here.
 
-        protected void btnAppDelete_Click(object sender, EventArgs e)
-        {
-            int appID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllApp)).Int; // Get ready for action with an int version of the Exp ID
+        //protected void btnAppDelete_Click(object sender, EventArgs e)
+        //{
+        //    int appID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllApp)).Int; // Get ready for action with an int version of the Exp ID
 
-            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-            {
-                try
-                {
+        //    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+        //    {
+        //        try
+        //        {
 
-                    //  1) Blow off the Supporting Docs associated with the Request. This means deleting the files and SupportingDoc rows.
+        //            //  1) Blow off the Supporting Docs associated with the Request. This means deleting the files and SupportingDoc rows.
 
-                    SupportingActions.DeleteDocs(RequestType.Approval, appID);                // Great idea. Do that!
+        //            SupportingActions.DeleteDocs(RequestType.Approval, appID);                // Great idea. Do that!
 
-                    //  2) Delete the AppHistory rows associated with the Request
+        //            //  2) Delete the AppHistory rows associated with the Request
 
-                    context.AppHistorys.RemoveRange(context.AppHistorys.Where(x => x.AppID == appID)); // Delete all of them
+        //            context.AppHistorys.RemoveRange(context.AppHistorys.Where(x => x.AppID == appID)); // Delete all of them
 
-                    //  3) Kill off the Request itself. Do this last so that if something earlier breaks, we can recover - by deleting again.
+        //            //  3) Kill off the Request itself. Do this last so that if something earlier breaks, we can recover - by deleting again.
 
-                    App app = new App { AppID = appID };                // Instantiate an Exp object with the selected row's ID
-                    context.Apps.Attach(app);                           // Find that record, but don't fetch it
-                    context.Apps.Remove(app);                           // Delete that row
-                    context.SaveChanges();                              // Commit the deletions
-                }
-                catch (Exception ex)
-                {
-                    LogError.LogDatabaseError(ex, "ProjectDashboard",
-                        "Error deleting App, SupportingDoc and AppHistory rows or deleting Supporting Document"); // Fatal error
-                }
-                SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
-                litSuccessMessage.Text = "Approval deleted";            // Report success to our user
-            }
-        }
+        //            App app = new App { AppID = appID };                // Instantiate an Exp object with the selected row's ID
+        //            context.Apps.Attach(app);                           // Find that record, but don't fetch it
+        //            context.Apps.Remove(app);                           // Delete that row
+        //            context.SaveChanges();                              // Commit the deletions
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            LogError.LogDatabaseError(ex, "ProjectDashboard",
+        //                "Error deleting App, SupportingDoc and AppHistory rows or deleting Supporting Document"); // Fatal error
+        //        }
+        //        SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
+        //        litSuccessMessage.Text = "Approval deleted";            // Report success to our user
+        //    }
+        //}
 
-        // Edit button clicked. Fetch the ID of the selected row and dispatch to EditApproval.
+        //// Edit button clicked. Fetch the ID of the selected row and dispatch to EditApproval.
 
-        protected void btnAppEdit_Click(object sender, EventArgs e)
-        {
-            string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is AppID
-            Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
-                                            + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
-                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
-                                            + PortalConstants.QSRequestID + "=" + appID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with an existing request
-                                              + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
-        }
+        //protected void btnAppEdit_Click(object sender, EventArgs e)
+        //{
+        //    string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is AppID
+        //    Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+        //                                    + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+        //                                    + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+        //                                    + PortalConstants.QSRequestID + "=" + appID + "&"
+        //                                    + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with an existing request
+        //                                      + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+        //}
 
-        protected void btnAppNew_Click(object sender, EventArgs e)
-        {
+        //protected void btnAppNew_Click(object sender, EventArgs e)
+        //{
 
-            // Propagage the UserID and ProjectID that we were called with. No AppID means a new Request.
+        //    // Propagage the UserID and ProjectID that we were called with. No AppID means a new Request.
 
-            Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
-                                            + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
-                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew + "&" // Start with an empty request
-                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
-        }
+        //    Response.Redirect(PortalConstants.URLEditDocument + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+        //                                    + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+        //                                    + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+        //                                    + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew + "&" // Start with an empty request
+        //                                    + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+        //}
 
-        protected void btnAppReview_Click(object sender, EventArgs e)
-        {
-            string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is DepID
+        //protected void btnAppReview_Click(object sender, EventArgs e)
+        //{
+        //    string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is DepID
 
-            // Unconditionally send Request to ReviewRequest. It is possible that the user does not have the authority to review the Request in
-            // its current state. But we'll let ReviewRequest display all the detail for the Dep and then deny editing.
+        //    // Unconditionally send Request to ReviewRequest. It is possible that the user does not have the authority to review the Request in
+        //    // its current state. But we'll let ReviewRequest display all the detail for the Dep and then deny editing.
 
-            Response.Redirect(PortalConstants.URLReviewApproval + "?" + PortalConstants.QSRequestID + "=" + appID + "&" // Start with an existing request
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview + "&" // Review it
-                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
-        }
+        //    Response.Redirect(PortalConstants.URLReviewApproval + "?" + PortalConstants.QSRequestID + "=" + appID + "&" // Start with an existing request
+        //                                    + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview + "&" // Review it
+        //                                    + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+        //}
 
-        protected void btnAppView_Click(object sender, EventArgs e)
-        {
-            string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is AppID
-            Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
-                                            + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
-                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
-                                            + PortalConstants.QSRequestID + "=" + appID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView + "&" // Start with existing request
-                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
-        }
+        //protected void btnAppView_Click(object sender, EventArgs e)
+        //{
+        //    string appID = GetSelectedRowID(gvAllApp);               // Extract the text of the control, which is AppID
+        //    Response.Redirect(PortalConstants.URLEditApproval + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+        //                                    + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+        //                                    + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+        //                                    + PortalConstants.QSRequestID + "=" + appID + "&"
+        //                                    + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView + "&" // Start with existing request
+        //                                    + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+        //}
 
         // Start of DEPOSIT section
 
@@ -1016,6 +1187,183 @@ namespace Portal11.Proj
                                             + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView + "&" // Start with existing request
                                             + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
         }
+
+        // DOCUMENT functions
+
+        // Archive button pressed. Just flip on the Archived flag
+
+        protected void btnDocArchive_Click(object sender, EventArgs e)
+        {
+            int docID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllDoc)).Int; // Get ready for action with an int version of the Doc ID
+
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                try
+                {
+                    Doc toArchive = context.Docs.Find(docID);            // Fetch Doc row by its key
+                    if (toArchive == null)
+                        LogError.LogInternalError("ProjectDashboard", $"Unable to locate DocumentID {docID.ToString()} in database");
+                    // Log fatal error
+
+                    toArchive.Archived = true;                          // Mark request as Archived
+                    DocHistory hist = new DocHistory();                 // Get a place to build a new DocHistory row
+                    StateActions.CopyPreviousState(toArchive, hist, "Archived"); // Create a DocHistory log row from "old" version of Docosit
+                    StateActions.SetNewDocState(toArchive, hist.PriorDocState, litSavedUserID.Text, hist);
+                    // Write down our current State (which doesn't change here) and authorship
+                    context.DocHistorys.Add(hist);                      // Save new DocHistory row
+                    context.SaveChanges();                              // Commit the Add or Modify
+                }
+                catch (Exception ex)
+                {
+                    LogError.LogDatabaseError(ex, "ProjectDashboard",
+                        "Error updating Doc and DocHistory rows");      // Fatal error
+                }
+                SearchCriteriaChanged(sender, e);                          // Update the grid view and buttons for display
+                litSuccessMessage.Text = "Document Request successfully Archived";    // Let user know we're good
+            }
+        }
+
+        // Copy button pushed. Just dispatch
+
+        protected void btnDocCopy_Click(object sender, EventArgs e)
+        {
+            string docID = GetSelectedRowID(gvAllDoc);               // Extract the text of the control, which is ExpID
+            Response.Redirect(PortalConstants.URLEditDocument + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+                                            + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+                                            + PortalConstants.QSRequestID + "=" + docID + "&"
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandCopy + "&" // Start with existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
+        }
+
+        // Delete button pushed. Clean up all the parts of the Document Request including supporting documents and history.
+
+        protected void btnDocDelete_Click(object sender, EventArgs e)
+        {
+            int docID = QueryStringActions.ConvertID(GetSelectedRowID(gvAllDoc)).Int; // Extract the text of the control, which is DocID
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                try
+                {
+
+                    //  1) Blow off the Supporting Docs associated with the Doc. This means deleting the files and SupportingDoc rows.
+
+                    SupportingActions.DeleteDocs(RequestType.Document, docID); // Great idea. Do that!
+
+                    //  2) Delete the DocHistory rows associated with the Doc
+
+                    context.DocHistorys.RemoveRange(context.DocHistorys.Where(x => x.DocID == docID)); // Delete all of them
+
+                    //  3) Kill off the Doc itself. Do this last so that if something earlier breaks, we can recover - by deleting again.
+
+                    Doc Doc = new Doc { DocID = docID };                // Instantiate an Doc object with the selected row's ID
+                    context.Docs.Attach(Doc);                           // Find that record, but don't fetch it
+                    context.Docs.Remove(Doc);                           // Delete that row
+                    context.SaveChanges();                              // Commit the deletions
+                }
+                catch (Exception ex)
+                {
+                    LogError.LogDatabaseError(ex, "ProjectDashboard",
+                        "Error deleting Document Request, SupportingDoc and DocHistory rows or deleting Supporting Document"); // Fatal error
+                }
+                SearchCriteriaChanged(sender, e);                        // Update the grid view and buttons for display
+                litSuccessMessage.Text = "Document deleted";             // Report success to our user
+            }
+            return;
+        }
+
+        // Edit button clicked. Fetch the DocID of the selected row and dispatch to EditDocument.
+
+        protected void btnDocEdit_Click(object sender, EventArgs e)
+        {
+            string docID = GetSelectedRowID(gvAllDoc);               // Extract the text of the control, which is DocID
+            Response.Redirect(PortalConstants.URLEditDocument + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+                                            + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+                                            + PortalConstants.QSRequestID + "=" + docID + "&"
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with an existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
+        }
+
+        protected void btnDocNew_Click(object sender, EventArgs e)
+        {
+
+            // Propagage the UserID and ProjectID that we were called with. No DocID means a new Request.
+
+            Response.Redirect(PortalConstants.URLEditDocument + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+                                            + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew + "&" // Start with an empty request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
+        }
+
+        // Review Request button clicked. One of two situations:
+        //  1) The PD/PS/IC is revising a Returned request. This triggers a Revise function, via a dispatch to Edit Document. (Unfortunate name overload of "Review".)
+        //  2) The PD is reviewing an Awaiting request. This triggers a Review function. Dispatch to Review Document.
+
+        protected void btnDocReview_Click(object sender, EventArgs e)
+        {
+            string ID = GetSelectedRowID(gvAllDoc);                         // Extract the text of the rowID control, which is DocID
+            DocState currState = EnumActions.ConvertTextToDocState(GetSelectedRowCurrentState(gvAllDoc)); // Extract and convert Current State of request
+
+            if (StateActions.RequestIsReturned(currState))                  // If true dispatch to EditDocument to revise the request
+            {
+                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+                {
+                    try
+                    {
+                        int DocID = QueryStringActions.ConvertID(ID).Int;   // Convert to Docosit ID
+                        Doc toRevise = context.Docs.Find(DocID);            // Fetch Doc row by its key
+                        if (toRevise == null)
+                            LogError.LogInternalError("ProjectDashboard", $"Unable to locate DocumentID {DocID.ToString()} in database"); // Log fatal error
+
+                        DocHistory hist = new DocHistory();                 // Get a place to build a new DocHistory row
+                        StateActions.CopyPreviousState(toRevise, hist, "Reviewed"); // Create a DocHistory log row from "old" version of Docosit
+                        StateActions.SetNewDocState(toRevise, StateActions.FindNextState(toRevise.CurrentState, ReviewAction.Revise, toRevise.DocType),
+                            litSavedUserID.Text, hist);
+                        // Write down our new state and authorship
+                        context.DocHistorys.Add(hist);                      // Save new DocHistory row
+                        context.SaveChanges();                              // Commit the Add or Modify
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError.LogDatabaseError(ex, "ProjectDashboard",
+                            "Error updating Doc and DocHistory rows");      // Fatal error
+                    }
+                }
+                Response.Redirect(PortalConstants.URLEditDocument + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text
+                             + "&" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text
+                             + "&" + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text
+                             + "&" + PortalConstants.QSRequestID + "=" + ID // Use selected row's ID
+                             + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandRevise // Revise the returned request
+                             + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+
+            }
+            else                                                    // Otherwise dispatch to ReviewDocument to review the request
+            {
+
+                // It is possible that the user does not have the authority to review the Doc in
+                // its current state. But we'll let ReviewRequest display all the detail for the Doc and then deny editing.
+
+                Response.Redirect(PortalConstants.URLReviewDocument + "?" + PortalConstants.QSRequestID + "=" + ID  // Start with an existing request
+                                + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview // Review it
+                                + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page when done
+            }
+        }
+
+        // View button clicked.
+        protected void btnDocView_Click(object sender, EventArgs e)
+        {
+            string docID = GetSelectedRowID(gvAllDoc);               // Extract the text of the control, which is DocID
+            Response.Redirect(PortalConstants.URLEditDocument + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
+                                            + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
+                                            + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
+                                            + PortalConstants.QSRequestID + "=" + docID + "&"
+                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandView + "&" // Start with existing request
+                                            + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
+        }
+
+        // EXPENSE functions
 
         // Archive button pressed. Just flip on the Archived flag
 
@@ -1198,113 +1546,113 @@ namespace Portal11.Proj
         // Fetch all of the Requests for this project, subject to further search constraints. Display in a GridView.
         // Find current project ID in listSavedProjectID
 
-        void LoadAllApps(int pageIndex = 0)
-        {
-            if (!pnlApp.Visible)                                        // If ! the panel is hidden, no need to refresh
-                return;
+        //void LoadAllApps(int pageIndex = 0)
+        //{
+        //    if (!pnlApp.Visible)                                        // If ! the panel is hidden, no need to refresh
+        //        return;
 
-            gvAllApp.PageIndex = pageIndex;                             // Go to the page specified by the caller
-            int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
-            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-            {
-                var pred = PredicateBuilder.True<App>();                // Initialize predicate to select from App table
-                pred = pred.And(r => r.ProjectID == projectID && !r.Inactive);  // Select requests for this project only and not Inactive
+        //    gvAllApp.PageIndex = pageIndex;                             // Go to the page specified by the caller
+        //    int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
+        //    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+        //    {
+        //        var pred = PredicateBuilder.True<App>();                // Initialize predicate to select from App table
+        //        pred = pred.And(r => r.ProjectID == projectID && !r.Inactive);  // Select requests for this project only and not Inactive
 
-                // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
+        //        // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
 
-                if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
-                    ;                                                   // Don't ignore anything
-                else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
-                    pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
-                else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
-                    pred = pred.And(r => r.Archived);                   // Ignore Active requests
-                else                                                    // Both boxes are unchecked
-                    pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
+        //        if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
+        //            ;                                                   // Don't ignore anything
+        //        else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
+        //            pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
+        //        else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
+        //            pred = pred.And(r => r.Archived);                   // Ignore Active requests
+        //        else                                                    // Both boxes are unchecked
+        //            pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
 
-                // Deal with date range filter. Remember that we've already validated the date strings, so we can just use them.
+        //        // Deal with date range filter. Remember that we've already validated the date strings, so we can just use them.
 
-                if (txtBeginningDate.Text != "")
-                {
-                    DateTime date = Convert.ToDateTime(txtBeginningDate.Text);  // Convert to a date value
-                    pred = pred.And(r => (r.CurrentTime >= date));
-                }
+        //        if (txtBeginningDate.Text != "")
+        //        {
+        //            DateTime date = Convert.ToDateTime(txtBeginningDate.Text);  // Convert to a date value
+        //            pred = pred.And(r => (r.CurrentTime >= date));
+        //        }
 
-                if (txtEndingDate.Text != "")
-                {
-                    DateTime date = Convert.ToDateTime(txtEndingDate.Text);     // Convert to a date value
-                    TimeSpan day = new TimeSpan(23, 59, 59);                    // Figure out the length of a day
-                    DateTime endOfDay = date.Add(day);                          // Set query to END of the specified day
-                    pred = pred.And(r => (r.CurrentTime <= endOfDay));          // Query to end END of the specified day
-                }
+        //        if (txtEndingDate.Text != "")
+        //        {
+        //            DateTime date = Convert.ToDateTime(txtEndingDate.Text);     // Convert to a date value
+        //            TimeSpan day = new TimeSpan(23, 59, 59);                    // Figure out the length of a day
+        //            DateTime endOfDay = date.Add(day);                          // Set query to END of the specified day
+        //            pred = pred.And(r => (r.CurrentTime <= endOfDay));          // Query to end END of the specified day
+        //        }
 
-                List<App> apps = context.Apps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
-                // Do the query using the constructed predicate, sort the result, and create a list of App rows
+        //        List<App> apps = context.Apps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
+        //        // Do the query using the constructed predicate, sort the result, and create a list of App rows
 
-                // From this list of Apps, build a list of rows for the gvAllApp GridView
+        //        // From this list of Apps, build a list of rows for the gvAllApp GridView
 
-                List<rowProjectAppView> rows = new List<rowProjectAppView>(); // Create an empty list for the GridView control
-                foreach (var r in apps)                                 // Fill the list row-by-row
-                {
-                    bool useRow = false;                                // Assume that we skip this row
-                    switch(r.CurrentState)
-                    {
-                        case AppState.UnsubmittedByInternalCoordinator:
-                        case AppState.UnsubmittedByProjectDirector:
-                        case AppState.UnsubmittedByProjectStaff:
-                        case AppState.AwaitingProjectDirector:
-                            if (ckRUnsubmitted.Checked)                 // If true, interested in these states
-                                useRow = true;                          // Process the row, don't skip it
-                            break;
+        //        List<rowProjectAppView> rows = new List<rowProjectAppView>(); // Create an empty list for the GridView control
+        //        foreach (var r in apps)                                 // Fill the list row-by-row
+        //        {
+        //            bool useRow = false;                                // Assume that we skip this row
+        //            switch(r.CurrentState)
+        //            {
+        //                case AppState.UnsubmittedByInternalCoordinator:
+        //                case AppState.UnsubmittedByProjectDirector:
+        //                case AppState.UnsubmittedByProjectStaff:
+        //                case AppState.AwaitingProjectDirector:
+        //                    if (ckRUnsubmitted.Checked)                 // If true, interested in these states
+        //                        useRow = true;                          // Process the row, don't skip it
+        //                    break;
 
-                        case AppState.AwaitingFinanceDirector:
-                        case AppState.AwaitingInternalCoordinator:
-                        case AppState.AwaitingCommunityDirector:
-                        case AppState.AwaitingPresident:
-                            if (ckRAwaitingCWStaff.Checked)             // If true, interested in these states
-                                useRow = true;                          // Process the row, don't skip it
-                            break;
+        //                case AppState.AwaitingFinanceDirector:
+        //                case AppState.AwaitingInternalCoordinator:
+        //                case AppState.AwaitingCommunityDirector:
+        //                case AppState.AwaitingPresident:
+        //                    if (ckRAwaitingCWStaff.Checked)             // If true, interested in these states
+        //                        useRow = true;                          // Process the row, don't skip it
+        //                    break;
 
-                        case AppState.Approved:
-                            if (ckRApproved.Checked)                    // If true, interested in these states
-                                useRow = true;                          // Process the row, don't skip it
-                            break;
+        //                case AppState.Approved:
+        //                    if (ckRApproved.Checked)                    // If true, interested in these states
+        //                        useRow = true;                          // Process the row, don't skip it
+        //                    break;
 
-                        case AppState.Returned:
-                            if (ckRReturned.Checked)                    // If true, interested in these states
-                                useRow = true;                          // Process the row, don't skip it
-                            break;
+        //                case AppState.Returned:
+        //                    if (ckRReturned.Checked)                    // If true, interested in these states
+        //                        useRow = true;                          // Process the row, don't skip it
+        //                    break;
 
-                        default:                                        // For all other oddballs, just skip the row
-                            break;
-                    }
+        //                default:                                        // For all other oddballs, just skip the row
+        //                    break;
+        //            }
 
-                    if (useRow)                                         // If true. checkboxes indicate that we should use the row
-                    {
-                        rowProjectAppView row = new rowProjectAppView()     // Empty row all ready to fill
-                        {
-                            RowID = r.AppID.ToString(),                     // Convert ID from int to string for easier retrieval later
-                            CurrentTime = r.CurrentTime,                    // When request was last updated
-                            AppTypeDesc = EnumActions.GetEnumDescription(r.AppType), // Convert enum version to English version for display
-                            Description = r.Description,                    // Free text description of deposit
-                            CurrentState = r.CurrentState,                  // Load enum version for use when row is selected. But not visible
-                            CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
-                            Archived = r.Archived                           // Load archived state
+        //            if (useRow)                                         // If true. checkboxes indicate that we should use the row
+        //            {
+        //                rowProjectAppView row = new rowProjectAppView()     // Empty row all ready to fill
+        //                {
+        //                    RowID = r.AppID.ToString(),                     // Convert ID from int to string for easier retrieval later
+        //                    CurrentTime = r.CurrentTime,                    // When request was last updated
+        //                    AppTypeDesc = EnumActions.GetEnumDescription(r.AppType), // Convert enum version to English version for display
+        //                    Description = r.Description,                    // Free text description of deposit
+        //                    CurrentState = r.CurrentState,                  // Load enum version for use when row is selected. But not visible
+        //                    CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
+        //                    Archived = r.Archived                           // Load archived state
 
-                        };
-                        if (r.Archived)                                     // If true row is Archived
-                            row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
+        //                };
+        //                if (r.Archived)                                     // If true row is Archived
+        //                    row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
 
-                        rows.Add(row);                                      // Add the filled-in row to the list of rows
-                    }
-                }
-                gvAllApp.DataSource = rows;                           // Give it to the GridView control
-                gvAllApp.DataBind();                                  // And get it in gear
+        //                rows.Add(row);                                      // Add the filled-in row to the list of rows
+        //            }
+        //        }
+        //        gvAllApp.DataSource = rows;                           // Give it to the GridView control
+        //        gvAllApp.DataBind();                                  // And get it in gear
 
-                NavigationActions.EnableGridViewNavButtons(gvAllApp); // Enable appropriate nav buttons based on page count
-                gvAllApp.SelectedIndex = -1;                          // No selected row any more
-            }
-            return;
-        }
+        //        NavigationActions.EnableGridViewNavButtons(gvAllApp); // Enable appropriate nav buttons based on page count
+        //        gvAllApp.SelectedIndex = -1;                          // No selected row any more
+        //    }
+        //    return;
+        //}
 
         void LoadAllDeps(int pageIndex = 0)
         {
@@ -1480,6 +1828,161 @@ namespace Portal11.Proj
             return;
         }
 
+        void LoadAllDocs(int pageIndex = 0)
+        {
+            if (!pnlDoc.Visible)                                        // If ! the panel is hidden, no need to refresh
+                return;
+
+            gvAllDoc.PageIndex = pageIndex;                             // Go to the page specified by the caller
+            int projectID = Convert.ToInt32(litSavedProjectID.Text);    // Fetch ID of current project as an int
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                var pred = PredicateBuilder.True<Doc>();                // Initialize predicate to select from Doc table
+                pred = pred.And(r => r.ProjectID == projectID && !r.Inactive);  // Select requests for this project only and not Inactive
+
+                // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
+
+                if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
+                    ;                                                   // Don't ignore anything
+                else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
+                    pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
+                else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
+                    pred = pred.And(r => r.Archived);                   // Ignore Active requests
+                else                                                    // Both boxes are unchecked
+                    pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
+
+                // Deal with date range filter. Remember that we've already validated the date strings, so we ca just use them.
+
+                if (txtBeginningDate.Text != "")
+                {
+                    DateTime date = Convert.ToDateTime(txtBeginningDate.Text);  // Convert to a date value
+                    pred = pred.And(r => (r.CurrentTime >= date));
+                }
+
+                if (txtEndingDate.Text != "")
+                {
+                    DateTime date = Convert.ToDateTime(txtEndingDate.Text);     // Convert to a date value
+                    TimeSpan day = new TimeSpan(23, 59, 59);                    // Figure out the length of a day
+                    DateTime endOfDay = date.Add(day);                          // Set query to END of the specified day
+                    pred = pred.And(r => (r.CurrentTime <= endOfDay));          // Query to end END of the specified day
+                }
+
+                // If a specific Entity is selected, only select requests for that Entity
+
+                if (ddlEntityName.SelectedIndex > 0)                       // If > Entity is selected. Fetch rqsts only for that Entity
+                {
+                    int id = Convert.ToInt32(ddlEntityName.SelectedValue);  // Convert ID of selected Entity
+                    pred = pred.And(r => r.EntityID == id);         // Only requests from selected Entity
+                }
+
+                // If a specific GLCode is selected, only select requests for that GLCode
+
+                //if (ddlGLCode.SelectedIndex > 0)                            // If > GLCode is selected. Fetch rqsts only for that GLCode
+                //{
+                //    int id = Convert.ToInt32(ddlGLCode.SelectedValue);      // Convert ID of selected GLCode
+                //    pred = pred.And(r => r.GLCodeID == id);                 // Only requests from selected GLCode
+                //}
+
+                // If a specific Person is selected, only select requests from that Person
+
+                if (ddlPersonName.SelectedIndex > 0)                        // If > Person is selected. Fetch rqsts only for that Person
+                {
+                    int id = Convert.ToInt32(ddlPersonName.SelectedValue);  // Convert ID of selected Person
+                    pred = pred.And(r => r.PersonID == id);                 // Only requests from selected Person
+                }
+
+                // If a specific ProjectClass is selected, only select requests from that ProjectClass
+
+                //if (ddlProjectClass.SelectedIndex > 0)                      // If > ProjectClass is selected. Fetch rqsts only for that ProjectClass
+                //{
+                //    int id = Convert.ToInt32(ddlProjectClass.SelectedValue); // Convert ID of selected ProjectClass
+                //    pred = pred.And(r => r.ProjectClassID == id);           // Only requests from selected ProjectClass
+                //}
+
+                List<Doc> Docs = context.Docs.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
+                // Do the query using the constructed predicate, sort the result, and create a list of Doc rows
+
+                // From this list of Docs, build a list of rows for the gvAllExp GridView
+
+                List<rowProjectDocView> rows = new List<rowProjectDocView>(); // Create an empty list for the GridView control
+                foreach (var r in Docs)                                 // Fill the list row-by-row
+                {
+                    bool useRow = false;                                // Assume that we skip this row
+                    switch (r.CurrentState)
+                    {
+                        case DocState.AwaitingProjectDirector:
+                        case DocState.RevisingByProjectDirector:
+                        case DocState.RevisedByInternalCoordinator:
+                        case DocState.RevisedByFinanceDirector:
+                        case DocState.RevisedByCommunityDirector:
+                        case DocState.RevisedByPresident:
+                        case DocState.UnsubmittedByInternalCoordinator:
+                        case DocState.UnsubmittedByProjectDirector:
+                        case DocState.UnsubmittedByProjectStaff:
+                            if (ckRUnsubmitted.Checked)                 // If true, interested in these states
+                                useRow = true;                          // Process the row, don't skip it
+                            break;
+
+                        case DocState.AwaitingCommunityDirector:
+                        case DocState.AwaitingFinanceDirector:
+                        case DocState.AwaitingInternalCoordinator:
+                        case DocState.AwaitingPresident:
+                        case DocState.RevisingByInternalCoordinator:
+                        case DocState.RevisingByFinanceDirector:
+                        case DocState.RevisingByCommunityDirector:
+                        case DocState.RevisingByPresident:
+                            if (ckRAwaitingCWStaff.Checked)             // If true, interested in these states
+                                useRow = true;                          // Process the row, don't skip it
+                            break;
+
+                        case DocState.Executed:
+                            if (ckRApproved.Checked)                    // If true, interested in these states
+                                useRow = true;                          // Process the row, don't skip it
+                            break;
+
+                        case DocState.ReturnedToInternalCoordinator:
+                        case DocState.ReturnedToProjectDirector:
+                        case DocState.ReturnedToProjectStaff:
+                            if (ckRReturned.Checked)                    // If true, interested in these states
+                                useRow = true;                          // Process the row, don't skip it
+                            break;
+
+                        default:                                        // For all other oddballs, just skip the row
+                            break;
+                    }
+
+                    if (useRow)                                         // If true. checkboxes indicate that we should use the row
+                    {
+                        rowProjectDocView row = new rowProjectDocView()     // Empty row all ready to fill
+                        {
+                            RowID = r.DocID.ToString(),                     // Convert ID from int to string for easier retrieval later
+                            CurrentTime = r.CurrentTime,                    // When request was last updated
+                            DocTypeDesc = EnumActions.GetEnumDescription(r.DocType), // Convert enum version to English version for display
+                            Description = r.Description,                    // Free text description of document
+                                                                            // Source Of Funds is trickier, so done below
+//                            Amount = ExtensionActions.LoadDecimalIntoTxt(r.Amount), // Carefully load decimal amount into text field
+                            CurrentState = r.CurrentState,                  // Load enum version for use when row is selected. But not visible
+                            CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
+                            Archived = r.Archived                           // Load archived state
+
+                        };
+
+
+                        if (r.Archived)                                     // If true row is Archived
+                            row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
+
+                        rows.Add(row);                                      // Add the filled-in row to the list of rows
+                    }
+                }
+                gvAllDoc.DataSource = rows;                           // Give it to the GridView control
+                gvAllDoc.DataBind();                                  // And get it in gear
+
+                NavigationActions.EnableGridViewNavButtons(gvAllDoc); // Enable appropriate nav buttons based on page count
+                gvAllDoc.SelectedIndex = -1;                          // No selected row any more
+            }
+            return;
+        }
+
         // Fetch all of the Requests for this project, subject to further search constraints. Display in a GridView.
         // Find current project ID in listSavedProjectID
 
@@ -1619,7 +2122,8 @@ namespace Portal11.Proj
                             CurrentState = r.CurrentState,                  // Load enum version for use when row is selected
                             CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
                             Archived = r.Archived,                          // Whether the request is archived
-                            Rush = r.Rush                                   // Whether the request is Rush
+                            Rush = r.Rush,                                  // Whether the request is Rush
+                            ReviseUserRole = r.ReviseUserRole               // User Role that revised request if any
                         };
 
                         // Fill "Target" with Vendor Name or Person Name. Only one will be present, depending on ExpType.
@@ -1652,16 +2156,16 @@ namespace Portal11.Proj
 
         // We no longer have a selected Request. Adjust buttons
 
-        void ResetAppContext()
-        {
-            btnAppArchive.Enabled = false;
-            btnAppCopy.Enabled = false;
-            btnAppDelete.Enabled = false;
-            btnAppEdit.Enabled = false;                                 // Therefore, the buttons don't work
-                                                                        // Leave New button in its former state
-            btnAppReview.Enabled = false;
-            btnAppView.Enabled = false;
-        }
+        //void ResetAppContext()
+        //{
+        //    btnAppArchive.Enabled = false;
+        //    btnAppCopy.Enabled = false;
+        //    btnAppDelete.Enabled = false;
+        //    btnAppEdit.Enabled = false;                                 // Therefore, the buttons don't work
+        //                                                                // Leave New button in its former state
+        //    btnAppReview.Enabled = false;
+        //    btnAppView.Enabled = false;
+        //}
 
         void ResetDepContext()
         {
@@ -1672,6 +2176,17 @@ namespace Portal11.Proj
                                                                         // Leave New button in its former state
             btnDepReview.Enabled = false;
             btnDepView.Enabled = false;
+        }
+
+        void ResetDocContext()
+        {
+            btnDocArchive.Enabled = false;
+            btnDocCopy.Enabled = false;
+            btnDocDelete.Enabled = false;
+            btnDocEdit.Enabled = false;                                 // Therefore, the buttons don't work
+                                                                        // Leave New button in its former state
+            btnDocReview.Enabled = false;
+            btnDocView.Enabled = false;
         }
 
         void ResetExpContext()
@@ -1860,8 +2375,9 @@ namespace Portal11.Proj
             if (selection != null)                                      // If != something is selected
                 projectCheckboxesCookie[PortalConstants.CProjectDdlProjectClassID] = selection.ToString();
 
-            projectCheckboxesCookie[PortalConstants.CProjectAppVisible] = pnlApp.Visible.ToString();
+//            projectCheckboxesCookie[PortalConstants.CProjectAppVisible] = pnlApp.Visible.ToString();
             projectCheckboxesCookie[PortalConstants.CProjectDepVisible] = pnlDep.Visible.ToString();
+            projectCheckboxesCookie[PortalConstants.CProjectDocVisible] = pnlDoc.Visible.ToString();
             projectCheckboxesCookie[PortalConstants.CProjectExpVisible] = pnlExp.Visible.ToString();
 
             Response.Cookies.Add(projectCheckboxesCookie);                    // Store a new cookie
@@ -1955,10 +2471,10 @@ namespace Portal11.Proj
 
                 // Approvel Panel
 
-                if (projectCheckboxesCookie[PortalConstants.CProjectAppVisible] == "True")
-                    ExpandAppPanel();                                           // Expand, but don't fill Approval panel
-                else
-                    CollapseAppPanel();                                         // Start with Approval panel collapsed
+                //if (projectCheckboxesCookie[PortalConstants.CProjectAppVisible] == "True")
+                //    ExpandAppPanel();                                           // Expand, but don't fill Document panel
+                //else
+                //    CollapseAppPanel();                                         // Start with Document panel collapsed
 
                 // Deposit Panel
 
@@ -1966,6 +2482,14 @@ namespace Portal11.Proj
                     ExpandDepPanel();                                           // Expand, but don't fill Deposits panel
                 else
                     CollapseDepPanel();                                         // Start with Deposits panel collapsed
+
+                // Document Panel
+
+                if (projectCheckboxesCookie[PortalConstants.CProjectDocVisible] == "True")
+                    ExpandDocPanel();                                           // Expand, but don't fill Document panel
+                else
+                    CollapseDocPanel();                                         // Start with Document panel collapsed
+
 
                 // Expense Panel
 

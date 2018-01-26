@@ -1,4 +1,39 @@
-﻿Version 1.10
+﻿Version 1.12
+
+There is a new request type: "Document Request." It replaces the "Approval Request." In this release, only the "Contract" option is supported. Dashboards now list Expenses, then Deposits, then Documents.
+
+When the "Submit" button on the Edit Deposit, Edit Document, or Edit Expense page encounters an error, such asd a missing field, the page now repositions to the first field with an error.
+
+The Edit Project page now displays the Project Staff members associated with the project.
+
+The Edit Portal User page now displays projects that the user is associated with, i.e., Project Director or Project Staff.
+
+The Edit Advanced Options page now includes "Email Control Options," a parameterized string to control the way that emails are sent for Document Requests that reach "Executed" status.
+
+The Edit Advanced Options page for emails now supports a {5} parameter for Request Subtype, which is specific to Request Type, e.g., Contract, PEX Code, Check.
+
+The "New" button in the Edit Deposit/Document/Expense pages no longer asks for confirmation if the user is a CW staff member.
+
+When this "New" button opens the Assign Entity/Person to Project page, only the roles that relevant to the new Deposit/Document/Expense request are enabled.
+
+On the Edit Expense page, the "Split" button now creates a two-row list.
+
+After a staff member revises an Expense Request, the Request appears in Dashboards in "teal" color until that same staff member approves the Request. So "teal" means "undergoing revision."
+
+On the Edit Expense page, Delivery Instructions have been reorganized to be more consistent. The "Rush" operation is now available for all Expense types.
+
+On the Edit Expense page, when the "Rush" box is checked, a warning message appears before processing continues.
+
+On the Edit Document and Edit Expense pages, the "Save" button now asks for confirmation before saving (unless the user is a staff member).
+
+Deposit Requests are now called Deposit Notifications.
+
+
+Version 1.11
+
+On the Assign Entity To Project page and the Assign Person To Project page, the "Remove All" button has been removed. Too dangerous.
+
+Version 1.10
 
 The role "Trust Director" is now called "Community Director." The role "Trust Executive" is now called "President."
 On Project Dashboard, search filters are now available for GL Code and Project Class. These filters do not find GL Codes or Project Classes in split requests.

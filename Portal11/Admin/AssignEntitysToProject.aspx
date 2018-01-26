@@ -140,12 +140,12 @@
                             <asp:Button ID="btnRemove" runat="server" Text="Remove >" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
                                 OnClick="btnRemove_Click" Enabled="false" ToolTip="Remove selected entity from project" />
                         </div>
-                        <br />
+<%--                        <br />
                         &nbsp;
                         <div class="col-xs-12">
                             <asp:Button ID="btnRemoveAll" runat="server" Text="All >>" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
                                 OnClick="btnRemoveAll_Click" Enabled="false" ToolTip="Remove all entities from project" />
-                        </div>
+                        </div>--%>
                         <br />
                         &nbsp;
                         <br />

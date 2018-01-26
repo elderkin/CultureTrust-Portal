@@ -77,6 +77,8 @@ namespace Portal11.Models
         public DbSet<AppHistory> AppHistorys { get; set; }
         public DbSet<Dep> Deps { get; set; }
         public DbSet<DepHistory> DepHistorys { get; set; }
+        public DbSet<Doc> Docs { get; set; }
+        public DbSet<DocHistory> DocHistorys { get; set; }
         public DbSet<Entity> Entitys { get; set; }
         public DbSet<Exp> Exps { get; set; }
         public DbSet<ExpHistory> ExpHistorys { get; set; }

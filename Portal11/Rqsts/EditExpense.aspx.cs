@@ -45,8 +45,8 @@ namespace Portal11.Rqsts
                 litSavedExpID.Text = "";                                // Assume New or Copy - do not modify an existing row, but add a new one
                 litSavedProjectID.Text = projectID.String;
                 litSavedProjectRole.Text = projRole;                    // Save in a faster spot for later
-                litSavedUserID.Text = userID;
                 litSavedReturn.Text = ret;
+                litSavedUserID.Text = userID;
 
                 SupportingActions.CleanupTemp(userID, litDangerMessage); // Cleanup supporting docs from previous executions for this user
 
@@ -186,7 +186,7 @@ namespace Portal11.Rqsts
             }
             else                                                    // We are in Postback. See if FileUpload control has anything for us
             {
-                litDangerMessage.Text = ""; litSuccessMessage.Text = ""; // Start with a clean slate of message displays
+                litDangerMessage.Text = ""; litSuccessMessage.Text = ""; litSupportingError.Visible = false; // Start with a clean slate of message displays
                 if (fupUpload.HasFile)                              // If true PostBack was caused by File Upload control
                 {
                     SupportingActions.UploadDoc(fupUpload, lstSupporting, litSavedUserID, litSuccessMessage, litDangerMessage); // Do heavy lifting to get file
@@ -390,24 +390,14 @@ namespace Portal11.Rqsts
             return;
         }
 
-        // One of the radio buttons in the "Payment Method" panel has clicked. Switch the Delivery Instructions panel on or off.
+        // One of the radio buttons in the "Payment Method" panel has clicked. 
+        // There's only one button that makes a difference: EFT, which wants Delivery Instructions off.
+        // Which Delivery Instructions are visible depends on 1) Expense Type (PO gets special treatment) and 2) Payment Method (EFT gets special treatment).
+        // So we do this in a common method.
 
         protected void rdoPaymentMethod_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (rdoPaymentMethod.SelectedValue == PaymentMethod.EFT.ToString()) // If == EFT button was clicked. Flip Delivery Instructions
-            {
-                pnlDeliveryInstructions.Visible = false;            // EFT doesn't need delivery instructions. Hide panel
-                pnlDeliveryAddress.Visible = false;                 // Turn off delivery address
-            }
-            else
-            {
-                if (!pnlDeliveryInstructions.Visible)               // If false panel is currently invisible; last selection was EFT
-                {
-                    pnlDeliveryInstructions.Visible = true;         // Not EFT so need delivery instructions. Enable panel
-                    rdoDeliveryMode.SelectedIndex = 0;              // Reset radio buttons to default value
-                    pnlDeliveryAddress.Visible = false;             // Turn off delivery address
-                }
-            }
+            AdjustDeliveryInstructions("");                             // Make appropriate panels turn on and off
             return;
         }
 
@@ -425,32 +415,81 @@ namespace Portal11.Rqsts
         //    return;
         //}
 
-        // One of the radio buttons in the "Fulfilment Instructions" and "Delivery Instructions" has clicked.
+        // Delivery Instructions - radio buttons and check boxes.
 
-        protected void rdoDeliveryMode_SelectedIndexChanged(object sender, EventArgs e)
+        protected void rdoDeliveryModeReg_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (rdoDeliveryMode.SelectedValue == PortalConstants.DeliveryModeMailAddress) // If == delivery address needs to be specified
-                pnlDeliveryAddress.Visible = true;                  // Turn on delivery address
-            else
-                pnlDeliveryAddress.Visible = false;                 // Turn off delivery address
+            AdjustDeliveryModeReg("");                                  // Turn the right things on and off
             return;
         }
 
-        protected void rdoPODeliveryMode_SelectedIndexChanged(object sender, EventArgs e) // Special for Purchase Orders
+        protected void rdoDeliveryModePO_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (rdoPODeliveryMode.SelectedValue == PortalConstants.PODeliveryModeDeliverAddress) // If == delivery address needs to be specified
-                pnlDeliveryAddress.Visible = true;                  // Turn on delivery address
-            else
-                pnlDeliveryAddress.Visible = false;                 // Turn off delivery address
+            AdjustDeliveryModePO("");                                   // Turn the right things on and off
             return;
         }
+
+        // One of the Delivery Mode checkboxes has been checked. Now truth be told, there's only one checkbox - rush
+
+        protected void cblDeliveryModeRush_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cblDeliveryModeRush.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected) // If true Rush is checked
+            {
+                ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch project role and convert to enum
+                if (RoleActions.ProjectRoleIsStaff(projectRole))        // If true user is a staff member. No need for modal dialog box to confirm.
+                    return;                                             // Leave the Rush box checked
+                else
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "divModalRush", "$('#divModalRush').modal();", true); // Open the modal dialog to confirm
+            }
+            return;
+        }
+
+        // The user has pressed the "No" button in the modal dialog box for Rush
+
+        protected void btnModalRushNo_Click(object sender, EventArgs e)
+        {
+            cblDeliveryModeRush.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected = false; // Uncheck the Rush checkbox
+        }
+        //protected void rdoDeliveryMode_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    DeliveryMode mode = EnumActions.ConvertTextToDeliveryMode(rdoDeliveryMode.SelectedValue); // Fetch selected value (text) and convert to Delivery Mode (enum)
+        //    switch (mode)
+        //    {
+        //        case DeliveryMode.Pickup:
+        //            {
+        //                pnlDeliveryAddress.Visible = false;             // Turn off delivery address
+        //                return;
+        //            }
+        //        case DeliveryMode.MailPayee:
+        //            {
+        //                FillDeliveryAddress(litSavedEntityPersonFlag.Text, ddlEntity, ddlPerson, txtDeliveryAddress);
+        //                pnlDeliveryAddress.Visible = true;              // Turn on the panel
+        //                txtDeliveryAddress.ReadOnly = true;             // Only for viewing
+        //                return;
+        //            }
+        //        case DeliveryMode.MailAddress:
+        //            {
+        //                txtDeliveryAddress.Text = "";                   // Clear out any prior address entry
+        //                pnlDeliveryAddress.Visible = true;              // Turn on delivery address
+        //                txtDeliveryAddress.ReadOnly = false;            // Here, it's editable
+        //                return;
+        //            }
+        //        default:
+        //            LogError.LogInternalError("EditExpense", $"Invalid DeliveryMode value '{mode.ToString()}' encountered"); // Fatal error
+        //            break;
+        //    }
+        //    return;
+        //}
+
+        //protected void rdoPODeliveryMode_SelectedIndexChanged(object sender, EventArgs e) // Special for Purchase Orders
+        //{
+        //    pnlDeliveryAddress.Visible = (rdoPODeliveryMode.SelectedValue == PODeliveryMode.DeliverAddress.ToString()); // If == Yes, need to look for an Address
+        //    return;
+        //}
 
         protected void rdoPOVendorMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (rdoPOVendorMode.SelectedValue == PortalConstants.POVendorModeYes) // If == any mode will do
-                pnlEntity.Visible = false;                          // Any vendor will do, so no need to select vendor
-            else
-                pnlEntity.Visible = true;                           // Specific vendor needed, so show DDL
+            pnlEntity.Visible = (rdoPOVendorMode.SelectedValue != POVendorMode.Yes.ToString()); // If != Yes, need to look for an Entity
             return;
         }
 
@@ -462,21 +501,31 @@ namespace Portal11.Rqsts
 
         protected void btnNewEntity_Click(object sender, EventArgs e)
         {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "divModal", "$('#divModal').modal();", true); // Open the modal dialog to confirm
             litSavedEntityPersonFlag.Text = RequestType.Entity.ToString(); // Remember where we go to process the "New" command
+            CommonNewButton(sender, e);                             // Continue in processing common to New Entity and New Person
             return;                                                 // Open that modal dialog box
         }
 
         protected void btnNewPerson_Click(object sender, EventArgs e)
         {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "divModal", "$('#divModal').modal();", true); // Open the modal dialog to confirm
             litSavedEntityPersonFlag.Text = RequestType.Person.ToString();  // Remember where we go to process the "New" command
+            CommonNewButton(sender, e);                             // Continue in processing common to New Entity and New Person
+            return;                                                 // Open that modal dialog box
+        }
+
+        void CommonNewButton(object sender, EventArgs e)
+        {
+            ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch project role and convert to enum
+            if (RoleActions.ProjectRoleIsStaff(projectRole))        // If true user is a staff member. No need for modal dialog box to confirm.
+                btnModalNewYes_Click(sender, e);                    // Act as though the "Yes" button in the modal dialog box was pushed.
+            else
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "divModalNew", "$('#divModalNew').modal();", true); // Open the modal dialog to confirm
             return;                                                 // Open that modal dialog box
         }
 
         // The "Yes" button for the modal dialog box associated with the New button on Entity and Person. Continue the magic.
 
-        protected void btnModalYes_Click(object sender, EventArgs e)
+        protected void btnModalNewYes_Click(object sender, EventArgs e)
         {
             int expID = SaveExp();                                  // Save the request, return the request ID
             if (expID == 0) return;                                 // If == hit an error. Let user retry
@@ -497,7 +546,7 @@ namespace Portal11.Rqsts
                 RedirectRequest(PortalConstants.URLAssignPersonsToProject, // Do the heavy lifting to get there. Return to continue editing.
                     "&" + PortalConstants.QSPersonRole + "=" + litSavedPersonEnum.Text); // Tell Assign the type of Person
             }
-            LogError.LogInternalError("EditDeposit", $"Invalid SavedEntityPersonFlag value '{litSavedEntityPersonFlag.Text}' encountered"); // Fatal error
+            LogError.LogInternalError("EditExpense", $"Invalid SavedEntityPersonFlag value '{litSavedEntityPersonFlag.Text}' encountered"); // Fatal error
         }
 
         void RedirectRequest(string dest, string qs)
@@ -660,7 +709,6 @@ namespace Portal11.Rqsts
         protected void btnCancel_Click(object sender, EventArgs e)
         {
             Response.Redirect(litSavedReturn.Text);
-            return;
         }
 
         // Revise button clicked. This is the case where a Exp is in the "Returned" state - it was submitted, but failed during the review process.
@@ -714,7 +762,8 @@ namespace Portal11.Rqsts
 //            }
 //        }
 
-        // Save button clicked. "Save" means that we unload all the controls for the Expense into a database row. 
+        // Save button clicked. Throw a modal to make sure the user really wants to save, not submit.
+        // "Save" means that we unload all the controls for the Expense into a database row. 
         // If the Expense is new, we just add a new row. If the Expense already exists, we update it and add a history record to show the edit.
         // We can tell a Expense is new if the Query String doesn't contain a mention of a ExpID AND the literal litSavedExpID is empty.
         // On the first such Save, we stash the ExpID of the new Expense into this literal so that a second Save during the same session will find
@@ -722,6 +771,20 @@ namespace Portal11.Rqsts
 
         protected void btnSave_Click(object sender, EventArgs e)
         {
+
+            // Make sure the user really wants to save, not submit.
+
+            if (litSaveModalActive.Text != "true")                  // If == the modal has not been thrown yet
+            {
+                ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch project role and convert to enum
+                if (!RoleActions.ProjectRoleIsStaff(projectRole))   // If false user is a project member. Throw the modal
+                {
+                    litSaveModalActive.Text = "true";               // Note that the modal has been thrown once, which is enough
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "divModalSave", "$('#divModalSave').modal();", true); // Open the modal dialog to confirm
+                    return;                                         // See you again in a minute
+                }
+            }
+
             int dummy = SaveExp();                                  // Do the heavy lifting
             if (dummy == 0) return;                                 // If == hit an error. Let user retry
 
@@ -742,12 +805,14 @@ namespace Portal11.Rqsts
                 return;                                             // Give user a chance to fix the problem
 
             // Before saving, make sure that a sufficient number of supporting documents are present. Note that a user can "Save" with
-            // insufficent supporting docs, but can only "Submit" if the minimum is present.
+            // insufficent supporting docs, but can only "Submit" if the minimum is present. Write this error in two places.
 
             if (lstSupporting.Items.Count < Convert.ToInt32(litSupportingDocMin.Text)) // If < the minimum number of docs is not present
             {
                 litDangerMessage.Text = "The Expense Request must include a minimum of " + litSupportingDocMin.Text + " Supporting Document.";
                 litSuccessMessage.Text = "";                        // Just the danger message, not a stale success message
+                litSupportingError.Text = litDangerMessage.Text;    // Copy the error to a second place, right at the Supporting Doc list box
+                litSupportingError.Visible = true;                  // Make that error message visible
                 return;                                             // Back for more punishment
             }
 
@@ -766,6 +831,8 @@ namespace Portal11.Rqsts
                     Exp toSubmit = context.Exps.Find(savedExpID);   // Find the Exp that we want to update
                     if (toSubmit == null)                           // If == could not find the Dep
                         LogError.LogInternalError("EditExpense", $"Unable to find saved Expense ID '{savedExpID}' in database"); // Fatal error
+
+                    string temp = litSavedStateEnum.Text;                           // ** Temp **
 
                     // If this request is being submitted for the first time, write down the project role that did the submit.
                     // If the request has to be returned, we'll use this to return it to the originator role.
@@ -796,6 +863,7 @@ namespace Portal11.Rqsts
                         toSubmit.ProjectID,                             // Request is associated with this project
                         toSubmit.Project.Name,                          // Project has this name (for parameter substitution)
                         EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
+                        EnumActions.GetEnumDescription(toSubmit.ExpType), // Type of Expense Request, e.g., PEX Card
                         EnumActions.GetEnumDescription(nextState),      // Here is its next state
                         PortalConstants.CEmailDefaultExpenseBroadcastSubject, PortalConstants.CEmailDefaultExpenseBroadcastBody); // Use this subject and body, if needed
 
@@ -805,6 +873,7 @@ namespace Portal11.Rqsts
                         toSubmit.Project.Name,                          // Project has this name (for parameter substitution)
                         EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
                         EnumActions.GetEnumDescription(nextState),      // Here is its next state
+                        EnumActions.GetEnumDescription(toSubmit.ExpType), // Type of Expense Request, e.g., PEX Card
                         PortalConstants.CEmailDefaultExpenseApprovedSubject, PortalConstants.CEmailDefaultExpenseApprovedBody); // Use this subject and body, if needed
                 }
                 catch (Exception ex)
@@ -879,6 +948,7 @@ namespace Portal11.Rqsts
                         ProjectID = src.ProjectID,                  // New Rqst is in the same project
                         ReturnNote = "",                            // Clear out the return note, if any
                         ProjectClassID = src.ProjectClassID,
+                        ReviseUserRole = UserRole.None,             // No revisions of a new request
                         StaffNote = "",                             // Clear out the staff note, if any
                         CurrentTime = System.DateTime.Now,
                         CurrentState = StateActions.FindUnsubmittedExpState(litSavedProjectRole.Text),
@@ -940,6 +1010,7 @@ namespace Portal11.Rqsts
                             Inactive = false,
                             Archived = false,
                             ProjectID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int, // Connect Expense to Project
+                            ReviseUserRole = UserRole.None,         // No revisions (yet) of a new request
                             CreatedTime = System.DateTime.Now,      // Stamp time when Expense was first created as "now"
                             BeginningDate = (DateTime)SqlDateTime.MinValue, // Non-null values to satisfy SQL
                             EndingDate = (DateTime)SqlDateTime.MinValue,
@@ -1025,12 +1096,13 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = true;
                         pnlDateNeeded.Visible = false;
                         pnlDateOfInvoice.Visible = true;
-                        pnlDeliveryInstructions.Visible = true; pnlPODeliveryInstructions.Visible = false;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryModeReg.Visible = true; pnlDeliveryModePO.Visible = false; pnlDeliveryModeRush.Visible = true;
                         pnlEntity.Visible = false;
                         pnlGoods.Visible = false;
-                        pnlPaymentMethod.Visible = true; ExtensionActions.EnableRdoListItems(rdoPaymentMethod); // Enable all methods
+                        pnlPaymentMethod.Visible = true; ExtensionActions.EnableRdoListItems(rdoPaymentMethod, eft: false);
                         pnlPerson.Visible = true; lblPerson.Text = EnumActions.GetEnumDescription(PersonRole.Contractor); litSavedPersonEnum.Text = PersonRole.Contractor.ToString();
                         pnlPOFulFillmentInstructions.Visible = false;
+                        litSavedEntityPersonFlag.Text = RequestType.Person.ToString(); // Remember that we are dealing with a Person
                         litSupportingDocMin.Text = "1";
                         break;
                     }
@@ -1038,16 +1110,17 @@ namespace Portal11.Rqsts
                     {
                         lblAmount.Text = "Total Amount";
                         pnlBeginningEnding.Visible = false;
-                        pnlCards.Visible = true;
+                        pnlCards.Visible = true; txtAmount.Enabled = true;     // Cards calculate the total amount. User can't fill it.
                         pnlContractQuestions.Visible = false;
                         pnlDateNeeded.Visible = true;
                         pnlDateOfInvoice.Visible = false;
-                        pnlDeliveryInstructions.Visible = true; pnlPODeliveryInstructions.Visible = false;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryModeReg.Visible = true; pnlDeliveryModePO.Visible = false; pnlDeliveryModeRush.Visible = true;
                         pnlGoods.Visible = false;
                         pnlEntity.Visible = false;
                         pnlPaymentMethod.Visible = false;
                         pnlPerson.Visible = true; lblPerson.Text = EnumActions.GetEnumDescription(PersonRole.ResponsiblePerson); litSavedPersonEnum.Text = PersonRole.ResponsiblePerson.ToString();
                         pnlPOFulFillmentInstructions.Visible = false;
+                        litSavedEntityPersonFlag.Text = RequestType.Person.ToString(); // Remember that we are dealing with a Person
                         litSupportingDocMin.Text = "1";
                         break;
                     }
@@ -1059,12 +1132,13 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = false;
                         pnlDateNeeded.Visible = false;
                         pnlDateOfInvoice.Visible = false;
-                        pnlDeliveryInstructions.Visible = true; pnlPODeliveryInstructions.Visible = false;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryModeReg.Visible = true; pnlDeliveryModePO.Visible = false; pnlDeliveryModeRush.Visible = true;
                         pnlEntity.Visible = false;
                         pnlGoods.Visible = false;
                         pnlPaymentMethod.Visible = true; ExtensionActions.EnableRdoListItems(rdoPaymentMethod, creditcard:false, invoice:false); // Enable correct methods
                         pnlPerson.Visible = true; lblPerson.Text = EnumActions.GetEnumDescription(PersonRole.Employee); litSavedPersonEnum.Text = PersonRole.Employee.ToString();
                         pnlPOFulFillmentInstructions.Visible = false;
+                        litSavedEntityPersonFlag.Text = RequestType.Person.ToString(); // Remember that we are dealing with a Person
                         litSupportingDocMin.Text = "1";
                         break;
                     }
@@ -1076,12 +1150,13 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = false;
                         pnlDateNeeded.Visible = true;
                         pnlDateOfInvoice.Visible = false;
-                        pnlDeliveryInstructions.Visible = false; pnlPODeliveryInstructions.Visible = true;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryModeReg.Visible = false; pnlDeliveryModePO.Visible = true; pnlDeliveryModeRush.Visible = true;
                         pnlEntity.Visible = true; litSavedEntityEnum.Text = EntityRole.ExpenseVendor.ToString();
                         pnlGoods.Visible = true;
-                        pnlPaymentMethod.Visible = true; ExtensionActions.EnableRdoListItems(rdoPaymentMethod); // Enable all methods
+                        pnlPaymentMethod.Visible = true; ExtensionActions.EnableRdoListItems(rdoPaymentMethod, eft: false);
                         pnlPerson.Visible = false;
                         pnlPOFulFillmentInstructions.Visible = true;
+                        litSavedEntityPersonFlag.Text = RequestType.Entity.ToString(); // Remember that we are dealing with an Entity
                         litSupportingDocMin.Text = "1";
                         break;
                     }
@@ -1093,12 +1168,13 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = false;
                         pnlDateNeeded.Visible = false;
                         pnlDateOfInvoice.Visible = false;
-                        pnlDeliveryInstructions.Visible = true; pnlPODeliveryInstructions.Visible = false;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryModeReg.Visible = true; pnlDeliveryModePO.Visible = false; pnlDeliveryModeRush.Visible = true;
                         pnlEntity.Visible = false;
                         pnlGoods.Visible = false;
                         pnlPaymentMethod.Visible = true; ExtensionActions.EnableRdoListItems(rdoPaymentMethod, creditcard:false, eft:false, invoice:false); // Enable relevant methods
                         pnlPerson.Visible = true; lblPerson.Text = EnumActions.GetEnumDescription(PersonRole.Recipient); litSavedPersonEnum.Text = PersonRole.Recipient.ToString();
                         pnlPOFulFillmentInstructions.Visible = false;
+                        litSavedEntityPersonFlag.Text = RequestType.Person.ToString(); // Remember that we are dealing with a Person
                         litSupportingDocMin.Text = "1";
                         break;
                     }
@@ -1110,12 +1186,13 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = true;
                         pnlDateNeeded.Visible = false;
                         pnlDateOfInvoice.Visible = true;
-                        pnlDeliveryInstructions.Visible = true; pnlPODeliveryInstructions.Visible = false;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryModeReg.Visible = true; pnlDeliveryModePO.Visible = false; pnlDeliveryModeRush.Visible = true;
                         pnlEntity.Visible = true; litSavedEntityEnum.Text = EntityRole.ExpenseVendor.ToString();
                         pnlGoods.Visible = false;
-                        pnlPaymentMethod.Visible = true; ExtensionActions.EnableRdoListItems(rdoPaymentMethod); // Enable all methods
+                        pnlPaymentMethod.Visible = true; ExtensionActions.EnableRdoListItems(rdoPaymentMethod, eft:false); // Enable almost all methods
                         pnlPerson.Visible = false;
                         pnlPOFulFillmentInstructions.Visible = false;
+                        litSavedEntityPersonFlag.Text = RequestType.Entity.ToString(); // Remember that we are dealing with a Entity
                         litSupportingDocMin.Text = "1";
                         break;
                     }
@@ -1146,42 +1223,7 @@ namespace Portal11.Rqsts
             if (pnlEntity.Visible && (ddlEntity.Items.Count == 0))      // If true control is visible and empty. Fill it
             {
                 int projID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int; // Find ID of current project
-                EntityRole selectedRole = EnumActions.ConvertTextToEntityRole(litSavedEntityEnum.Text); // Role for this Request Type
-
-                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-                {
-                    var query = from pe in context.ProjectEntitys
-                                where pe.ProjectID == projID && pe.EntityRole == selectedRole // This project, this role
-                                orderby pe.Entity.Name
-                                select new { EntityID = pe.EntityID, pe.Entity.Name }; // Find all Entitys that are assigned to this project
-
-                    DataTable rows = new DataTable();
-                    rows.Columns.Add(PortalConstants.DdlID);
-                    rows.Columns.Add(PortalConstants.DdlName);
-
-                    foreach (var row in query)
-                    {
-                        DataRow dr = rows.NewRow();                      // Build a row from the next query output
-                        dr[PortalConstants.DdlID] = row.EntityID;
-                        dr[PortalConstants.DdlName] = row.Name;
-                        rows.Rows.Add(dr);                               // Add the new row to the data table
-                    }
-                    ddlEntity.Items.Clear();                            // Remove items of another Vendor Role, if any
-
-                    // The "needed" option is no longer supported in new requests. But we may have requests in the database that still have the needed flag set.
-
-                    if (needed)                                     // If true old request has needed flag set
-                    {
-                        DdlActions.LoadDdl(ddlEntity, entityID, rows,
-                            "", "-- none selected --",
-                            needed, "-- Please add new " + lblEntity.Text + " --"); // Put the cherry on top
-                    }
-                    else                                            // If false, new request. "Needed" option no longer supported
-                    {
-                        DdlActions.LoadDdl(ddlEntity, entityID, rows,
-                            "", "-- none selected --");
-                    }
-                }
+                DdlActions.FillEntityDDL(ddlEntity, projID, litSavedEntityEnum.Text, entityID, needed); // Do the heavy lifting
             }
             return;
         }
@@ -1228,42 +1270,7 @@ namespace Portal11.Rqsts
             if (pnlPerson.Visible)                                // If true need to populate list
             {
                 int projID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int; // Find ID of current project
-                PersonRole selectedRole = EnumActions.ConvertTextToPersonRole(litSavedPersonEnum.Text); // Role for this Request Type
-
-                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-                {
-                    var query = from pe in context.ProjectPersons
-                                where pe.ProjectID == projID && pe.PersonRole == selectedRole // This project, this role
-                                orderby pe.Person.Name
-                                select new { PersonID = pe.PersonID, pe.Person.Name }; // Find all employees that are assigned to this project
-
-                    DataTable rows = new DataTable();
-                    rows.Columns.Add(PortalConstants.DdlID);
-                    rows.Columns.Add(PortalConstants.DdlName);
-
-                    foreach (var row in query)
-                    {
-                        DataRow dr = rows.NewRow();                 // Build a row from the next query output
-                        dr[PortalConstants.DdlID] = row.PersonID;
-                        dr[PortalConstants.DdlName] = row.Name;
-                        rows.Rows.Add(dr);                          // Add the new row to the data table
-                    }
-                    ddlPerson.Items.Clear();                        // Remove items of another Person Role, if any
-
-                    // The "needed" option is no longer supported in new requests. But we may have requests in the database that still have the needed flag set.
-
-                    if (needed)                                     // If true old request has needed flag set
-                    {
-                        DdlActions.LoadDdl(ddlPerson, personID, rows,
-                        "", "-- none selected --",
-                        needed, "-- Please add new " + lblPerson.Text + " --"); // Put the cherry on top
-                    }
-                    else
-                    {
-                        DdlActions.LoadDdl(ddlPerson, personID, rows,
-                        "", "-- none selected --");
-                    }
-                }
+                DdlActions.FillPersonDDL(ddlPerson, projID, litSavedPersonEnum.Text, personID, needed); // Do the heavy lifting
             }
             return;
         }
@@ -1338,6 +1345,7 @@ namespace Portal11.Rqsts
             {
                 txtNumberOfCards.Text = record.CardsQuantity.ToString();
                 txtEachCard.Text = record.CardsValueEach.ToString("C");
+                ExtensionActions.FillQCA(txtNumberOfCards, txtEachCard, txtAmount); // Try to get cute and fill a missing field
             }
 
             if (pnlContractQuestions.Visible)
@@ -1361,17 +1369,6 @@ namespace Portal11.Rqsts
                 txtInvoiceNumber.Text = record.InvoiceNumber;
             }
 
-            if (pnlDeliveryInstructions.Visible)
-            {
-                ExtensionActions.LoadEnumIntoRdo(record.DeliveryMode, rdoDeliveryMode); // Load enum value into Radio Button List
-                if (record.DeliveryMode == DeliveryMode.MailAddress)        // If true Delivery Mode requires an address
-                {
-                    pnlDeliveryAddress.Visible = true;                      // Turn on the Delivery Address
-                    txtDeliveryAddress.Text = record.DeliveryAddress;       // And fill it
-                }
-                cblDeliveryInstructions.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected = record.Rush; // Fill value of checkbox
-            }
-
             txtDescription.Text = record.Description;
             
             if (pnlEntity.Visible)
@@ -1379,7 +1376,7 @@ namespace Portal11.Rqsts
                 FillEntityDDL(record.EntityID, record.EntityNeeded);    // Pull the VendorID and load the DDL
                 if (pnlPOFulFillmentInstructions.Visible)               // If true, controls that include the Vendor DDL are also visible
                 {
-                    ExtensionActions.LoadYesNoIntoRdo(record.POVendorMode, rdoPOVendorMode); // Load enum value into Radio Button List
+                    ExtensionActions.LoadPOVendorModeIntoRdo(record.POVendorMode, rdoPOVendorMode); // Load enum value into Radio Button List
 
                     EventArgs e = new EventArgs();                      // Dummy argument
                     rdoPOVendorMode_SelectedIndexChanged(0, e);         // React to the setting, which may involve hiding the Vendor DDL again
@@ -1401,24 +1398,11 @@ namespace Portal11.Rqsts
                 txtNotes.Text = record.Notes;
 
             if (pnlPaymentMethod.Visible)
-            {
-                EventArgs e = new EventArgs();                              // Dummy argument
                 ExtensionActions.LoadEnumIntoRdo(record.PaymentMethod, rdoPaymentMethod); // Load enum value into Radio Button List
-                rdoPaymentMethod_SelectedIndexChanged(0, e);                // React to the loaded value
-            }
+                                                                            // We will adjust delivery instructions below
 
             if (pnlPerson.Visible)
                 FillPersonDDL(record.PersonID, record.PersonNeeded);        // Fill drop down list and highlight the selected item, if any
-
-            if (pnlPODeliveryInstructions.Visible)
-            {
-                ExtensionActions.LoadEnumIntoRdo(record.PODeliveryMode, rdoPODeliveryMode); // Load enum value into Radio Button List
-                if (record.PODeliveryMode == PODeliveryMode.DeliverAddress) // If true Delivery Mode requires an address
-                {
-                    pnlDeliveryAddress.Visible = true;                  // Turn on the Delivery Address
-                    txtDeliveryAddress.Text = record.DeliveryAddress;   // And fill it
-                }
-            }
 
             if (pnlProjectClass.Visible)                                // If true, process Project Class
                 FillProjectClassDDL(record.ProjectClassID);             // Fill the DDL 
@@ -1431,7 +1415,17 @@ namespace Portal11.Rqsts
             //if (txtURL.Visible)
             //    txtURL.Text = record.URL;
 
+            // Delivery Instructions can't be loaded until Entity and Person are loaded. Unconditionally load the radio buttons and checkbox.
+            // Then react to the environment to make the right things visible.
+
+            ExtensionActions.LoadEnumIntoRdo(record.DeliveryMode, rdoDeliveryModeReg); // Load enum value into Radio Button List
+            ExtensionActions.LoadEnumIntoRdo(record.PODeliveryMode, rdoDeliveryModePO); // Load enum value into Radio Button list
+            cblDeliveryModeRush.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected = record.Rush; // Fill value of checkbox
+
+            AdjustDeliveryInstructions(record.DeliveryAddress);         // Turn the right panels on and off, based on other settings
+                
             // Supporting Documents handled elsewhere
+
             return;
         }
 
@@ -1445,7 +1439,7 @@ namespace Portal11.Rqsts
             txtDateOfInvoice.Enabled = false;
             txtDateNeeded.Enabled = false; btnDateNeeded.Enabled = false;
             txtDeliveryAddress.Enabled = false;
-            rdoDeliveryMode.Enabled = false; cblDeliveryInstructions.Enabled = false;
+            rdoDeliveryModeReg.Enabled = false; rdoDeliveryModePO.Enabled = false; cblDeliveryModeRush.Enabled = false;
             txtDescription.Enabled = false;
             // Expense Type - already set
             // Expense State - already set
@@ -1457,7 +1451,6 @@ namespace Portal11.Rqsts
             txtNumberOfCards.Enabled = false;
             rdoPaymentMethod.Enabled = false;
             ddlPerson.Enabled = false;
-            rdoPODeliveryMode.Enabled = false;
             rdoPOVendorMode.Enabled = false;
             ddlProjectClass.Enabled = false;
             txtReturnNote.Enabled = false; btnReturnNoteClear.Visible = false;
@@ -1506,14 +1499,17 @@ namespace Portal11.Rqsts
                 record.InvoiceNumber = txtInvoiceNumber.Text;
             }
 
-            if (pnlDeliveryAddress.Visible)
-                record.DeliveryAddress = txtDeliveryAddress.Text;
+            record.DeliveryMode = EnumActions.ConvertTextToDeliveryMode(rdoDeliveryModeReg.SelectedValue); // Convert selection to enum
 
-            if (pnlDeliveryInstructions.Visible)
-            {
-                record.DeliveryMode = EnumActions.ConvertTextToDeliveryMode(rdoDeliveryMode.SelectedValue); // Convert selection to enum
-                record.Rush = cblDeliveryInstructions.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected; // Stash value of checkbox
-            }
+            record.PODeliveryMode = EnumActions.ConvertTextToPODeliveryMode(rdoDeliveryModePO.SelectedValue); // Convert selection to bool
+
+            record.Rush = cblDeliveryModeRush.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected; // Stash value of checkbox
+
+            // Lots of permutations here - the DeliveryAddress may or may not be meaningful depending on DeliveryMode and PODeliveryMode. (They share txtDeliveryAddress.)
+            // Rather than replicating all that logic here, just store whatever is in the text box. When we load it again, either here or in ReviewExpense,
+            // we'll figure out if it should be visible.
+
+            record.DeliveryAddress = txtDeliveryAddress.Text;
 
             record.Description = txtDescription.Text;
 
@@ -1552,11 +1548,8 @@ namespace Portal11.Rqsts
                 record.PersonRole = EnumActions.ConvertTextToPersonRole(litSavedPersonEnum.Text); // Convert relevant role to enum
             }
 
-            if (pnlPODeliveryInstructions.Visible)
-                record.PODeliveryMode = EnumActions.ConvertTextToPODeliveryMode(rdoPODeliveryMode.SelectedValue); // Convert selection to bool
-
             if (pnlPOFulFillmentInstructions.Visible)
-                record.POVendorMode = ExtensionActions.LoadRdoIntoYesNo(rdoPOVendorMode); // Convert Yes/No to enum
+                record.POVendorMode = ExtensionActions.LoadRdoIntoPOVendorMode(rdoPOVendorMode); // Convert Yes/No to enum
 
             if (pnlProjectClass.Visible)                                    // If true the Expense does have a Project Class
                 record.ProjectClassID = DdlActions.UnloadDdl(ddlProjectClass); // Pull the selected Project Class from the DDL
@@ -1651,6 +1644,7 @@ namespace Portal11.Rqsts
 
         // We have a request with no split rows and the "Split" button has been pressed.
         // Create an "empty" gridview row and prime it with existing fields from the page, if any
+        // Then create a second, even emptier row, as though the user had pressed the "Add" button on the first row
 
         void LoadFirstSplitRow()
         {
@@ -1660,16 +1654,18 @@ namespace Portal11.Rqsts
                 // Case 1) This request has never had splits before.
 
                 List<rowGLCodeSplit> rows = new List<rowGLCodeSplit>(); // Create a list of rows for the gridview
-                rowGLCodeSplit row = new rowGLCodeSplit()               // Prime the first row of the grid from "parent" fields of the page
+                rowGLCodeSplit row1 = new rowGLCodeSplit()               // Prime the first row of the grid from "parent" fields of the page
                 {
-                    TotalRows = 1,                                      // This is the only row in the grid
+                    TotalRows = 2,                                      // This row plus an empty one
                     SelectedGLCodeID = ddlGLCode.SelectedValue,         // Copy the selected GL Code, if any, from the ddl
                     SelectedProjectClassID = ddlProjectClass.SelectedValue, // Copy the selected Project Code, if any, from the ddl
                 };
                 decimal a = ExtensionActions.LoadTxtIntoDecimal(txtAmount); // Fetch current value of Total Dollar Amount field
-                row.Amount = ExtensionActions.LoadDecimalIntoTxt(a);    // Pretty up that amount for display
+                row1.Amount = ExtensionActions.LoadDecimalIntoTxt(a);   // Pretty up that amount for display
+                rows.Add(row1);                                         // Add the first row
 
-                rows.Add(row);                                          // Add the first (and only) row
+                rowGLCodeSplit row2 = new rowGLCodeSplit();             // Create an empty row
+                rows.Add(row2);                                         // Add it to the list
 
                 gvExpSplit.DataSource = rows;                           // Give the rows to the gridview
                 gvExpSplit.DataBind();                                  // And bind them to display the rows, firing RowDataBound for each row
@@ -1725,6 +1721,130 @@ namespace Portal11.Rqsts
             return;
         }
 
+        // Turn appropriate panels in Delivery Instructions on and off based on other settings
+
+        void AdjustDeliveryInstructions(string deliveryAddress)
+        {
+            if (rdoPaymentMethod.SelectedValue == PaymentMethod.EFT.ToString()) // If == payment method is EFT
+            {
+                pnlDeliveryModeReg.Visible = false;
+                pnlDeliveryModePO.Visible = false;
+                pnlDeliveryModeRush.Visible = true;
+                pnlDeliveryAddress.Visible = false;                 // No delivery mode, no delivery address
+                return;                                             // No need to look any further
+            }
+            switch (EnumActions.ConvertTextToExpType(rdoExpType.SelectedValue)) // Break out by Expense Type
+            {
+                case ExpType.ContractorInvoice:
+                case ExpType.Payroll:
+                case ExpType.PEXCard:
+                case ExpType.Reimbursement:
+                case ExpType.VendorInvoice:
+                    {
+                        pnlDeliveryModeReg.Visible = true;
+                        pnlDeliveryModePO.Visible = false;
+                        pnlDeliveryModeRush.Visible = true;
+                        AdjustDeliveryModeReg(deliveryAddress);     // DeliveryAddress on/off/filled
+                        break;
+                    }
+                case ExpType.PurchaseOrder:
+                    {
+                        pnlDeliveryModeReg.Visible = false;
+                        pnlDeliveryModePO.Visible = true;
+                        pnlDeliveryModeRush.Visible = true;
+                        AdjustDeliveryModePO(deliveryAddress);      // DeliveryAddress on/off
+                        break;
+                    }
+                default:
+                    {
+                        LogError.LogInternalError("EditExpense", $"Invalid ExpenseType value '{rdoExpType.SelectedValue}' encountered"); // Fatal error
+                        break;
+                    }
+            }
+            return;
+        }
+
+        //  React to the settings of Delivery Mode (regular) radio buttons
+
+        void AdjustDeliveryModeReg(string deliveryAddress)
+        {
+            switch (EnumActions.ConvertTextToDeliveryMode(rdoDeliveryModeReg.SelectedValue)) // Break out by button pushed
+            {
+                case DeliveryMode.Pickup:
+                    {
+                        pnlDeliveryAddress.Visible = false;             // Turn off delivery address
+                        return;
+                    }
+                case DeliveryMode.MailPayee:
+                    {
+                        FillDeliveryAddress(litSavedEntityPersonFlag.Text, ddlEntity, ddlPerson, txtDeliveryAddress);
+                        pnlDeliveryAddress.Visible = true;              // Turn on the panel containing delivery address
+                        txtDeliveryAddress.ReadOnly = true;             // Only for viewing
+                        return;
+                    }
+                case DeliveryMode.MailAddress:
+                    {
+                        txtDeliveryAddress.Text = deliveryAddress;      // Load or clear, as caller requests
+                        pnlDeliveryAddress.Visible = true;              // Turn on delivery address
+                        txtDeliveryAddress.ReadOnly = false;            // Here, it's editable
+                        return;
+                    }
+                default:
+                    {
+                        LogError.LogInternalError("EditExpense", $"Invalid DeliveryMode value '{rdoDeliveryModeReg.SelectedValue}' encountered"); // Fatal error
+                        break;
+                    }
+            }
+        }
+
+        // React to the setting of the Delivery Mode (PO) radio buttons
+
+        void AdjustDeliveryModePO(string deliveryAddress)
+        {
+            if (rdoDeliveryModePO.SelectedValue == PODeliveryMode.DeliverAddress.ToString()) // If == Yes, need to look for an Address
+            {
+                txtDeliveryAddress.Text = deliveryAddress;          // Set or Clear field as caller specifies
+                pnlDeliveryAddress.Visible = true;                  // Flip the delivery address on
+            }
+            else
+            {
+                pnlDeliveryAddress.Visible = false;                 // Not a "Delivery Address" option, so field go invisible
+            }
+            return;
+        }
+        void FillDeliveryAddress(string entityPersonFlag, DropDownList ddlEntity, DropDownList ddlPerson, TextBox deliveryAddress)
+        {
+            deliveryAddress.Text = "";                              // Clear existing text from text box
+            if (entityPersonFlag == RequestType.Entity.ToString())  // If == we are dealing with an Entity
+            {
+                int? entityID = DdlActions.UnloadDdl(ddlEntity);    // Fetch selected value - entity ID - if any
+                if (entityID != null)                               // If != a row of the DDL is selected. Process it
+                {
+                    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+                    {
+                        Entity entity = context.Entitys.Find(entityID); // Use the Entity ID to track down the Entity
+                        if (entity == null)                         // If == no Entity row found. That's a fatal error
+                            LogError.LogInternalError("EditExpense", $"Unable to locate EntityID '{entityID.ToString()}' in database"); // Log fatal error
+                        deliveryAddress.Text = entity.Address;      // Load the text box with the address of the Entity
+                    }
+                }
+            }
+            else if (entityPersonFlag == RequestType.Person.ToString()) // If == we are dealing with a Person
+            {
+                int? personID = DdlActions.UnloadDdl(ddlPerson);    // Fetch selected value - person ID - if any
+                if (personID != null)                               // If != a row of the DDL is selected. Process it
+                {
+                    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+                    {
+                        Person person = context.Persons.Find(personID); // Use the person ID to track down the person
+                        if (person == null)                         // If == no person row found. That's a fatal error
+                            LogError.LogInternalError("EditExpense", $"Unable to locate personID '{personID.ToString()}' in database"); // Log fatal error
+                        deliveryAddress.Text = person.Address;      // Load the text box with the address of the person
+                    }
+                }
+            }
+            return;
+        }
         // Sum all the amount fields in the gridview. Use it to update the "master" amount field.
 
         void RecalculateTotalDollarAmount ()

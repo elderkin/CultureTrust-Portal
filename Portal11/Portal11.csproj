@@ -234,9 +234,11 @@
     <Content Include="Proj\ViewDoc.aspx" />
     <Content Include="Rqsts\EditApproval.aspx" />
     <Content Include="Rqsts\EditDeposit.aspx" />
+    <Content Include="Rqsts\EditDocument.aspx" />
     <Content Include="Rqsts\EditExpense.aspx" />
     <Content Include="Rqsts\ReviewApproval.aspx" />
     <Content Include="Rqsts\ReviewDeposit.aspx" />
+    <Content Include="Rqsts\ReviewDocument.aspx" />
     <Content Include="Select\SelectEntity.aspx" />
     <Content Include="Select\SelectPerson.aspx" />
     <Content Include="Select\SelectGLCode.aspx" />
@@ -621,6 +623,7 @@
     <Compile Include="Logic\FlowControl.aspx.designer.cs">
       <DependentUpon>FlowControl.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Logic\ParseActions.cs" />
     <Compile Include="Logic\ProjectClassActions.cs" />
     <Compile Include="Logic\QueryStringActions.cs" />
     <Compile Include="Logic\SplitActions.cs" />
@@ -663,6 +666,13 @@
     <Compile Include="Rqsts\EditDeposit.aspx.designer.cs">
       <DependentUpon>EditDeposit.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Rqsts\EditDocument.aspx.cs">
+      <DependentUpon>EditDocument.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Rqsts\EditDocument.aspx.designer.cs">
+      <DependentUpon>EditDocument.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Rqsts\EditExpense.aspx.cs">
       <DependentUpon>EditExpense.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -683,6 +693,13 @@
     </Compile>
     <Compile Include="Rqsts\ReviewDeposit.aspx.designer.cs">
       <DependentUpon>ReviewDeposit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Rqsts\ReviewDocument.aspx.cs">
+      <DependentUpon>ReviewDocument.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Rqsts\ReviewDocument.aspx.designer.cs">
+      <DependentUpon>ReviewDocument.aspx</DependentUpon>
     </Compile>
     <Compile Include="Select\SelectEntity.aspx.cs">
       <DependentUpon>SelectEntity.aspx</DependentUpon>

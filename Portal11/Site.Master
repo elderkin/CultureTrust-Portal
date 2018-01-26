@@ -98,12 +98,16 @@
                     </asp:LoginView>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a runat="server">
+                        <li><a runat="server" id="mnuFullName">
                             <asp:Label runat="server" ID="labFullName" /></a></li>
+                        <li><a runat="server" id="mnuFullNameSmall" visible="false">
+                            <div style="font-size:60%"> <asp:Label runat="server" ID="labFullNameSmall" /> </div></a></li>
                         <li><a runat="server" id="mnuNoProjectRole" href="#" visible="false">
                             <asp:Literal runat="server" ID="litNoProjectRole" /></a></li>
                         <li><a runat="server" id="mnuProjectName" href="~/Proj/ProjectDashboard" visible="false">
-                            <asp:Literal runat="server" ID="litProjectName" /></a></li>
+                            <asp:Literal runat="server" ID="litProjectName"  /></a></li>
+                        <li><a runat="server" id="mnuProjectNameSmall" href="~/Proj/ProjectDashboard" visible="false">
+                            <div style="font-size:60%"> <asp:Literal runat="server" ID="litProjectNameSmall" /> </div></a></li>
                         <li><a runat="server" id="mnuStaffRole" href="~/Staff/StaffDashboard" visible="false">
                             <asp:Literal runat="server" ID="litStaffRole" /></a></li>
                         <li><a runat="server" id="mnuAdminRole" href="~/Admin/Main" visible="false">

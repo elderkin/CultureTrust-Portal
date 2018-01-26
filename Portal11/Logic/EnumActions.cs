@@ -97,6 +97,62 @@ namespace Portal11.Logic
             }
         }
 
+        public static DocContractOtherParty ConvertTextToDocContractOtherParty(string text)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(text))                         // If true the string is blank.
+                    return DocContractOtherParty.None;                  // Note no selection
+                return (DocContractOtherParty)Enum.Parse(typeof(DocContractOtherParty), text, true); // Convert back into enumeration type
+            }
+            catch (Exception)
+            {
+                LogError.LogInternalError("EnumActions.ConvertTextToDocContractOtherParty", $"Unable to parse text '{text}' to DocContractOtherParty enum"); // Fatal error
+                return 0;                                               // If conversion failed, substitute null value
+            }
+        }
+
+        public static DocContractFunds ConvertTextToDocContractFunds(string text)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(text))                         // If true the string is blank.
+                    return DocContractFunds.None;                       // Note no selection
+                return (DocContractFunds)Enum.Parse(typeof(DocContractFunds), text, true); // Convert back into enumeration type
+            }
+            catch (Exception)
+            {
+                LogError.LogInternalError("EnumActions.ConvertTextToDocContractFunds", $"Unable to parse text '{text}' to DocContractFunds enum"); // Fatal error
+                return 0;                                               // If conversion failed, substitute null value
+            }
+        }
+
+        public static DocState ConvertTextToDocState(string text)
+        {
+            try
+            {
+                return (DocState)Enum.Parse(typeof(DocState), text, true); // Convert back into enumeration type
+            }
+            catch (Exception)
+            {
+                LogError.LogInternalError("EnumActions.ConvertTextToDocState", $"Unable to parse text '{text}' to DocState enum"); // Fatal error
+                return 0;                                               // If conversion failed, substitute null value
+            }
+        }
+
+        public static DocType ConvertTextToDocType(string text)
+        {
+            try
+            {
+                return (DocType)Enum.Parse(typeof(DocType), text, true); // Convert back into enumeration type
+            }
+            catch (Exception)
+            {
+                LogError.LogInternalError("EnumActions.ConvertTextToDocType", $"Unable to parse text '{text}' to DocType enum"); // Fatal error
+                return 0;                                               // If conversion failed, substitute null value
+            }
+        }
+
         public static EntityRole ConvertTextToEntityRole(string text)
         {
             try
@@ -171,6 +227,19 @@ namespace Portal11.Logic
             catch (Exception)
             {
                 LogError.LogInternalError("EnumActions.ConvertTextToPODeliveryMode", $"Unable to parse text '{text}' to PODeliveryMode enum"); // Fatal error
+                return 0;                                               // If conversion failed, substitute null value
+            }
+        }
+
+        public static POVendorMode ConvertTextToPOVendorMode(string text)
+        {
+            try
+            {
+                return (POVendorMode)Enum.Parse(typeof(POVendorMode), text, true); // Convert back into enumeration type
+            }
+            catch (Exception)
+            {
+                LogError.LogInternalError("EnumActions.ConvertTextToPOVendorMode", $"Unable to parse text '{text}' to POVendorMode enum"); // Fatal error
                 return 0;                                               // If conversion failed, substitute null value
             }
         }

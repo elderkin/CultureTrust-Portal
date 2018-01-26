@@ -706,24 +706,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.RadioButtonList rdoPaymentMethod;
         
         /// <summary>
-        /// pnlPODeliveryInstructions control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlPODeliveryInstructions;
-        
-        /// <summary>
-        /// rdoPODeliveryMode control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList rdoPODeliveryMode;
-        
-        /// <summary>
         /// pnlDeliveryInstructions control.
         /// </summary>
         /// <remarks>
@@ -733,22 +715,58 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Panel pnlDeliveryInstructions;
         
         /// <summary>
-        /// rdoDeliveryMode control.
+        /// pnlDeliveryModeReg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList rdoDeliveryMode;
+        protected global::System.Web.UI.WebControls.Panel pnlDeliveryModeReg;
         
         /// <summary>
-        /// cblDeliveryInstructions control.
+        /// rdoDeliveryModeReg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBoxList cblDeliveryInstructions;
+        protected global::System.Web.UI.WebControls.RadioButtonList rdoDeliveryModeReg;
+        
+        /// <summary>
+        /// pnlDeliveryModePO control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlDeliveryModePO;
+        
+        /// <summary>
+        /// rdoDeliveryModePO control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButtonList rdoDeliveryModePO;
+        
+        /// <summary>
+        /// pnlDeliveryModeRush control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlDeliveryModeRush;
+        
+        /// <summary>
+        /// cblDeliveryModeRush control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBoxList cblDeliveryModeRush;
         
         /// <summary>
         /// pnlDeliveryAddress control.
@@ -821,6 +839,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRem;
+        
+        /// <summary>
+        /// litSupportingError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSupportingError;
         
         /// <summary>
         /// litSDError control.
@@ -1075,6 +1102,15 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Literal litSavedUserID;
         
         /// <summary>
+        /// litSaveModalActive control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSaveModalActive;
+        
+        /// <summary>
         /// litSupportingDocMin control.
         /// </summary>
         /// <remarks>
@@ -1082,32 +1118,5 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSupportingDocMin;
-        
-        /// <summary>
-        /// btnModalCancel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnModalCancel;
-        
-        /// <summary>
-        /// btnModalNo control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnModalNo;
-        
-        /// <summary>
-        /// btnModalYes control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnModalYes;
     }
 }
