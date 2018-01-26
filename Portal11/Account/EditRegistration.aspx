@@ -142,6 +142,17 @@
             </div>
         </div>
 
+    <!-- Project list - read only -->
+        <div class="form-group">
+            <div class="row">
+                <asp:Label runat="server" AssociatedControlID="lstProjectMembership" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Project Membership</asp:Label>
+                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <!-- Fill this control from code-behind -->
+                    <asp:ListBox runat="server" ID="lstProjectMembership" CssClass="form-control" ReadOnly="true" />
+                </div>
+            </div>
+        </div>
+
     <!-- Button array -->
         <div class="row">
             <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-sm-offset-1 col-md-1 col-xs-2" Enabled="true"

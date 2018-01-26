@@ -101,6 +101,8 @@ namespace Portal11.Account
                     txtLoginCount.Text = existingUser.LoginCount.ToString();
                     txtLastLogin.Text = existingUser.LastLogin.ToString();
 
+                    LoadProjectMembership(userID);                          // List which projects we're a part of
+
                     litSavedUserID.Text = userID;                           // Save values for use as form processing finishes
                     litSavedEmail.Text = existingUser.Email;
                 }
@@ -214,6 +216,22 @@ namespace Portal11.Account
             }
             Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
                         + PortalConstants.QSStatus + "=" + "User registration successfully updated. Changes take effect at next login.");
+        }
+
+        void LoadProjectMembership(string userID)
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                var query = from up in context.UserProjects
+                            where (up.UserID == userID)
+                            orderby up.User.FullName
+                            select new { up.Project.Name, up.ProjectRole }; // Find the Projects this user is on
+                foreach (var row in query)
+                {
+                    lstProjectMembership.Items.Add(new ListItem(row.ProjectRole.ToString() + ": " + row.Name, "")); // Stash each Project  name into list
+
+                }
+            }
         }
     }
 }

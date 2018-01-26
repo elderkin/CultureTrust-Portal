@@ -181,7 +181,7 @@ namespace Portal11.Rqsts
             }
             else                                                    // We are in Postback. See if FileUpload control has anything for us
             {
-                litDangerMessage.Text = ""; litSuccessMessage.Text = ""; // Start with a clean slate of message displays
+                litDangerMessage.Text = ""; litSuccessMessage.Text = ""; litSupportingError.Visible = false; // Start with a clean slate of message displays
                 if (fupUpload.HasFile)                              // If true PostBack was caused by File Upload control
                 {
                     SupportingActions.UploadDoc(fupUpload, lstSupporting, litSavedUserID, litSuccessMessage, litDangerMessage); // Do heavy lifting to get file
@@ -315,15 +315,25 @@ namespace Portal11.Rqsts
 
         protected void btnNewEntity_Click(object sender, EventArgs e)
         {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "divModal", "$('#divModal').modal();", true); // Open the modal dialog to confirm
             litSavedEntityPersonFlag.Text = RequestType.Entity.ToString(); // Remember where we go to process the "New" command
+            CommonNewButton(sender, e);                             // Continue in processing common to New Entity and New Person
             return;                                                 // Open that modal dialog box
         }
 
         protected void btnNewPerson_Click(object sender, EventArgs e)
         {
-            ScriptManager.RegisterStartupScript(Page, Page.GetType(), "divModal", "$('#divModal').modal();", true); // Open the modal dialog to confirm
             litSavedEntityPersonFlag.Text = RequestType.Person.ToString();  // Remember where we go to process the "New" command
+            CommonNewButton(sender, e);                             // Continue in processing common to New Entity and New Person
+            return;                                                 // Open that modal dialog box
+        }
+
+        void CommonNewButton(object sender, EventArgs e)
+        {
+            ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch project role and convert to enum
+            if (RoleActions.ProjectRoleIsStaff(projectRole))        // If true user is a staff member. No need for modal dialog box to confirm.
+                btnModalYes_Click(sender, e);                       // Act as though the "Yes" button in the modal dialog box was pushed.
+            else
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "divModal", "$('#divModal').modal();", true); // Open the modal dialog to confirm
             return;                                                 // Open that modal dialog box
         }
 
@@ -610,6 +620,8 @@ namespace Portal11.Rqsts
             {
                 litDangerMessage.Text = "The Deposit Request must include a minimum of " + litSupportingDocMin.Text + " Supporting Document.";
                 litSuccessMessage.Text = "";                        // Just the danger message, not a stale success message
+                litSupportingError.Text = litDangerMessage.Text;    // Copy the error to a second place, right at the Supporting Doc list box
+                litSupportingError.Visible = true;                  // Make that error message visible
                 return;                                             // Back for more punishment
             }
 
@@ -649,6 +661,7 @@ namespace Portal11.Rqsts
                         toSubmit.ProjectID,                         // Request is associated with this project
                         toSubmit.Project.Name,                      // Project has this name (for parameter substitution)
                         EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
+                        EnumActions.GetEnumDescription(toSubmit.DepType), // Of this type
                         EnumActions.GetEnumDescription(nextState),      // Here is its next state
                         PortalConstants.CEmailDefaultDepositApprovedSubject, PortalConstants.CEmailDefaultDepositApprovedBody); // Use this subject and body, if needed
                 }
@@ -937,42 +950,43 @@ namespace Portal11.Rqsts
         void FillEntityDDL(int? entityID, bool needed = false)
         {
             int projID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int; // Find ID of current project
-            EntityRole selectedRole = EnumActions.ConvertTextToEntityRole(litSavedEntityEnum.Text); // Role for this Request Type
+            DdlActions.FillEntityDDL(ddlEntity, projID, litSavedEntityEnum.Text, entityID, needed); // Do the heavy lifting
+            //EntityRole selectedRole = EnumActions.ConvertTextToEntityRole(litSavedEntityEnum.Text); // Role for this Request Type
 
-            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-            {
-                var query = from pe in context.ProjectEntitys
-                            where pe.ProjectID == projID && (pe.EntityRole == selectedRole) // This project, our Entity Role
-                            orderby pe.Entity.Name
-                            select new { EntityID = pe.EntityID, pe.Entity.Name }; // Find all Entitys that are assigned to this project
+            //using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            //{
+            //    var query = from pe in context.ProjectEntitys
+            //                where pe.ProjectID == projID && (pe.EntityRole == selectedRole) // This project, our Entity Role
+            //                orderby pe.Entity.Name
+            //                select new { EntityID = pe.EntityID, pe.Entity.Name }; // Find all Entitys that are assigned to this project
 
-                DataTable rows = new DataTable();
-                rows.Columns.Add(PortalConstants.DdlID);
-                rows.Columns.Add(PortalConstants.DdlName);
+            //    DataTable rows = new DataTable();
+            //    rows.Columns.Add(PortalConstants.DdlID);
+            //    rows.Columns.Add(PortalConstants.DdlName);
 
-                foreach (var row in query)
-                {
-                    DataRow dr = rows.NewRow();                 // Build a row from the next query output
-                    dr[PortalConstants.DdlID] = row.EntityID;
-                    dr[PortalConstants.DdlName] = row.Name;
-                    rows.Rows.Add(dr);                          // Add the new row to the data table
-                }
+            //    foreach (var row in query)
+            //    {
+            //        DataRow dr = rows.NewRow();                 // Build a row from the next query output
+            //        dr[PortalConstants.DdlID] = row.EntityID;
+            //        dr[PortalConstants.DdlName] = row.Name;
+            //        rows.Rows.Add(dr);                          // Add the new row to the data table
+            //    }
 
-                // The "needed" option is no longer supported in new requests. But we may have requests in the database that still have the needed flag set.
+            //    // The "needed" option is no longer supported in new requests. But we may have requests in the database that still have the needed flag set.
 
-                if (needed)                                     // If true old request has needed flag set
-                {
-                    DdlActions.LoadDdl(ddlEntity, entityID, rows,
-                        "", "-- none selected --",
-                        needed, "-- Please add new " + lblEntity.Text + " --"); // Put the cherry on top
-                }
-                else                                            // If false, new request. "Needed" option no longer supported
-                {
-                    DdlActions.LoadDdl(ddlEntity, entityID, rows,
-                        "", "-- none selected --");
-                }
+            //    if (needed)                                     // If true old request has needed flag set
+            //    {
+            //        DdlActions.LoadDdl(ddlEntity, entityID, rows,
+            //            "", "-- none selected --",
+            //            needed, "-- Please add new " + lblEntity.Text + " --"); // Put the cherry on top
+            //    }
+            //    else                                            // If false, new request. "Needed" option no longer supported
+            //    {
+            //        DdlActions.LoadDdl(ddlEntity, entityID, rows,
+            //            "", "-- none selected --");
+            //    }
 
-            }
+//            }
             return;
         }
 
@@ -1022,41 +1036,42 @@ namespace Portal11.Rqsts
         void FillPersonDDL(int? personID, bool needed = false)
         {
             int projID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int; // Find ID of current project
-            PersonRole selectedRole = EnumActions.ConvertTextToPersonRole(litSavedPersonEnum.Text); // Role for this Request Type
+            DdlActions.FillPersonDDL(ddlPerson, projID, litSavedPersonEnum.Text, personID, needed); // Do the heavy lifting
+            //PersonRole selectedRole = EnumActions.ConvertTextToPersonRole(litSavedPersonEnum.Text); // Role for this Request Type
 
-            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-            {
-                var query = from pe in context.ProjectPersons
-                            where pe.ProjectID == projID && pe.PersonRole == selectedRole // This project, this role
-                            orderby pe.Person.Name
-                            select new { PersonID = pe.PersonID, pe.Person.Name }; // Find all employees that are assigned to this project
+            //using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            //{
+            //    var query = from pe in context.ProjectPersons
+            //                where pe.ProjectID == projID && pe.PersonRole == selectedRole // This project, this role
+            //                orderby pe.Person.Name
+            //                select new { PersonID = pe.PersonID, pe.Person.Name }; // Find all employees that are assigned to this project
 
-                DataTable rows = new DataTable();
-                rows.Columns.Add(PortalConstants.DdlID);
-                rows.Columns.Add(PortalConstants.DdlName);
+            //    DataTable rows = new DataTable();
+            //    rows.Columns.Add(PortalConstants.DdlID);
+            //    rows.Columns.Add(PortalConstants.DdlName);
 
-                foreach (var row in query)
-                {
-                    DataRow dr = rows.NewRow();                 // Build a row from the next query output
-                    dr[PortalConstants.DdlID] = row.PersonID;
-                    dr[PortalConstants.DdlName] = row.Name;
-                    rows.Rows.Add(dr);                          // Add the new row to the data table
-                }
+            //    foreach (var row in query)
+            //    {
+            //        DataRow dr = rows.NewRow();                 // Build a row from the next query output
+            //        dr[PortalConstants.DdlID] = row.PersonID;
+            //        dr[PortalConstants.DdlName] = row.Name;
+            //        rows.Rows.Add(dr);                          // Add the new row to the data table
+            //    }
 
-                // The "needed" option is no longer supported in new requests. But we may have requests in the database that still have the needed flag set.
+            //    // The "needed" option is no longer supported in new requests. But we may have requests in the database that still have the needed flag set.
 
-                if (needed)                                     // If true old request has needed flag set
-                {
-                    DdlActions.LoadDdl(ddlPerson, personID, rows,
-                    "", "-- none selected --",
-                    needed, "-- Please add new " + lblPerson.Text + " --"); // Put the cherry on top
-                }
-                else
-                {
-                    DdlActions.LoadDdl(ddlPerson, personID, rows,
-                    "", "-- none selected --");
-                }
-            }
+            //    if (needed)                                     // If true old request has needed flag set
+            //    {
+            //        DdlActions.LoadDdl(ddlPerson, personID, rows,
+            //        "", "-- none selected --",
+            //        needed, "-- Please add new " + lblPerson.Text + " --"); // Put the cherry on top
+            //    }
+            //    else
+            //    {
+            //        DdlActions.LoadDdl(ddlPerson, personID, rows,
+            //        "", "-- none selected --");
+            //    }
+            //}
             return;
         }
 

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Review Deposit" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReviewDeposit.aspx.cs" 
+﻿<%@ Page Title="Review Deposit Notification" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ReviewDeposit.aspx.cs" 
     Inherits="Portal11.Rqsts.ReviewDeposit" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
@@ -408,6 +408,7 @@
         <!-- "Scratch" storage used during form processing -->
         <asp:Literal ID="litSavedCommand" runat="server" Visible="false" />
         <asp:Literal ID="litSavedDepID" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedDepType" runat="server" Visible="false" />
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedState" runat="server" Visible="false" />

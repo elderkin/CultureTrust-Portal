@@ -2,10 +2,7 @@
 using Portal11.Logic;
 using Portal11.Models;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlTypes;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -46,6 +43,7 @@ namespace Portal11.Rqsts
 
                     litSavedCommand.Text = cmd;
                     litSavedExpID.Text = expID.String;
+                    litSavedExpType.Text = EnumActions.GetEnumDescription(exp.ExpType);
                     litSavedProjectID.Text = exp.ProjectID.ToString();
                     litSavedReturn.Text = ret;
                     litSavedRush.Text = exp.Rush.ToString();            // Whether or not it is a rush request
@@ -70,6 +68,7 @@ namespace Portal11.Rqsts
                         txtStaffNote.Enabled = false; btnStaffNoteClear.Visible = false; // Can see this note but not edit it
                         btnApprove.Enabled = false;                     // Cannot "Approve" the Exp
                         btnReturn.Enabled = false;                      // Cannot "Return" the Exp
+                        btnRevise.Enabled = false;                      // Cannot "Revise" the Exp
                         litDangerMessage.Text = "You can view this Expense Request, but you cannot approve it."; // Explain that to user
                     }
                     else if (!StateActions.UserCanReviseRequest(exp.CurrentState)) // If false user cannot Revise this Dep. Disable function
@@ -138,7 +137,10 @@ namespace Portal11.Rqsts
             ExpState currentState = EnumActions.ConvertTextToExpState(litSavedState.Text); // Pull ToString version; convert to enum type
             ExpState nextState = StateActions.FindNextState(currentState, ReviewAction.Approve); // Now what?
             int projectID = new int(); string projectName = "";
-            SaveExp(nextState, "Approved", out projectID, out projectName); // Update Exp; write new History row
+            SaveExp(nextState,                                      // Advance request to this state
+                    ReviewAction.Approve, "Approved",               // Note that we are approving the request
+                    EnumActions.ConvertTextToUserRole(litSavedUserRole.Text), // User role of the current user
+                    out projectID, out projectName);                // Update Exp; write new History row
 
             string emailSent = EmailActions.SendEmailToReviewer(    // Send email to next reviewer
                 EnumActions.ConvertTextToBool(litSavedRush.Text),   // Whether the request is "rush"
@@ -146,6 +148,7 @@ namespace Portal11.Rqsts
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has this name
                 EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
+                litSavedExpType.Text,                               // Of this type, e.g., Payroll
                 EnumActions.GetEnumDescription(nextState),          // Here is its next state
                 PortalConstants.CEmailDefaultExpenseApprovedSubject, PortalConstants.CEmailDefaultExpenseApprovedBody); // Use this subject and body, if needed
 
@@ -165,10 +168,13 @@ namespace Portal11.Rqsts
                 litReturnNoteError.Visible = true;                  // Make the message visible
                 return;                                             // Go back for more punishment
             }
-            int projectID = new int(); string projectName = "";     // ** TEMP **
+            int projectID = new int(); string projectName = "";     // To be filled by SaveExp
             ExpState currentState = EnumActions.ConvertTextToExpState(litSavedState.Text); // Pull ToString version; convert to enum type
             ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedSubmitProjectRole.Text); // Pull string version, convert to enum type
-            SaveExp(StateActions.FindNextState(currentState, ReviewAction.Return, projectRole), "Returned", out projectID, out projectName); // Update Exp; write new History row
+            SaveExp(StateActions.FindNextState(currentState, ReviewAction.Return, projectRole), // Advance to the next state
+                ReviewAction.Return, "Returned",                    // We are returning this request
+                EnumActions.ConvertTextToUserRole(litSavedUserRole.Text), // User role of the current user
+                out projectID, out projectName);                    // Update Exp; write new History row
 
             string emailSent = EmailActions.SendEmailToReviewer(    // Send email to next reviewer
                 EnumActions.ConvertTextToBool(litSavedRush.Text),   // Whether the request is "rush"
@@ -176,6 +182,7 @@ namespace Portal11.Rqsts
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has this name
                 EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
+                litSavedExpType.Text,                               // Of this type, e.g., Payroll
                 EnumActions.GetEnumDescription(ExpState.ReturnedToProjectDirector),  // Here is its next state
                 PortalConstants.CEmailDefaultExpenseReturnedSubject, PortalConstants.CEmailDefaultExpenseReturnedBody); // Use this subject and body, if needed
 
@@ -190,9 +197,11 @@ namespace Portal11.Rqsts
         {
             int projectID = new int(); string projectName = "";
             ExpState currentState = EnumActions.ConvertTextToExpState(litSavedState.Text); // Pull ToString version; convert to enum type  
-            SaveExp(StateActions.FindNextState(currentState, ReviewAction.Revise), "Revising", out projectID, out projectName); // Update Dep; write new History row
-            DispatchRevise();                                                       // Dispatch to Edit Deposit
-
+            SaveExp(StateActions.FindNextState(currentState, ReviewAction.Revise),  // Find next state for revised request
+                    ReviewAction.Revise, "Revising",                // We are revising
+                    EnumActions.ConvertTextToUserRole(litSavedUserRole.Text), // User role of the current user
+                    out projectID, out projectName);                // Update Dep; write new History row
+            DispatchRevise();                                       // Dispatch to Edit Deposit
         }
 
         void DispatchRevise()
@@ -229,8 +238,9 @@ namespace Portal11.Rqsts
         //  1) Fetch the Exp row to be updated.
         //  2) Create a new ExpHistory row and fill it.
         //  3) Update the Exp row with new State and Return Note.
+        //  4) Flip the value of the ReviseUserRole under certain circumstances
 
-        private void SaveExp(ExpState nextState, string verb, out int projectID, out string projectName)
+        private void SaveExp(ExpState nextState, ReviewAction action, string verb, UserRole reviewUserRole, out int projectID, out string projectName)
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -244,6 +254,34 @@ namespace Portal11.Rqsts
                     toUpdate.StaffNote = txtStaffNote.Text;                     // Fetch updated content of this note, if any
                     StateActions.CopyPreviousState(toUpdate, hist, verb);       // Create a Request History log row from "old" version of Request
                     StateActions.SetNewExpState(toUpdate, nextState, litSavedUserID.Text, hist); // Write down our current State and authorship
+
+                    // If this is a Revise, just jam the reviseUserRole into the Request and save it.
+                    // If this is a Return, don't do anything
+                    // If this is an Approve:
+                    //  If Request's ReviseUserRole is None, don't do anything - we're not in a revising cycle.
+                    //      If Request's ReviseUserRole is the same as the caller, reset Request's ReviseUserRole to None. Revising cycle is complet.
+                    // This lets Dashboards turn this row "Teal" from the time of a Revision to the time of a "re-Approval."
+
+                    switch (action)
+                    {
+                        case ReviewAction.Revise:
+                            {
+                                toUpdate.ReviseUserRole = reviewUserRole;       // Note that we are starting a "revise" cycle.
+                                break;
+                            }
+                        case ReviewAction.Return:
+                            break;
+                        case ReviewAction.Approve:
+                            {
+                                if (toUpdate.ReviseUserRole != UserRole.None)   // If != we are in a "revise" cycle.
+                                {
+                                    if (toUpdate.ReviseUserRole == reviewUserRole) // If == we are approving to end a "revise" cycle
+                                        toUpdate.ReviseUserRole = UserRole.None; // Note that the "revise" cycle is complete
+                                }
+                                break;
+                            }
+                    }
+
                     context.ExpHistorys.Add(hist);                              // Save new ExpHistory row
                     context.SaveChanges();                                      // Commit the Add and Modify
                     projectID = (int)toUpdate.ProjectID;                        // Report Project ID to caller
@@ -286,7 +324,7 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = true;
                         pnlDateNeeded.Visible = false;
                         pnlDateOfInvoice.Visible = true;
-                        pnlDeliveryInstructions.Visible = true; pnlPODeliveryInstructions.Visible = false; pnlDeliveryAddress.Visible = true;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryAddress.Visible = true;
                         pnlEntity.Visible = false;
                         pnlGoods.Visible = false;
                         pnlPaymentMethod.Visible = true;
@@ -302,7 +340,7 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = false;
                         pnlDateNeeded.Visible = true;
                         pnlDateOfInvoice.Visible = false;
-                        pnlDeliveryInstructions.Visible = true; pnlPODeliveryInstructions.Visible = false; pnlDeliveryAddress.Visible = true;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryAddress.Visible = true;
                         pnlEntity.Visible = false;
                         pnlGoods.Visible = false;
                         pnlPaymentMethod.Visible = false;
@@ -318,7 +356,7 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = false;
                         pnlDateNeeded.Visible = false;
                         pnlDateOfInvoice.Visible = false;
-                        pnlDeliveryInstructions.Visible = true; pnlPODeliveryInstructions.Visible = false; pnlDeliveryAddress.Visible = true;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryAddress.Visible = true;
                         pnlEntity.Visible = false;
                         pnlGoods.Visible = false;
                         pnlPaymentMethod.Visible = true;
@@ -334,7 +372,7 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = false;
                         pnlDateNeeded.Visible = true;
                         pnlDateOfInvoice.Visible = false;
-                        pnlDeliveryInstructions.Visible = false; pnlPODeliveryInstructions.Visible = true; pnlDeliveryAddress.Visible = true;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryAddress.Visible = true;
                         pnlEntity.Visible = true;
                         pnlGoods.Visible = true;
                         pnlPaymentMethod.Visible = true;
@@ -350,7 +388,7 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = false;
                         pnlDateNeeded.Visible = false;
                         pnlDateOfInvoice.Visible = false;
-                        pnlDeliveryInstructions.Visible = true; pnlPODeliveryInstructions.Visible = false; pnlDeliveryAddress.Visible = true;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryAddress.Visible = true;
                         pnlEntity.Visible = false;
                         pnlGoods.Visible = false;
                         pnlPaymentMethod.Visible = true;
@@ -366,7 +404,7 @@ namespace Portal11.Rqsts
                         pnlContractQuestions.Visible = true;
                         pnlDateNeeded.Visible = false;
                         pnlDateOfInvoice.Visible = true;
-                        pnlDeliveryInstructions.Visible = true; pnlPODeliveryInstructions.Visible = false; pnlDeliveryAddress.Visible = true;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryAddress.Visible = true;
                         pnlEntity.Visible = true;
                         pnlGoods.Visible = false;
                         pnlPaymentMethod.Visible = true;
@@ -413,17 +451,22 @@ namespace Portal11.Rqsts
             if (record.DateOfInvoice > SqlDateTime.MinValue)
                 txtDateOfInvoice.Text = DateActions.LoadDateIntoTxt(record.DateOfInvoice);
 
-            txtDeliveryInstructions.Text = EnumActions.GetEnumDescription(record.DeliveryMode);
             if (record.Rush)
                 txtDeliveryInstructionsRush.Visible = true;
-            txtPODeliveryInstructions.Text = EnumActions.GetEnumDescription(record.PODeliveryMode);
-            if (record.DeliveryAddress != null)
-                txtDeliveryAddress.Text = record.DeliveryAddress;
 
             if (record.Description != null)
                 txtDescription.Text = record.Description;
 
             txtTypeDescription.Text = EnumActions.GetEnumDescription(record.ExpType); // Convert enum value to English value for display
+
+            string entityPersonAddress = "";                                // Hold address of Entity or Person for Delivery Address
+            if (record.EntityID != null)
+            {
+                txtEntity.Text = record.Entity.Name;
+                entityPersonAddress = record.Entity.Address;                // Save address, too, in case Delivery Address needs it
+            }
+            else if (record.EntityNeeded)                                   // If true, PD asks us to create a new Entity
+                txtEntity.Text = "-- Please create a new " + lblEntity.Text + "--"; // Make that request
 
             if (record.GLCodeID != null)
                 txtGLCode.Text = record.GLCode.Code;
@@ -449,7 +492,10 @@ namespace Portal11.Rqsts
             }
 
             if (record.PersonID != null)                                    // If != there is a Person to display
+            {
                 txtPerson.Text = record.Person.Name;
+                entityPersonAddress = record.Person.Address;                // Save address, too, in case Delivery Address needs it
+            }
             else if (record.PersonNeeded)                                   // If true, PD asks us to create a new Person
                 txtPerson.Text = "-- Please create a new " + lblPerson.Text + " --"; // Make that request
 
@@ -459,11 +505,6 @@ namespace Portal11.Rqsts
 
             if (record.ReturnNote != null)
                 txtReturnNote.Text = record.ReturnNote;
-
-            if (record.EntityID != null)
-                txtEntity.Text = record.Entity.Name;
-            else if (record.EntityNeeded)                                   // If true, PD asks us to create a new Entity
-                txtEntity.Text = "-- Please create a new " + lblEntity.Text + "--"; // Make that request
 
             // For a while, we used an enum called SourceOfFunds to select various options, one of which, Restricted, 
             // required a Project Class. Then SourceOfFunds went away and everything became Restricted. To process legacy
@@ -482,6 +523,36 @@ namespace Portal11.Rqsts
 
             if (SplitActions.LoadSplitRowsForView(RequestType.Expense, record.ExpID, gvExpSplit)) // If true, ExpSplits existed and were loaded
                 EnergizeSplit();                                        // Adjust page to accommodate split gridview
+
+            // Delivery Mode and PO Delivery Mode both use Delivery Instructions and Delivery Address. Delivery Address only makes sense in some modes. 
+            // EditExpense has packed this information and saved it in the database. Now we have to unpack it.
+
+            if (record.ExpType == ExpType.PurchaseOrder)                            // This is a purchase order
+            {
+                txtDeliveryInstructions.Text = EnumActions.GetEnumDescription(record.PODeliveryMode); // Fill Delivery Instructions
+                if (record.PODeliveryMode == PODeliveryMode.DeliverAddress)         // If == deliver to a specific address
+                    txtDeliveryAddress.Text = record.DeliveryAddress;               // Fill from database
+            }
+            else
+            {
+                txtDeliveryInstructions.Text = EnumActions.GetEnumDescription(record.DeliveryMode); // Fill Delivery Instructions
+                switch (record.DeliveryMode)                                        // Break out by Delivery Mode
+                {
+                    case DeliveryMode.MailAddress:
+                        {
+                            txtDeliveryAddress.Text = record.DeliveryAddress;       // Delivery to a specified address. Fill from database
+                            break;
+                        }
+                    case DeliveryMode.MailPayee:
+                        {
+                            txtDeliveryAddress.Text = entityPersonAddress;          // Deliver to an Entity or Person's address on file
+                            break;
+                        }
+                    case DeliveryMode.Pickup:
+                    default:
+                        break;
+                }
+            }
 
             SupportingActions.LoadDocs(RequestType.Expense, record.ExpID, lstSupporting, litDangerMessage); // Load into list box
             return;

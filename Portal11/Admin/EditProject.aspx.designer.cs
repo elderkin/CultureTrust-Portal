@@ -193,6 +193,24 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.DropDownList ddlProjectDirector;
         
         /// <summary>
+        /// pnlProjectStaff control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlProjectStaff;
+        
+        /// <summary>
+        /// lstProjectStaff control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.ListBox lstProjectStaff;
+        
+        /// <summary>
         /// btnCancel control.
         /// </summary>
         /// <remarks>

@@ -220,103 +220,103 @@ namespace Portal11.Proj {
         protected global::System.Web.UI.WebControls.CheckBox ckRArchived;
         
         /// <summary>
-        /// btnAppCollapse control.
+        /// btnExpCollapse control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnAppCollapse;
+        protected global::System.Web.UI.WebControls.LinkButton btnExpCollapse;
         
         /// <summary>
-        /// btnAppExpand control.
+        /// btnExpExpand control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnAppExpand;
+        protected global::System.Web.UI.WebControls.LinkButton btnExpExpand;
         
         /// <summary>
-        /// pnlApp control.
+        /// pnlExp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlApp;
+        protected global::System.Web.UI.WebControls.Panel pnlExp;
         
         /// <summary>
-        /// gvAllApp control.
+        /// gvAllExp control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvAllApp;
+        protected global::System.Web.UI.WebControls.GridView gvAllExp;
         
         /// <summary>
-        /// btnAppNew control.
+        /// btnExpNew control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAppNew;
+        protected global::System.Web.UI.WebControls.Button btnExpNew;
         
         /// <summary>
-        /// btnAppEdit control.
+        /// btnExpEdit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAppEdit;
+        protected global::System.Web.UI.WebControls.Button btnExpEdit;
         
         /// <summary>
-        /// btnAppView control.
+        /// btnExpView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAppView;
+        protected global::System.Web.UI.WebControls.Button btnExpView;
         
         /// <summary>
-        /// btnAppCopy control.
+        /// btnExpCopy control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAppCopy;
+        protected global::System.Web.UI.WebControls.Button btnExpCopy;
         
         /// <summary>
-        /// btnAppDelete control.
+        /// btnExpDelete control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAppDelete;
+        protected global::System.Web.UI.WebControls.Button btnExpDelete;
         
         /// <summary>
-        /// btnAppReview control.
+        /// btnExpReview control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAppReview;
+        protected global::System.Web.UI.WebControls.Button btnExpReview;
         
         /// <summary>
-        /// btnAppArchive control.
+        /// btnExpArchive control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAppArchive;
+        protected global::System.Web.UI.WebControls.Button btnExpArchive;
         
         /// <summary>
         /// btnDepCollapse control.
@@ -418,103 +418,103 @@ namespace Portal11.Proj {
         protected global::System.Web.UI.WebControls.Button btnDepArchive;
         
         /// <summary>
-        /// btnExpCollapse control.
+        /// btnDocCollapse control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnExpCollapse;
+        protected global::System.Web.UI.WebControls.LinkButton btnDocCollapse;
         
         /// <summary>
-        /// btnExpExpand control.
+        /// btnDocExpand control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnExpExpand;
+        protected global::System.Web.UI.WebControls.LinkButton btnDocExpand;
         
         /// <summary>
-        /// pnlExp control.
+        /// pnlDoc control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlExp;
+        protected global::System.Web.UI.WebControls.Panel pnlDoc;
         
         /// <summary>
-        /// gvAllExp control.
+        /// gvAllDoc control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvAllExp;
+        protected global::System.Web.UI.WebControls.GridView gvAllDoc;
         
         /// <summary>
-        /// btnExpNew control.
+        /// btnDocNew control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExpNew;
+        protected global::System.Web.UI.WebControls.Button btnDocNew;
         
         /// <summary>
-        /// btnExpEdit control.
+        /// btnDocEdit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExpEdit;
+        protected global::System.Web.UI.WebControls.Button btnDocEdit;
         
         /// <summary>
-        /// btnExpView control.
+        /// btnDocView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExpView;
+        protected global::System.Web.UI.WebControls.Button btnDocView;
         
         /// <summary>
-        /// btnExpCopy control.
+        /// btnDocCopy control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExpCopy;
+        protected global::System.Web.UI.WebControls.Button btnDocCopy;
         
         /// <summary>
-        /// btnExpDelete control.
+        /// btnDocDelete control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExpDelete;
+        protected global::System.Web.UI.WebControls.Button btnDocDelete;
         
         /// <summary>
-        /// btnExpReview control.
+        /// btnDocReview control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExpReview;
+        protected global::System.Web.UI.WebControls.Button btnDocReview;
         
         /// <summary>
-        /// btnExpArchive control.
+        /// btnDocArchive control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnExpArchive;
+        protected global::System.Web.UI.WebControls.Button btnDocArchive;
         
         /// <summary>
         /// litSavedUserID control.

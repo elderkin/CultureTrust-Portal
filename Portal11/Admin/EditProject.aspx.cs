@@ -180,6 +180,7 @@ namespace Portal11.Admin
             txtCurrentFunds.Text = record.CurrentFunds.ToString("C");
             // Project Director
             FillProjectDirectorDDL();
+            FillProjectStaffList(record.ProjectID);
             return;
         }
 
@@ -271,6 +272,27 @@ namespace Portal11.Admin
                 ddlProjectDirector.Items.Insert(0, new ListItem("-- No Project Director selected --", String.Empty)); 
                 // Place an empty item at top of list to force selection
                 ddlProjectDirector.SelectedIndex = 0;                   // Select that row
+            }
+            return;
+        }
+
+        // Fill a ListBox of names of Project Staff members
+
+        void FillProjectStaffList (int projID)
+        {
+            if (projID != 0)                                            // If != a project exists and we can look at it
+            {
+                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+                {
+                    var query = from up in context.UserProjects
+                                where (up.ProjectID == projID) && (up.ProjectRole == ProjectRole.ProjectStaff)
+                                orderby up.User.FullName
+                                select new { up.User.FullName };       // Find the Users who are PS on this Project
+                    foreach (var row in query)
+                    {
+                        lstProjectStaff.Items.Add(new ListItem(row.FullName, "")); // Stash each Project Staff user name into list
+                    }
+                }
             }
             return;
         }

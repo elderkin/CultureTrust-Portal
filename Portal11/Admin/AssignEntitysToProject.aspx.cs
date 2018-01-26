@@ -19,7 +19,7 @@ namespace Portal11.Admin
             // This page assigns Entitys to a Project in roles of Entity and Vendor. The ProjectEntity table intermediates
             // these relationships.
             // Query Strings:
-            //    QSEntityRole = "ExpenseVendor" for initial setting of radio button. Optional
+            //    QSEntityRole = role that the caller is interested in selecting (optional, can be comma-delimited list)
             //    QSProjectID = ID of current project
             //    QSReturn - where to go when we finish
 
@@ -36,12 +36,31 @@ namespace Portal11.Admin
 
                 // If EntityRole is specified and value is ExpenseVendor, flip the radio button from DepositEntity to ExpenseVendor
 
-                string entityRole = Request.QueryString[PortalConstants.QSEntityRole]; // Fetch Query String, if present
-                if (!string.IsNullOrEmpty(entityRole))                      // If false there's something there for us to process
+                string entityRoles = Request.QueryString[PortalConstants.QSEntityRole]; // Fetch Query String, if present
+                if (!string.IsNullOrEmpty(entityRoles))                      // If false there's something there for us to process
                 {
-                    foreach (ListItem item in rdoEntityRole.Items)
+
+                    // Process a comma-delimited list of EntityRole values. For each value, leave the corresponding button enabled. Disable others.
+                    // As we start, all the radio buttons are enabled and the first button is selected.
+
+                    bool selectionComplete = false;                         // Flag to show that we've selected an item
+                    foreach (ListItem item in rdoEntityRole.Items)          // Fetch the radio button items one at a time
                     {
-                        item.Selected = (entityRole == item.Value);         // If == set item true, else set item false
+                        if (entityRoles.IndexOf(item.Value) != -1)          // If != the radio button value (EntityRole) was found in our list
+                            if (!selectionComplete)                         // If false we have not yet made a selection
+                            {
+                                item.Selected = true;                       // Select this radio button
+                                selectionComplete = true;                   // Remember that we have made this selection
+                            }
+                            else
+                            {
+                                item.Selected = false;                      // One selection per list is enough
+                            }
+                        else                                                // This radio button is dead to us
+                        {
+                            item.Selected = false;                          // De-select this radio button
+                            item.Enabled = false;                           // And disable this radio button
+                        }
                     }
                 }
 
@@ -277,16 +296,16 @@ namespace Portal11.Admin
                     if (search != "")                                       // If != the search string is not blank, use a Contains clause
                         pred = pred.And(p => p.Entity.Name.Contains(search)); // Only Entitys whose name match our search criteria
 
-                    List<ProjectEntity> pps = context.ProjectEntitys.AsExpandable().Where(pred).OrderBy(p => p.Entity.Name).ToList(); // Query, exclude, sort and make list
-
-                    gvProjectEntity.DataSource = pps;                     // Give it to the GridView cnorol
-                    gvProjectEntity.DataBind();                           // And display it
+                    gvProjectEntity.DataSource = context.ProjectEntitys.AsExpandable().Where(pred) // Query using the Where predicate we just constructed
+                                                        .OrderBy(p => p.Entity.Name) // Sort the results by Name
+                                                        .ToList();          // Deliver the list to the GridView control
+                    gvProjectEntity.DataBind();                             // And display it
 
                     NavigationActions.EnableGridViewNavButtons(gvProjectEntity); // Enable appropriate nav buttons based on page count
 
-                    btnRemoveAll.Enabled = true;                            // Assume that there are rows here which could be removed
-                    if (pps.Count() == 0)                                   // If == there are no rows displayed here
-                        btnRemoveAll.Enabled = false;                       // So the "Remove All" button is not useful
+                    //btnRemoveAll.Enabled = true;                            // Assume that there are rows here which could be removed
+                    //if (pps.Count() == 0)                                   // If == there are no rows displayed here
+                    //    btnRemoveAll.Enabled = false;                       // So the "Remove All" button is not useful
                 }
             }
         }
@@ -324,8 +343,11 @@ namespace Portal11.Admin
 
                 List<Entity> ps = context.Entitys.AsExpandable().Where(pred).Except(queryPE).OrderBy(p => p.Name).ToList(); // Query, exclude,sort and make list
 
-                gvAllEntity.DataSource = ps;                          // Give it to the GridView cnorol
-                gvAllEntity.DataBind();                               // And display it
+                gvAllEntity.DataSource = context.Entitys.AsExpandable().Where(pred) // Query using the predicate we just created
+                                                .Except(queryPE)        // Exclude Entities already in selected role for project
+                                                .OrderBy(p => p.Name)   // Sort the Entities by name
+                                                .ToList();              // Deliver the list to the GridView control
+                gvAllEntity.DataBind();                                 // And display it
 
                 NavigationActions.EnableGridViewNavButtons(gvAllEntity); // Enable appropriate nav buttons based on page count
             }

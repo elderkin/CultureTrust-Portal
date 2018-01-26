@@ -328,6 +328,7 @@ namespace Portal11.Rqsts
                         toSubmit.ProjectID,                             // Request is associated with this project
                         toSubmit.Project.Name,                          // Project has this name (for parameter substitution)
                         EnumActions.GetEnumDescription(RequestType.Approval), // This is an Approval Request
+                        EnumActions.GetEnumDescription(toSubmit.AppType), // Here is its Approval type
                         EnumActions.GetEnumDescription(nextState),      // Here is its next state
                         PortalConstants.CEmailDefaultApprovalApprovedSubject, PortalConstants.CEmailDefaultApprovalApprovedBody); // Use this subject and body, if needed
                 }

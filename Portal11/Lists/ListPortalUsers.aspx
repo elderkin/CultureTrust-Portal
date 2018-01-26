@@ -77,7 +77,7 @@
                         </table>
                     </EmptyDataTemplate>
                     <Columns>
-                        <asp:TemplateField HeaderText="ID" Visible="false">
+                        <asp:TemplateField HeaderText="ID" Visible="true">
                             <ItemTemplate>
                                 <asp:Label ID="lblUserID" runat="server" Text='<%# Bind("UserID") %>'></asp:Label>
                             </ItemTemplate>

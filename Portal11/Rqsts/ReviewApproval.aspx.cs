@@ -56,6 +56,7 @@ namespace Portal11.Rqsts
                     // Stash these parameters into invisible literals on the current page.
 
                     litSavedAppID.Text = appID.String;
+                    litSavedAppType.Text = EnumActions.GetEnumDescription(app.AppType); // Here is its Approval type
                     litSavedCommand.Text = cmd;
                     litSavedProjectID.Text = app.ProjectID.ToString();
                     litSavedReturn.Text = ret;
@@ -129,6 +130,7 @@ namespace Portal11.Rqsts
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has a name
                 EnumActions.GetEnumDescription(RequestType.Approval), // This is an Approval Request
+                litSavedAppType.Text,                               // Here is its Approval type
                 EnumActions.GetEnumDescription(nextState),          // Here is its next state
                 PortalConstants.CEmailDefaultApprovalApprovedSubject, PortalConstants.CEmailDefaultApprovalApprovedBody); // Use this subject and body, if needed
 
@@ -149,6 +151,7 @@ namespace Portal11.Rqsts
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has a name
                 EnumActions.GetEnumDescription(RequestType.Approval), // This is an Approval Request
+                litSavedAppType.Text,                               // Here is its Approval type
                 EnumActions.GetEnumDescription(AppState.Returned),  // Here is its next state
                 PortalConstants.CEmailDefaultApprovalReturnedSubject, PortalConstants.CEmailDefaultApprovalReturnedBody); // Use this subject and body, if needed
 

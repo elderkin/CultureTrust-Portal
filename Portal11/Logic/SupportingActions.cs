@@ -62,7 +62,7 @@ namespace Portal11.Logic
         }
 
         //  2) Copy the Supporting Docs. We know that in the source Rqst, all the supporting docs are "permanent," i.e., we don't need
-        //  to worry about "temporary" docs.
+        //  to worry about "temporary" docs or revisions.
 
         public static void CopyDocs(ApplicationDbContext context, RequestType rqstType, int srcID, int destID)
         {
@@ -80,7 +80,7 @@ namespace Portal11.Logic
                     MIME = srcSD.MIME,
                     FileLength = srcSD.FileLength,
                     UploadedTime = srcSD.UploadedTime,
-                    OwnerID = destID,                                // This belongs to the destination Rqst
+                    OwnerID = destID,                               // This belongs to the destination Rqst
                     OwnerType = rqstType
                 };
                 context.SupportingDocs.Add(destSD);                 // Add the new row
@@ -90,9 +90,10 @@ namespace Portal11.Logic
                           serverRoot + destSD.SupportingDocID.ToString() + Path.GetExtension(destSD.FileName));
                     // Copy the source supporting doc file to create the destination supporting doc
             }
+            return;
         }
 
-        // Delete all the supporting documents (and SupportingDoc rows) for a Deposit or Expense.
+        // Delete all the supporting documents and revisions (and SupportingDoc rows) for a Deposit, Document, or Expense.
 
         public static void DeleteDocs(RequestType rqstType, int ownerID)
         {
@@ -100,16 +101,17 @@ namespace Portal11.Logic
             {
                 try
                 {
-                    string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
                     var query = from sd in context.SupportingDocs
                                 where sd.OwnerID == ownerID && sd.OwnerType == rqstType
                                 select sd;                              // Find all SupportingDoc rows for this ExpID
 
                     foreach (SupportingDoc sd in query)                 // Process each Supporting Doc in turn
                     {
-                        File.Delete(serverRoot + sd.SupportingDocID.ToString() + Path.GetExtension(sd.FileName)); // Delete the file from the /Supporting directory
-                        context.SupportingDocs.Remove(sd);              // and the row from the database
+                        DeleteSupportingDocFilesAndRevisionFiles(sd.SupportingDocID); // That name's pretty self-explanitory, eh?
+
+                        context.SupportingDocs.Remove(sd);              // and the SD row from the database
                     }
+                    context.SaveChanges();                              // Commit the database changes
                 }
                 catch (Exception ex)
                 {
@@ -118,6 +120,18 @@ namespace Portal11.Logic
                 }
             }
             return;
+        }
+
+        // See whether the selected Supporting Doc is a temporary file (or a permanent file).
+        // This code assumes that a prior call has insured that a row is selected.
+
+        public static bool IsDocTemp(ListBox lst)
+        {
+            string val = lst.SelectedValue;                         // Fetch the Value of the Selected row, if any. Contains ID with "T" flag
+            if (val.Substring(0, PortalConstants.SupportingTempFlag.Length) == PortalConstants.SupportingTempFlag)
+                // If == this entry has a corresponding row in Temp table.
+                return true;                                        // Tell caller that the row contains a Temp document
+            return false;
         }
 
         // Load the Supporting Listbox control from the database.
@@ -139,7 +153,7 @@ namespace Portal11.Logic
                     foreach (SupportingDoc rs in query)             // Loop through all the rows that the query returned
                     {
 
-                        //  2) Create a row in the Listbox control for this Supporting
+                       //  2) Create a row in the Listbox control for this Supporting
 
                         lst.Items.Add(new ListItem(rs.FileName, rs.SupportingDocID.ToString())); // Value is the ID of this row
                     }
@@ -164,8 +178,8 @@ namespace Portal11.Logic
 
             //  1) Make sure that a row is selected. If not, its an error.
 
-            string val = lst.SelectedValue;               // Fetch the Value of the Selected row, if any
-            ListItem item = lst.SelectedItem;             // Fetch the Selected row
+            string val = lst.SelectedValue;                         // Fetch the Value of the Selected row, if any. Contains ID with "T" flag
+            ListItem item = lst.SelectedItem;                       // Fetch the Selected row, which contains filename
             if (val == "" || item == null)                          // If == no row selected, that's an error
             {
                 dan.Text = "Please select a Supporting Document to Remove";
@@ -206,8 +220,7 @@ namespace Portal11.Logic
                             LogError.LogInternalError("RemoveDoc", string.Format(
                                 "SupportingDocID '{0}' from selected GridView row not found in database",
                                 sdID.ToString()));                  // Log fatal error
-
-                        File.Delete(serverRoot + sd.SupportingDocID.ToString() + Path.GetExtension(sd.FileName)); // Delete the file from the /Supporting directory
+                        DeleteSupportingDocFilesAndRevisionFiles(sd.SupportingDocID); // Delete all the underlying files
                         context.SupportingDocs.Remove(sd);          // and the row from the database
                     }
                     context.SaveChanges();                          // Commit that change
@@ -220,6 +233,122 @@ namespace Portal11.Logic
                 catch (Exception ex)
                 {
                     LogError.LogDatabaseError(ex, "RemoveDoc", "Error processing SupportingDoc row"); // Fatal error
+                }
+            }
+        }
+
+        // Revise the selected Supporting Doc. This works only for Document Requests.
+        //  1) Make sure that a row is selected. If not, its an error.
+        //  2) If the row is for a Temp, ignore this request. We don't revise Temp docs.
+        //  3) Locate the Rqst row and SD row for the previous document
+        //  4) Prepare a new History row
+        //  5) Rename the previous document to contain the ID of the history row.
+        //  6) Load the new document, but as a permanent file, not a temporary file
+        //  7) Update the selected row from the Listbox.
+
+        public static void ReviseDoc(FileUpload fup, ListBox lst, int docID, Literal suc, Literal dan)
+        {
+            suc.Text = ""; dan.Text = "";                           // Start with a clean slate of message displays
+
+            //  1) Make sure that a row is selected. If not, its an error.
+
+            string val = lst.SelectedValue;                         // Fetch the Value of the Selected row, if any. Contains ID with "T" flag
+            ListItem item = lst.SelectedItem;                       // Fetch the Selected row, which contains filename
+            if (val == "" || item == null)                          // If == no row selected, that's an error
+            {
+                dan.Text = "Please select a Supporting Document to Remove"; // Report the error
+                return;
+            }
+
+            //  2) If the row is for a Temp, ignore this request. We don't revise Temp docs.
+
+            if (val.Substring(0, PortalConstants.SupportingTempFlag.Length) == PortalConstants.SupportingTempFlag)
+            // If == this entry has a corresponding row in Temp table. We don't revise temps.
+            {
+                dan.Text = "Please save the request before revising a Supporting Document"; // Report the error
+                return;
+            }
+
+            // 2.5 Do some quick checks on the newly uploaded file before we change anything in the database
+
+            string newName = fup.PostedFile.FileName;          // Fetch the name of the file to upload
+            if (newName.Contains("#"))                         // If true, the file name contains a character we can't handle
+            {
+                dan.Text = "Name of selected file contains a pound sign character ('#') which the Portal cannot process. Please rename the file or choose another file.";
+                return;
+            }
+            int newLength = fup.PostedFile.ContentLength;      // Fetch the length of the file - it might be too big for us
+            if (newLength > PortalConstants.MaxSupportingFileSize) // If > file is too big to upload
+            {
+                dan.Text = "Selected file is too large to upload";
+                return;
+            }
+
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+                try
+                {
+                    //  3) Locate the Rqst row and SD row for the previous document
+
+                    Doc doc = context.Docs.Find(docID);             // Fetch Doc row by its key
+                    if (doc == null)                                // If == couldn't find the row
+                        LogError.LogInternalError("EditDocument, ReviseDoc", $"Unable to locate DocumentID '{docID.ToString()}' in database"); // Log fatal error
+
+                    int sdID = Convert.ToInt32(val);                // Convert SupportingDoc row ID
+                    SupportingDoc sd = context.SupportingDocs.Find(sdID); // Use the ID to fetch that row
+                    if (sd == null)                                 // If == couldn't find the row
+                        LogError.LogInternalError("ReviseDoc", 
+                            $"SupportingDocID '{sdID.ToString()}' from selected GridView row not found in database"); // Log fatal error
+                    if (sd.OwnerType != RequestType.Document)       // If != SD is connected to the wrong type of request
+                        LogError.LogInternalError("ReviseDoc",
+                            $"SupportingDocID '{sdID.ToString()}' is not associated with a Document Request"); // Log fatal error
+
+                    //  4) Prepare a new History row. Store it early so we can have it's database ID.
+
+                    DocHistory hist = new DocHistory();             // Get a place to build a new DepHistory row
+                    StateActions.CopyPreviousState(doc, hist, "Supporting Document '" + sd.FileName + "' Revised to '" + newName + "'"); // Fill the DocHistory row from Doc request row
+                    hist.SupportingDocID = sdID;                    // Connect the history to the supporting doc so we can track down this revision
+                    hist.FileName = sd.FileName;                    // Save name of the old file
+                    hist.MIME = sd.MIME;                            // Save type of the old file
+                    hist.NewDocState = hist.PriorDocState;          // State of the request hasn't changed by a supporting document revision
+                    hist.HistoryTime = System.DateTime.Now;         // Show that this revision is happening now, not when the owner Doc row was written
+
+                    context.DocHistorys.Add(hist);                  // Add the new DocHistory row
+                    context.SaveChanges();                          // Commit changes to get the ID of the new DocHistory row
+
+                    //  5) Rename the previous document to contain the ID of the history row.
+                    //    Old name: sdID.type
+                    //    New name: sdID_histID.type
+
+                    string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
+                    string oldExt = Path.GetExtension(sd.FileName);    // Parse out the file extension
+                    File.Move(serverRoot + sd.SupportingDocID.ToString() + oldExt,
+                              serverRoot + sd.SupportingDocID.ToString() + "_" + hist.DocHistoryID.ToString() + oldExt); // Change the name of the file
+
+                    //  6) Load the new document, but as a permanent file, not a temporary file. Use the same filename (the sdID), but the
+                    //  new file's type. Overwrite the SupportingDoc row to describe it.
+
+                    string newExt = Path.GetExtension(newName);         // We'll propagate the extension
+                    string uploadFullName = serverRoot + sd.SupportingDocID.ToString() + newExt; // And the full name including path
+                    fup.SaveAs(uploadFullName);                     // Copy the Supporting file to server using our manufactured name
+
+                    sd.FileName = newName;                              // Copy description of the new file into the SupportingDoc row
+                    sd.MIME = fup.PostedFile.ContentType;               // Knowing MIME type helps with download
+                    sd.FileLength = newLength;
+                    sd.UploadedTime = System.DateTime.Now;
+                    sd.OwnerID = docID;                                 // Connect this SupportingDoc to owner Document Request
+                    sd.OwnerType = RequestType.Document;                // So far, we can only revise a Document Request's supporting doc
+
+                    context.SaveChanges();                              // Update the sd row
+
+                    //  7) Update the selected row from the Listbox to display the new file name.
+
+                    lst.Items.FindByValue(val).Text = newName;          // Update the filename displayed in the list
+                    suc.Text = "Supporting Document successfully revised"; // Let the user know
+                }
+                catch (Exception ex)
+                {
+                    LogError.LogDatabaseError(ex, "ReviseDoc", "Error processing SupportingDoc row"); // Fatal error
                 }
             }
         }
@@ -473,6 +602,20 @@ namespace Portal11.Logic
                     PortalConstants.QSMIME + "=" + sourceMIME + "&" + PortalConstants.QSUserFile + "=" + destFileName;
         }
 
+        // Delete all supporting documents and revisions given the SupportingDocID
+
+        static void DeleteSupportingDocFilesAndRevisionFiles(int sdID)
+        {
+            string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
+            DirectoryInfo dir = new DirectoryInfo(serverRoot); // Connect to the directory in which supporting documents live  
+            string sdfiles = sdID.ToString() + "*.*";           // Build up name of all SDs and revisions. Note: all file types deleted
+
+            foreach (var file in dir.EnumerateFiles(sdfiles)) // Use wild card to find each document file in turn
+            {
+                file.Delete();                              // Delete next file
+            }
+
+        }
         // Given a ListItem in the Supporting Document list, fetch the name, length, and MIME type of the supporting document file.
         // In this context, "source file" means the file on the server's /Supporting directory where the user's original file was copied.
 
@@ -500,7 +643,7 @@ namespace Portal11.Logic
                     // Remove the "T" and extract row ID
                     SupportingDocTemp sdt = context.SupportingDocTemps.Find(sdtID); // Use the ID to fetch that database row
                     if (sdt == null)                                        // If == couldn't find the row
-                        LogError.LogInternalError("ViewDocPrep", "RequestSupportingTempID from selected GridView row not found in database");
+                        LogError.LogInternalError("ViewDocPrep", $"RequestSupportingTempID '{sdtID}' from selected GridView row not found in database");
                     // Log fatal error
 
                     sourceFileName = sdt.FileName;                          // Source of the download - a temporary file

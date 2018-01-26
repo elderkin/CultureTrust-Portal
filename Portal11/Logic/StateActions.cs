@@ -33,7 +33,7 @@ namespace Portal11.Logic
             }
             else
             {
-                LogError.LogInternalError("FindUnsubmittedState", $"Invalid ProjectRole value '{role}' encountered"); // Fatal error
+                LogError.LogInternalError("FindUnsubmittedAppState", $"Invalid ProjectRole value '{role}' encountered"); // Fatal error
                 return 0;
             }
         }
@@ -46,10 +46,27 @@ namespace Portal11.Logic
             }
             else
             {
-                LogError.LogInternalError("FindUnsubmittedState", $"Invalid ProjectRole value '{role}' encountered"); // Fatal error
+                LogError.LogInternalError("FindUnsubmittedDepState", $"Invalid ProjectRole value '{role}' encountered"); // Fatal error
                 return 0;
             }
         }
+
+        public static DocState FindUnsubmittedDocState(string role)
+        {
+            switch (EnumActions.ConvertTextToProjectRole(role))
+            {
+                case ProjectRole.InternalCoordinator:
+                    return DocState.UnsubmittedByInternalCoordinator;
+                case ProjectRole.ProjectDirector:
+                    return DocState.UnsubmittedByProjectDirector;
+                case ProjectRole.ProjectStaff:
+                    return DocState.UnsubmittedByProjectStaff;
+                default:
+                    LogError.LogInternalError("FindUnsubmittedDocState", $"Invalid ProjectRole value '{role}' encountered"); // Fatal error
+                    return 0;
+            }
+        }
+
         public static ExpState FindUnsubmittedExpState(string role)
         {
             switch (EnumActions.ConvertTextToProjectRole(role))
@@ -61,38 +78,38 @@ namespace Portal11.Logic
                 case ProjectRole.ProjectStaff:
                     return ExpState.UnsubmittedByProjectStaff;
                 default:
-                    LogError.LogInternalError("FindUnsubmittedState", $"Invalid ProjectRole value '{role}' encountered"); // Fatal error
+                    LogError.LogInternalError("FindUnsubmittedExpState", $"Invalid ProjectRole value '{role}' encountered"); // Fatal error
                 return 0;
             }
         }
 
         // Given a current state, determine which project role can process the Request.
 
-        public static ProjectRole ProjectRoleToProcessRequest(AppState currentState)
-        {
-            switch (currentState)
-            {
-                case AppState.UnsubmittedByInternalCoordinator:
-                case AppState.AwaitingInternalCoordinator:
-                    return ProjectRole.InternalCoordinator;
-                case AppState.UnsubmittedByProjectDirector:
-                case AppState.AwaitingProjectDirector:
-                case AppState.Returned:
-                    return ProjectRole.ProjectDirector;
-                case AppState.UnsubmittedByProjectStaff:
-                    return ProjectRole.ProjectStaff;
-                case AppState.Approved:
-                case AppState.AwaitingCommunityDirector:
-                case AppState.AwaitingFinanceDirector:
-                case AppState.AwaitingPresident:
-                    return ProjectRole.NoRole;
-                default:
-                    {
-                        LogError.LogInternalError("StateActions.ProjectRoleToProcessRequest", $"Unable to process AppState value '{currentState.ToString()}'"); // Fatal error
-                        return ProjectRole.NoRole;
-                    }
-            }
-        }
+        //public static ProjectRole ProjectRoleToProcessRequest(AppState currentState)
+        //{
+        //    switch (currentState)
+        //    {
+        //        case AppState.UnsubmittedByInternalCoordinator:
+        //        case AppState.AwaitingInternalCoordinator:
+        //            return ProjectRole.InternalCoordinator;
+        //        case AppState.UnsubmittedByProjectDirector:
+        //        case AppState.AwaitingProjectDirector:
+        //        case AppState.Returned:
+        //            return ProjectRole.ProjectDirector;
+        //        case AppState.UnsubmittedByProjectStaff:
+        //            return ProjectRole.ProjectStaff;
+        //        case AppState.Approved:
+        //        case AppState.AwaitingCommunityDirector:
+        //        case AppState.AwaitingFinanceDirector:
+        //        case AppState.AwaitingPresident:
+        //            return ProjectRole.NoRole;
+        //        default:
+        //            {
+        //                LogError.LogInternalError("StateActions.ProjectRoleToProcessRequest", $"Unable to process AppState value '{currentState.ToString()}'"); // Fatal error
+        //                return ProjectRole.NoRole;
+        //            }
+        //    }
+        //}
 
         public static ProjectRole ProjectRoleToProcessRequest(DepState currentState)
         {
@@ -115,6 +132,40 @@ namespace Portal11.Logic
                 default:
                     {
                         LogError.LogInternalError("StateActions.ProjectRoleToProcessRequest", $"Unable to process DepositState value '{currentState.ToString()}'"); // Fatal error
+                        return ProjectRole.NoRole;
+                    }
+            }
+        }
+
+        public static ProjectRole ProjectRoleToProcessRequest(DocState currentState)
+        {
+            switch (currentState)
+            {
+                case DocState.AwaitingInternalCoordinator:
+                case DocState.ReturnedToInternalCoordinator:
+                case DocState.RevisingByInternalCoordinator:
+                case DocState.UnsubmittedByInternalCoordinator:
+                    return ProjectRole.InternalCoordinator;
+                case DocState.ReturnedToProjectStaff:
+                case DocState.UnsubmittedByProjectStaff:
+                    return ProjectRole.ProjectStaff;
+                case DocState.AwaitingProjectDirector:
+                case DocState.ReturnedToProjectDirector:
+                case DocState.RevisingByProjectDirector:
+                case DocState.UnsubmittedByProjectDirector:
+                case DocState.RevisedByCommunityDirector:
+                case DocState.RevisedByFinanceDirector:
+                case DocState.RevisedByInternalCoordinator:
+                case DocState.RevisedByPresident:
+                    return ProjectRole.ProjectDirector;
+                case DocState.AwaitingCommunityDirector:
+                case DocState.AwaitingFinanceDirector:
+                case DocState.AwaitingPresident:
+                case DocState.Executed:
+                    return ProjectRole.NoRole;
+                default:
+                    {
+                        LogError.LogInternalError("StateActions.ProjectRoleToProcessRequest", $"Unable to process DocState value '{currentState.ToString()}'"); // Fatal error
                         return ProjectRole.NoRole;
                     }
             }
@@ -181,7 +232,34 @@ namespace Portal11.Logic
                     }
             }
         }
-        
+
+        public static bool StateToEditReturnNote(DocState currentState)
+        {
+            switch (currentState)
+            {
+                case DocState.AwaitingCommunityDirector:
+                case DocState.AwaitingFinanceDirector:
+                case DocState.AwaitingInternalCoordinator:
+                case DocState.AwaitingPresident:
+                case DocState.AwaitingProjectDirector:
+
+                case DocState.RevisedByCommunityDirector:
+                case DocState.RevisedByFinanceDirector:
+                case DocState.RevisedByInternalCoordinator:
+                case DocState.RevisedByPresident:
+
+                case DocState.RevisingByCommunityDirector:
+                case DocState.RevisingByFinanceDirector:
+                case DocState.RevisingByInternalCoordinator:
+                case DocState.RevisingByPresident:
+                case DocState.RevisingByProjectDirector:
+                    return true;
+                default:
+                    return false;                                           // Return Note is ReadOnly for everybody else
+
+            }
+        }
+
         public static bool StateToEditReturnNote(ExpState currentState)
         {
             switch (currentState)
@@ -210,6 +288,32 @@ namespace Portal11.Logic
             }
         }
 
+        // Given a current state, determine whether the request is ready for a signature
+
+        public static bool RequestAwaitsSignature(DocState currentState)
+        {
+            switch (currentState)
+            {
+                case DocState.AwaitingPresident:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Given a current state, determine whether the request has reached "Executed" state
+
+        public static bool RequestIsExecuted(DocState currentState)
+        {
+            switch (currentState)
+            {
+                case DocState.Executed:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         // Given a current state, determine whether the request has been returned
 
         public static bool RequestIsReturned(DepState currentState)
@@ -217,6 +321,19 @@ namespace Portal11.Logic
             switch (currentState)
             {
                 case DepState.Returned:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool RequestIsReturned(DocState currentState)
+        {
+            switch (currentState)
+            {
+                case DocState.ReturnedToInternalCoordinator:
+                case DocState.ReturnedToProjectDirector:
+                case DocState.ReturnedToProjectStaff:
                     return true;
                 default:
                     return false;
@@ -238,28 +355,28 @@ namespace Portal11.Logic
 
         // Given a current state, determine whether the request can be revised, rather than reviewed.
 
-        public static bool RequestIsRevising(AppState currentState)
-        {
-            switch (currentState)
-            {
-                case AppState.UnsubmittedByInternalCoordinator:
-                case AppState.AwaitingInternalCoordinator:
-                case AppState.UnsubmittedByProjectDirector:
-                case AppState.AwaitingProjectDirector:
-                case AppState.Returned:
-                case AppState.UnsubmittedByProjectStaff:
-                case AppState.Approved:
-                case AppState.AwaitingCommunityDirector:
-                case AppState.AwaitingFinanceDirector:
-                case AppState.AwaitingPresident:
-                    return false;
-                default:
-                    {
-                        LogError.LogInternalError("StateActions.StateToReviseRequest", $"Unable to process AppState value '{currentState.ToString()}'"); // Fatal error
-                        return false;
-                    }
-            }
-        }
+        //public static bool RequestIsRevising(AppState currentState)
+        //{
+        //    switch (currentState)
+        //    {
+        //        case AppState.UnsubmittedByInternalCoordinator:
+        //        case AppState.AwaitingInternalCoordinator:
+        //        case AppState.UnsubmittedByProjectDirector:
+        //        case AppState.AwaitingProjectDirector:
+        //        case AppState.Returned:
+        //        case AppState.UnsubmittedByProjectStaff:
+        //        case AppState.Approved:
+        //        case AppState.AwaitingCommunityDirector:
+        //        case AppState.AwaitingFinanceDirector:
+        //        case AppState.AwaitingPresident:
+        //            return false;
+        //        default:
+        //            {
+        //                LogError.LogInternalError("StateActions.StateToReviseRequest", $"Unable to process AppState value '{currentState.ToString()}'"); // Fatal error
+        //                return false;
+        //            }
+        //    }
+        //}
 
         public static bool RequestIsRevising(DepState currentState)
         {
@@ -285,6 +402,21 @@ namespace Portal11.Logic
             }
         }
 
+        public static bool RequestIsRevising(DocState currentState)
+        {
+            switch (currentState)
+            {
+                case DocState.RevisingByCommunityDirector:
+                case DocState.RevisingByFinanceDirector:
+                case DocState.RevisingByInternalCoordinator:
+                case DocState.RevisingByPresident:
+                case DocState.RevisingByProjectDirector:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public static bool RequestIsRevising(ExpState currentState)
         {
             switch (currentState)
@@ -300,6 +432,19 @@ namespace Portal11.Logic
             }
         }
 
+
+        public static bool RequestIsUnsubmitted(DocState currentState)
+        {
+            switch (currentState)
+            {
+                case DocState.UnsubmittedByInternalCoordinator:
+                case DocState.UnsubmittedByProjectStaff:
+                case DocState.UnsubmittedByProjectDirector:
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
         public static bool RequestIsUnsubmitted(ExpState currentState)
         {
@@ -349,11 +494,11 @@ namespace Portal11.Logic
         {
             switch (currentState)
             {
-                case DepState.UnsubmittedByInternalCoordinator:
                 case DepState.AwaitingProjectDirector:
                 case DepState.DepositComplete:
                 case DepState.RevisingByProjectDirector:
                 case DepState.RevisedByFinanceDirector:
+                case DepState.UnsubmittedByInternalCoordinator:
                     return UserRole.Project;
                 case DepState.Returned:
                     return UserRole.InternalCoordinator;                    // Note: Deposits are returned to IC, not PD
@@ -366,6 +511,44 @@ namespace Portal11.Logic
                 default:
                     {
                         LogError.LogInternalError("StateActions.UserRoleToApproveRequest", $"Unable to process DepositState value '{currentState.ToString()}'"); // Fatal error
+                        return UserRole.Undefined;
+                    }
+            }
+        }
+
+        public static UserRole UserRoleToProcessRequest(DocState currentState)
+        {
+            switch (currentState)
+            {
+                case DocState.AwaitingProjectDirector:
+                case DocState.Executed:
+                case DocState.ReturnedToProjectDirector:
+                case DocState.ReturnedToProjectStaff:
+                case DocState.RevisedByCommunityDirector:
+                case DocState.RevisedByFinanceDirector:
+                case DocState.RevisedByInternalCoordinator:
+                case DocState.RevisedByPresident:
+                case DocState.RevisingByProjectDirector:
+                case DocState.UnsubmittedByInternalCoordinator:
+                case DocState.UnsubmittedByProjectDirector:
+                case DocState.UnsubmittedByProjectStaff:
+                    return UserRole.Project;
+                case DocState.AwaitingInternalCoordinator:
+                case DocState.ReturnedToInternalCoordinator:
+                case DocState.RevisingByInternalCoordinator:
+                    return UserRole.InternalCoordinator;
+                case DocState.AwaitingCommunityDirector:
+                case DocState.RevisingByCommunityDirector:
+                    return UserRole.CommunityDirector;
+                case DocState.AwaitingFinanceDirector:
+                case DocState.RevisingByFinanceDirector:
+                    return UserRole.FinanceDirector;
+                case DocState.AwaitingPresident:
+                case DocState.RevisingByPresident:
+                    return UserRole.President;
+                default:
+                    {
+                        LogError.LogInternalError("StateActions.UserRoleToApproveRequest", $"Unable to process DocumentState value '{currentState.ToString()}'"); // Fatal error
                         return UserRole.Undefined;
                     }
             }
@@ -386,10 +569,11 @@ namespace Portal11.Logic
                 case ExpState.RevisedByFinanceDirector:
                 case ExpState.RevisedByInternalCoordinator:
                 case ExpState.RevisedByPresident:
+                case ExpState.RevisingByProjectDirector:
                     return UserRole.Project;
                 case ExpState.AwaitingInternalCoordinator:
-                case ExpState.RevisingByInternalCoordinator:
                 case ExpState.ReturnedToInternalCoordinator:
+                case ExpState.RevisingByInternalCoordinator:
                     return UserRole.InternalCoordinator;
                 case ExpState.AwaitingCommunityDirector:
                 case ExpState.RevisingByCommunityDirector:
@@ -453,6 +637,26 @@ namespace Portal11.Logic
             return false;                                           // Otherwise the specified role cannot approve the Exp
         }
 
+        internal static bool UserCanApproveRequest(DocState docState)
+        {
+            HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Fetch user info cookie for current user
+            UserRole userRole = EnumActions.ConvertTextToUserRole(userInfoCookie[PortalConstants.CUserRole]); //Fetch user role, convert to enum
+            if (userRole == UserRoleToProcessRequest(docState))     // If == the specified role can approve the Exp
+            {
+                if (userRole == UserRole.Project)                   // If == this is a Project user. Need another check
+                {
+                    HttpCookie projInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CProjectInfo]; // Fetch project info cookie for current project
+                    ProjectRole projRole = EnumActions.ConvertTextToProjectRole(projInfoCookie[PortalConstants.CProjectRole]); // Fetch role
+                    if (projRole == ProjectRole.ProjectDirector)    // If == this is a Project Director - the only role that can approve anything
+                        return true;                                // Report that User can apporve Exp
+                    else
+                        return false;                               // No other project roles can approve Exp
+                }
+                return true;                                        // It's staff and they can approve
+            }
+            return false;                                           // Otherwise the specified role cannot approve the Exp
+        }
+
         internal static bool UserCanApproveRequest(ExpState expState)
         {
             HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Fetch user info cookie for current user
@@ -486,6 +690,21 @@ namespace Portal11.Logic
             }
         }
 
+        internal static bool UserCanReviseRequest(DocState state)
+        {
+            switch (state)
+            {
+                case DocState.AwaitingCommunityDirector:
+                case DocState.AwaitingFinanceDirector:
+                case DocState.AwaitingInternalCoordinator:
+                case DocState.AwaitingPresident:
+                case DocState.AwaitingProjectDirector:
+                    return true;                                    // Request is waiting for their review. They can revise.
+                default:
+                    return false;
+            }
+        }
+
         internal static bool UserCanReviseRequest(ExpState state)
         {
             switch (state)
@@ -508,7 +727,7 @@ namespace Portal11.Logic
         {
             hist.AppID = app.AppID;                                 // Connect history row to original request row
             hist.PriorAppState = app.CurrentState;
-            hist.HistoryTime = app.CurrentTime;
+            hist.HistoryTime = System.DateTime.Now;                 // Record when the history row is written. Was app.CurrentTime;
             hist.HistoryUserID = app.CurrentUserID;
             hist.ReturnNote = app.ReturnNote;
             HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie
@@ -520,9 +739,21 @@ namespace Portal11.Logic
         {
             hist.DepID = dep.DepID;                                 // Connect history row to original request row
             hist.PriorDepState = dep.CurrentState;
-            hist.HistoryTime = dep.CurrentTime;
+            hist.HistoryTime = System.DateTime.Now;                 // Record when the history row is written. Was dep.CurrentTime;
             hist.HistoryUserID = dep.CurrentUserID;
             hist.ReturnNote = dep.ReturnNote;
+            HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie
+            hist.HistoryNote = verb + " by '" + userInfoCookie[PortalConstants.CUserFullName] + "'"; // Explain why this revision appeared
+            return;
+        }
+
+        public static void CopyPreviousState(Doc doc, DocHistory hist, string verb)
+        {
+            hist.DocID = doc.DocID;                                 // Connect history row to original request row
+            hist.PriorDocState = doc.CurrentState;
+            hist.HistoryTime = System.DateTime.Now;                 // Record when the history row is written. Was doc.CurrentTime;
+            hist.HistoryUserID = doc.CurrentUserID;
+            hist.ReturnNote = doc.ReturnNote;
             HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie
             hist.HistoryNote = verb + " by '" + userInfoCookie[PortalConstants.CUserFullName] + "'"; // Explain why this revision appeared
             return;
@@ -532,7 +763,7 @@ namespace Portal11.Logic
         {
             hist.ExpID = exp.ExpID;                                 // Connect history row to original request row
             hist.PriorExpState = exp.CurrentState;
-            hist.HistoryTime = exp.CurrentTime;
+            hist.HistoryTime = System.DateTime.Now;                 // Record when the history row is written. Was exp.CurrentTime;
             hist.HistoryUserID = exp.CurrentUserID;
             hist.ReturnNote = exp.ReturnNote;
             HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie
@@ -729,6 +960,125 @@ namespace Portal11.Logic
                 return DepState.Error;
         }
 
+
+        public static DocState FindNextState(DocState currentState, ReviewAction action, DocType docType, ProjectRole role = ProjectRole.ProjectDirector)
+        {
+            switch (docType)
+            {
+                case DocType.Contract:
+                    {
+                        switch (action)
+                        {
+
+                            // Approve means advance to the next review or be done
+
+                            case ReviewAction.Approve:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.AwaitingInternalCoordinator;
+                                    case DocState.AwaitingInternalCoordinator:
+                                        return DocState.AwaitingFinanceDirector;
+                                    case DocState.AwaitingFinanceDirector:
+                                        return DocState.AwaitingCommunityDirector;
+                                    case DocState.AwaitingCommunityDirector:
+                                        return DocState.AwaitingPresident;
+                                    case DocState.AwaitingPresident:
+                                        return DocState.Executed;
+                                    case DocState.RevisedByInternalCoordinator:
+                                    case DocState.RevisedByFinanceDirector:
+                                    case DocState.RevisedByCommunityDirector:
+                                    case DocState.RevisedByPresident:
+                                        return DocState.AwaitingInternalCoordinator;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Return means go back to originator of the request
+
+                            case ReviewAction.Return:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.AwaitingProjectDirector:
+                                    case DocState.AwaitingInternalCoordinator:
+                                    case DocState.AwaitingFinanceDirector:
+                                    case DocState.AwaitingCommunityDirector:
+                                    case DocState.AwaitingPresident:
+                                    case DocState.RevisedByInternalCoordinator:
+                                    case DocState.RevisedByFinanceDirector:
+                                    case DocState.RevisedByCommunityDirector:
+                                    case DocState.RevisedByPresident:
+                                        return SendDocToOriginator(role);               // Back to right "returned" state
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Revise means current reviewer can edit the request
+
+                            case ReviewAction.Revise:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.ReturnedToInternalCoordinator:
+                                        return DocState.UnsubmittedByInternalCoordinator;
+                                    case DocState.ReturnedToProjectDirector:
+                                        return DocState.UnsubmittedByProjectDirector;
+                                    case DocState.ReturnedToProjectStaff:
+                                        return DocState.UnsubmittedByProjectStaff;
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.RevisingByProjectDirector;
+                                    case DocState.AwaitingInternalCoordinator:
+                                        return DocState.RevisingByInternalCoordinator;
+                                    case DocState.AwaitingFinanceDirector:
+                                        return DocState.RevisingByFinanceDirector;
+                                    case DocState.AwaitingCommunityDirector:
+                                        return DocState.RevisingByCommunityDirector;
+                                    case DocState.AwaitingPresident:
+                                        return DocState.RevisingByPresident;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Submit means conclude the editing and commence review
+
+                            case ReviewAction.Submit:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.UnsubmittedByInternalCoordinator:
+                                    case DocState.UnsubmittedByProjectStaff:
+                                        return DocState.AwaitingProjectDirector;
+                                    case DocState.UnsubmittedByProjectDirector:
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.AwaitingInternalCoordinator;
+                                    case DocState.RevisingByProjectDirector:
+                                        return SendDocToOriginator(role);                  // Back to right "returned" state
+                                    case DocState.RevisingByInternalCoordinator:
+                                        return DocState.RevisedByInternalCoordinator;
+                                    case DocState.RevisingByFinanceDirector:
+                                        return DocState.RevisedByFinanceDirector;
+                                    case DocState.RevisingByCommunityDirector:
+                                        return DocState.RevisedByCommunityDirector;
+                                    case DocState.RevisingByPresident:
+                                        return DocState.RevisedByPresident;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    }
+                default:
+                    break;
+            }
+            LogError.LogInternalError("StateActions.FindNextState", $"Inappropriate DocState value '{currentState.ToString()}', DocType value '{docType.ToString()}', ReviewAction value '{action.ToString()}'"); // Fatal error
+            return DocState.Error;
+        
+        }
+
         public static ExpState FindNextState(ExpState currentState, ReviewAction action, ProjectRole role=ProjectRole.ProjectDirector)
         {
             switch (action)
@@ -771,11 +1121,12 @@ namespace Portal11.Logic
                         case ExpState.AwaitingFinanceDirector:
                         case ExpState.AwaitingCommunityDirector:
                         case ExpState.AwaitingPresident:
+                        case ExpState.Approved:
                         case ExpState.RevisedByInternalCoordinator:
                         case ExpState.RevisedByFinanceDirector:
                         case ExpState.RevisedByCommunityDirector:
                         case ExpState.RevisedByPresident:
-                            return SendToOriginator(role);                  // Back to right "returned" state
+                            return SendExpToOriginator(role);                  // Back to right "returned" state
                         default:                                            // No other states should arrive here. Report error
                             break;
                     }
@@ -818,10 +1169,10 @@ namespace Portal11.Logic
                         case ExpState.UnsubmittedByProjectStaff:
                             return ExpState.AwaitingProjectDirector;
                         case ExpState.UnsubmittedByProjectDirector:
-                        case ExpState.AwaitingProjectDirector:
+//                        case ExpState.AwaitingProjectDirector:            // This only appears when the browser Back button has brought us back to this page
                             return ExpState.AwaitingInternalCoordinator;
                         case ExpState.RevisingByProjectDirector:
-                            return SendToOriginator(role);                  // Back to right "returned" state
+                            return SendExpToOriginator(role);                  // Back to right "returned" state
                         case ExpState.RevisingByInternalCoordinator:
                             return ExpState.RevisedByInternalCoordinator;
                         case ExpState.RevisingByFinanceDirector:
@@ -840,10 +1191,28 @@ namespace Portal11.Logic
             LogError.LogInternalError("StateActions.FindNextState", $"Inappropriate ExpState value '{currentState.ToString()}' for ReviewAction value '{action.ToString()}'"); // Fatal error
             return ExpState.Error;
         }
-        static ExpState SendToOriginator(ProjectRole role)
+
+        // Figure out which role created the request so that we may return it to them.
+
+        static DocState SendDocToOriginator(ProjectRole role)
         {
             switch (role)
                 {
+                case ProjectRole.InternalCoordinator:
+                    return DocState.ReturnedToInternalCoordinator;
+                case ProjectRole.ProjectDirector:
+                    return DocState.ReturnedToProjectDirector;
+                case ProjectRole.ProjectStaff:
+                    return DocState.ReturnedToProjectStaff;
+                default:                                                // For compatibility with earlier releases, deal with an undefined project role
+                    return DocState.ReturnedToProjectDirector;
+            }
+        }
+
+        static ExpState SendExpToOriginator(ProjectRole role)
+        {
+            switch (role)
+            {
                 case ProjectRole.InternalCoordinator:
                     return ExpState.ReturnedToInternalCoordinator;
                 case ProjectRole.ProjectDirector:
@@ -884,6 +1253,16 @@ namespace Portal11.Logic
             dep.CurrentUserID = userID;                                 // Remember who made this change
             if (hist != null)                                           // If != there is an DepHistory row available for update
                 hist.NewDepState = newState;                            // Also record the new state
+            return;
+        }
+
+        public static void SetNewDocState(Doc doc, DocState newState, string userID, DocHistory hist = null)
+        {
+            doc.CurrentState = newState;                                // Store the new state in the Dep row
+            doc.CurrentTime = System.DateTime.Now;                      // Timestamp this update
+            doc.CurrentUserID = userID;                                 // Remember who made this change
+            if (hist != null)                                           // If != there is an DocHistory row available for update
+                hist.NewDocState = newState;                            // Also record the new state
             return;
         }
 

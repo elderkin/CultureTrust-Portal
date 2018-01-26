@@ -196,6 +196,19 @@
             </div>
         </asp:Panel>
 
+        <!-- Project Staff list - read only -->
+        <asp:Panel ID="pnlProjectStaff" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" AssociatedControlID="lstProjectStaff" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Project Staff</asp:Label>
+                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                        <!-- Fill this control from code-behind -->
+                        <asp:ListBox runat="server" ID="lstProjectStaff" CssClass="form-control" ReadOnly="true" />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
         <!-- Button array -->
         <div class="row">
             <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-sm-offset-1 col-md-1 col-xs-2" Enabled="true"

@@ -45,12 +45,13 @@ namespace Portal11.Rqsts
                 RestoreCheckboxes();                                        // Read cookie, restore checkbox settings, fill DDLs
 
                 int rows = CookieActions.GetGridViewRows();                // Find number of rows per page from cookie
-                gvStaffApp.PageSize = rows;                                 // Adjust each GridView accordingly
                 gvStaffDep.PageSize = rows;
+                gvStaffDoc.PageSize = rows;                                 // Adjust each GridView accordingly
                 gvStaffExp.PageSize = rows;
 
-                LoadAllApps(RestorePageIndex(PortalConstants.CStaffPIApp)); // Load the grid view of Approvals and reposition
+//                LoadAllApps(RestorePageIndex(PortalConstants.CStaffPIApp)); // Load the grid view of Approvals and reposition
                 LoadAllDeps(RestorePageIndex(PortalConstants.CStaffPIDep)); // Load the grid view of Deposits and reposition
+                LoadAllDocs(RestorePageIndex(PortalConstants.CStaffPIDoc)); // Load the grid view of Documents and reposition
                 LoadAllExps(RestorePageIndex(PortalConstants.CStaffPIExp)); // Load the grid view of Expenses and reposition
             }
             return;
@@ -92,8 +93,8 @@ namespace Portal11.Rqsts
 
         protected void SearchCriteriaChanged(object sender, EventArgs e)
         {
-            LoadAllApps();                                                  // Recreate the grid view of Approvals
             LoadAllDeps();                                                  // Load the grid view of Deposits
+            LoadAllDocs();                                                  // Recreate the grid view of Documents
             LoadAllExps();                                                  // Load the grid view of Expenses
 
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
@@ -180,35 +181,35 @@ namespace Portal11.Rqsts
 
         // Collapse/Expand the panels of A's, D's and E's
 
-        protected void btnAppCollapse_Click(object sender, EventArgs e)
+        protected void btnDocCollapse_Click(object sender, EventArgs e)
         {
-            CollapseAppPanel();                                             // Do the heavy lifting
+            CollapseDocPanel();                                             // Do the heavy lifting
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             return;
         }
 
-        void CollapseAppPanel()
+        void CollapseDocPanel()
         {
-            pnlApp.Visible = false;
-            btnAppCollapse.Visible = false;
-            btnAppExpand.Visible = true;
+            pnlDoc.Visible = false;
+            btnDocCollapse.Visible = false;
+            btnDocExpand.Visible = true;
             return;
         }
 
-        protected void btnAppExpand_Click(object sender, EventArgs e)
+        protected void btnDocExpand_Click(object sender, EventArgs e)
         {
-            ExpandAppPanel();
-            LoadAllApps();
+            ExpandDocPanel();
+            LoadAllDocs();
             SaveCheckboxes();                                               // Save current checkbox settings in a cookie
             SaveStaffPageIndexes();                                         // Save position within each gridview
             return;
         }
 
-        void ExpandAppPanel()
+        void ExpandDocPanel()
         {
-            pnlApp.Visible = true;
-            btnAppCollapse.Visible = true;
-            btnAppExpand.Visible = false;
+            pnlDoc.Visible = true;
+            btnDocCollapse.Visible = true;
+            btnDocExpand.Visible = false;
             return;
         }
 
@@ -278,21 +279,21 @@ namespace Portal11.Rqsts
 
         // Flip a page of the grid view control
 
-        protected void gvStaffApp_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        {
-            if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
-            {
-                LoadAllApps(e.NewPageIndex);                                // Reload the grid view control, position to target page
-                SaveStaffPageIndexes();                                     // Save position within each gridview
-            }
-            return;
-        }
-
         protected void gvStaffDep_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
             {
                 LoadAllDeps(e.NewPageIndex);                                // Reload the grid view control, position to target page
+                SaveStaffPageIndexes();                                     // Save position within each gridview
+            }
+            return;
+        }
+
+        protected void gvStaffDoc_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            if (e.NewPageIndex >= 0)                                        // If >= a value that we can handle
+            {
+                LoadAllDocs(e.NewPageIndex);                                // Reload the grid view control, position to target page
                 SaveStaffPageIndexes();                                     // Save position within each gridview
             }
             return;
@@ -310,22 +311,6 @@ namespace Portal11.Rqsts
 
         // Invoked for each row as it gets its content data bound. Make the row sensitive to mouseover and click
         // thereby letting us select the row without a Select button
-
-        protected void gvStaffApp_RowDataBound(object sender, GridViewRowEventArgs e)
-        {
-            if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
-            {
-                Common_RowDataBound(sender, e, "btnAppDblClick");           // Do the common setup work for the row
-
-                // See whether the User is next to act on this row
-
-                Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
-                AppState state = EnumActions.ConvertTextToAppState(label.Text); // Carefully convert back into enumeration type
-                if (StateActions.UserRoleToProcessRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
-                    e.Row.Cells[rowStaffApp.OwnerColumn].Font.Bold = true; // Bold Status cell.
-            }
-            return;
-        }
 
         protected void gvStaffDep_RowDataBound(object sender, GridViewRowEventArgs e)
         {
@@ -354,25 +339,57 @@ namespace Portal11.Rqsts
             return;
         }
 
+        protected void gvStaffDoc_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
+            {
+                Common_RowDataBound(sender, e, "btnDocDblClick");           // Do the common setup work for the row
+
+                // See whether the User is next to act on this row
+
+                Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
+                DocState state = EnumActions.ConvertTextToDocState(label.Text); // Carefully convert back into enumeration type
+                if (StateActions.UserRoleToProcessRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
+                {
+                    e.Row.Cells[rowStaffDoc.OwnerColumn].Font.Bold = true; // Bold Status cell.
+                    if (StateActions.RequestIsRevising(state))         // If true this request is being revised now. Revision can continue, not review
+                    {
+                        Button btn = (Button)e.Row.FindControl("btnGridReview"); // Find the button on the row
+                        if (btn == null)                                    // If true the button is missing. That's an error.
+                            LogError.LogInternalError("StaffDashboard", $"btnGridReview not found in selected GridView row"); // Log fatal error
+                        btn.Text = "Revise";                                // Change button to show a revise, not a review
+                        btn.ToolTip = "Click to continue editing this request"; // Change flyover help as well
+                    }
+                }
+            }
+            return;
+        }
+
         protected void gvStaffExp_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)                // If == this is indeed a row of our GridView control
             {
                 Common_RowDataBound(sender, e, "btnExpDblClick");           // Do the common setup work for the row
 
-                // See whether the User is next to act on this row
-
-                Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
-                ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Carefully convert back into enumeration type
-
                 // See if the row is Rush
 
-                label = (Label)e.Row.FindControl("lblRush");                // Find the label control that contains Rush in this row
+                Label label = (Label)e.Row.FindControl("lblRush");          // Find the label control that contains Rush in this row
                 if (label.Text == "True")                                   // If == this record is Rush
-                    e.Row.ForeColor = Color.Red;                            // Use color to indicate Rush status
+                    e.Row.ForeColor = PortalConstants.DashboardRush;        // Use color to indicate Rush status
+
+                // See if the row is in revision
+
+                label = (Label)e.Row.FindControl("lblReviseUserRole");      // Find the label control that contains ReviseUserRole in this row
+                UserRole reviseRole = EnumActions.ConvertTextToUserRole(label.Text); // Carefully convert back into enumeration type
+                if (reviseRole != UserRole.None)                            // If != row is in revision
+                {
+                    e.Row.ForeColor = PortalConstants.DashboardRevising;    // How about something in a nice teal?
+                }
 
                 // See if user can approve row
 
+                label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
+                ExpState state = EnumActions.ConvertTextToExpState(label.Text); // Carefully convert back into enumeration type
                 if (StateActions.UserRoleToProcessRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
                 {
                     e.Row.Cells[rowStaffExp.OwnerColumn].Font.Bold = true; // Bold Status cell.
@@ -381,13 +398,11 @@ namespace Portal11.Rqsts
 
                     if (StateActions.NextReviewIsSecondFD(state))           // If true next review is second FD review
                     {
-                        //e.Row.Cells[rowStaffExp.StateColumn].ForeColor = Color.Purple; // Use color to indicate this condition
-                        //e.Row.Cells[rowStaffExp.StateColumn].Font.Bold = true; // Also make it bold, since purple doesn't show up very well
-                        e.Row.ForeColor = Color.Purple;                     // Make the whole row purple
+                        e.Row.ForeColor = PortalConstants.DashboardSecondFD; // Make the whole row purple
                         e.Row.Font.Bold = true;                             // Make the whole row bold
                     }
 
-                    if (StateActions.RequestIsRevising(state))         // If true this request is being revised now. Revision can continue, not review
+                    if (StateActions.RequestIsRevising(state))              // If true this request is being revised now. Revision can continue, not review
                     {
                         Button btn = (Button)e.Row.FindControl("btnGridReview"); // Find the button on the row
                         if (btn == null)                                    // If true the button is missing. That's an error.
@@ -424,56 +439,36 @@ namespace Portal11.Rqsts
 
         // The Review button within a GridView row has been clicked. Dispatch to the Review page.
 
-        protected void btnAppGridReview_Click(object sender, EventArgs e)
-        {
-            GridViewRow row = (GridViewRow)((Button)sender).DataItemContainer;  // Find the row that contains the button that just clicked
-            DispatchReview(((Button)(row.FindControl("btnAppDblClick"))).Text,  // OK, within that row, find the double click button. Its text is rowID
-                PortalConstants.URLReviewApproval);                             // Dispatch request ID to Review page
-        }
-
         protected void btnDepGridReview_Click(object sender, EventArgs e)
         {
             DispatchReviewRevise((GridViewRow)((Button)sender).DataItemContainer, PortalConstants.URLReviewDeposit, PortalConstants.URLEditDeposit); // Do it!
         }
 
+        protected void btnDocGridReview_Click(object sender, EventArgs e)
+        {
+            DispatchReviewRevise((GridViewRow)((Button)sender).DataItemContainer, PortalConstants.URLReviewDocument, PortalConstants.URLEditDocument); // Do it!
+        }
+
         protected void btnExpGridReview_Click(object sender, EventArgs e)
         {
-            GridViewRow row = (GridViewRow)((Button)sender).DataItemContainer;  // Find the row that contains the button that just clicked
-            DispatchReview(((Button)(row.FindControl("btnExpDblClick"))).Text,  // OK, within that row, find the double click button. Its text is rowID
-                PortalConstants.URLReviewExpense);                              // Dispatch request ID to Review page
+            DispatchReviewRevise((GridViewRow)((Button)sender).DataItemContainer, PortalConstants.URLReviewExpense, PortalConstants.URLEditExpense); // Do it!
         }
 
         // A row in the GridView has been double clicked. We dispatch to the Review function for the selected row.
-
-        protected void btnAppDblClick_Click(object sender, EventArgs e)
-        {
-            DispatchReview(((Button)sender).Text, PortalConstants.URLReviewApproval); // Dispatch request ID to Review Approval page
-        }
 
         protected void btnDepDblClick_Click(object sender, EventArgs e)
         {
             DispatchReviewRevise((GridViewRow)((Button)sender).DataItemContainer, PortalConstants.URLReviewDeposit, PortalConstants.URLEditDeposit); // Do it!
         }
 
+        protected void btnDocDblClick_Click(object sender, EventArgs e)
+        {
+            DispatchReviewRevise((GridViewRow)((Button)sender).DataItemContainer, PortalConstants.URLReviewDocument, PortalConstants.URLEditDocument); // Do it!
+        }
+
         protected void btnExpDblClick_Click(object sender, EventArgs e)
         {
             DispatchReviewRevise((GridViewRow)((Button)sender).DataItemContainer, PortalConstants.URLReviewExpense, PortalConstants.URLEditExpense); // Do it!
-        }
-
-        // Code that is common to all "Review" and "Revise" buttons and double clicks. If the Request ID is sensible, redirect to the Review page.
-
-        void DispatchReview(string rqstID, string url)
-        {
-            if (string.IsNullOrEmpty(rqstID))                               // If true the RqstID is missing. That's an error.
-                LogError.LogInternalError("StaffDashboard", $"RqstID not found in selected GridView row"); // Log fatal error
-
-            // It is possible that the user does not have the authority to review the rqst in
-            // its current state. But we'll let Review display all the detail for the Rqst and then deny editing.
-
-            Response.Redirect(url + "?" + PortalConstants.QSUserRole + "=" + litSavedUserRole.Text
-                                  + "&" + PortalConstants.QSRequestID + "=" + rqstID  // Start with an existing request
-                                  + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview // Review it
-                                  + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLStaffDashboard); // Return to this page when done
         }
 
         // Code that is common to all "Review" and "Revise" buttons and double clicks. 
@@ -483,15 +478,21 @@ namespace Portal11.Rqsts
 
         void DispatchReviewRevise(GridViewRow row, string reviewURL, string reviseURL)
         {
-            Label rqstID = (Label)row.FindControl("lblRequestID");       // Locate the cell containing the row ID
-            Label projectID = (Label)row.FindControl("lblProjectID");       // Locate the cell containing the project ID (if any)
-            Button btn = (Button)row.FindControl("btnGridReview");          // Locate the button on the row
+            Label rqstID = (Label)row.FindControl("lblRequestID");      // Locate the cell containing the row ID
+            Label projectID = (Label)row.FindControl("lblProjectID");   // Locate the cell containing the project ID (if any)
+            Button btn = (Button)row.FindControl("btnGridReview");      // Locate the button on the row
             if ((rqstID == null) || (projectID == null) || (btn == null)) // If == couldn't find the label. Fatal error
-                LogError.LogInternalError("StaffDashboard", $"lblRequestID or lblProjectID or btnGridReview control not found in selected GridView row"); // Log fatal error
+            {
+                string s1 = rqstID != null ? rqstID.Text : "null";
+                string s2 = projectID != null ? projectID.Text : "null";
+                string s3 = btn != null ? btn.Text : "null";
+                LogError.LogInternalError("StaffDashboard",
+                    $"lblRequestID '{s1}' or lblProjectID '{s2}' or btnGridReview '{s3}' control not found in selected GridView row"); // Log fatal error
+            }
 
             // Figure out whether the Name of the button was "Review" or "Revise," indicating which action we should take
 
-            if (btn.Text == "Revise")                                           // If == this is a Revise function
+            if (btn.Text == "Revise")                                   // If == this is a Revise function
             {
                 // Find current role and map to the role to be used for editing.
 
@@ -520,201 +521,201 @@ namespace Portal11.Rqsts
             }
         }
 
-        // Fetch all of the Approvals for CS Staff, subject to further search constraints. Display in a GridView
+        //// Fetch all of the Approvals for CS Staff, subject to further search constraints. Display in a GridView
 
-        void LoadAllApps(int pageIndex = 0)
-        {
-            if (!pnlApp.Visible)                                            // If false the panel is not visible
-                return;                                                     // Don't waste time on filling it
+        //void LoadAllApps(int pageIndex = 0)
+        //{
+        //    if (!pnlApp.Visible)                                            // If false the panel is not visible
+        //        return;                                                     // Don't waste time on filling it
 
-            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-            {
+        //    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+        //    {
 
-                // There are so many permutations of this query that we have to build it up piece by piece.
+        //        // There are so many permutations of this query that we have to build it up piece by piece.
 
-                var pred = PredicateBuilder.True<App>();                    // Initialize predicate to select from App table
-                pred = pred.And(r => !r.Inactive);                          // Only active Apps
+        //        var pred = PredicateBuilder.True<App>();                    // Initialize predicate to select from App table
+        //        pred = pred.And(r => !r.Inactive);                          // Only active Apps
 
-                // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
+        //        // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
 
-                if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
-                    ;                                                   // Don't ignore anything
-                else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
-                    pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
-                else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
-                    pred = pred.And(r => r.Archived);                   // Ignore Active requests
-                else                                                    // Both boxes are unchecked
-                    pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
+        //        if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
+        //            ;                                                   // Don't ignore anything
+        //        else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
+        //            pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
+        //        else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
+        //            pred = pred.And(r => r.Archived);                   // Ignore Active requests
+        //        else                                                    // Both boxes are unchecked
+        //            pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
 
-                // If a specific project is selected, only select Apps from that project
+        //        // If a specific project is selected, only select Apps from that project
 
-                if (ddlProjectName.SelectedIndex != 0)                      // If != Project is selected. Fetch rqsts only for that Projects
-                {
-                    int projectID = Convert.ToInt32(ddlProjectName.SelectedValue);  // Convert ID of selected Project
-                    pred = pred.And(r => r.ProjectID == projectID);         // Only active Apps from current project
-                }
+        //        if (ddlProjectName.SelectedIndex != 0)                      // If != Project is selected. Fetch rqsts only for that Projects
+        //        {
+        //            int projectID = Convert.ToInt32(ddlProjectName.SelectedValue);  // Convert ID of selected Project
+        //            pred = pred.And(r => r.ProjectID == projectID);         // Only active Apps from current project
+        //        }
 
-                // Now look for Requests in the right state. For auditor, it's only complete requests.
+        //        // Now look for Requests in the right state. For auditor, it's only complete requests.
 
-                if (litSavedUserRole.Text == UserRole.Auditor.ToString())   // If == user is an Auditor
-                {
-                    pred = pred.And(r => (r.CurrentState == AppState.Approved)); // Auditors only see Approved Requests
-                }
+        //        if (litSavedUserRole.Text == UserRole.Auditor.ToString())   // If == user is an Auditor
+        //        {
+        //            pred = pred.And(r => (r.CurrentState == AppState.Approved)); // Auditors only see Approved Requests
+        //        }
 
-                // Deal with date range filter. Remember that we've already validated the date strings, so we ca just use them.
+        //        // Deal with date range filter. Remember that we've already validated the date strings, so we ca just use them.
 
-                if (txtBeginningDate.Text != "")
-                {
-                    DateTime date = Convert.ToDateTime(txtBeginningDate.Text);  // Convert to a date value
-                    pred = pred.And(r => (r.CurrentTime >= date));
-                }
+        //        if (txtBeginningDate.Text != "")
+        //        {
+        //            DateTime date = Convert.ToDateTime(txtBeginningDate.Text);  // Convert to a date value
+        //            pred = pred.And(r => (r.CurrentTime >= date));
+        //        }
 
-                if (txtEndingDate.Text != "")
-                {
-                    DateTime date = Convert.ToDateTime(txtEndingDate.Text);     // Convert to a date value
-                    TimeSpan day = new TimeSpan(23, 59, 59);                    // Figure out the length of a day
-                    DateTime endOfDay = date.Add(day);                          // Set query to END of the specified day
-                    pred = pred.And(r => (r.CurrentTime <= endOfDay));          // Query to end END of the specified day
-                }
+        //        if (txtEndingDate.Text != "")
+        //        {
+        //            DateTime date = Convert.ToDateTime(txtEndingDate.Text);     // Convert to a date value
+        //            TimeSpan day = new TimeSpan(23, 59, 59);                    // Figure out the length of a day
+        //            DateTime endOfDay = date.Add(day);                          // Set query to END of the specified day
+        //            pred = pred.And(r => (r.CurrentTime <= endOfDay));          // Query to end END of the specified day
+        //        }
 
-                // The predicate is ready. Do the Query and sort most recent first. creating a list of App rows
+        //        // The predicate is ready. Do the Query and sort most recent first. creating a list of App rows
 
-                List<App> apps = context.Apps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
+        //        List<App> apps = context.Apps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
 
-                // From this list of Rqsts, build a list of rows for the gvStaffApp GridView based on the selection criteria provided by the user.
+        //        // From this list of Rqsts, build a list of rows for the gvStaffApp GridView based on the selection criteria provided by the user.
 
-                List<rowStaffApp> rows = new List<rowStaffApp>();   // Create the empty list
-                foreach (var a in apps)
-                {
-                    bool useRow = false;                                    // Assume we're not interested in the row
+        //        List<rowStaffApp> rows = new List<rowStaffApp>();   // Create the empty list
+        //        foreach (var a in apps)
+        //        {
+        //            bool useRow = false;                                    // Assume we're not interested in the row
 
-                    // Process the Approval Type checkboxes. If the "All Types" box is checked, take every row. Otherwise, only take rows
-                    // whose ApprovalType matches a checked checkbox.
+        //            // Process the Approval Type checkboxes. If the "All Types" box is checked, take every row. Otherwise, only take rows
+        //            // whose ApprovalType matches a checked checkbox.
 
-                    switch (a.AppType)                                  // By ApprovalType, look for relevant checkbox
-                    {
-                        case AppType.Contract:
-                        case AppType.Grant: // TODO: Finish logic
-                        case AppType.Campaign:
-                        case AppType.Certificate:
-                            {
-                                if (ckAExpress.Checked)                 // If true relevant checkbox is checked
-                                    useRow = true;                      // Take the row
-                                break;
-                            }
-                        case AppType.Report:
-                            {
-                                if (ckAFull.Checked)                    // If true relevant checkbox is checked
-                                    useRow = true;                      // Take the row
-                                break;
-                            }
-                        default:
-                            {
-                                LogError.LogInternalError("StaffDashboard", $"Invalid AppType in Approval RqstID '{a.AppID.ToString()}'"); // Log fatal error
-                                break;
-                            }
-                    }
-                    if (useRow)                                         // If true row passes the Request Type screen
-                    {
-                        if (litSavedUserRole.Text != UserRole.Auditor.ToString()) // If true User is not an Auditor. Auditors don't check Next Reviewer
-                        {
+        //            switch (a.AppType)                                  // By ApprovalType, look for relevant checkbox
+        //            {
+        //                case AppType.Contract:
+        //                case AppType.Grant: // TODO: Finish logic
+        //                case AppType.Campaign:
+        //                case AppType.Certificate:
+        //                    {
+        //                        if (ckAExpress.Checked)                 // If true relevant checkbox is checked
+        //                            useRow = true;                      // Take the row
+        //                        break;
+        //                    }
+        //                case AppType.Report:
+        //                    {
+        //                        if (ckAFull.Checked)                    // If true relevant checkbox is checked
+        //                            useRow = true;                      // Take the row
+        //                        break;
+        //                    }
+        //                default:
+        //                    {
+        //                        LogError.LogInternalError("StaffDashboard", $"Invalid AppType in Approval RqstID '{a.AppID.ToString()}'"); // Log fatal error
+        //                        break;
+        //                    }
+        //            }
+        //            if (useRow)                                         // If true row passes the Request Type screen
+        //            {
+        //                if (litSavedUserRole.Text != UserRole.Auditor.ToString()) // If true User is not an Auditor. Auditors don't check Next Reviewer
+        //                {
 
-                            // Apply the Next Reviewer screen using the Current State of the row. Current State determines the identity of the next
-                            // reviewer. It's Next Reviewer that's screened via checkboxes.
+        //                    // Apply the Next Reviewer screen using the Current State of the row. Current State determines the identity of the next
+        //                    // reviewer. It's Next Reviewer that's screened via checkboxes.
 
-                            useRow = false;                             // Assume this next screen will prove negative for the row
+        //                    useRow = false;                             // Assume this next screen will prove negative for the row
 
-                            switch (a.CurrentState)                     // By Current State, look for relevant Next Reviewer checkbox
-                            {
-                                case AppState.Approved:
-                                    {
-                                        if (ckRCompleted.Checked)
-                                            useRow = true;
-                                        break;
-                                    }
-                                case AppState.AwaitingFinanceDirector:
-                                    {
-                                        if (ckRFinanceDirector.Checked)
-                                            useRow = true;
-                                        break;
-                                    }
-                                case AppState.AwaitingInternalCoordinator:
-                                    {
-                                        if (ckRInternalCoordinator.Checked)
-                                            useRow = true;
-                                        break;
-                                    }
-                                case AppState.AwaitingProjectDirector:
-                                case AppState.UnsubmittedByInternalCoordinator:
-                                case AppState.UnsubmittedByProjectDirector:
-                                case AppState.UnsubmittedByProjectStaff:
-                                    {
-                                        if (ckRUnsubmitted.Checked)
-                                            useRow = true;
-                                        break;
-                                    }
-                                case AppState.AwaitingCommunityDirector:
-                                    {
-                                        if (ckRCommunityDirector.Checked)
-                                            useRow = true;
-                                        break;
-                                    }
-                                case AppState.AwaitingPresident:
-                                    {
-                                        if (ckRPresident.Checked)
-                                            useRow = true;
-                                        break;
-                                    }
-                                case AppState.Returned:
-                                    {
-                                        if (ckRReturned.Checked)
-                                            useRow = true;
-                                        break;
-                                    }
-                                default:
-                                    {
-                                        LogError.LogInternalError("StaffDashboard", $"Invalid CurrentState in Approval RqstID '{a.AppID.ToString()}'"); // Log fatal error
-                                        break;
-                                    }
-                            }
-                        }
-                        if (useRow)                                         // If true passed the second screen
-                        {
-                            rowStaffApp row = new rowStaffApp()
-                            {                                               // Empty row all ready to fill
-                                RowID = a.AppID.ToString(),                 // Convert ID from int to string for easier retrieval later
-                                ProjectID = a.ProjectID.ToString(),         // Same treatment for project ID
-                                ProjectName = a.Project.Name,               // Fetch project name
-                                CurrentTime = a.CurrentTime,                // When request was last updated
-                                AppTypeDesc = EnumActions.GetEnumDescription((Enum)a.AppType), // Convert enum form to English for display
-                                AppReviewType = a.AppReviewType.ToString(), // Stick with the value, it's brief and row is crowded
-                                CurrentState = a.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
-                                CurrentStateDesc = EnumActions.GetEnumDescription(a.CurrentState), // Convert enum form to English for display
-                                ReturnNote = a.ReturnNote,
-                                Owner = EnumActions.GetEnumDescription(StateActions.UserRoleToProcessRequest(a.CurrentState)), // Fetch "English" version of owner
-                                Description = a.Description,
-                                Archived = a.Archived
-                            };
-                            if (a.Archived)                                  // If true row is Archived
-                                row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
+        //                    switch (a.CurrentState)                     // By Current State, look for relevant Next Reviewer checkbox
+        //                    {
+        //                        case AppState.Approved:
+        //                            {
+        //                                if (ckRCompleted.Checked)
+        //                                    useRow = true;
+        //                                break;
+        //                            }
+        //                        case AppState.AwaitingFinanceDirector:
+        //                            {
+        //                                if (ckRFinanceDirector.Checked)
+        //                                    useRow = true;
+        //                                break;
+        //                            }
+        //                        case AppState.AwaitingInternalCoordinator:
+        //                            {
+        //                                if (ckRInternalCoordinator.Checked)
+        //                                    useRow = true;
+        //                                break;
+        //                            }
+        //                        case AppState.AwaitingProjectDirector:
+        //                        case AppState.UnsubmittedByInternalCoordinator:
+        //                        case AppState.UnsubmittedByProjectDirector:
+        //                        case AppState.UnsubmittedByProjectStaff:
+        //                            {
+        //                                if (ckRUnsubmitted.Checked)
+        //                                    useRow = true;
+        //                                break;
+        //                            }
+        //                        case AppState.AwaitingCommunityDirector:
+        //                            {
+        //                                if (ckRCommunityDirector.Checked)
+        //                                    useRow = true;
+        //                                break;
+        //                            }
+        //                        case AppState.AwaitingPresident:
+        //                            {
+        //                                if (ckRPresident.Checked)
+        //                                    useRow = true;
+        //                                break;
+        //                            }
+        //                        case AppState.Returned:
+        //                            {
+        //                                if (ckRReturned.Checked)
+        //                                    useRow = true;
+        //                                break;
+        //                            }
+        //                        default:
+        //                            {
+        //                                LogError.LogInternalError("StaffDashboard", $"Invalid CurrentState in Approval RqstID '{a.AppID.ToString()}'"); // Log fatal error
+        //                                break;
+        //                            }
+        //                    }
+        //                }
+        //                if (useRow)                                         // If true passed the second screen
+        //                {
+        //                    rowStaffApp row = new rowStaffApp()
+        //                    {                                               // Empty row all ready to fill
+        //                        RowID = a.AppID.ToString(),                 // Convert ID from int to string for easier retrieval later
+        //                        ProjectID = a.ProjectID.ToString(),         // Same treatment for project ID
+        //                        ProjectName = a.Project.Name,               // Fetch project name
+        //                        CurrentTime = a.CurrentTime,                // When request was last updated
+        //                        AppTypeDesc = EnumActions.GetEnumDescription((Enum)a.AppType), // Convert enum form to English for display
+        //                        AppReviewType = a.AppReviewType.ToString(), // Stick with the value, it's brief and row is crowded
+        //                        CurrentState = a.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
+        //                        CurrentStateDesc = EnumActions.GetEnumDescription(a.CurrentState), // Convert enum form to English for display
+        //                        ReturnNote = a.ReturnNote,
+        //                        Owner = EnumActions.GetEnumDescription(StateActions.UserRoleToProcessRequest(a.CurrentState)), // Fetch "English" version of owner
+        //                        Description = a.Description,
+        //                        Archived = a.Archived
+        //                    };
+        //                    if (a.Archived)                                  // If true row is Archived
+        //                        row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
 
-                            rows.Add(row);                                  // Add the filled-in row to the list of rows
-                        }
-                    }
-                }
+        //                    rows.Add(row);                                  // Add the filled-in row to the list of rows
+        //                }
+        //            }
+        //        }
 
-                gvStaffApp.DataSource = rows;                             // Give it to the GridView control
-                gvStaffApp.PageIndex = pageIndex;                         // Position to the requested page
-                gvStaffApp.DataBind();                                    // And get it in gear
+        //        gvStaffApp.DataSource = rows;                             // Give it to the GridView control
+        //        gvStaffApp.PageIndex = pageIndex;                         // Position to the requested page
+        //        gvStaffApp.DataBind();                                    // And get it in gear
 
-                // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
+        //        // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
 
-                NavigationActions.EnableGridViewNavButtons(gvStaffApp);   // Enable appropriate nav buttons based on page count
-                gvStaffApp.SelectedIndex = -1;                            // No selected row any more
-                litSelectedAppRow.Text = "";                                // No selected row remembered (for double click)
-            }
-            return;
-        }
+        //        NavigationActions.EnableGridViewNavButtons(gvStaffApp);   // Enable appropriate nav buttons based on page count
+        //        gvStaffApp.SelectedIndex = -1;                            // No selected row any more
+        //        litSelectedAppRow.Text = "";                                // No selected row remembered (for double click)
+        //    }
+        //    return;
+        //}
 
         // Fetch all of the Deposits for CS Staff, subject to further search constraints. Display in a GridView
 
@@ -805,14 +806,14 @@ namespace Portal11.Rqsts
                 // From this list of Rqsts, build a list of rows for the StaffDeptView GridView based on the selection criteria provided by the user.
 
                 List<rowStaffDep> rows = new List<rowStaffDep>();           // Create the empty list
-                foreach (var d in deps)
+                foreach (var r in deps)
                 {
                     bool useRow = false;                                    // Assume we're not interested in the row
 
                     // Process the Deposit Type checkboxes. If the "All Types" box is checked, take every row. Otherwise, only take rows
                     // whose DepositType matches a checked checkbox.
 
-                    switch (d.DepType)                                      // By DepositType, look for relevant checkbox
+                    switch (r.DepType)                                      // By DepositType, look for relevant checkbox
                     {
                         case DepType.Cash:
                             {
@@ -846,7 +847,7 @@ namespace Portal11.Rqsts
                             }
                         default:
                             {
-                                LogError.LogInternalError("StaffDashboard", $"Invalid DepositType in Deposit RqstID '{d.DepID.ToString()}'"); // Log fatal error
+                                LogError.LogInternalError("StaffDashboard", $"Invalid DepositType '{r.DepType.ToString()}' in Deposit RqstID '{r.DepID.ToString()}'"); // Log fatal error
                                 break;
                             }
                     }
@@ -860,7 +861,7 @@ namespace Portal11.Rqsts
 
                             useRow = false;                                 // Assume this next screen will prove negative for the row
 
-                            switch (d.CurrentState)                         // By Current State, look for relevant checkbox
+                            switch (r.CurrentState)                         // By Current State, look for relevant checkbox
                             {
                                 case DepState.ApprovedReadyToDeposit:
                                 case DepState.DepositComplete:
@@ -899,7 +900,7 @@ namespace Portal11.Rqsts
                                     }
                                 default:
                                     {
-                                        LogError.LogInternalError("StaffDashboard", $"Invalid CurrentState in Deposit RqstID '{d.DepID.ToString()}'"); // Log fatal error
+                                        LogError.LogInternalError("StaffDashboard", $"Invalid CurrentState '{r.CurrentState.ToString()}' in Deposit RqstID '{r.DepID.ToString()}'"); // Log fatal error
                                         break;
                                     }
                             }
@@ -908,20 +909,20 @@ namespace Portal11.Rqsts
                         {
                             rowStaffDep row = new rowStaffDep()
                             {                                               // Empty row all ready to fill
-                                RequestID = d.DepID.ToString(),                 // Convert ID from int to string for easier retrieval later
-                                ProjectID = d.ProjectID.ToString(),         // Same treatment for project ID
-                                ProjectName = d.Project.Name,               // Fetch project name
-                                CurrentTime = d.CurrentTime,                // When request was last updated
-                                DepTypeDesc = EnumActions.GetEnumDescription((Enum)d.DepType), // Convert enum form to English for display
-                                Amount = d.Amount,
-                                CurrentState = d.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
-                                CurrentStateDesc = EnumActions.GetEnumDescription(d.CurrentState), // Convert enum form to English for display
-                                ReturnNote = d.ReturnNote,
-                                Owner = EnumActions.GetEnumDescription(StateActions.UserRoleToProcessRequest(d.CurrentState)), // Fetch "English" version of owner
-                                Description = d.Description,
-                                Archived = d.Archived
+                                RequestID = r.DepID.ToString(),             // Convert ID from int to string for easier retrieval later
+                                ProjectID = r.ProjectID.ToString(),         // Same treatment for project ID
+                                ProjectName = r.Project.Name,               // Fetch project name
+                                CurrentTime = r.CurrentTime,                // When request was last updated
+                                DepTypeDesc = EnumActions.GetEnumDescription((Enum)r.DepType), // Convert enum form to English for display
+                                Amount = r.Amount,
+                                CurrentState = r.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
+                                CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum form to English for display
+                                ReturnNote = r.ReturnNote,
+                                Owner = EnumActions.GetEnumDescription(StateActions.UserRoleToProcessRequest(r.CurrentState)), // Fetch "English" version of owner
+                                Description = r.Description,
+                                Archived = r.Archived
                             };
-                            if (d.Archived)                                  // If true row is Archived
+                            if (r.Archived)                                  // If true row is Archived
                                 row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
 
                             rows.Add(row);                                  // Add the filled-in row to the list of rows
@@ -938,6 +939,203 @@ namespace Portal11.Rqsts
                 NavigationActions.EnableGridViewNavButtons(gvStaffDep);   // Enable appropriate nav buttons based on page count
                 gvStaffDep.SelectedIndex = -1;                            // No selected row any more
                 litSelectedDepRow.Text = "";                                // No selected row remembered (for double click)
+            }
+            return;
+        }
+
+        // Fetch all of the Documents for CS Staff, subject to further search constraints. Display in a GridView
+
+        void LoadAllDocs(int pageIndex = 0)
+        {
+            if (!pnlDoc.Visible)                                            // If false the panel is not visible
+                return;                                                     // Don't waste time on filling it
+
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+
+                // There are so many permutations of this query that we have to build it up piece by piece.
+
+                var pred = PredicateBuilder.True<Doc>();                    // Initialize predicate to select from Doc table
+                pred = pred.And(r => !r.Inactive);                          // Only active Docs
+
+                // Process "Active" and "Archived" flags. They're not independent, so we have to grind through their combinations
+
+                if (ckRActive.Checked && ckRArchived.Checked)           // If true, take them all
+                    ;                                                   // Don't ignore anything
+                else if (ckRActive.Checked && !ckRArchived.Checked)     // If true, only Active checked
+                    pred = pred.And(r => !r.Archived);                  // Ignore Archived requests
+                else if (!ckRActive.Checked && ckRArchived.Checked)     // If true, only Archived checked
+                    pred = pred.And(r => r.Archived);                   // Ignore Active requests
+                else                                                    // Both boxes are unchecked
+                    pred = pred.And(r => r.Archived && !r.Archived);    // Nonsensical. Returns nothing
+
+                // If a specific project is selected, only select Docs from that project
+
+                if (ddlProjectName.SelectedIndex != 0)                      // If != Project is selected. Fetch rqsts only for that Projects
+                {
+                    int projectID = Convert.ToInt32(ddlProjectName.SelectedValue);  // Convert ID of selected Project
+                    pred = pred.And(r => r.ProjectID == projectID);         // Only active Docs from current project
+                }
+
+                // Now look for Requests in the right state. For auditor, it's only complete requests.
+
+                if (litSavedUserRole.Text == UserRole.Auditor.ToString())   // If == user is an Auditor
+                {
+                    pred = pred.And(r => (r.CurrentState == DocState.Executed)); // Auditors only see Executed Requests
+                }
+
+                // Deal with date range filter. Remember that we've already validated the date strings, so we ca just use them.
+
+                if (txtBeginningDate.Text != "")
+                {
+                    DateTime date = Convert.ToDateTime(txtBeginningDate.Text);  // Convert to a date value
+                    pred = pred.And(r => (r.CurrentTime >= date));
+                }
+
+                if (txtEndingDate.Text != "")
+                {
+                    DateTime date = Convert.ToDateTime(txtEndingDate.Text);     // Convert to a date value
+                    TimeSpan day = new TimeSpan(23, 59, 59);                    // Figure out the length of a day
+                    DateTime endOfDay = date.Add(day);                          // Set query to END of the specified day
+                    pred = pred.And(r => (r.CurrentTime <= endOfDay));          // Query to end END of the specified day
+                }
+
+                // The predicate is ready. Do the Query and sort most recent first. creating a list of Doc rows
+
+                List<Doc> docs = context.Docs.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
+
+                // From this list of Rqsts, build a list of rows for the gvStaffDoc GridView based on the selection criteria provided by the user.
+
+                List<rowStaffDoc> rows = new List<rowStaffDoc>();   // Create the empty list
+                foreach (var r in docs)
+                {
+                    bool useRow = false;                                    // Assume we're not interested in the row
+
+                    // Process the Document Type checkboxes. If the "All Types" box is checked, take every row. Otherwise, only take rows
+                    // whose DocumentType matches a checked checkbox.
+
+                    switch (r.DocType)                                  // By DocumentType, look for relevant checkbox
+                    {
+                        case DocType.Contract:
+                            {
+                                if (ckCContract.Checked)                // If true relevant checkbox is checked
+                                    useRow = true;                      // Take the row
+                                break;
+                            }
+                        default:
+                            {
+                                LogError.LogInternalError("StaffDashboard", $"Invalid DocType '{r.DocType.ToString()}' in Document RqstID '{r.DocID.ToString()}'"); // Log fatal error
+                                break;
+                            }
+                    }
+                    if (useRow)                                         // If true row passes the Request Type screen
+                    {
+                        if (litSavedUserRole.Text != UserRole.Auditor.ToString()) // If true User is not an Auditor. Auditors don't check Next Reviewer
+                        {
+
+                            // Apply the Next Reviewer screen using the Current State of the row. Current State determines the identity of the next
+                            // reviewer. It's Next Reviewer that's screened via checkboxes.
+
+                            useRow = false;                             // Assume this next screen will prove negative for the row
+
+                            switch (r.CurrentState)                         // By Reviewer Type, look for relevant checkbox
+                            {
+                                case DocState.AwaitingCommunityDirector:
+                                case DocState.RevisingByCommunityDirector:
+                                    {
+                                        if (ckRCommunityDirector.Checked)
+                                            useRow = true;
+                                        break;
+                                    }
+                                case DocState.AwaitingFinanceDirector:
+                                case DocState.RevisingByFinanceDirector:
+                                    {
+                                        if (ckRFinanceDirector.Checked)
+                                            useRow = true;
+                                        break;
+                                    }
+                                case DocState.AwaitingInternalCoordinator:
+                                case DocState.RevisingByInternalCoordinator:
+                                    {
+                                        if (ckRInternalCoordinator.Checked)
+                                            useRow = true;
+                                        break;
+                                    }
+                                case DocState.AwaitingPresident:
+                                case DocState.RevisingByPresident:
+                                    {
+                                        if (ckRPresident.Checked)
+                                            useRow = true;
+                                        break;
+                                    }
+                                case DocState.AwaitingProjectDirector:
+                                case DocState.RevisingByProjectDirector:
+                                case DocState.RevisedByCommunityDirector:
+                                case DocState.RevisedByFinanceDirector:
+                                case DocState.RevisedByInternalCoordinator:
+                                case DocState.RevisedByPresident:
+                                case DocState.UnsubmittedByInternalCoordinator:
+                                case DocState.UnsubmittedByProjectDirector:
+                                case DocState.UnsubmittedByProjectStaff:
+                                    {
+                                        if (ckRUnsubmitted.Checked)
+                                            useRow = true;
+                                        break;
+                                    }
+                                case DocState.Executed:
+                                    {
+                                        if (ckRCompleted.Checked)
+                                            useRow = true;
+                                        break;
+                                    }
+                                case DocState.ReturnedToInternalCoordinator:
+                                case DocState.ReturnedToProjectDirector:
+                                case DocState.ReturnedToProjectStaff:
+                                    {
+                                        if (ckRReturned.Checked)
+                                            useRow = true;
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        LogError.LogInternalError("StaffDashboard", $"Invalid CurrentState '{r.CurrentState.ToString()}' in Document RqstID '{r.DocID.ToString()}'"); // Log fatal error
+                                        break;
+                                    }
+                            }
+                        }
+                        if (useRow)                                         // If true passed the second screen
+                        {
+                            rowStaffDoc row = new rowStaffDoc()
+                            {                                               // Empty row all ready to fill
+                                RequestID = r.DocID.ToString(),                 // Convert ID from int to string for easier retrieval later
+                                ProjectID = r.ProjectID.ToString(),         // Same treatment for project ID
+                                ProjectName = r.Project.Name,               // Fetch project name
+                                CurrentTime = r.CurrentTime,                // When request was last updated
+                                DocTypeDesc = EnumActions.GetEnumDescription((Enum)r.DocType), // Convert enum form to English for display
+                                CurrentState = r.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
+                                CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum form to English for display
+                                ReturnNote = r.ReturnNote,
+                                Owner = EnumActions.GetEnumDescription(StateActions.UserRoleToProcessRequest(r.CurrentState)), // Fetch "English" version of owner
+                                Description = r.Description,
+                                Archived = r.Archived
+                            };
+                            if (r.Archived)                                  // If true row is Archived
+                                row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
+
+                            rows.Add(row);                                  // Add the filled-in row to the list of rows
+                        }
+                    }
+                }
+
+                gvStaffDoc.DataSource = rows;                             // Give it to the GridView control
+                gvStaffDoc.PageIndex = pageIndex;                         // Position to the requested page
+                gvStaffDoc.DataBind();                                    // And get it in gear
+
+                // Not enough to merit this                AllRqstRowCount.Text = rqsts.Count().ToString();     // Show total number of rows for amusement 
+
+                NavigationActions.EnableGridViewNavButtons(gvStaffDoc);   // Enable appropriate nav buttons based on page count
+                gvStaffDoc.SelectedIndex = -1;                            // No selected row any more
+                litSelectedDocRow.Text = "";                              // No selected row remembered (for double click)
             }
             return;
         }
@@ -1078,7 +1276,7 @@ namespace Portal11.Rqsts
                             }
                         default:
                             {
-                                LogError.LogInternalError("StaffDashboard", $"Invalid RqstType in Expense RqstID '{r.ExpID.ToString()}'"); // Log fatal error
+                                LogError.LogInternalError("StaffDashboard", $"Invalid RqstType '{r.ExpType.ToString()}' in Expense RqstID '{r.ExpID.ToString()}'"); // Log fatal error
                                 break;
                             }
                     }
@@ -1125,6 +1323,7 @@ namespace Portal11.Rqsts
                                         break;
                                     }
                                 case ExpState.AwaitingProjectDirector:
+                                case ExpState.RevisingByProjectDirector:
                                 case ExpState.RevisedByCommunityDirector:
                                 case ExpState.RevisedByFinanceDirector:
                                 case ExpState.RevisedByInternalCoordinator:
@@ -1153,7 +1352,7 @@ namespace Portal11.Rqsts
                                     }
                                 default:
                                     {
-                                        LogError.LogInternalError("StaffDashboard", $"Invalid CurrentState in Expense RqstID '{r.ExpID.ToString()}'"); // Log fatal error
+                                        LogError.LogInternalError("StaffDashboard", $"Invalid CurrentState '{r.CurrentState.ToString()}' in Expense RqstID '{r.ExpID.ToString()}'"); // Log fatal error
                                         break;
                                     }
                             }
@@ -1161,8 +1360,8 @@ namespace Portal11.Rqsts
                         if (useRow)                                         // If true passed the second screen
                         {
                             rowStaffExp row = new rowStaffExp()
-                            {          // Empty row all ready to fill
-                                RowID = r.ExpID.ToString(),                 // Convert ID from int to string for easier retrieval later
+                            {
+                                RequestID = r.ExpID.ToString(),             // Convert ID from int to string for easier retrieval later
                                 ProjectID = r.ProjectID.ToString(),         // Same treatment for project ID
                                 ProjectName = r.Project.Name,               // Fetch project name
                                 CurrentTime = r.CurrentTime,                // When request was last updated
@@ -1174,7 +1373,8 @@ namespace Portal11.Rqsts
                                 ReturnNote = r.ReturnNote,
                                 Owner = EnumActions.GetEnumDescription(StateActions.UserRoleToProcessRequest(r.CurrentState)), // Fetch "English" version of owner
                                 Archived = r.Archived,
-                                Rush = r.Rush                               // Whether the Request is a "Rush"
+                                Rush = r.Rush,                              // Whether the Request is a "Rush"
+                                ReviseUserRole = r.ReviseUserRole           // Whether the Request is in revision
                             };
 
                             // Fill "Target" with Vendor Name or Employee Name or Recipient. Only one will be present, depending on RqstType.
@@ -1387,9 +1587,9 @@ namespace Portal11.Rqsts
             staffCheckboxesCookie[PortalConstants.CStaffCkRActive] = ckRActive.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkRArchived] = ckRArchived.Checked.ToString();
 
-            staffCheckboxesCookie[PortalConstants.CStaffApprovalsVisible] = pnlApp.Visible.ToString();
-            staffCheckboxesCookie[PortalConstants.CStaffCkAExpress] = ckAExpress.Checked.ToString();
-            staffCheckboxesCookie[PortalConstants.CStaffCkAFull] = ckAFull.Checked.ToString();
+            //staffCheckboxesCookie[PortalConstants.CStaffApprovalsVisible] = pnlApp.Visible.ToString();
+            //staffCheckboxesCookie[PortalConstants.CStaffCkAExpress] = ckAExpress.Checked.ToString();
+            //staffCheckboxesCookie[PortalConstants.CStaffCkAFull] = ckAFull.Checked.ToString();
 
             staffCheckboxesCookie[PortalConstants.CStaffDepositsVisible] = pnlDep.Visible.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkDCheck] = ckDCheck.Checked.ToString();
@@ -1397,6 +1597,11 @@ namespace Portal11.Rqsts
             staffCheckboxesCookie[PortalConstants.CStaffCkDCash] = ckDCash.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkDInKind] = ckDInKind.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkDPledge] = ckDPledge.Checked.ToString();
+
+            staffCheckboxesCookie[PortalConstants.CStaffDocumentsVisible] = pnlDoc.Visible.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkCContract] = ckCContract.Checked.ToString();
+            //staffCheckboxesCookie[PortalConstants.CStaffCkCGrant] = ckCGrant.Checked.ToString();
+            //staffCheckboxesCookie[PortalConstants.CStaffCkCCOI] = ckCCOI.Checked.ToString();
 
             staffCheckboxesCookie[PortalConstants.CStaffExpVisible] = pnlExp.Visible.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEContractorInvoice] = ckEContractorInvoice.Checked.ToString();
@@ -1501,16 +1706,16 @@ namespace Portal11.Rqsts
 
                 // Approval Requests panel
 
-                if (staffCheckboxesCookie[PortalConstants.CStaffApprovalsVisible] == "True")
-                    ExpandAppPanel();                                       // Expand, but don't fill Approvals panel
-                else
-                    CollapseAppPanel();                                     // Start with Approvals panel collapsed
+                //if (staffCheckboxesCookie[PortalConstants.CStaffApprovalsVisible] == "True")
+                //    ExpandAppPanel();                                       // Expand, but don't fill Approvals panel
+                //else
+                //    CollapseAppPanel();                                     // Start with Approvals panel collapsed
 
-                if (staffCheckboxesCookie[PortalConstants.CStaffCkAExpress] == "True") ckAExpress.Checked = true;
-                else ckAExpress.Checked = false;
+                //if (staffCheckboxesCookie[PortalConstants.CStaffCkAExpress] == "True") ckAExpress.Checked = true;
+                //else ckAExpress.Checked = false;
 
-                if (staffCheckboxesCookie[PortalConstants.CStaffCkAFull] == "True") ckAFull.Checked = true;
-                else ckAFull.Checked = false;
+                //if (staffCheckboxesCookie[PortalConstants.CStaffCkAFull] == "True") ckAFull.Checked = true;
+                //else ckAFull.Checked = false;
 
                 // Deposit Requests panel
 
@@ -1533,6 +1738,22 @@ namespace Portal11.Rqsts
 
                 if (staffCheckboxesCookie[PortalConstants.CStaffCkDPledge] == "True") ckDPledge.Checked = true;
                 else ckDPledge.Checked = false;
+
+                // Document Requests panel
+
+                if (staffCheckboxesCookie[PortalConstants.CStaffDocumentsVisible] == "True")
+                    ExpandDocPanel();                                       // Expand, but don't fill Documents panel
+                else
+                    CollapseDocPanel();                                     // Start with Documents panel collapsed
+
+                if (staffCheckboxesCookie[PortalConstants.CStaffCkCContract] == "True") ckCContract.Checked = true;
+                else ckCContract.Checked = false;
+
+                //if (staffCheckboxesCookie[PortalConstants.CStaffCkCGrant] == "True") ckCGrant.Checked = true;
+                //else ckCGrant.Checked = false;
+
+                //if (staffCheckboxesCookie[PortalConstants.CStaffCkCCOI] == "True") ckCCOI.Checked = true;
+                //else ckCCOI.Checked = false;
 
                 // Expense Requests panel
 
@@ -1574,10 +1795,11 @@ namespace Portal11.Rqsts
         void SaveStaffPageIndexes()
         {
             HttpCookie staffPageIndexCookie = new HttpCookie(PortalConstants.CStaffPageIndexes);
-            staffPageIndexCookie[PortalConstants.CStaffPIApp] = gvStaffApp.PageIndex.ToString(); // Copy App gridview value
+            //staffPageIndexCookie[PortalConstants.CStaffPIApp] = gvStaffApp.PageIndex.ToString(); // Copy App gridview value
             staffPageIndexCookie[PortalConstants.CStaffPIDep] = gvStaffDep.PageIndex.ToString(); // Copy Dep gridview value
+            staffPageIndexCookie[PortalConstants.CStaffPIDoc] = gvStaffDoc.PageIndex.ToString(); // Copy Doc gridview value
             staffPageIndexCookie[PortalConstants.CStaffPIExp] = gvStaffExp.PageIndex.ToString(); // Copy Exp gridview value
-
+            
             Response.Cookies.Add(staffPageIndexCookie);                 // Store a new cookie
         }
 

@@ -144,12 +144,12 @@
                             <asp:Button ID="btnRemove" runat="server" Text="Remove >" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
                                 OnClick="btnRemove_Click" Enabled="false" ToolTip="Remove selected person from project" />
                         </div>
-                        <br />
+<%--                        <br />
                         &nbsp;
                         <div class="col-xs-12">
                             <asp:Button ID="btnRemoveAll" runat="server" Text="All >>" CssClass="btn btn-default col-md-offset-4 col-md-4 col-xs-offset-3 col-xs-6"
                                 OnClick="btnRemoveAll_Click" Enabled="false" ToolTip="Assign all persons to project in role" />
-                        </div>
+                        </div>--%>
                         <br />
                         &nbsp;
                         <br />

@@ -155,7 +155,7 @@
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Quantity</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtGoodsQuantity" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                        <asp:TextBox ID="txtGoodsQuantity" runat="server" CssClass="form-control has-success" style="text-align:right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -164,7 +164,7 @@
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Cost Per Unit</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtGoodsCostPerUnit" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                        <asp:TextBox ID="txtGoodsCostPerUnit" runat="server" CssClass="form-control has-success" style="text-align:right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -176,7 +176,7 @@
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Number of Cards</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtNumberOfCards" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                        <asp:TextBox ID="txtNumberOfCards" runat="server" CssClass="form-control has-success" style="text-align:right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -185,7 +185,7 @@
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Cash Value of Each Card</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtEachCard" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                        <asp:TextBox ID="txtEachCard" runat="server" CssClass="form-control has-success" style="text-align:right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -239,7 +239,7 @@
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Fulfillment Instructions</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtPOVendorMode" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                        <asp:TextBox ID="txtPOVendorMode" runat="server" CssClass="form-control has-success" TextMode="MultiLine" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -412,16 +412,16 @@
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Delivery Instructions</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtDeliveryInstructions" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                        <asp:TextBox ID="txtDeliveryInstructions" runat="server" CssClass="form-control has-success" TextMode="MultiLine" ReadOnly="true"></asp:TextBox>
                     </div>
                     <div class="form-group col-xs-1 has-error">
-                        <asp:TextBox ID="txtDeliveryInstructionsRush" runat="server" CssClass="form-control has-error text-danger" Text="Rush" Enabled="false" Visible="false" />
+                        <asp:TextBox ID="txtDeliveryInstructionsRush" runat="server" CssClass="form-control has-error text-danger" Text="Rush" ReadOnly="true" Visible="false" />
                     </div>
                 </div>
             </div>
         </asp:panel>
 
-        <asp:Panel ID="pnlPODeliveryInstructions" runat="server">
+ <%--       <asp:Panel ID="pnlPODeliveryInstructions" runat="server">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Delivery Instructions</asp:Label>
@@ -431,13 +431,13 @@
                 </div>
             </div>
         </asp:Panel>
-        
+ --%>       
         <asp:Panel ID="pnlDeliveryAddress" runat="server">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Delivery Address</asp:Label>
                     <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtDeliveryAddress" runat="server" CssClass="form-control has-success" TextMode="MultiLine" ReadOnly="true"></asp:TextBox>
+                        <asp:TextBox ID="txtDeliveryAddress" runat="server" CssClass="form-control has-success" TextMode="MultiLine" Rows="3" ReadOnly="true" />
                     </div>
                 </div>
             </div>
@@ -575,6 +575,7 @@
         <!-- "Scratch" storage used during form processing -->
         <asp:Literal ID="litSavedCommand" runat="server" Visible="false" />
         <asp:Literal ID="litSavedExpID" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedExpType" runat="server" Visible="false" />
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedRush" runat="server" Visible="false" />

@@ -42,6 +42,7 @@ namespace Portal11.Rqsts
                     // Stash these parameters into invisible literals on the current page.
 
                     litSavedDepID.Text = depID.String;
+                    litSavedDepType.Text = EnumActions.GetEnumDescription(dep.DepType); // Type of Deposit Request
                     litSavedCommand.Text = cmd;
                     litSavedProjectID.Text = dep.ProjectID.ToString();
                     litSavedReturn.Text = ret;
@@ -143,6 +144,7 @@ namespace Portal11.Rqsts
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has a name
                 EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
+                litSavedDepType.Text,                               // Here is its type
                 EnumActions.GetEnumDescription(nextState),          // Here is its next state
                 PortalConstants.CEmailDefaultDepositApprovedSubject, PortalConstants.CEmailDefaultDepositApprovedBody); // Use this subject and body, if needed
 
@@ -171,6 +173,7 @@ namespace Portal11.Rqsts
                 projectID,                                          // Request is associated with this project
                 projectName,                                        // Project has a name
                 EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
+                litSavedDepType.Text,                               // Here is its type
                 EnumActions.GetEnumDescription(DepState.Returned),  // Here is its next state
                 PortalConstants.CEmailDefaultDepositApprovedSubject, PortalConstants.CEmailDefaultDepositApprovedBody); // Use this subject and body, if needed
 

@@ -18,7 +18,7 @@ namespace Portal11.Admin
             // This page assigns Persons to a Project in roles of Contractor, Employee, Holder and Recipient. The ProjectPerson table intermediates
             // these relationships.
             // Query Strings:
-            //    QSPersonRole - role that the caller is interested in selecting (optional)
+            //    QSPersonRole - role that the caller is interested in selecting (optional, can be comma-delimited list)
             //    QSProjectID = ID of current project
             //    QSReturn - where to go when we finish
 
@@ -35,12 +35,31 @@ namespace Portal11.Admin
 
                 // If PersonRole is specified, flip the radio button to match
 
-                string personRole = Request.QueryString[PortalConstants.QSPersonRole]; // Fetch Query String, if present
-                if (!string.IsNullOrEmpty(personRole))                      // If false there's something there for us to process
+                string personRoles = Request.QueryString[PortalConstants.QSPersonRole]; // Fetch Query String, if present. If absent, allow all roles
+                if (!string.IsNullOrEmpty(personRoles))                      // If false there's something there for us to process
+
+                    // Process a comma-delimited list of PersonRole values. For each value, leave the corresponding button enabled. Disable others.
+                    // As we start, all the radio buttons are enabled and the first button - Contractor - is selected.
+
                 {
-                    foreach (ListItem item in rdoPersonRole.Items)
+                    bool selectionComplete = false;                         // Flag to show that we've selected an item
+                    foreach (ListItem item in rdoPersonRole.Items)          // Fetch the radio button items one at a time
                     {
-                        item.Selected = (personRole == item.Value);         // If == select the item, if not deselect the item
+                        if (personRoles.IndexOf(item.Value) != -1)          // If != the radio button value (PersonRole) was found in our list
+                            if (!selectionComplete)                         // If false we have not yet made a selection
+                            {
+                                item.Selected = true;                       // Select this radio button
+                                selectionComplete = true;                   // Remember that we have made this selection
+                            }
+                            else
+                            {
+                                item.Selected = false;                      // One selection per list is enough
+                            }
+                        else                                                // This radio button is dead to us
+                        {
+                            item.Selected = false;                          // De-select this radio button
+                            item.Enabled = false;                           // And disable this radio button
+                        }
                     }
                 }
 
@@ -246,12 +265,12 @@ namespace Portal11.Admin
 
         protected void btnDone_Click(object sender, EventArgs e)
         {
-            if (gvProjectPerson.Rows.Count == 0)                      // If == no Persons are assigned to this Project
+            if (gvProjectPerson.Rows.Count == 0)                        // If == no Persons are assigned to this Project
             {
                 litDangerMessage.Text = "The Project must have at least one Person assigned to it in this role."; // Display the error
                 return;
             }
-            Response.Redirect(litSavedReturn.Text);                 // Back to caller-specified page
+            Response.Redirect(litSavedReturn.Text);                     // Back to caller-specified page
         }
 
         // Fetch all the Persons on this project and load them into a GridView
@@ -276,22 +295,25 @@ namespace Portal11.Admin
                     if (search != "")                                       // If != the search string is not blank, use a Contains clause
                         pred = pred.And(p => p.Person.Name.Contains(search)); // Only Persons whose name match our search criteria
 
-                    List<ProjectPerson> pps = context.ProjectPersons.AsExpandable().Where(pred).OrderBy(p => p.Person.Name).ToList(); // Query, exclude, sort and make list
+                    //List<ProjectPerson> pps = context.ProjectPersons.AsExpandable().Where(pred) // Query ProjectPerson table using Where predicate just constructed
+                    //                                .OrderBy(p => p.Person.Name) // Sort the result by Name
+                    //                                .ToList();              // Deliver as a list ready to add to GridView
 
-                    if (selectedRole == PersonRole.Contractor)              // If == we are being asked for Contractors
-                        gvProjectPerson.Columns[PortalConstants.gvProjectPersonW9Column].Visible = true; // Display W-9 information
-                    else
-                        gvProjectPerson.Columns[PortalConstants.gvProjectPersonW9Column].Visible = false; // Do not display W-9 information
+                    gvProjectPerson.Columns[PortalConstants.gvProjectPersonW9Column].Visible = (selectedRole == PersonRole.Contractor); 
+                                                                            // If showing Contractors, display W-9 information
+                    //gvProjectPerson.DataSource = pps;                       // Give it to the GridView cnorol
+                    gvProjectPerson.DataSource = context.ProjectPersons.AsExpandable().Where(pred) // Query ProjectPerson table using Where predicate just constructed
+                                                    .OrderBy(p => p.Person.Name) // Sort the result by Name
+                                                    .ToList();              // Deliver result to GridView
 
-                    gvProjectPerson.DataSource = pps;                     // Give it to the GridView cnorol
-                    gvProjectPerson.DataBind();                           // And display it
+                    gvProjectPerson.DataBind();                             // And display it
 
 
                     NavigationActions.EnableGridViewNavButtons(gvProjectPerson); // Enable appropriate nav buttons based on page count
 
-                    btnRemoveAll.Enabled = true;                            // Assume that there are rows here which could be removed
-                    if (pps.Count() == 0)                                   // If == there are no rows displayed here
-                        btnRemoveAll.Enabled = false;                       // So the "Remove All" button is not useful
+                    //btnremoveall.enabled = true;                            // assume that there are rows here which could be removed
+                    //if (pps.count() == 0)                                   // if == there are no rows displayed here
+                    //    btnremoveall.enabled = false;                       // so the "remove all" button is not useful
                 }
             }
         }
@@ -327,15 +349,15 @@ namespace Portal11.Admin
                 string franchiseKey = SupportingActions.GetFranchiseKey(); // Fetch the current key
                 pred = pred.And(p => p.FranchiseKey == franchiseKey);   // Only for this Franchise
 
-                List<Person> ps = context.Persons.AsExpandable().Where(pred).Except(queryPE).OrderBy(p => p.Name).ToList(); // Query, exclude,sort and make list
+                List<Person> ps = context.Persons.AsExpandable().Where(pred) // Query using the Where predicate we constructed
+                                                                .Except(queryPE) // Exclude Persons already assigned to Project in this role
+                                                                .OrderBy(p => p.Name) // Sort the result by name
+                                                                .ToList(); // Deliver result as a list we can jam into the gv
 
-                if (selectedRole == PersonRole.Contractor)              // If == we are being asked for Contractors
-                    gvAllPerson.Columns[PortalConstants.gvAllPersonW9Column].Visible = true; // Display W-9 information
-                else
-                    gvAllPerson.Columns[PortalConstants.gvAllPersonW9Column].Visible = false; // Do not display W-9 information
-
-                gvAllPerson.DataSource = ps;                          // Give it to the GridView cnorol
-                gvAllPerson.DataBind();                               // And display it
+                gvAllPerson.Columns[PortalConstants.gvAllPersonW9Column].Visible = (selectedRole == PersonRole.Contractor);
+                                                                        // If showing Contractors, display W-9 information
+                gvAllPerson.DataSource = ps;                            // Give it to the GridView cnorol
+                gvAllPerson.DataBind();                                 // And display it
 
                 NavigationActions.EnableGridViewNavButtons(gvAllPerson); // Enable appropriate nav buttons based on page count
             }
