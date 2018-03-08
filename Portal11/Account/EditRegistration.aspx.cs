@@ -108,6 +108,14 @@ namespace Portal11.Account
                 }
             }
         }
+        protected void gvListProjectMember_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
+            {
+                gvListProjectMember.PageIndex = e.NewPageIndex;         // Propagate the desired page index
+                LoadProjectMembership(litSavedUserID.Text);             // Fill the grid
+            }
+        }
 
         // Back out without making any changes
 
@@ -226,12 +234,27 @@ namespace Portal11.Account
                             where (up.UserID == userID)
                             orderby up.User.FullName
                             select new { up.Project.Name, up.ProjectRole }; // Find the Projects this user is on
-                foreach (var row in query)
-                {
-                    lstProjectMembership.Items.Add(new ListItem(row.ProjectRole.ToString() + ": " + row.Name, "")); // Stash each Project  name into list
+                //foreach (var row in query)
+                //{
+                //    lstProjectMembership.Items.Add(new ListItem(row.ProjectRole.ToString() + ": " + row.Name, "")); // Stash each Project  name into list
 
+                //}
+                List<rowListProjectMember> rows = new List<rowListProjectMember>(); // Create an empty list for the GridView control
+                foreach (var up in query)
+                {
+                    rowListProjectMember row = new rowListProjectMember() // Empty row all ready to fill
+                    {
+                        UserRole = EnumActions.GetEnumDescription(up.ProjectRole), // Convert to descriptive text
+                        ProjectName = up.Name
+                    };
+                    rows.Add(row);                                  // Add the filled-in row to the list of rows
                 }
+                gvListProjectMember.DataSource = rows;               // Give it to the GridView control
+                gvListProjectMember.DataBind();                      // And display it
+
+                NavigationActions.EnableGridViewNavButtons(gvListProjectMember); // Enable appropriate nav buttons based on page count
             }
+            return;
         }
     }
 }

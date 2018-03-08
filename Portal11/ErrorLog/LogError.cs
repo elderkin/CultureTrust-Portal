@@ -64,9 +64,7 @@ namespace Portal11.ErrorLog
                     {
                         foreach (var validationError in validationErrors.ValidationErrors) // Boxes inside boxes
                         {
-                            secondaryError = secondaryError + string.Format("; Property: '{0}' Error: '{1}' ",
-                                        validationError.PropertyName,
-                                        validationError.ErrorMessage);  // Build up the secondary error message with validation error details
+                            secondaryError = secondaryError + $"; Property: '{validationError.PropertyName}' Error: '{validationError.ErrorMessage}' ";  // Details
                         }
                     }
                 }
@@ -77,9 +75,7 @@ namespace Portal11.ErrorLog
                     {
                         foreach (var validationError in validationErrors.ValidationErrors) // Boxes inside boxes
                         {
-                            secondaryError = secondaryError + string.Format("; Property: '{0}' Error: '{1}' ",
-                                        validationError.PropertyName,
-                                        validationError.ErrorMessage);  // Build up the secondary error message with validation error details
+                            secondaryError = secondaryError + $"; Property: '{validationError.PropertyName}' Error: '{validationError.ErrorMessage}' ";  // Details
                         }
                     }
                 }

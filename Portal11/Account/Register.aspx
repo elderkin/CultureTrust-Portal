@@ -20,7 +20,7 @@
                 <asp:TextBox runat="server" ID="txtFranchiseKey" CssClass="form-control" />
             </div>
             <div class="col-md-7">
-                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtFranchiseKey"
+                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtFranchiseKey" SetFocusOnError="true"
                     CssClass="text-danger" ErrorMessage="The Franchise Key field is required." />
             </div>
         </div>
@@ -32,7 +32,7 @@
                 <asp:TextBox runat="server" ID="Email" CssClass="form-control" TextMode="Email" />
             </div>
             <div class="col-md-7">
-                <asp:RequiredFieldValidator runat="server" ControlToValidate="Email"
+                <asp:RequiredFieldValidator runat="server" ControlToValidate="Email" SetFocusOnError="true"
                     CssClass="text-danger" ErrorMessage="The Email field is required." />
             </div>
         </div>
@@ -43,7 +43,7 @@
                 <asp:TextBox runat="server" ID="Password" TextMode="Password" CssClass="form-control" />
             </div>
             <div class="col-md-7">
-                <asp:RequiredFieldValidator runat="server" ControlToValidate="Password"
+                <asp:RequiredFieldValidator runat="server" ControlToValidate="Password" SetFocusOnError="true"
                     CssClass="text-danger" ErrorMessage="The password field is required." />
             </div>
         </div>
@@ -54,7 +54,7 @@
                 <asp:TextBox runat="server" ID="ConfirmPassword" TextMode="Password" CssClass="form-control" />
             </div>
             <div class="col-md-7">
-                <asp:RequiredFieldValidator runat="server" ControlToValidate="ConfirmPassword"
+                <asp:RequiredFieldValidator runat="server" ControlToValidate="ConfirmPassword" SetFocusOnError="true"
                     CssClass="text-danger" Display="Dynamic" ErrorMessage="The confirm password field is required." />
                 <asp:CompareValidator runat="server" ControlToCompare="Password" ControlToValidate="ConfirmPassword"
                     CssClass="text-danger" Display="Dynamic" ErrorMessage="The password and confirmation password do not match." />
@@ -67,7 +67,7 @@
                 <asp:TextBox runat="server" ID="FullName" CssClass="form-control" />
             </div>
             <div class="col-md-7">
-                <asp:RequiredFieldValidator runat="server" ControlToValidate="FullName"
+                <asp:RequiredFieldValidator runat="server" ControlToValidate="FullName" SetFocusOnError="true"
                     CssClass="text-danger" Display="Dynamic" ErrorMessage="The name field is required." />
             </div>
         </div>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -20,9 +21,17 @@ namespace Portal11.Logic
                 return "";
         }
 
+        public static string LoadDateTimeIntoTxt(DateTime date)
+        {
+            if (date > SqlDateTime.MinValue)                                // If > there is a useful date value
+                return date.ToString("g", DateTimeFormatInfo.CurrentInfo);  // I know, simple. But it's all done here in case it needs to change
+            else
+                return "";
+        }
+
         // Take a date, convert it to a text string and store it in a text box. Then place the date in an associated calendar.
 
-        public static void LoadDateIntoTxtCal(DateTime date, TextBox txt, Calendar cal)
+        public static void LoadDateIntoTxtCal(DateTime date, TextBox txt, System.Web.UI.WebControls.Calendar cal)
         {
             if (date > SqlDateTime.MinValue)                                // If > there is a useful date value
             {
@@ -35,7 +44,7 @@ namespace Portal11.Logic
 
         // Take the Text from a TextBox, convert it carefully to a DateTime value, and insert it into a Calendar as the SelectedDate.
 
-        public static void LoadTxtIntoCal(TextBox txt, Calendar cal)
+        public static void LoadTxtIntoCal(TextBox txt, System.Web.UI.WebControls.Calendar cal)
         {
             if (txt.Text != "")                                             // If != there is a value in the text box
             {
@@ -71,9 +80,10 @@ namespace Portal11.Logic
         }
 
         // Validate a typed-in date value from a text box
+
         public static void ValidateDateInput(TextBox txt, string source, Literal lit)
         {
-            if (txt.Text != "")                                                 // If != there is a value in the text box
+            if (!string.IsNullOrEmpty(txt.Text))                                // If false there is a value in the text box
             {
                 try
                 {

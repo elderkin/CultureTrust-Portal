@@ -7,10 +7,13 @@
       .table {
         margin-bottom: 0px;
       }
+      /*.panel-success .panel-heading {
+          background-color:#6F7CFC;
+          margin-bottom:10px;*/
+ }
     </style>
 
     <h2><%: Title %></h2>
-    <hr />
     <p class="text-success">
         <asp:Literal runat="server" ID="litSuccessMessage" />
     </p>
@@ -293,7 +296,7 @@
                                 </table>
                             </EmptyDataTemplate>
                             <Columns>
-                                <asp:BoundField DataField="CurrentTime" ItemStyle-HorizontalAlign="Right" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                                <asp:BoundField DataField="CurrentTime" ItemStyle-HorizontalAlign="Right" HeaderText="Last Modified" DataFormatString="{0:g}" />
                                 <asp:BoundField DataField="ProjectName" ItemStyle-HorizontalAlign="Left" HeaderText="Project" HeaderStyle-HorizontalAlign="Right"/>
                                 <asp:BoundField DataField="AppTypeDesc" HeaderText="Approval Type" />
                                 <asp:BoundField DataField="AppReviewType" HeaderText="Review Type" />
@@ -415,7 +418,7 @@
                                 </table>
                             </EmptyDataTemplate>
                             <Columns>
-                                <asp:BoundField DataField="CurrentTime" ItemStyle-HorizontalAlign="Right" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                                <asp:BoundField DataField="Time" ItemStyle-HorizontalAlign="Right" HeaderText="Created" DataFormatString="{0:g}" />
                                 <asp:BoundField DataField="ProjectName" HeaderText="Project" />
                                 <asp:BoundField DataField="ExpTypeDesc" HeaderText="Expense Type" />
                                 <asp:BoundField DataField="Amount" HeaderText="Amount" DataFormatString="${0:###,###.00}"
@@ -552,7 +555,7 @@
                                 </table>
                             </EmptyDataTemplate>
                             <Columns>
-                                <asp:BoundField DataField="CurrentTime" ItemStyle-HorizontalAlign="Right" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                                <asp:BoundField DataField="Time" ItemStyle-HorizontalAlign="Right" HeaderText="Created" DataFormatString="{0:g}" />
                                 <asp:BoundField DataField="ProjectName" HeaderText="Project" />
                                 <asp:BoundField DataField="DepTypeDesc" HeaderText="Deposit Type" />
                                 <asp:BoundField DataField="Amount" HeaderText="Amount" DataFormatString="${0:###,###.00}"
@@ -584,6 +587,11 @@
                                 <asp:TemplateField HeaderText="Request ID" Visible="false">
                                     <ItemTemplate>
                                         <asp:Label ID="lblRequestID" runat="server" Text='<%# Bind("RequestID") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Revise" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblReviseUserRole" runat="server" Text='<%# Bind("ReviseUserRole") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Row Actions" Visible="false">
@@ -673,7 +681,7 @@
                                 </table>
                             </EmptyDataTemplate>
                             <Columns>
-                                <asp:BoundField DataField="CurrentTime" ItemStyle-HorizontalAlign="Right" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                                <asp:BoundField DataField="Time" ItemStyle-HorizontalAlign="Right" HeaderText="Created" DataFormatString="{0:g}" />
                                 <asp:BoundField DataField="ProjectName" HeaderText="Project" />
                                 <asp:BoundField DataField="DocTypeDesc" HeaderText="Document Type" />
                                 <asp:BoundField DataField="CurrentStateDesc" HeaderText="Status" />
@@ -703,6 +711,16 @@
                                 <asp:TemplateField HeaderText="Request ID" Visible="false">
                                     <ItemTemplate>
                                         <asp:Label ID="lblRequestID" runat="server" Text='<%# Bind("RequestID") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Rush" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblRush" runat="server" Text='<%# Bind("Rush") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Revise" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblReviseUserRole" runat="server" Text='<%# Bind("ReviseUserRole") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Row Actions" Visible="false">

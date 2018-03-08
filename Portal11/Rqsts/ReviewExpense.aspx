@@ -31,7 +31,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Project Name</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtProjectName" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Expense Type</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtTypeDescription" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Current Status</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtStateDescription" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Established by</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtEstablishedBy" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -79,8 +79,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Established on</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtEstablishedTime" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtEstablishedTime" CssClass="form-control has-success text-right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -91,7 +91,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Description</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox runat="server" ID="txtDescription" TextMode="MultiLine" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -103,8 +103,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Pay Period - Beginning</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtBeginningDate" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtBeginningDate" CssClass="form-control has-success text-right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -112,8 +112,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Pay Period - Ending</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtEndingDate" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtEndingDate" CssClass="form-control has-success text-right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -124,8 +124,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Date Needed</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtDateNeeded" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtDateNeeded" CssClass="form-control has-success text-right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -136,7 +136,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Description of Goods</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox ID="txtGoodsDescription" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -145,8 +145,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">SKU or Model Number</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtGoodsSKU" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox ID="txtGoodsSKU" runat="server" CssClass="form-control has-success text-right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -154,8 +154,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Quantity</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtGoodsQuantity" runat="server" CssClass="form-control has-success" style="text-align:right" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox ID="txtGoodsQuantity" runat="server" CssClass="form-control has-success text-right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -163,8 +163,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Cost Per Unit</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtGoodsCostPerUnit" runat="server" CssClass="form-control has-success" style="text-align:right" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox ID="txtGoodsCostPerUnit" runat="server" CssClass="form-control has-success text-right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -175,8 +175,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Number of Cards</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtNumberOfCards" runat="server" CssClass="form-control has-success" style="text-align:right" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox ID="txtNumberOfCards" runat="server" CssClass="form-control has-success text-right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -184,8 +184,20 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Cash Value of Each Card</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtEachCard" runat="server" CssClass="form-control has-success" style="text-align:right" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox ID="txtEachCard" runat="server" CssClass="form-control has-success text-right" ReadOnly="true"></asp:TextBox>
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- Dollar Amount -->
+        <asp:Panel ID="pnlAmount" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" ID="lblAmount" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
+                    <div class="col-md-3 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control has-success text-right" ReadOnly="true" />
                     </div>
                 </div>
             </div>
@@ -196,8 +208,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Date of Invoice</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtDateOfInvoice" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox ID="txtDateOfInvoice" runat="server" CssClass="form-control has-success text-right" ReadOnly="true" />
                     </div>
                 </div>
             </div>
@@ -205,8 +217,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Invoice Number</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtInvoiceNumber" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox ID="txtInvoiceNumber" runat="server" CssClass="form-control has-success text-right" ReadOnly="true"/>
                     </div>
                 </div>
             </div>
@@ -217,7 +229,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Existing Contract?</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox ID="txtExistingContract" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -226,7 +238,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Contract Reason</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox ID="txtContractReason" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -238,7 +250,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Fulfillment Instructions</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox ID="txtPOVendorMode" runat="server" CssClass="form-control has-success" TextMode="MultiLine" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -250,7 +262,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label ID="lblEntity" runat="server" CssClass="col-sm-2 col-xs-12 control-label">Vendor</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtEntity" CssClass="form-control" ReadOnly="true" />
                     </div>
                 </div>
@@ -262,7 +274,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" ID="lblPerson" CssClass="col-sm-2 col-xs-12 control-label">Person</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtPerson" CssClass="form-control" ReadOnly="true" />
                     </div>
                 </div>
@@ -274,7 +286,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">URL</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtURL" CssClass="form-control" ReadOnly="true" />
                     </div>
                 </div>
@@ -286,7 +298,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Source of Funds</asp:Label>
-                    <div class="panel panel-default col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="panel panel-default col-md-3 col-sm-5 col-xs-6">
                         <div class="radio">
                             <asp:RadioButtonList ID="rdoSourceOfFunds" runat="server" AutoPostBack="true"
                                 Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
@@ -306,7 +318,7 @@
             <div class="form-group">
                     <div class="row">
                         <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Project Class</asp:Label>
-                        <div class="col-lg-4 col-md-4 col-xs-6">
+                        <div class="col-md-3 col-xs-6">
                             <asp:TextBox runat="server" ID="txtProjectClass" CssClass="form-control" ReadOnly="true" />
                         </div>
                     </div>
@@ -314,24 +326,12 @@
         </asp:Panel>
         <! -- End of pnlFunds -->
 
-        <!-- Dollar Amount -->
-        <asp:Panel ID="pnlAmount" runat="server">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" ID="lblAmount" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" style="text-align:right" ReadOnly="true" />
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
-
         <!-- GL Code -->
         <asp:Panel ID="pnlGLCode" runat="server">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">General Ledger Code</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtGLCode" CssClass="form-control" ReadOnly="true" />
                     </div>
                 </div>
@@ -399,7 +399,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Payment Method</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox ID="txtPaymentMethod" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -411,32 +411,28 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Delivery Instructions</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtDeliveryInstructions" runat="server" CssClass="form-control has-success" TextMode="MultiLine" ReadOnly="true"></asp:TextBox>
-                    </div>
-                    <div class="form-group col-xs-1 has-error">
-                        <asp:TextBox ID="txtDeliveryInstructionsRush" runat="server" CssClass="form-control has-error text-danger" Text="Rush" ReadOnly="true" Visible="false" />
-                    </div>
-                </div>
-            </div>
-        </asp:panel>
-
- <%--       <asp:Panel ID="pnlPODeliveryInstructions" runat="server">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Delivery Instructions</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                        <asp:TextBox ID="txtPODeliveryInstructions" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-sm-5 col-xs-6">
+                        <asp:TextBox ID="txtDeliveryInstructions" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
         </asp:Panel>
- --%>       
+
+        <asp:Panel ID="pnlDeliveryModeRush" runat="server" Visible="false">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-offset-2 col-md-3 col-sm-5 col-xs-6">
+                        <asp:button runat="server" CssClass="btn btn-danger disabled col-xs-12" Text="Rush" />
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
         <asp:Panel ID="pnlDeliveryAddress" runat="server">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Delivery Address</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox ID="txtDeliveryAddress" runat="server" CssClass="form-control has-success" TextMode="MultiLine" Rows="3" ReadOnly="true" />
                     </div>
                 </div>
@@ -448,12 +444,19 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Supporting Docs</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:ListBox runat="server" ID="lstSupporting" CssClass="form-control" Rows="2" SelectionMode="Single"
                             OnSelectedIndexChanged="lstSupporting_SelectedIndexChanged" AutoPostBack="true" />
                     </div>
-                    <asp:HyperLink ID="btnViewLink" runat="server" CssClass="btn btn-default col-xs-1" Enabled="false" ToolTip="Select a row then click here to view the document"
+                    <div class="col-lg-5 col-md-offset-0 col-md-6 col-sm-offset-2 col-xs-offset-1 col-xs-6">
+                    <asp:HyperLink ID="btnViewLink" runat="server" CssClass="btn btn-default col-md-2 col-xs-3" Enabled="false" ToolTip="Select a row then click here to view the document"
                         NavigateUrl="overwrite from code behind" Text="View" Target="_blank" />
+                    <asp:Button ID="btnZip" runat="server" Text="Zip" CssClass="btn btn-default col-md-2 col-xs-offset-1 col-xs-3" CausesValidation="false" 
+                        Enabled="true" OnClick="btnZip_Click" ToolTip="Download a Zip file containing all supporting documents" />
+                    </div>
+                    <div class="col-xs-6 text-success">
+                        <asp:Literal runat="server" ID="litSDSuccess" />
+                    </div>
                 </div>
             </div>
         </asp:Panel>
@@ -547,11 +550,11 @@
                         </table>
                     </EmptyDataTemplate>
                     <Columns>
-                        <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:MM/dd/yyyy}" />
+                        <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:g}" />
                         <asp:BoundField DataField="FormerStatus" HeaderText="Former Status" />
                         <asp:BoundField DataField="EstablishedBy" HeaderText="Established By" />
-                        <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />
                         <asp:BoundField DataField="ReasonForChange" HeaderText="Reason For Change" />
+                        <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />
                         <asp:BoundField DataField="ReturnNote" HeaderText="Return Note" />
                     </Columns>
                 </asp:GridView>
@@ -577,6 +580,8 @@
         <asp:Literal ID="litSavedExpID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedExpType" runat="server" Visible="false" />
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedProjectName" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedProjectCode" runat="server" Visible="false" />
         <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedRush" runat="server" Visible="false" />
         <asp:Literal ID="litSavedState" runat="server" Visible="false" />

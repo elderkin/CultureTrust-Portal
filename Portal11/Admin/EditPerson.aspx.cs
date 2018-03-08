@@ -16,9 +16,8 @@ namespace Portal11.Admin
             //      PersonID - the database ID of the Person to be edited. If absent, invoke Select Entity to find the Entity.
             //      ProjectID - propagated to caller
             //      Return - the URL to which we return when processing is complete. If blank, we return to the Admin page. (required)
-            //      Return2 - the caller's caller. We propagate this - feels shakey (optional)
-            // If we are invoked from AssignEntitysToProject, we have more Query Strings, ProjectID and ProjectName. These are propagated through
-            // if we pass control back there.
+            //      Return2, PersonRole - the caller's stuff. We propagate this (optional)
+
 
             if (!Page.IsPostBack)
             {
@@ -180,6 +179,10 @@ namespace Portal11.Admin
             string ret2 = Request.QueryString[PortalConstants.QSReturn2];   // Fetch Return2 parameter, if present
             if (!string.IsNullOrEmpty(ret2))                                // If false parameter present, propagate it
                 running += "&" + PortalConstants.QSReturn + "=" + ret2;     // Propagate caller's return
+
+            string ent = Request.QueryString[PortalConstants.QSPersonRole]; // Fetch PersonRole parameter, if present
+            if (!string.IsNullOrEmpty(ent))                                 // If false parameter present, propagate it
+                running += "&" + PortalConstants.QSPersonRole + "=" + ent;  // Propagate caller's parameter
 
             Response.Redirect(running);                                     // Return to the "caller" with QS parameters
         }

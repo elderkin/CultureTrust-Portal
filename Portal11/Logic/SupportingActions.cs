@@ -3,7 +3,9 @@ using Portal11.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -40,25 +42,6 @@ namespace Portal11.Logic
                     dan.Text = "Unable to delete Supporting Documents: " + ex.Message; // Set an error message for user to see, but press on
                 }
             }
-        }
-
-        // Provide the caller with the Franchise Key for this instance. Fetch the key from the UserInfoCookie of the current user
-
-        public static string GetFranchiseKey()
-        {
-            if (HttpContext.Current != null)
-            {
-                HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Find the User Info cookie
-                if (userInfoCookie != null)                                     // There is a cookie here for us
-                {
-                    string franchiseKey = userInfoCookie[PortalConstants.CUserFranchiseKey];   // Fetch Franchise Key from cookie
-                    if (franchiseKey != "")                                     // If != something there for us to use
-                        return franchiseKey;                                    // Give the value to the caller
-                }
-            }
-            return Franchise.LocalFranchiseKey;                             // If no other alternative, provide our default TODO: Do better
-            //LogError.LogInternalError("GetFranchiseKey", "Unable to find Franchise Key in User Info Cookie. User is not logged in"); // Fatal error
-            //return "";
         }
 
         //  2) Copy the Supporting Docs. We know that in the source Rqst, all the supporting docs are "permanent," i.e., we don't need
@@ -120,6 +103,88 @@ namespace Portal11.Logic
                 }
             }
             return;
+        }
+
+        // Create a ZIP file of supporting documents and download it
+        //  0) Delete any previous ZIP file for this user
+        //  1) Create an empty ZIP file in the ZipTempFiles directory
+        //  2) Cycle through the SupportingDoc rows for the request
+        //  3) Add each SD file to the ZIP file
+        //  4) Download the ZIP file
+
+
+        public static void DownloadDocsZip(RequestType rqstType, int ownerID, string userID, string projectCode, Literal suc, Literal dan)
+        {
+            string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
+            string zipName = serverRoot + PortalConstants.ZipFileDir + userID + PortalConstants.ZipExt;
+            File.Delete(zipName);                                                   // Delete the temporary Zip file, left over from previous executions
+
+            //  1) Create an empty ZIP file in the ZipTempFiles directory
+
+            using (ZipArchive archive = ZipFile.Open(zipName, ZipArchiveMode.Create))
+            {
+                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+                {
+                    try
+                    {
+                        var query = from sd in context.SupportingDocs
+                                    where sd.OwnerID == ownerID && sd.OwnerType == rqstType
+                                    select sd;                              // Find all SupportingDoc rows for this Request
+
+                        //  2) Cycle through the SupportingDoc rows for the request
+
+                        foreach (SupportingDoc sd in query)                 // Process each Supporting Doc in turn
+                        {
+
+                            //  3) Add each SD file to the ZIP file
+
+                            string sourceFileName = serverRoot + sd.SupportingDocID.ToString() + Path.GetExtension(sd.FileName); // Formulate name of sd file on server
+                            archive.CreateEntryFromFile(sourceFileName, sd.FileName); // Add this file to the archive, labeled with its original name
+                        }
+                        archive.Dispose();                                  // Close up the newly created Zip file
+
+                        //  4) Download the ZIP file
+
+                        DateTime moment = DateTime.Now;                     // Fetch current time
+                        string outputName = projectCode + "_" + rqstType.ToString() + "_" + moment.ToString("yyyyMMdd") + ".ZIP"; // Formulate file name
+                        HttpContext.Current.Response.Clear();
+                        HttpContext.Current.Response.ClearHeaders();
+                        HttpContext.Current.Response.ClearContent();        // Just download the file and let user figure it out
+                        HttpContext.Current.Response.ContentType = PortalConstants.ZipMIME; // Store the file type
+                        HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + outputName + "\"");
+                        // Name of file after download
+                        HttpContext.Current.Response.Flush();
+                        HttpContext.Current.Response.TransmitFile(zipName); // Name of source file on server /Supporting directory
+                        suc.Text = "Supporting Documents successfully downloaded in ZIP file '" + outputName + "'";
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        LogError.LogSupportingDocumentError(ex, "DownloadDocZip", "Unable to Zip and download Supporting Documents"); // Log error
+                        dan.Text = "Unable to Zip and download Supporting Documents: " + ex.Message; // Put error message where user can see it
+                        return;                                     // This failed, but press on no matter what
+                    }
+                }
+            }
+        }
+
+        // Provide the caller with the Franchise Key for this instance. Fetch the key from the UserInfoCookie of the current user
+
+        public static string GetFranchiseKey()
+        {
+            if (HttpContext.Current != null)
+            {
+                HttpCookie userInfoCookie = HttpContext.Current.Request.Cookies[PortalConstants.CUserInfo]; // Find the User Info cookie
+                if (userInfoCookie != null)                                     // There is a cookie here for us
+                {
+                    string franchiseKey = userInfoCookie[PortalConstants.CUserFranchiseKey];   // Fetch Franchise Key from cookie
+                    if (franchiseKey != "")                                     // If != something there for us to use
+                        return franchiseKey;                                    // Give the value to the caller
+                }
+            }
+            return Franchise.LocalFranchiseKey;                             // If no other alternative, provide our default TODO: Do better
+            //LogError.LogInternalError("GetFranchiseKey", "Unable to find Franchise Key in User Info Cookie. User is not logged in"); // Fatal error
+            //return "";
         }
 
         // See whether the selected Supporting Doc is a temporary file (or a permanent file).
@@ -564,28 +629,21 @@ namespace Portal11.Logic
 
                 //  2) Command the server to download the file to the browser
 
-                HttpContext.Current.Response.Clear();
-                HttpContext.Current.Response.ClearHeaders();
-                HttpContext.Current.Response.ClearContent();                // Just download the file and let user figure it out
-                HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + destFileName + "\"");
-                // Name of file after download
-                HttpContext.Current.Response.AddHeader("Content-Length", sourceFileLength.ToString());
-                HttpContext.Current.Response.Flush();
+                HttpContext.Current.Response.ContentType = sourceMIME;
+                HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment; filename=\"" + destFileName + "\""); // Name after download
                 HttpContext.Current.Response.TransmitFile(serverRoot + sourceFileName); // Name of source file on server /Supporting directory
                 HttpContext.Current.Response.End();                         // Download that baby
                 return;
             }
+            catch (ThreadAbortException)
+            {
+                return;
+            }
             catch (Exception ex)
             {
-                Exception inner = ex.InnerException;
-                if (ex.Message == "Thread was being aborted." && ex.InnerException == null) // If == Response.End has thrown an unhandled event
-                    return;                                                 // This is its normal exit. We can continue.
-                else
-                {
-                    LogError.LogSupportingDocumentError(ex, "ViewDoc", "Unable to download and view Supporting Document"); // Log error
-                    dan.Text = "Unable to download Supporting Document: " + destFileName; // Display the offending document
-                    return;                                                 // This failed, but press on no matter what
-                }
+                LogError.LogSupportingDocumentError(ex, "ViewDoc", "Unable to download and view Supporting Document"); // Log error
+                dan.Text = "Unable to download Supporting Document: " + destFileName; // Display the offending document
+                return;                                                 // This failed, but press on no matter what
             }
         }
 

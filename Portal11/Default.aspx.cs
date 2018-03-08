@@ -26,8 +26,15 @@ namespace Portal11
                 //      the Select Project process, come here to let them contemplate their navel - but nothing else.
 
                 HttpCookie userInfoCookie = Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie, if any
-                if ((HttpContext.Current.User.Identity.Name != "") && (userInfoCookie != null)) // If != user is logged in and has cookie
+                if ((HttpContext.Current.User.Identity.Name != "") && (userInfoCookie != null)) // If true user is logged in and has cookie
+                {
+                    btnViewLink.NavigateUrl = PortalConstants.URLViewDoc        // Fill the link to the news page
+                                + "?" + PortalConstants.QSDirectory + "=" + PortalConstants.NewsFileDir
+                                + "&" + PortalConstants.QSServerFile + "=" + PortalConstants.NewsFileName
+                                + "&" + PortalConstants.QSMIME + "=" + PortalConstants.NewsFileMIME
+                                + "&" + PortalConstants.QSUserFile + "=" + PortalConstants.NewsOutputFile;
                     return;                                             // Case 2) Execute the Default page
+                }
 
                 // Case 1) Ask the user to log in
 

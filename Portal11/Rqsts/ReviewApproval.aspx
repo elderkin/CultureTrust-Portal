@@ -201,7 +201,7 @@
                             </table>
                         </EmptyDataTemplate>
                         <Columns>
-                            <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:MM/dd/yyyy}" />
+                            <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:g}" />
                             <asp:BoundField DataField="FormerStatus" HeaderText="Former Status" />
                             <asp:BoundField DataField="EstablishedBy" HeaderText="Established By" />
                             <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />

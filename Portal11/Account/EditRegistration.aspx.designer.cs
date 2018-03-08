@@ -121,13 +121,13 @@ namespace Portal11.Account {
         protected global::System.Web.UI.WebControls.TextBox txtLastLogin;
         
         /// <summary>
-        /// lstProjectMembership control.
+        /// gvListProjectMember control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ListBox lstProjectMembership;
+        protected global::System.Web.UI.WebControls.GridView gvListProjectMember;
         
         /// <summary>
         /// btnCancel control.

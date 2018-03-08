@@ -79,6 +79,14 @@ namespace Portal11.Models
         public string EntityRole { get; set; }
     }
 
+    // One row of the GridView named gvListProjectMembers, used by EditProjectUser
+
+    public class rowListProjectMember
+    {
+        public string UserRole { get; set; }
+        public string ProjectName { get; set; }
+    }
+
     // One row of the GridView named gvListProjectPersons, used by ListProjectMetadata
 
     public class rowListProjectPerson
@@ -89,6 +97,14 @@ namespace Portal11.Models
         public DateTime StartDate { get; set; }
         public DateTime CreatedTime { get; set; }
         public string PersonRole { get; set; }
+    }
+
+    // One row of the GridView named gvListProjectStaff, used by EditProject
+
+    public class rowListProjectStaff
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
     }
 
     // One row of a list of persons with IDs. Very simple
@@ -164,8 +180,8 @@ namespace Portal11.Models
     public class rowProjectDepView
     {
         public string RowID { get; set; }
-        public const int RowIDCell = 0;
-        public DateTime CurrentTime { get; set; }
+        public DateTime Time { get; set; }
+        public const int TimeRow = 1;
         public string DepTypeDesc { get; set; }
         public string Description { get; set; }
         public string SourceOfFunds { get; set; }
@@ -176,6 +192,7 @@ namespace Portal11.Models
         public const int CurrentStateDescRow = 7;
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
+        public UserRole ReviseUserRole { get; set; }        // User Role of user who revised the Exp
     }
 
     // One row of the GridView named gvAllDocView, used by ProjectDashboard
@@ -183,8 +200,8 @@ namespace Portal11.Models
     public class rowProjectDocView
     {
         public string RowID { get; set; }
-        public const int RowIDCell = 0;
-        public DateTime CurrentTime { get; set; }
+        public DateTime Time { get; set; }
+        public const int TimeRow = 1;
         public string DocTypeDesc { get; set; }
         public string Description { get; set; }
         public DocState CurrentState { get; set; }
@@ -193,6 +210,8 @@ namespace Portal11.Models
         public const int CurrentStateDescRow = 5;
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
+        public bool Rush { get; set; }
+        public UserRole ReviseUserRole { get; set; }        // User Role of user who revised the Exp
     }
 
     // One row of the GridView named gvAllExpView, used by ProjectDashboard
@@ -200,7 +219,8 @@ namespace Portal11.Models
     public class rowProjectExpView
     {
         public string RowID { get; set; }
-        public DateTime CurrentTime { get; set; }
+        public DateTime Time { get; set; }
+        public const int TimeRow = 1;
         public string ExpTypeDesc { get; set; }
         public string Description { get; set; }
         public string Target { get; set; }
@@ -260,7 +280,7 @@ namespace Portal11.Models
     public class rowStaffDep
     {
         public string RequestID { get; set; }
-        public DateTime CurrentTime { get; set; }
+        public DateTime Time { get; set; }
         public string ProjectID { get; set; }
         public string ProjectName { get; set; }
         public string DepTypeDesc { get; set; }
@@ -272,6 +292,7 @@ namespace Portal11.Models
         public string Description { get; set; }
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
+        public UserRole ReviseUserRole { get; set; }        // User Role of user who revised the request
     }
 
     // One row of GridView named gvStaffDoc, used by StaffDashboard
@@ -279,7 +300,7 @@ namespace Portal11.Models
     public class rowStaffDoc
     {
         public string RequestID { get; set; }
-        public DateTime CurrentTime { get; set; }
+        public DateTime Time { get; set; }
         public string ProjectID { get; set; }
         public string ProjectName { get; set; }
         public string DocTypeDesc { get; set; }
@@ -290,6 +311,8 @@ namespace Portal11.Models
         public string Description { get; set; }
         public string ReturnNote { get; set; }
         public bool Archived { get; set; }
+        public bool Rush { get; set; }
+        public UserRole ReviseUserRole { get; set; }        // User Role of user who revised the request
     }
 
     // One row of the GridView named gvStaffExp, used by StaffDashboard
@@ -297,7 +320,7 @@ namespace Portal11.Models
     public class rowStaffExp
     {
         public string RequestID { get; set; }
-        public DateTime CurrentTime { get; set; }
+        public DateTime Time { get; set; }
         public string ProjectID { get; set; }
         public string ProjectName { get; set; }
         public string ExpTypeDesc { get; set; }
@@ -523,10 +546,9 @@ namespace Portal11.Models
         // The User who took the most recent action on the Deposit
         public string CurrentUserID { get; set; }
         public virtual ApplicationUser CurrentUser { get; set; }
-        // The User who originally submitted the Deposit. They get notified if it's returned
-        public string SubmitUserID { get; set; }
+        public string SubmitUserID { get; set; }            // The User who originally submitted the Deposit. They get notified if it's returned
         public virtual ApplicationUser SubmitUser { get; set; }
-
+        public UserRole ReviseUserRole { get; set; }        // User Role of user who revised the Exp. This helps us turn Dashboard rows Teal
     }
 
     // The states that the Deposit has gone through. Who did what when why to the Request
@@ -630,6 +652,7 @@ namespace Portal11.Models
         public string SubmitUserID { get; set; }
         public virtual ApplicationUser SubmitUser { get; set; }
         public ProjectRole SubmitProjectRole { get; set; }      // Project Role of user who submitted the Doc. Revisions are returned to them.
+        public UserRole ReviseUserRole { get; set; }            // User Role of user who revised the Exp. This helps us turn Dashboard rows Teal
 
         // Links to other records
 
@@ -641,6 +664,10 @@ namespace Portal11.Models
         public virtual Person Person { get; set; }
         public int? ProjectClassID { get; set; }
         public virtual ProjectClass ProjectClass { get; set; }
+
+        // Other fields common to all Document types
+
+        public bool Rush { get; set; }                          // Whether the Request has "Rush" status
 
         // Specifics for Document Type - Contract
 
@@ -665,6 +692,8 @@ namespace Portal11.Models
         public string ContractScheduleDetails { get; set; }
         public bool ContractVerifyProjectName { get; set; }
         public bool ContractVerifyCTPresident { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string ContractVerifyReason { get; set; }
 
     }
     public enum DocContractFunds
@@ -897,7 +926,6 @@ public class DocHistory
         public string ReturnNote { get; set; }              // When approval is denied, the reason goes here
 
         public bool Rush { get; set; }                      // Whether the Request has "Rush" status
-        public const string DeliveryInstructionsRush = "Rush";
 
         public SourceOfExpFunds SourceOfFunds { get; set; } // Where the Request gets its Funds OBSOLETE
         public int? ProjectClassID { get; set; }
@@ -930,6 +958,7 @@ public class DocHistory
     {
         public int ExpHistoryID { get; set; }
         public int ExpID { get; set; }
+        public virtual Exp Exp { get; set; }
         public ExpState PriorExpState { get; set; }
         public ExpState NewExpState { get; set; }
         public DateTime HistoryTime { get; set; }
@@ -993,7 +1022,10 @@ public class DocHistory
         RevisedByCommunityDirector,
         [Description("Revised By PR")]
         RevisedByPresident,
+        [Description("Revising (IC) Late")]
+        RevisingByFinanceDirectorLate
     }
+
     // Each type of Expense fills different fields in the Expense object. This mapping is complicated and expressed in code.
     public enum ExpType
     {
@@ -1172,9 +1204,9 @@ public class DocHistory
     {
         [Description("Have the vendor hold this item. I will pick it up.")]
         Pickup,
-        [Description("Have the item delivered to CultureWorks.")]
+        [Description("Have item delivered to CultureWorks.")]
         DeliverCW,
-        [Description("Have the item delivered to below address.")]
+        [Description("Have item delivered to below address.")]
         DeliverAddress
     }
 
@@ -1444,9 +1476,9 @@ public class DocHistory
     {
         [Description("Not Applicable")]
         NA = 1,
-        [Description("Unrestricted (No Project Class")]
+        [Description("Unrestricted (No Project Class)")]
         Unrestricted,
-        [Description("Restricted (One Project Class")]
+        [Description("Restricted (One Project Class)")]
         Restricted
     }
 
@@ -1573,6 +1605,7 @@ public class DocHistory
             QSCommandView = "View",
             QSCommandUserLogin = "UserLogin",
             QSDanger = "Danger",
+            QSDirectory = "Directory",
             QSEmail = "Email",
             QSEntityID = "EntityID",
             QSEntityRole = "EntityRole",
@@ -1647,6 +1680,8 @@ public class DocHistory
         public const string
             CEmailDefaultDocumentApprovedSubject = "Document Request is ready for your action",
             CEmailDefaultDocumentApprovedBody = "An Document Request has advanced in the review process. It is ready for your action.",
+            CEmailDefaultDocumentBroadcastSubject = "A rush Document Request has been submitted for project {0}",
+            CEmailDefaultDocumentBroadcastBody = "A rush Document Request has been submitted. Expect an email asking for your review.",
             CEmailDefaultDocumentExecutedSubject = "Document Request executed",
             CEmailDefaultDocumentExecutedBody = "An Document Request has been executed at the conclusion of the review process. It is ready for your action.",
             CEmailDefaultDocumentReturnedSubject = "Document Request returned to you",
@@ -1672,6 +1707,7 @@ public class DocHistory
             CProjectInfo = "ProjectInfoCookie",
             CProjectID = "ProjectID",
             CProjectName = "ProjectName",
+            CProjectCode = "ProjectCode",
             CProjectRole = "ProjectRole",
             CProjectRoleDescription = "ProjectRoleDescription";
 
@@ -1793,6 +1829,7 @@ public class DocHistory
             EventArgument = "__EVENTARGUMENT",
             EventSupporting = "Supporting",
             ForeColor = "#18bc9c",
+            ImageDir = "~/Images/", ImageTemp = "Temp", ImageType = "image/jpeg",
             ReadmeDir = "~/App_Readme/",
             ReturnNotePresent = "You have pressed the Approve button with text in the Return Note field. Please press the 'Clear' button next to the Return Note field to proceed.",
             ReturnNoteMissing = "Please supply a Return Note before pressing the Return button.",
@@ -1800,6 +1837,7 @@ public class DocHistory
             SupportingTempFlag = "T",
             WhatsNewName = "WhatsNew.txt";
         public const int
+            gvAllPersonEmailColumn = 2,
             gvAllPersonW9Column = 3,
             SingleClickTimeout = 400,
             MaxProjectNameLength1 = 50, MaxProjectNameLength2 = 50,
@@ -1875,14 +1913,19 @@ public class DocHistory
             CNo = "No",
             CNone = "None",
             CSVFileName = "Uploaded CSV File.CSV", CSVExt = ".CSV", CSVType = "APPLICATION/VND.MS-EXCEL",
+            NewsFileDir = "~//Images//", NewsFileName="News.pdf", NewsFileMIME = "application/pdf", NewsOutputFile = "CultureWorks News.pdf",
+            ZipFileDir = "TempZipFiles\\", ZipExt = ".ZIP", ZipMIME = "APPLICATION/X-ZIPCOMPRESSED", ZipOutputFile = "Supporting Documents.ZIP",
             EmailAddress = "portal@cultureworksfoundry.org", EmailPassword = "GUsr9o9y3Aj4&", EmailServer = "mail.cultureworksfoundry.org",
-//            EmailAddress = "portal@cultureworksphila.org", EmailPassword = "password2016", EmailServer = "mail.cultureworksphila.org",
             POVendorModeYes = "Yes",
             POVendorModeNo = "No",
-            //PODeliveryModePickup = "Pickup",
-            //PODeliveryModeDeliverCW = "DeliverCW",
-            //PODeliveryModeDeliverAddress = "DeliverAddress",
+            DeliveryInstructionsRush = "Rush",
             DocumentVerify1Starter = "Project name represented as 'Your Project of ";
+
+        // Alternate Expense status displays for special cases
+
+        public const string 
+            ExpTypePaidPickup = "Check Cut",
+            ExpTypePaidPEX = "Card Generated/Funds Transferred";
 
         public const int
             EmailPort = 587;

@@ -18,7 +18,7 @@
             width: 40%;
         }
 
-        .panel.col-lg-3 {
+        .panel.col-md-3, .panel.col-md-4, .panel.col-md-5 {
             margin-bottom: 0px;
         }
 
@@ -33,7 +33,7 @@
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="rdoExpType"
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Expense Type</asp:Label>
-                    <div class="panel panel-default col-lg-4 col-md-5 col-sm-offset-0 col-xs-offset-1 col-xs-11">
+                    <div class="panel panel-default col-md-5 col-sm-offset-0 col-xs-offset-1 col-xs-11">
                         <div class="radio">
                             <asp:RadioButtonList ID="rdoExpType" runat="server" AutoPostBack="true"
                                 Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
@@ -48,7 +48,7 @@
                             </asp:RadioButtonList>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-sm-offset-0 col-xs-offset-1 col-xs-5">
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="rdoExpType" SetFocusOnError="true"
                             CssClass="text-danger col-xs-12" ErrorMessage="Please select a type of the new Request." />
                     </div>
@@ -60,8 +60,8 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtState"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Current Status</asp:Label>
-                        <div class="col-lg-4 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:TextBox runat="server" ID="txtState" CssClass="form-control has-success" Enabled="false"></asp:TextBox>
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:TextBox runat="server" ID="txtState" CssClass="form-control has-success" Enabled="false" />
                         </div>
                     </div>
                 </div>
@@ -73,12 +73,12 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtDescription"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Description</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:TextBox runat="server" ID="txtDescription" TextMode="MultiLine" CssClass="form-control has-success"></asp:TextBox>
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:TextBox runat="server" ID="txtDescription" TextMode="MultiLine" CssClass="form-control has-success" />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDescription" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Description of the new Request." />
+                                CssClass="text-danger col-xs-12" ErrorMessage="Please enter a Description of the new Request." />
                         </div>
                     </div>
                 </div>
@@ -90,11 +90,11 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtBeginningDate"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Pay Period - Beginning</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <div class="input-group">
 
-                                <asp:TextBox runat="server" ID="txtBeginningDate" CssClass="form-control has-success"
-                                    OnTextChanged="txtBeginningDate_TextChanged" AutoPostBack="true"></asp:TextBox>
+                                <asp:TextBox runat="server" ID="txtBeginningDate" CssClass="form-control has-success text-right"
+                                    ToolTip="Enter the date on which the pay period began" />
                                 <span class="input-group-addon">
                                     <asp:LinkButton runat="server" ID="btnBeginningDate" CssClass="btn-xs btn-default"
                                         OnClick="btnBeginningDate_Click" CausesValidation="false">
@@ -126,12 +126,27 @@
                                 SelectWeekText="week"
                                 SelectMonthText="month" />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtBeginningDate" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Beginning Date of the new Request." />
-                            <asp:RegularExpressionValidator ID="valBeginningDate" runat="server" ControlToValidate="txtBeginningDate" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Date format is dd/mm/yyyy"
-                                ValidationExpression="^([0-9]{1,2})[./-]+([0-9]{1,2})[./-]+([0-9]{2}|[0-9]{4})$" />
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:RequiredFieldValidator 
+                            ControlToValidate="txtBeginningDate" 
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="Please enter a date."
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:CompareValidator
+                            ControlToValidate="txtBeginningDate"
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Operator="DataTypeCheck" Type="Date"
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:RangeValidator
+                            ControlToValidate="txtBeginningDate"
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="The date must be between 1900 and 2099."
+                            MinimumValue="01/01/1900" MaximumValuE="12/31/2099" Type="Date"
+                            runat="server" SetFocusOnError="true"
+                            />
                         </div>
                     </div>
                 </div>
@@ -140,11 +155,11 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtEndingDate"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Pay Period - Ending</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
 
                             <div class="input-group">
-                                <asp:TextBox runat="server" ID="txtEndingDate" CssClass="form-control has-success"
-                                    OnTextChanged="txtEndingDate_TextChanged" AutoPostBack="true"></asp:TextBox>
+                                <asp:TextBox runat="server" ID="txtEndingDate" CssClass="form-control has-success text-right"
+                                    ToolTip="Enter the date of the end of the pay period" />
                                 <span class="input-group-addon">
                                     <asp:LinkButton runat="server" ID="btnEndingDate" CssClass="btn-xs btn-default"
                                         OnClick="btnEndingDate_Click" CausesValidation="false">
@@ -173,15 +188,38 @@
                                 SelectorStyle-BackColor="#3498db"
                                 SelectorStyle-ForeColor="white"
                                 SelectorStyle-Font-Size="10px"
-                                SelectWeekText="week"
+                                SelectWeekText="week"   
                                 SelectMonthText="month" />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEndingDate" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply an Ending Date of the new Request." />
-                            <asp:RegularExpressionValidator ID="valEndingDate" runat="server" ControlToValidate="txtEndingDate" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Date format is dd/mm/yyyy"
-                                ValidationExpression="^([0-9]{1,2})[./-]+([0-9]{1,2})[./-]+([0-9]{2}|[0-9]{4})$" />
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:RequiredFieldValidator 
+                            ControlToValidate="txtEndingDate" 
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="Please enter a date."
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:CompareValidator
+                            ControlToValidate="txtEndingDate"
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Operator="DataTypeCheck" Type="Date"
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:RangeValidator
+                            ControlToValidate="txtEndingDate"
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="The date must be between 1900 and 2099."
+                            MinimumValue="01/01/1900" MaximumValuE="12/31/2099" Type="Date"
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:CompareValidator 
+                            ControlToCompare="txtBeginningDate" 
+                            ControlToValidate="txtEndingDate" 
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="Ending Date must come after Beginning Date"
+                            runat="server"  SetFocusOnError="true"
+                            Type="Date" Operator="GreaterThanEqual" 
+                            />
                         </div>
                     </div>
                 </div>
@@ -193,11 +231,11 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtDateNeeded"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Date Needed</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <div class="input-group">
 
-                                <asp:TextBox runat="server" ID="txtDateNeeded" CssClass="form-control has-success"
-                                    OnTextChanged="txtDateNeeded_TextChanged" AutoPostBack="true"></asp:TextBox>
+                                <asp:TextBox runat="server" ID="txtDateNeeded" CssClass="form-control has-success text-right"
+                                    ToolTip="Enter the date when you need this item"></asp:TextBox>
                                 <span class="input-group-addon">
                                     <asp:LinkButton runat="server" ID="btnDateNeeded" CssClass="btn-xs btn-default"
                                         OnClick="btnDateNeeded_Click" CausesValidation="false">
@@ -229,12 +267,27 @@
                                 SelectWeekText="week"
                                 SelectMonthText="month" />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDateNeeded" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Date Needed of the new Request." />
-                            <asp:RegularExpressionValidator ID="valDateNeeded" runat="server" ControlToValidate="txtDateNeeded" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Date format is dd/mm/yyyy"
-                                ValidationExpression="^([0-9]{1,2})[./-]+([0-9]{1,2})[./-]+([0-9]{2}|[0-9]{4})$" />
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:RequiredFieldValidator 
+                            ControlToValidate="txtDateNeeded" 
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="Please enter a date."
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:CompareValidator
+                            ControlToValidate="txtDateNeeded"
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Operator="DataTypeCheck" Type="Date"
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:RangeValidator
+                            ControlToValidate="txtDateNeeded"
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="The date must be between 1900 and 2099."
+                            MinimumValue="01/01/1900" MaximumValuE="12/31/2099" Type="Date"
+                            runat="server" SetFocusOnError="true"
+                            />
                         </div>
                     </div>
                 </div>
@@ -246,12 +299,12 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtGoodsDescription"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Description of Goods</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:TextBox ID="txtGoodsDescription" runat="server" CssClass="form-control has-success" />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtGoodsDescription" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Description of Goods for the new Request." />
+                                CssClass="text-danger col-xs-12" ErrorMessage="Please enter a Description of Goods for the new Request." />
                         </div>
                     </div>
                 </div>
@@ -259,12 +312,12 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtGoodsSKU"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">SKU or Model Number</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:TextBox ID="txtGoodsSKU" runat="server" CssClass="form-control has-success"></asp:TextBox>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtGoodsSKU" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a SKU or Model Number for the new Request." />
+                                CssClass="text-danger col-xs-12" ErrorMessage="Please enter a SKU or Model Number for the new Request." />
                         </div>
                     </div>
                 </div>
@@ -272,16 +325,36 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtGoodsQuantity"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Quantity</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:TextBox ID="txtGoodsQuantity" runat="server" CssClass="form-control has-success" Style="text-align: right" CausesValidation="true" ValidationGroup="valGoodsQuantity"
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:TextBox ID="txtGoodsQuantity" runat="server" CssClass="form-control has-success text-right" 
+                                CausesValidation="true" ValidationGroup="valGoodsQuantity"
                                 OnTextChanged="txtGoodsCostPerUnit_TextChanged" AutoPostBack="true">
                             </asp:TextBox>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtGoodsQuantity" SetFocusOnError="true" ValidationGroup="valGoodsQuantity"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Quantity of the new Request." />
-                            <asp:RegularExpressionValidator ID="valGoodsQuantity" runat="server" ControlToValidate="txtGoodsQuantity" SetFocusOnError="true" ValidationGroup="valGoodsQuantity"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Numbers only please" ValidationExpression="^\d+$" />
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:RequiredFieldValidator 
+                                ControlToValidate="txtGoodsQuantity" 
+                                CssClass="text-danger col-xs-12"
+                                Display="Dynamic" ErrorMessage="Please enter a value."
+                                runat="server" SetFocusOnError="true" 
+                                ValidationGroup="valGoodsQuantity" 
+                                />
+                            <asp:CompareValidator
+                                ControlToValidate="txtGoodsQuantity"
+                                CssClass="text-danger col-xs-12" 
+                                Display="Dynamic" ErrorMessage="Please enter a number."
+                                Operator="DataTypeCheck" Type="Integer"
+                                runat="server" SetFocusOnError="true"
+                                ValidationGroup="valGoodsQuantity" 
+                                />
+                            <asp:RangeValidator 
+                                ControlToValidate="txtGoodsQuantity" 
+                                CssClass="text-danger col-xs-12" 
+                                Display="Dynamic" ErrorMessage="Please enter a value between 1 and 500." 
+                                runat="server" SetFocusOnError="true" 
+                                Type="Integer" MinimumValue="1" MaximumValue="500"
+                                ValidationGroup="valGoodsQuantity" 
+                                />
                         </div>
                     </div>
                 </div>
@@ -289,17 +362,28 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtGoodsCostPerUnit"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Cost Per Unit</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:TextBox ID="txtGoodsCostPerUnit" runat="server" CssClass="form-control has-success" Style="text-align: right" CausesValidation="true" ValidationGroup="valGoodsCostPerUnit"
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:TextBox ID="txtGoodsCostPerUnit" runat="server" CssClass="form-control has-success text-right" 
+                                CausesValidation="true" ValidationGroup="valGoodsCostPerUnit"
                                 OnTextChanged="txtGoodsCostPerUnit_TextChanged" AutoPostBack="true">
                             </asp:TextBox>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtGoodsCostPerUnit" SetFocusOnError="true" ValidationGroup="valGoodsCostPerUnit"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Cost Per Unit of the new Request." />
-                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtGoodsCostPerUnit" SetFocusOnError="true" ValidationGroup="valGoodsCostPerUnit"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Currency values only. For example, $123.45"
-                                ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$" />
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:RequiredFieldValidator 
+                                ControlToValidate="txtGoodsCostPerUnit" 
+                                CssClass="text-danger col-xs-12" 
+                                Display="Dynamic" ErrorMessage="Please enter a value."
+                                runat="server" SetFocusOnError="true" 
+                                ValidationGroup="valGoodsCostPerUnit"
+                                />
+                            <asp:RegularExpressionValidator
+                                ControlToValidate="txtGoodsCostPerUnit"
+                                CssClass="text-danger col-xs-12"
+                                Display="Dynamic" ErrorMessage="Please enter a currency value."
+                                runat="server" SetFocusOnError="true"
+                                ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$"
+                                ValidationGroup="valGoodsCostPerUnit"
+                                />
                         </div>
                     </div>
                 </div>
@@ -311,17 +395,35 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtNumberOfCards"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Number of Cards</asp:Label>
-                        <div class="col-lg-4 col-md-4 col-sm-offset-0 col-sm-5 col-xs-offset-1 col-xs-6">
-                            <asp:TextBox runat="server" ID="txtNumberOfCards" CssClass="form-control has-success" Style="text-align: right"
-                                OnTextChanged="txtNumberOfCards_TextChanged" AutoPostBack="true" Text="1" CausesValidation="true" ValidationGroup="valNumberOfCards" />
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:TextBox runat="server" ID="txtNumberOfCards" CssClass="form-control has-success text-right"
+                                OnTextChanged="txtNumberOfCards_TextChanged" AutoPostBack="true" 
+                                Text="1" CausesValidation="true" ValidationGroup="valNumberOfCards" />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-xs-6">
-                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtNumberOfCards" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Numbers only please." ValidationExpression="^\d+$" />
-                            <asp:RangeValidator ID="RangeValidator1" runat="server" ControlToValidate="txtNumberOfCards" SetFocusOnError="true" Type="Integer" ValidationGroup="valNumberOfCards"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a value between 1 and 500." MinimumValue="1" MaximumValue="500" />
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtNumberOfCards" SetFocusOnError="true" ValidationGroup="valNumberOfCards"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Number of Cards of the new Request." />
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:RequiredFieldValidator 
+                                ControlToValidate="txtNumberOfCards" 
+                                CssClass="text-danger col-xs-12"
+                                Display="Dynamic" ErrorMessage="Please enter a value."
+                                runat="server" SetFocusOnError="true" 
+                                ValidationGroup="valNumberOfCards" 
+                                />
+                            <asp:CompareValidator
+                                ControlToValidate="txtNumberOfCards"
+                                CssClass="text-danger col-xs-12" 
+                                Display="Dynamic" ErrorMessage="Please enter a number."
+                                Operator="DataTypeCheck" Type="Integer"
+                                runat="server" SetFocusOnError="true"
+                                ValidationGroup="valNumberOfCards" 
+                                />
+                            <asp:RangeValidator 
+                                ControlToValidate="txtNumberOfCards" 
+                                CssClass="text-danger col-xs-12" 
+                                Display="Dynamic" ErrorMessage="Please enter a value between 1 and 500." 
+                                runat="server" SetFocusOnError="true" 
+                                Type="Integer" MinimumValue="1" MaximumValue="500"
+                                ValidationGroup="valNumberOfCards" 
+                                />
                         </div>
                     </div>
                 </div>
@@ -330,14 +432,45 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtEachCard"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Cash Value of Each Card</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:TextBox runat="server" ID="txtEachCard" CssClass="form-control" Style="text-align: right"
-                                OnTextChanged="txtNumberOfCards_TextChanged" AutoPostBack="true" CausesValidation="true" ValidationGroup="valEachCard" />
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:TextBox runat="server" ID="txtEachCard" CssClass="form-control has-success text-right"
+                                OnTextChanged="txtNumberOfCards_TextChanged" AutoPostBack="true" 
+                                CausesValidation="true" ValidationGroup="valEachCard" />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEachCard" SetFocusOnError="true" ValidationGroup="valEachCard"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Cash Value." />
-                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtEachCard" SetFocusOnError="true" ValidationGroup="valEachCard"
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:RequiredFieldValidator 
+                                ControlToValidate="txtEachCard" 
+                                CssClass="text-danger col-xs-12" 
+                                Display="Dynamic" ErrorMessage="Please enter a value."
+                                runat="server" SetFocusOnError="true" 
+                                ValidationGroup="valEachCard"
+                                />
+                            <asp:RegularExpressionValidator
+                                ControlToValidate="txtEachCard"
+                                CssClass="text-danger col-xs-12"
+                                Display="Dynamic" ErrorMessage="Please enter a currency value."
+                                runat="server" SetFocusOnError="true"
+                                ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$"
+                                ValidationGroup="valEachCard"
+                                />
+                        </div>
+                    </div>
+                </div>
+            </asp:Panel>
+
+            <!-- Dollar Amount -->
+            <asp:Panel ID="pnlAmount" runat="server" Visible="false">
+                <div class="form-group">
+                    <div class="row">
+                        <asp:Label runat="server" ID="lblAmount" AssociatedControlID="txtAmount"
+                            CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Dollar Amount</asp:Label>
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control has-success text-right" />
+                        </div>
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:RequiredFieldValidator runat="server" ID="rfvAmount" ControlToValidate="txtAmount" SetFocusOnError="true"
+                                CssClass="text-danger col-xs-12" ErrorMessage="Please enter a Dollar Amount value." />
+                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount" SetFocusOnError="true"
                                 CssClass="text-danger col-xs-12" ErrorMessage="Currency values only. For example, $123.45"
                                 ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$" />
                         </div>
@@ -351,10 +484,10 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtDateOfInvoice"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Date of Invoice</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <div class="input-group">
-                                <asp:TextBox runat="server" ID="txtDateOfInvoice" CssClass="form-control has-success"
-                                    OnTextChanged="txtDateOfInvoice_TextChanged" AutoPostBack="true"></asp:TextBox>
+                                <asp:TextBox runat="server" ID="txtDateOfInvoice" CssClass="form-control has-success text-right"
+                                    ToolTip="Enter the date on the Invoice"></asp:TextBox>
                                 <span class="input-group-addon">
                                     <asp:LinkButton runat="server" ID="btnDateOfInvoice" CssClass="btn-xs btn-default"
                                         OnClick="btnDateOfInvoice_Click" CausesValidation="false">
@@ -386,25 +519,40 @@
                                 SelectWeekText="week"
                                 SelectMonthText="month" />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDateOfInvoice" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Date of Invoice of the new Request." />
-                            <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ControlToValidate="txtDateOfInvoice" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Date format is dd/mm/yyyy"
-                                ValidationExpression="^([0-9]{1,2})[./-]+([0-9]{1,2})[./-]+([0-9]{2}|[0-9]{4})$" />
-                        </div>
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:RequiredFieldValidator 
+                            ControlToValidate="txtDateOfInvoice" 
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="Please enter a date."
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:CompareValidator
+                            ControlToValidate="txtDateOfInvoice"
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Operator="DataTypeCheck" Type="Date"
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:RangeValidator
+                            ControlToValidate="txtDateOfInvoice"
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="The date must be between 1900 and 2099."
+                            MinimumValue="01/01/1900" MaximumValuE="12/31/2099" Type="Date"
+                            runat="server" SetFocusOnError="true"
+                            />
                     </div>
+                </div>
                 </div>
                 <div class="form-group">
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtInvoiceNumber"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Invoice Number</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:TextBox ID="txtInvoiceNumber" runat="server" CssClass="form-control has-success"></asp:TextBox>
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:TextBox ID="txtInvoiceNumber" runat="server" CssClass="form-control has-success text-right" />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtInvoiceNumber" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply an Invoice Number of the new Request." />
+                                CssClass="text-danger col-xs-12" ErrorMessage="Please enter an Invoice Number of the new Request." />
                         </div>
                     </div>
                 </div>
@@ -416,7 +564,7 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="rdoContractOnFile"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Contract Questions</asp:Label>
-                        <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <div class="col-xs-12">
                                 <asp:Literal ID="litContractInvoice" runat="server">Is this Invoice applied to an existing contract currently on file?</asp:Literal>
                             </div>
@@ -429,14 +577,14 @@
                                 </asp:RadioButtonList>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:RequiredFieldValidator runat="server" ID="radRfv" ControlToValidate="rdoContractOnFile" SetFocusOnError="true"
                                 CssClass="text-danger col-xs-12" ErrorMessage="Please select Yes or No" />
                         </div>
                     </div>
                     <asp:Panel ID="pnlContractReason" runat="server" Visible="false">
                         <div class="row">
-                            <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-2 col-xs-offset-1 col-xs-6">
+                            <div class="panel panel-default col-md-3 col-sm-offset-2 col-xs-offset-1 col-xs-6">
                                 <div class="col-xs-12">
                                     <asp:Literal ID="litContractReason" runat="server">According to the contract, why are we getting this invoice?</asp:Literal>
                                 </div>
@@ -448,7 +596,7 @@
                     </asp:Panel>
                     <asp:Panel ID="pnlContractComing" runat="server" Visible="false">
                         <div class="row">
-                            <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-2 col-xs-offset-1 col-xs-6">
+                            <div class="panel panel-default col-md-3 col-sm-offset-2 col-xs-offset-1 col-xs-6">
                                 <div class="col-xs-12">
                                     <asp:Literal ID="litContractComing" runat="server">Does the vendor intend to submit a contract?</asp:Literal>
                                 </div>
@@ -467,7 +615,7 @@
                                     <asp:Literal ID="litContractNone" runat="server" Visible="false">Proceed. Thank you.</asp:Literal>
                                 </div>
                             </div>
-                            <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
                                 <asp:RequiredFieldValidator runat="server" ID="RequiredFieldValidator1" ControlToValidate="rdoContractComing" SetFocusOnError="true"
                                     CssClass="text-danger col-xs-12" ErrorMessage="Please select Yes or No" />
                             </div>
@@ -483,7 +631,7 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="rdoPOVendorMode"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Fulfillment Instructions</asp:Label>
-                        <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="panel panel-default col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <div class="radio">
                                 <asp:RadioButtonList ID="rdoPOVendorMode" runat="server" AutoPostBack="true"
                                     Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth" Visible="true"
@@ -503,15 +651,15 @@
                     <div class="row">
                         <asp:Label runat="server" ID="lblEntity" AssociatedControlID="ddlEntity"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Vendor</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <!-- Fill this control from code-behind -->
                             <asp:DropDownList runat="server" ID="ddlEntity" CssClass="form-control"></asp:DropDownList>
                         </div>
-                        <div class="col-md-1 col-xs-3">
-                            <asp:Button ID="btnNewEntity" runat="server" Text="New" CssClass="btn btn-default col-xs-12" Visible="true"
+                        <div class="col-md-2 col-xs-3">
+                            <asp:Button ID="btnNewEntity" runat="server" Text="New" CssClass="btn btn-default col-xs-6" Visible="true"
                                 Enabled="true" OnClick="btnNewEntity_Click" CausesValidation="false" ToolTip="Add a new entity to this project. Save changes before pressing this button." />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlEntity" SetFocusOnError="true"
                                 CssClass="text-danger col-xs-12" ErrorMessage="Please select a Vendor from the list" />
                         </div>
@@ -525,15 +673,15 @@
                     <div class="row">
                         <asp:Label runat="server" ID="lblPerson" AssociatedControlID="ddlPerson"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Person</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <!-- Fill this control from code-behind -->
                             <asp:DropDownList runat="server" ID="ddlPerson" CssClass="form-control"></asp:DropDownList>
                         </div>
-                        <div class="col-md-1 col-xs-3">
-                            <asp:Button ID="btnNewPerson" runat="server" Text="New" CssClass="btn btn-default col-xs-12" Visible="true"
+                        <div class="col-md-2 col-xs-3">
+                            <asp:Button ID="btnNewPerson" runat="server" Text="New" CssClass="btn btn-default col-xs-6" Visible="true"
                                 Enabled="true" OnClick="btnNewPerson_Click" CausesValidation="false" ToolTip="Add a new person to this project. Save changes before pressing this button." />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlPerson" SetFocusOnError="true"
                                 CssClass="text-danger col-xs-12" ErrorMessage="Please select a Person from the list" />
                         </div>
@@ -547,7 +695,7 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtURL"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">URL</asp:Label>
-                        <div class="col-lg-4 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:TextBox runat="server" ID="txtURL" CssClass="form-control" />
                         </div>
                         <asp:RegularExpressionValidator runat="server" ControlToValidate="txtURL" SetFocusOnError="true"
@@ -563,7 +711,7 @@
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="rdoSourceOfFunds" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Source of Funds</asp:Label>
-                    <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="radio">
                             <asp:RadioButtonList ID="rdoSourceOfFunds" runat="server" AutoPostBack="true"
                                 Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
@@ -583,29 +731,9 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="ddlProjectClass"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Project Class</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <!-- Fill this control from code-behind -->
                             <asp:DropDownList runat="server" ID="ddlProjectClass" CssClass="form-control"></asp:DropDownList>
-                        </div>
-                    </div>
-                </div>
-            </asp:Panel>
-
-            <!-- Dollar Amount -->
-            <asp:Panel ID="pnlAmount" runat="server" Visible="false">
-                <div class="form-group">
-                    <div class="row">
-                        <asp:Label runat="server" ID="lblAmount" AssociatedControlID="txtAmount"
-                            CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Dollar Amount</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" Style="text-align: right" />
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" ID="rfvAmount" ControlToValidate="txtAmount" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Dollar Amount value." />
-                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Currency values only. For example, $123.45"
-                                ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$" />
                         </div>
                     </div>
                 </div>
@@ -617,14 +745,14 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="ddlGLCode"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Expense Account</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:DropDownList runat="server" ID="ddlGLCode" CssClass="form-control"></asp:DropDownList>
                         </div>
-                        <div class="col-md-1 col-xs-3">
-                            <asp:Button ID="btnSplit" runat="server" Text="Split" CssClass="btn btn-default col-xs-12" Visible="false"
+                        <div class="col-md-2 col-xs-3">
+                            <asp:Button ID="btnSplit" runat="server" Text="Split" CssClass="btn btn-default col-xs-6" Visible="false"
                                 Enabled="true" OnClick="btnSplit_Click" CausesValidation="false" ToolTip="Divide the reimbursement into multiple Expense Accounts" />
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:RequiredFieldValidator ID="rfvGLCode" runat="server" InitialValue="" ControlToValidate="ddlGLCode" SetFocusOnError="true"
                                 CssClass="text-danger col-xs-12" ErrorMessage="Please select a General Ledger Code from the list"></asp:RequiredFieldValidator>
                         </div>
@@ -718,7 +846,7 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="rdoPaymentMethod"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Payment Method</asp:Label>
-                        <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <div class="radio">
                                 <asp:RadioButtonList ID="rdoPaymentMethod" runat="server" AutoPostBack="true"
                                     Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth" 
@@ -741,7 +869,7 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="cblDeliveryModeRush"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Delivery Instructions</asp:Label>
-                        <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="panel panel-default col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
 
                             <%--A panel of radio buttons for Delivery Mode--%>
 
@@ -793,7 +921,7 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="rdoPODeliveryMode"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Delivery Instructions</asp:Label>
-                        <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <div class="radio">
                                 <asp:RadioButtonList ID="rdoPODeliveryMode" runat="server" AutoPostBack="true"
                                     Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth" Visible="true"
@@ -813,7 +941,7 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="rdoDeliveryMode"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Delivery Instructions</asp:Label>
-                        <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <div class="radio">
                                 <asp:RadioButtonList ID="rdoDeliveryMode" runat="server" AutoPostBack="true"
                                     Style="margin-left: 20px;" CssClass="rdoColWidth" Visible="true"
@@ -839,13 +967,13 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="txtDeliveryAddress"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Delivery Address</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:TextBox runat="server" ID="txtDeliveryAddress" CssClass="form-control" placeholder="Delivery Address"
                                 TextMode="MultiLine" Visible="true" />
                         </div>
                         <div class="col-lg-offset-1 col-lg-6 col-md-6 col-sm-4 col-xs-6">
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDeliveryAddress" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please supply a Delivery Address value." />
+                                CssClass="text-danger col-xs-12" ErrorMessage="Please enter a Delivery Address value." />
                         </div>
                     </div>
                 </div>
@@ -857,7 +985,7 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="lstSupporting"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Supporting Docs</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:ListBox runat="server" ID="lstSupporting" CssClass="form-control" Rows="2" SelectionMode="Single"
                                 OnSelectedIndexChanged="lstSupporting_SelectedIndexChanged" AutoPostBack="true" />
                         </div>
@@ -889,7 +1017,7 @@
                         <asp:Label runat="server" AssociatedControlID="txtNotes"
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Note</asp:Label>
                         <div class="col-xs-5">
-                            <asp:TextBox runat="server" ID="txtNotes" TextMode="MultiLine" Rows="6" CssClass="form-control has-success"></asp:TextBox>
+                            <asp:TextBox runat="server" ID="txtNotes" TextMode="MultiLine" Rows="6" CssClass="form-control has-success" />
                         </div>
                         <div class="col-xs-5">
                             <asp:Button ID="btnNotesClear" runat="server" Text="Clear" CssClass="btn btn-default col-md-2 col-xs-3"
@@ -914,7 +1042,7 @@
                             <div class="col-xs-12">
                                 <br />
                                 <asp:RequiredFieldValidator ID="rfvReturnNote" runat="server" InitialValue="" ControlToValidate="txtReturnNote" SetFocusOnError="true"
-                                    CssClass="text-danger col-xs-12" ErrorMessage="Please supply a reason for revising the request"></asp:RequiredFieldValidator>
+                                    CssClass="text-danger col-xs-12" ErrorMessage="Please enter a reason for revising the request"></asp:RequiredFieldValidator>
                             </div>
                         </div>
                     </div>
@@ -977,11 +1105,11 @@
                             </table>
                         </EmptyDataTemplate>
                         <Columns>
-                            <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:MM/dd/yyyy}" />
+                            <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:g}" />
                             <asp:BoundField DataField="FormerStatus" HeaderText="Former Status" />
                             <asp:BoundField DataField="EstablishedBy" HeaderText="Established By" />
-                            <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />
                             <asp:BoundField DataField="ReasonForChange" HeaderText="Reason For Change" />
+                            <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />
                             <asp:BoundField DataField="ReturnNote" HeaderText="Return Note" />
                         </Columns>
                     </asp:GridView>
@@ -990,11 +1118,11 @@
 
             <!-- Button array -->
             <div class="row col-xs-12">
-                <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-sm-offset-0 col-xs-offset-1 col-xs-2" Enabled="true"
+                <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-danger col-xs-offset-1 col-md-1 col-sm-offset-0 col-xs-offset-1 col-xs-2" Enabled="true"
                     OnClick="btnCancel_Click" CausesValidation="false" ToolTip="Return to the Dashboard without saving" />
-                <asp:Button ID="btnSave" runat="server" Text="Save" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true" UseSubmitBehavior="true"
+                <asp:Button ID="btnSave" runat="server" Text="Save" CssClass="btn btn-warning col-xs-offset-1 col-md-1 col-xs-2" Enabled="true" UseSubmitBehavior="true"
                     OnClick="btnSave_Click" CausesValidation="false" ToolTip="Save this Expense Request and return to the Dashboard" />
-                <asp:Button ID="btnSubmit" runat="server" Text="Submit" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+                <asp:Button ID="btnSubmit" runat="server" Text="Submit" CssClass="btn btn-success col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                     OnClick="btnSubmit_Click" CausesValidation="true" ToolTip="Save this Expense Request, submit it for approval and return to the Dashboard" />
                 <asp:Button ID="btnShowHistory" runat="server" Text="History" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                     OnClick="btnShowHistory_Click" CausesValidation="false" ToolTip="List the changes that this Expense Request has gone through" />
@@ -1012,7 +1140,6 @@
             <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
             <asp:Literal ID="litSavedStateEnum" runat="server" Visible="false" />
             <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
-            <asp:Literal ID="litSaveModalActive" runat="server" Visible="false" />
             <asp:Literal ID="litSupportingDocMin" runat="server" Visible="false" Text="Minimum"></asp:Literal>
 
         </asp:Panel>
@@ -1108,11 +1235,11 @@
                 </div>
                 <div class="modal-footer">
                     <div class="row col-xs-12">
-                        <asp:Button runat="server" Text="Cancel" CssClass="btn btn-default col-xs-2" data-dismiss="modal" CausesValidation="false"
+                        <asp:Button runat="server" Text="Cancel" CssClass="btn btn-danger col-xs-2" data-dismiss="modal" CausesValidation="false"
                             ToolTip="Close this window without saving." />
-                        <asp:Button runat="server" Text="Save" CssClass="btn btn-primary col-xs-offset-1 col-xs-2" CausesValidation="false" 
-                            OnClick="btnSave_Click" ToolTip="Save this Expense Request and return to the Dashboard" />
-                        <asp:Button runat="server" Text="Submit" CssClass="btn btn-default col-xs-offset-1 col-xs-2" data-dismiss="modal" CausesValidation="true" UseSubmitBehavior="false"
+                        <asp:Button runat="server" Text="Save" CssClass="btn btn-warning col-xs-offset-1 col-xs-2" CausesValidation="false" 
+                            OnClick="btnSave1_Click" ToolTip="Save this Expense Request and return to the Dashboard" />
+                        <asp:Button runat="server" Text="Submit" CssClass="btn btn-success col-xs-offset-1 col-xs-2" data-dismiss="modal" CausesValidation="true" UseSubmitBehavior="false"
                             OnClick="btnSubmit_Click" ToolTip="Save this Expense Request, submit it for approval and return to the Dashboard" />
                     </div>
                 </div>

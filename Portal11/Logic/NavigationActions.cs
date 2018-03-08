@@ -206,6 +206,7 @@ namespace Portal11.Logic
                         ReasonForChange = r.HistoryNote,
                         ReturnNote = r.ReturnNote
                     };
+
                     rows.Add(row);                                      // Add the filled-in row to the list of rows
                 }
 

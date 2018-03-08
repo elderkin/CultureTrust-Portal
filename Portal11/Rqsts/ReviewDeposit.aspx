@@ -13,7 +13,7 @@
         </p>
 
     <style>
-        .panel.col-lg-3 {
+        .panel.col-md-3 {
             margin-bottom: 0px;
         }
     </style>
@@ -25,7 +25,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Project Name</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtProjectName" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -37,7 +37,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Deposit Type</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtTypeDescription" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Current Status</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtStateDescription" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Established by</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtEstablishedBy" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -73,8 +73,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Established on</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtEstablishedTime" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    <div class="col-md-3 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtEstablishedTime" CssClass="form-control has-success text-right" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Description</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox runat="server" ID="txtDescription" TextMode="MultiLine" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
                     </div>
                 </div>
@@ -97,8 +97,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" ID="lblDateOfDeposit" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtDateOfDeposit" CssClass="form-control" ReadOnly="true" />
+                    <div class="col-md-3 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtDateOfDeposit" CssClass="form-control text-right" ReadOnly="true" />
                     </div>
                 </div>
             </div>
@@ -110,8 +110,8 @@
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="cblOptions" CssClass="col-sm-2 col-xs-12 control-label"
                         Font-Bold="false">Options</asp:Label>
-                    <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <div class="checkbox" style="padding-top:10pt; padding-bottom:10pt">
+                    <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="checkbox" style="padding-top:10pt; padding-bottom:10pt;">
                             <asp:CheckBoxList ID="cblOptions" runat="server" Style="margin-left: 20px" Enabled="false">
                                 <asp:ListItem Text="Pledge Payment" Value="PledgePayment" ></asp:ListItem>
                             </asp:CheckBoxList>
@@ -126,45 +126,75 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Source of Funds</asp:Label>
-                    <div class="panel panel-default col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="panel panel-default col-md-3 col-sm-5 col-xs-6">
                         <div class="radio">
                             <asp:RadioButtonList ID="rdoSourceOfFunds" runat="server" AutoPostBack="true"
                                 Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
                                 Enabled="false">
                                 <asp:ListItem Text="Not Applicable" Value="NA"></asp:ListItem>
-                                <asp:ListItem Text="Anonymous" Value="Anonymous"></asp:ListItem>
                                 <asp:ListItem Text="Entity (EIN)" Value="Entity"></asp:ListItem>
                                 <asp:ListItem Text="Individual (SSN)" Value="Individual"></asp:ListItem>
                             </asp:RadioButtonList>
                         </div>
                     </div>
                 </div>
+            </div>
+               
 
-                <!-- Individual Name -->
+                <!-- Individual Name or Anonymous-->
                 <asp:Panel ID="pnlPerson" runat="server" Visible="false">
                     <div class="form-group">
                         <div class="row">
                             <asp:Label runat="server" ID="lblPerson" CssClass="col-sm-2 col-xs-12 control-label">Donor or Customer</asp:Label>
-                            <div class="col-lg-4 col-md-4 col-xs-6">
+                            <div class="col-md-3 col-xs-6">
                                 <asp:TextBox runat="server" ID="txtPerson" CssClass="form-control" ReadOnly="true" />
                             </div>
                         </div>
                     </div>
                 </asp:Panel>
 
-                <!-- Entity Name -->
+                <asp:Panel ID="pnlPersonAnonymous" runat="server" Visible="false">
+                    <div class="form-group">
+                        <div class="row">
+                            <asp:Label runat="server" ID="Label1" CssClass="col-sm-2 col-xs-12 control-label">Donor or Customer</asp:Label>
+                            <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                                <div class="checkbox" style="padding-top:10pt; padding-bottom:10pt;">
+                                    <asp:CheckBoxList runat="server" Style="margin-left: 20px">
+                                        <asp:ListItem Text="Anonymous" Selected="True" Enabled="false"></asp:ListItem>
+                                    </asp:CheckBoxList>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </asp:Panel>
+
+                <!-- Entity Name or Anonymous-->
                 <asp:Panel ID="pnlEntity" runat="server" Visible="false">
                     <div class="form-group">
                         <div class="row">
                             <asp:Label runat="server" ID="lblEntity" CssClass="col-sm-2 col-xs-12 control-label">Entity</asp:Label>
-                            <div class="col-lg-4 col-md-4 col-xs-6">
+                            <div class="col-md-3 col-xs-6">
                                 <asp:TextBox runat="server" ID="txtEntity" CssClass="form-control" ReadOnly="true" />
                             </div>
                         </div>
                     </div>
                 </asp:Panel>
 
-            </div>
+                <asp:Panel ID="pnlEntityAnonymous" runat="server" Visible="false">
+                    <div class="form-group">
+                        <div class="row">
+                            <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Entity</asp:Label>
+                            <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                                <div class="checkbox" style="padding-top:10pt; padding-bottom:10pt;">
+                                    <asp:CheckBoxList runat="server" Style="margin-left: 20px">
+                                        <asp:ListItem Text="Anonymous" Selected="True" Enabled="false"></asp:ListItem>
+                                    </asp:CheckBoxList>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </asp:Panel>
+
         </asp:Panel>
 
         <!-- Dest of Funds and Project Class -->
@@ -172,7 +202,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Destination of Funds</asp:Label>
-                    <div class="panel panel-default col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="panel panel-default col-md-3 col-sm-5 col-xs-6">
                         <div class="radio">
                             <asp:RadioButtonList ID="rdoDestOfFunds" runat="server" AutoPostBack="true"
                                 Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
@@ -188,7 +218,7 @@
                 <asp:Panel ID="pnlProjectClass" runat="server">
                     <div class="row">
                         <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Project Class</asp:Label>
-                        <div class="col-lg-4 col-md-4 col-xs-6">
+                        <div class="col-md-3 col-xs-6">
                             <asp:TextBox runat="server" ID="txtProjectClass" CssClass="form-control" ReadOnly="true" />
                         </div>
                     </div>
@@ -201,8 +231,8 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" ID="lblAmount" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" style="text-align:right" ReadOnly="true" />
+                    <div class="col-md-3 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control text-right" ReadOnly="true" />
                     </div>
                 </div>
             </div>
@@ -213,7 +243,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">General Ledger Code</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtGLCode" CssClass="form-control" ReadOnly="true" />
                     </div>
                 </div>
@@ -222,7 +252,7 @@
 
         <!-- GL Code Split -->
         <asp:Panel ID="pnlDepositSplit" runat="server" Visible="false">
-            <div class="form-group" style="margin-bottom:0">
+            <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Account Splits</asp:Label>
                     <div class="col-sm-10 col-xs-offset-0 col-xs-12">
@@ -281,12 +311,19 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Supporting Docs</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:ListBox runat="server" ID="lstSupporting" CssClass="form-control" Rows="2" SelectionMode="Single"
                             OnSelectedIndexChanged="lstSupporting_SelectedIndexChanged" AutoPostBack="true" />
                     </div>
-                    <asp:HyperLink ID="btnViewLink" runat="server" CssClass="btn btn-default col-xs-1" Enabled="false" ToolTip="Select a row then click here to view the document"
+                    <div class="col-lg-5 col-md-offset-0 col-md-6 col-sm-offset-2 col-xs-offset-1 col-xs-6">
+                    <asp:HyperLink ID="btnViewLink" runat="server" CssClass="btn btn-default col-md-2 col-xs-3" Enabled="false" ToolTip="Select a row then click here to view the document"
                         NavigateUrl="overwrite from code behind" Text="View" Target="_blank" />
+                    <asp:Button ID="btnZip" runat="server" Text="Zip" CssClass="btn btn-default col-md-2 col-xs-offset-1 col-xs-3" CausesValidation="false" 
+                        Enabled="true" OnClick="btnZip_Click" ToolTip="Download a Zip file containing all supporting documents" />
+                    </div>
+                    <div class="col-xs-6 text-success">
+                        <asp:Literal runat="server" ID="litSDSuccess" />
+                    </div>
                 </div>
             </div>
         </asp:Panel>
@@ -380,11 +417,11 @@
                         </table>
                     </EmptyDataTemplate>
                     <Columns>
-                        <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:MM/dd/yyyy}" />
+                        <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:g}" />
                         <asp:BoundField DataField="FormerStatus" HeaderText="Former Status" />
                         <asp:BoundField DataField="EstablishedBy" HeaderText="Established By" />
-                        <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />
                         <asp:BoundField DataField="ReasonForChange" HeaderText="Reason For Change" />
+                        <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />
                         <asp:BoundField DataField="ReturnNote" HeaderText="Return Note" />
                     </Columns>
                 </asp:GridView>
@@ -410,6 +447,8 @@
         <asp:Literal ID="litSavedDepID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedDepType" runat="server" Visible="false" />
         <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedProjectName" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedProjectCode" runat="server" Visible="false" />
         <asp:Literal ID="litSavedReturn" runat="server" Visible="false" />
         <asp:Literal ID="litSavedState" runat="server" Visible="false" />
         <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />

@@ -14,9 +14,8 @@ namespace Portal11.Admin
         //      EntityID - the database ID of the Entity to be edited. If absent, invoke Select Entity to find the Entity.
         //      ProjectID - propagated to caller
         //      Return - the URL to which we return when processing is complete. If blank, we return to the Admin page. (required)
-        //      Return2 - the caller's caller. We propagate this - feels shakey (optional)
-        // If we are invoked from AssignEntitysToProject, we have more Query Strings, ProjectID and ProjectName. These are propagated through
-        // if we pass control back there.
+        //      Return2 and EntityRole - Optional stuff from our caller. If it's there, we send it back
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!Page.IsPostBack)
@@ -61,8 +60,7 @@ namespace Portal11.Admin
                                 Entity toEdit = context.Entitys.Find(entityID.Int); // Fetch Entity row by its key
                                 if (toEdit == null)
                                 {
-                                    LogError.LogInternalError("EditEntity", string.Format("Unable to find EntityID '{0}' in database",
-                                        entityID.ToString()));              // Fatal error
+                                    LogError.LogInternalError("EditEntity", $"Unable to find EntityID '{entityID}' in database"); // Fatal error
                                 }
                                 LoadPanels(toEdit);                         // Fill in the visible panels from the request
                                 SupportingActions.LoadDocs(RequestType.Entity, entityID.Int, lstSupporting, litDangerMessage); // Do the heavy lifting
@@ -106,7 +104,6 @@ namespace Portal11.Admin
         protected void btnView_Click(object sender, EventArgs e)
         {
             SupportingActions.ViewDoc(lstSupporting, litDangerMessage);
-            return;
         }
 
         // Cancel button has been clicked. Just return to the main Admin page.
@@ -176,6 +173,10 @@ namespace Portal11.Admin
             string ret2 = Request.QueryString[PortalConstants.QSReturn2];   // Fetch Return2 parameter, if present
             if (!string.IsNullOrEmpty(ret2))                                // If false parameter present, propagate it
                 running += "&" + PortalConstants.QSReturn + "=" + ret2;     // Propagate caller's return
+
+            string ent = Request.QueryString[PortalConstants.QSEntityRole]; // Fetch EntityRole parameter, if present
+            if (!string.IsNullOrEmpty(ent))                                 // If false parameter present, propagate it
+                running += "&" + PortalConstants.QSEntityRole + "=" + ent;  // Propagate caller's parameter
 
             Response.Redirect(running);                                     // Return to the "caller" with QS parameters
         }

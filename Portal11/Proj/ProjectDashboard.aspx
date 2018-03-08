@@ -6,7 +6,7 @@
     <style>
       .col-md-offset-15 {
         margin-left: 6.92%;
-  }
+ }
     </style>
     <br />
     <div class="row">
@@ -23,7 +23,6 @@
         </div>
     </div>
 
-    <hr />
     <p class="text-success">
         <asp:Literal runat="server" ID="litSuccessMessage" />
     </p>
@@ -34,7 +33,7 @@
 
         <%--A panel for Search Criteria--%>
 
-        <div class="panel panel-success">
+        <div class="panel panel-success" style="margin-bottom:10px;">
             <div class="panel-heading">
                 <asp:LinkButton ID="btnSearchCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnSearchCollapse_Click" Visible="false"
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
@@ -292,7 +291,7 @@
                                 <asp:Label ID="lblRowID" runat="server" Text='<%# Bind("RowID") %>'></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField DataField="CurrentTime" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                        <asp:BoundField DataField="CurrentTime" HeaderText="Last Modified" DataFormatString="{0:g}" />
                         <asp:BoundField DataField="AppTypeDesc" HeaderText="Approval Type" />
                         <asp:BoundField DataField="Description" HeaderText="Description" />
                         <asp:TemplateField HeaderText="Status" Visible="false">
@@ -399,7 +398,11 @@
                                 <asp:Label ID="lblRowID" runat="server" Text='<%# Bind("RowID") %>'></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField DataField="CurrentTime" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                        <asp:TemplateField HeaderText="Date Modified">
+                            <ItemTemplate>
+                                <asp:Label ID="lblTime" runat="server" Text='<%# Eval("Time", "{0:g}") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:BoundField DataField="ExpTypeDesc" HeaderText="Expense Type" />
                         <asp:BoundField DataField="Description" HeaderText="Description" />
                         <asp:BoundField DataField="Target" HeaderText="Destination" />
@@ -522,7 +525,11 @@
                                 <asp:Label ID="lblRowID" runat="server" Text='<%# Bind("RowID") %>'></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField DataField="CurrentTime" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                        <asp:TemplateField HeaderText="Date Modified">
+                            <ItemTemplate>
+                                <asp:Label ID="lblTime" runat="server" Text='<%# Eval("Time", "{0:g}") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:BoundField DataField="DepTypeDesc" HeaderText="Deposit Type" />
                         <asp:BoundField DataField="Description" HeaderText="Description" />
                         <asp:BoundField DataField="SourceOfFunds" HeaderText="Source of Funds" />
@@ -542,6 +549,11 @@
                         <asp:TemplateField HeaderText="Archived" Visible="false">
                             <ItemTemplate>
                                 <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                         <asp:TemplateField HeaderText="Revise" Visible="false">
+                            <ItemTemplate>
+                                <asp:Label ID="lblReviseUserRole" runat="server" Text='<%# Bind("ReviseUserRole") %>'></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
@@ -635,7 +647,11 @@
                                 <asp:Label ID="lblRowID" runat="server" Text='<%# Bind("RowID") %>'></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:BoundField DataField="CurrentTime" HeaderText="Last Modified" DataFormatString="{0:MM/dd/yyyy}" />
+                        <asp:TemplateField HeaderText="Date Modified">
+                            <ItemTemplate>
+                                <asp:Label ID="lblTime" runat="server" Text='<%# Eval("Time", "{0:g}") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:BoundField DataField="DocTypeDesc" HeaderText="Document Type" />
                         <asp:BoundField DataField="Description" HeaderText="Description" />
                         <asp:TemplateField HeaderText="Status" Visible="false">
@@ -651,6 +667,16 @@
                         <asp:TemplateField HeaderText="Archived" Visible="false">
                             <ItemTemplate>
                                 <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Rush" Visible="false">
+                            <ItemTemplate>
+                                <asp:Label ID="lblRush" runat="server" Text='<%# Bind("Rush") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Revise" Visible="false">
+                            <ItemTemplate>
+                                <asp:Label ID="lblReviseUserRole" runat="server" Text='<%# Bind("ReviseUserRole") %>'></asp:Label>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>

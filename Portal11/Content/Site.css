@@ -24,7 +24,7 @@ input[type="password"],
 input[type="email"],
 input[type="tel"],
 input[type="select"] {
-    max-width: 280px;
+    max-width: unset;
 }
 
 /* Responsive: Portrait tablets and up */
@@ -36,3 +36,38 @@ input[type="select"] {
         padding: 0;
     }
 }
+
+/* Change color from green to purple */
+/*
+.navbar-inverse {
+    background-color: #6f7cfc;
+}
+
+.navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus {
+    background-color: #6f7cfc;
+}
+
+.panel-success > .panel-heading {
+    background-color: #6f7cfc;
+    border-color: #6f7cfc;
+}
+
+.panel-heading {
+    padding: 5px 15px;
+}
+
+.table > thead > tr > td.success,
+.table > tbody > tr > td.success,
+.table > tfoot > tr > td.success,
+.table > thead > tr > th.success,
+.table > tbody > tr > th.success,
+.table > tfoot > tr > th.success,
+.table > thead > tr.success > td,
+.table > tbody > tr.success > td,
+.table > tfoot > tr.success > td,
+.table > thead > tr.success > th,
+.table > tbody > tr.success > th,
+.table > tfoot > tr.success > th {
+    background-color: #6f7cfc;
+}
+    */

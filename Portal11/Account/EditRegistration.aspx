@@ -18,43 +18,43 @@
 
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="txtEmail" CssClass="col-md-2 col-sm-2 control-label" Font-Bold="true">Email</asp:Label>
-            <div class="col-md-3 col-sm-5 col-xs-12">
+            <div class="col-md-4 col-sm-5 col-xs-12">
                 <asp:TextBox runat="server" ID="txtEmail" CssClass="form-control" TextMode="Email" />
             </div>
             <div class="col-md-5 col-sm-3">
-                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail"
+                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" SetFocusOnError="true"
                     CssClass="text-danger" ErrorMessage="The email field is required." />
             </div>
         </div>
 
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="txtFullName" CssClass="col-md-2 col-sm-2 control-label" Font-Bold="true">Name</asp:Label>
-            <div class="col-md-3 col-sm-5 col-xs-12">
+            <div class="col-md-4 col-sm-5 col-xs-12">
                 <asp:TextBox runat="server" ID="txtFullName" CssClass="form-control" Enabled="true" />
             </div>
             <div class="col-md-5 col-sm-3">
-                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtFullName"
+                <asp:RequiredFieldValidator runat="server" ControlToValidate="txtFullName" SetFocusOnError="true"
                     CssClass="text-danger" ErrorMessage="The Name field is required." />
             </div>
         </div>
 
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="txtAddress" CssClass="col-md-2 col-sm-2 control-label" Font-Bold="false">Address</asp:Label>
-            <div class="col-md-3 col-sm-5 col-xs-12">
+            <div class="col-md-4 col-sm-5 col-xs-12">
                 <asp:TextBox runat="server" TextMode="MultiLine" ID="txtAddress" CssClass="form-control" />
             </div>
         </div>
 
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="txtPhoneNumber" CssClass="col-sm-2 control-label" Font-Bold="false">Phone Number</asp:Label>
-            <div class="col-md-3 col-sm-5 col-xs-12">
+            <div class="col-md-4 col-sm-5 col-xs-12">
                 <asp:TextBox runat="server" ID="txtPhoneNumber" CssClass="form-control " />
             </div>
         </div>
 
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="txtGridViewRows" CssClass="col-md-2 col-sm-2 control-label" Font-Bold="false">Rows in Each Grid</asp:Label>
-            <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="col-md-4 col-sm-6 col-xs-12">
                 <asp:TextBox runat="server" ID="txtGridViewRows" CssClass="form-control" ToolTip="On every web page of the Portal, include a maximum of this many rows in each table (or grid)." />
             </div>
            <div class="col-md-7">
@@ -66,7 +66,7 @@
 
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="cblOptions" CssClass="col-md-2 col-sm-2 col-xs-12 control-label" Font-Bold="false">Options</asp:Label>
-            <div class="col-md-3 col-sm-5 col-xs-6">
+            <div class="col-md-4 col-sm-5 col-xs-6">
                 <div class="well">
                     <div class="checkbox" style="padding-top: 0">
                         <asp:CheckBoxList ID="cblOptions" runat="server" Style="margin-left: 20px">
@@ -82,7 +82,7 @@
 
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="rblRole" CssClass="col-md-2 col-sm-2 col-xs-12 control-label" Font-Bold="false">CT Staff Role</asp:Label>
-            <div class="col-md-3 col-sm-5 col-xs-6">
+            <div class="col-md-4 col-sm-5 col-xs-6">
                 <div class="well">
                     <div class="checkbox" style="padding-top: 0">
                         <asp:RadioButtonList ID="rblRole" runat="server" >
@@ -106,7 +106,7 @@
 
         <div class="form-group">
             <asp:Label runat="server" AssociatedControlID="cblEmailOptions" CssClass="col-md-2 col-sm-2 col-xs-12 control-label" Font-Bold="false">Email Options</asp:Label>
-            <div class="col-md-3 col-sm-5 col-xs-6">
+            <div class="col-md-4 col-sm-5 col-xs-6">
                 <div class="well">
                     <div class="checkbox" style="padding-top: 0">
                         <asp:CheckBoxList ID="cblEmailOptions" runat="server" Style="margin-left: 20px">
@@ -126,7 +126,7 @@
         <div class="form-group">
             <div class="row">
                 <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Login Count</asp:Label>
-                <div class="col-md-3 col-sm-5 col-xs-12">
+                <div class="col-md-4 col-sm-5 col-xs-12">
                     <asp:TextBox runat="server" ID="txtLoginCount" CssClass="form-control" ReadOnly="true"></asp:TextBox>
                 </div>
             </div>
@@ -136,7 +136,7 @@
         <div class="form-group">
             <div class="row">
                 <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Last Login</asp:Label>
-                <div class="col-md-3 col-sm-5 col-xs-12">
+                <div class="col-md-4 col-sm-5 col-xs-12">
                     <asp:TextBox runat="server" ID="txtLastLogin" CssClass="form-control" ReadOnly="true"></asp:TextBox>
                 </div>
             </div>
@@ -145,13 +145,51 @@
     <!-- Project list - read only -->
         <div class="form-group">
             <div class="row">
-                <asp:Label runat="server" AssociatedControlID="lstProjectMembership" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Project Membership</asp:Label>
-                <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-                    <!-- Fill this control from code-behind -->
-                    <asp:ListBox runat="server" ID="lstProjectMembership" CssClass="form-control" ReadOnly="true" />
+                <asp:Label runat="server" AssociatedControlID="gvListProjectMember" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Project Membership</asp:Label>
+                <div class="col-xs-6">
+
+                    <asp:GridView ID="gvListProjectMember" runat="server"
+                        CssClass="table table-secondary"
+                        ItemType="Portal11.Models.rowListProjectMember"
+                        AutoGenerateColumns="false"
+                        AllowPaging="true" PageSize="25"
+                        OnPageIndexChanging="gvListProjectMember_PageIndexChanging">
+
+                        <HeaderStyle HorizontalAlign="Center" />
+                        <RowStyle BackColor="WhiteSmoke" />
+
+                        <PagerStyle CssClass="active" HorizontalAlign="Center"></PagerStyle>
+                        <PagerTemplate>
+                            <asp:Button ID="ButtonFirst" runat="server" Text="<<" CommandName="Page"
+                                CommandArgument="First"
+                                CssClass="btn btn-sm btn-default"></asp:Button>
+                            <asp:Button ID="ButtonPrev" runat="server" Text="<" CommandName="Page"
+                                CommandArgument="Prev"
+                                CssClass="btn btn-sm btn-default"></asp:Button>
+                            <asp:Button ID="ButtonNext" runat="server" Text=">" CommandName="Page"
+                                CommandArgument="Next"
+                                CssClass="btn btn-sm btn-default"></asp:Button>
+                            <asp:Button ID="ButtonLast" runat="server" Text=">>" CommandName="Page"
+                                CommandArgument="Last" Enabled="false"
+                                CssClass="btn btn-sm btn-default"></asp:Button>
+                        </PagerTemplate>
+
+                        <EmptyDataTemplate>
+                            <table>
+                                <tr>
+                                    <td>This Portal User is not associated with any Projects</td>
+                                </tr>
+                            </table>
+                        </EmptyDataTemplate>
+                        <Columns>
+                            <asp:BoundField DataField="UserRole" HeaderText="Role" />
+                            <asp:BoundField DataField="ProjectName" HeaderText="Project Name" />
+                        </Columns>
+                    </asp:GridView>
                 </div>
             </div>
         </div>
+
 
     <!-- Button array -->
         <div class="row">

@@ -126,7 +126,7 @@
         <!-- GridView of User Projects -->
 
         <asp:Panel ID="pnlUserProject" runat="server">
-            <div class="col-md-7 col-xs-12">
+            <div class="col-md-10 col-xs-12">
 
                 <!-- Code assumes that ProjectID is the first column of this grid -->
                 <asp:GridView ID="gvUserProject" runat="server"

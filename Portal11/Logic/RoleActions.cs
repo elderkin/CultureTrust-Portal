@@ -150,6 +150,46 @@ namespace Portal11.Logic
             }
         }
 
+        // In the midst of the Review process, update ReviseUserRole if appropriate. 
+        // Complicated algorithm shared by Review Deposit, Review Document, and Review Expense.
+        // Parameters:
+        //  reviewUserRole - the UserRole of the current user right now.
+        //  reviseUserRole - the stored UserRole from the request. This is the UserRole that initiated the revision cycle. We stay in
+        //      this cycle until we get back to that UserRole.
+
+        public static UserRole UpdateReviseUserRole(ReviewAction action, UserRole currentUserRole, UserRole reviseUserRole)
+        {
+
+            // If this is a Revise, just jam the currentUserRole into the Request and save it. That starts the revision cycle.
+            // If this is a Return, don't change anything
+            // If this is an Approve:
+            //  If Request's ReviseUserRole is None, don't do anything - we're not in a revising cycle.
+            //  Else If Request's ReviseUserRole is the same as the caller, reset Request's ReviseUserRole to None. Revising cycle is complet.
+            // This lets Dashboards turn this row "Teal" from the time of a Revision to the time of a "re-Approval."
+
+            switch (action)
+            {
+                case ReviewAction.Revise:
+                    {
+                        return currentUserRole;                         // Note that we are starting a "revise" cycle.
+                    }
+                case ReviewAction.Return:
+                    {
+                        break;                                          // No change
+                    }
+                case ReviewAction.Approve:
+                    {
+                        if (reviseUserRole != UserRole.None)            // If != we are in a "revise" cycle.
+                        {
+                            if (reviseUserRole == currentUserRole)      // If == we are approving to end a "revise" cycle
+                                return UserRole.None;                   // Note that the "revise" cycle is complete
+                        }
+                        break;                                          // Otherwise no change
+                    }
+            }
+            return reviseUserRole;                                      // Return original value - no change
+        }
+
         // Determine whether a UserRole is a staff member, with all the rights and privileges incumbent on that office
 
         public static bool UserRoleIsStaff(UserRole role)

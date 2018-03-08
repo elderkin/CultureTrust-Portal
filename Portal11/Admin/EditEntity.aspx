@@ -21,7 +21,7 @@
                         <asp:TextBox runat="server" ID="txtName" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                     <div class="col-lg-6 col-md-6 col-xs-6">
-                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtName"
+                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtName" SetFocusOnError="true"
                             CssClass="text-danger" ErrorMessage="Please supply a Entity Name." />
                     </div>
                 </div>
