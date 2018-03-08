@@ -2,7 +2,7 @@
 
 There is a new request type: "Document Request." It replaces the "Approval Request." In this release, only the "Contract" option is supported. Dashboards now list Expenses, then Deposits, then Documents.
 
-When the "Submit" button on the Edit Deposit, Edit Document, or Edit Expense page encounters an error, such asd a missing field, the page now repositions to the first field with an error.
+When the "Submit" button on the Edit Deposit, Edit Document, or Edit Expense page encounters an error, such as a missing field, the page now repositions to the first field with an error.
 
 The Edit Project page now displays the Project Staff members associated with the project.
 
@@ -18,15 +18,25 @@ When this "New" button opens the Assign Entity/Person to Project page, only the 
 
 On the Edit Expense page, the "Split" button now creates a two-row list.
 
-After a staff member revises an Expense Request, the Request appears in Dashboards in "teal" color until that same staff member approves the Request. So "teal" means "undergoing revision."
-
 On the Edit Expense page, Delivery Instructions have been reorganized to be more consistent. The "Rush" operation is now available for all Expense types.
 
 On the Edit Expense page, when the "Rush" box is checked, a warning message appears before processing continues.
 
-On the Edit Document and Edit Expense pages, the "Save" button now asks for confirmation before saving (unless the user is a staff member).
+On the Edit Document and Edit Expense pages, the "Save" button now asks for confirmation before saving (unless the user is a CW staff member).
 
 Deposit Requests are now called Deposit Notifications.
+
+The Edit Portal User and Edit Project pages now display User-to-Project information in a tabular format.
+
+In Dashboards and Histories, dates are now displayed as "dd/mm/yyyy hh:mm xm." Dates within requests are still displayed as "dd/mm/yyyy."
+
+In Expenses, PEX Cards now have a single Delivery option available - Rush. In addition, PEX Cards no longer ask for an Expense Code.
+
+On the Home page, the rightmost "Learn More>>" button now displays a news update.
+
+On the Review Deposit, Review Document, and Review Expense pages, the "Zip" button now downloads all supporting documents into a single, compressed file.
+
+On the Assign Entity To Project and Assign Person To Project pages, Project Directors and Project Staff must enter a search string to see Entities/Persons.
 
 
 Version 1.11

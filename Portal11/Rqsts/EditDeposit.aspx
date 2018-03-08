@@ -17,7 +17,7 @@
         .rdoColWidth tr td {
             width: 40%;
         }
-        .panel.col-lg-3 {
+        .panel.col-md-3, .panel.col-md-4 {
             margin-bottom: 0px;
         }
     </style>
@@ -28,7 +28,7 @@
             <div class="row">
                 <asp:Label runat="server" AssociatedControlID="rdoDepType"
                     CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Deposit Type</asp:Label>
-                <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-11">
+                <div class="panel panel-default col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                     <div class="radio">
                         <asp:RadioButtonList ID="rdoDepType" runat="server" AutoPostBack="true"
                             Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
@@ -42,7 +42,7 @@
                         </asp:RadioButtonList>
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
                     <asp:RequiredFieldValidator runat="server" ControlToValidate="rdoDepType" SetFocusOnError="true"
                         CssClass="text-danger  col-xs-12" ErrorMessage="Please select a type of the new Request." />
                 </div>
@@ -54,7 +54,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtState" CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Current Status</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:TextBox runat="server" ID="txtState" CssClass="form-control has-success" Enabled="false"></asp:TextBox>
                     </div>
                 </div>
@@ -66,10 +66,10 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtDescription" CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Description</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:TextBox runat="server" ID="txtDescription" TextMode="MultiLine" CssClass="form-control has-success"></asp:TextBox>
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDescription" SetFocusOnError="true"
                             CssClass="text-danger  col-xs-12" ErrorMessage="Please supply a Description of the new Request." />
                     </div>
@@ -83,10 +83,10 @@
                 <div class="row">
                     <asp:Label ID="lblDateOfDeposit" runat="server" AssociatedControlID="txtDateOfDeposit" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Date of Check</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="input-group">
-                            <asp:TextBox runat="server" ID="txtDateOfDeposit" CssClass="form-control has-success"
-                                 OnTextChanged="txtDateOfDeposit_TextChanged" AutoPostBack="true" ></asp:TextBox>
+                            <asp:TextBox runat="server" ID="txtDateOfDeposit" CssClass="form-control has-success text-right"
+                                 ToolTip="Enter the date that is written on the check" ></asp:TextBox>
                             <span class="input-group-addon">
                                 <asp:LinkButton runat="server" ID="btnDateOfDeposit" CssClass="btn-xs btn-default"
                                     OnClick="btnDateOfDeposit_Click" CausesValidation="false">
@@ -118,13 +118,27 @@
                             SelectWeekText="week"
                             SelectMonthText="month" />
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDateOfDeposit" SetFocusOnError="true"
-                            CssClass="text-danger  col-xs-12" ErrorMessage="Please supply a Date." />
-                        <asp:RegularExpressionValidator ID="valDateOfDeposit" runat="server" ControlToValidate="txtDateOfDeposit" SetFocusOnError="true"
-                            CssClass="text-danger  col-xs-12" ErrorMessage="Date format is dd/mm/yyyy"
-                            ValidationExpression="^([0-9]{1,2})[./-]+([0-9]{1,2})[./-]+([0-9]{2}|[0-9]{4})$">
-                        </asp:RegularExpressionValidator>
+                    <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:RequiredFieldValidator 
+                            ControlToValidate="txtDateOfDeposit" 
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="Please supply a date."
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:CompareValidator
+                            ControlToValidate="txtDateOfDeposit"
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Operator="DataTypeCheck" Type="Date"
+                            runat="server" SetFocusOnError="true"
+                            />
+                        <asp:RangeValidator
+                            ControlToValidate="txtDateOfDeposit"
+                            CssClass="text-danger col-xs-12" 
+                            Display="Dynamic" ErrorMessage="The date must be between 1900 and 2099."
+                            MinimumValue="01/01/1900" MaximumValuE="12/31/2099" Type="Date"
+                            runat="server" SetFocusOnError="true"
+                            />
                     </div>
                 </div>
             </div>
@@ -136,7 +150,7 @@
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="cblOptions" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Options</asp:Label>
-                    <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="checkbox" style="padding-top: 10pt; padding-bottom: 10pt">
                             <asp:CheckBoxList ID="cblOptions" runat="server" Style="margin-left: 20px">
                                 <asp:ListItem Text="Pledge Payment" Value="PledgePayment" data-toggle="tooltip"
@@ -154,7 +168,7 @@
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="rdoSourceOfFunds" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Source of Funds</asp:Label>
-                    <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="radio">
                             <asp:RadioButtonList ID="rdoSourceOfFunds" runat="server" AutoPostBack="true"
                                 Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
@@ -171,9 +185,10 @@
                     <div class="row">
                         <asp:Label ID="lblEntity" runat="server" AssociatedControlID="cblEntity" 
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Entity</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <div class="checkbox" style="padding-top: 10pt; padding-bottom: 10pt">
-                                <asp:CheckBoxList ID="cblEntity" runat="server" Style="margin-left: 20px" OnSelectedIndexChanged="cblEntity_SelectedIndexChanged" AutoPostBack="true">
+                                <asp:CheckBoxList ID="cblEntity" runat="server" Style="margin-left: 20px" 
+                                    OnSelectedIndexChanged="cblEntity_SelectedIndexChanged" AutoPostBack="true">
                                     <asp:ListItem Text="Anonymous" Value="Anonymous" data-toggle="tooltip"
                                         title="This entity wishes to remain anonymous."></asp:ListItem>
                                 </asp:CheckBoxList>
@@ -182,17 +197,17 @@
                     </div>
                     <div class="row">
                         <asp:Panel ID="pnlEntityDDL" runat="server">
-                            <div class="col-lg-3 col-md-4 col-sm-offset-2 col-xs-offset-1 col-xs-6">
+                            <div class="col-md-3 col-sm-offset-2 col-xs-offset-1 col-xs-6">
                                 <!-- Fill this control from code-behind -->
                                 <asp:DropDownList runat="server" ID="ddlEntity" CssClass="form-control"></asp:DropDownList>
                             </div>
-                            <div class="col-md-1 col-xs-3">
+                            <div class="col-md-1 col-xs-2">
                                 <asp:Button ID="btnNewEntity" runat="server" Text="New" CssClass="btn btn-default col-xs-12" Visible="true"
                                     Enabled="true" OnClick="btnNewEntity_Click" CausesValidation="false" ToolTip="Add a new entity to this project. Save changes before pressing this button." />
                             </div>
                             <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                                 <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlEntity" SetFocusOnError="true"
-                                    CssClass="text-danger  col-xs-12" ErrorMessage="Please select an Entity from the list" />
+                                    CssClass="text-danger col-xs-12" ErrorMessage="Please select an Entity from the list" />
                             </div>
                         </asp:Panel>
                     </div>
@@ -202,7 +217,7 @@
                     <div class="row">
                         <asp:Label ID="lblPerson" runat="server" AssociatedControlID="cblPerson" 
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Donor or Customer</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <div class="checkbox" style="padding-top: 10pt; padding-bottom: 10pt">
                                 <asp:CheckBoxList ID="cblPerson" runat="server" Style="margin-left: 20px" OnSelectedIndexChanged="cblPerson_SelectedIndexChanged" 
                                     AutoPostBack="true">
@@ -214,11 +229,11 @@
                     </div>
                     <div class="row">
                         <asp:Panel ID="pnlPersonDDL" runat="server">
-                            <div class="col-lg-3 col-md-4 col-sm-offset-2 col-xs-offset-1 col-xs-6">
+                            <div class="col-md-3 col-sm-offset-2 col-xs-offset-1 col-xs-6">
                                 <!-- Fill this control from code-behind -->
                                 <asp:DropDownList runat="server" ID="ddlPerson" CssClass="form-control"></asp:DropDownList>
                             </div>
-                            <div class="col-md-1 col-xs-3">
+                            <div class="col-md-1 col-xs-2">
                                 <asp:Button ID="btnNewPerson" runat="server" Text="New" CssClass="btn btn-default col-xs-12" Visible="true"
                                     Enabled="true" OnClick="btnNewPerson_Click" CausesValidation="false" ToolTip="Add a new person to this project. Save changes before pressing this button." />
                             </div>
@@ -240,7 +255,7 @@
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="rdoDestOfFunds" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Destination of Funds</asp:Label>
-                    <div class="panel panel-default col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="radio">
                             <asp:RadioButtonList ID="rdoDestOfFunds" runat="server" AutoPostBack="true"
                                 Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
@@ -258,7 +273,7 @@
                     <div class="row">
                         <asp:Label runat="server" AssociatedControlID="ddlProjectClass" 
                             CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Project Class</asp:Label>
-                        <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <!-- Fill this control from code-behind -->
                             <asp:DropDownList runat="server" ID="ddlProjectClass" CssClass="form-control"></asp:DropDownList>
                         </div>
@@ -273,11 +288,11 @@
                 <div class="row">
                     <asp:Label runat="server" ID="lblAmount" AssociatedControlID="txtAmount" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Dollar Amount</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control" 
-                            style="text-align:right" OnTextChanged="txtAmount_TextChanged" AutoPostBack="true"/>
+                    <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control text-right" 
+                            OnTextChanged="txtAmount_TextChanged" AutoPostBack="true"/>
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:RequiredFieldValidator runat="server" ID="rfvAmount" ControlToValidate="txtAmount" SetFocusOnError="true"
                             CssClass="text-danger  col-xs-12" ErrorMessage="Please supply a Dollar Amount value." />
                         <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount" SetFocusOnError="true"
@@ -294,14 +309,14 @@
                 <div class="row">
                     <asp:Label ID="labGLCode" runat="server" AssociatedControlID="ddlGLCode" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Income Account</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:DropDownList runat="server" ID="ddlGLCode" CssClass="form-control"></asp:DropDownList>
                     </div>
-                    <div class="col-md-1 col-xs-3">
+                    <div class="col-md-1 col-xs-2">
                         <asp:Button ID="btnSplit" runat="server" Text="Split" CssClass="btn btn-default col-xs-12" Visible="false"
                             Enabled="true" OnClick="btnSplit_Click" CausesValidation="false" ToolTip="Divide the deposit into multiple Accounts" />
                     </div>
-                    <div class="col-lg-6 col-md-6 col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:RequiredFieldValidator ID="rfvGLCode" runat="server" InitialValue="" ControlToValidate="ddlGLCode" SetFocusOnError="true"
                             CssClass="text-danger  col-xs-12" ErrorMessage="Please select a General Ledger Code from the list" />
                     </div>
@@ -395,7 +410,7 @@
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="lstSupporting" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Supporting Docs</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:ListBox runat="server" ID="lstSupporting" CssClass="form-control" Rows="2" SelectionMode="Single"
                             OnSelectedIndexChanged="lstSupporting_SelectedIndexChanged" AutoPostBack="true" />
                     </div>
@@ -426,7 +441,7 @@
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtNotes" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Note</asp:Label>
-                    <div class="col-xs-5">
+                    <div class="col-sm-offset-0 col-sm-5 col-xs-offset-1 col-xs-6">
                         <asp:TextBox runat="server" ID="txtNotes" TextMode="MultiLine" Rows="6" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                     <div class="col-xs-5">
@@ -443,7 +458,7 @@
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtReturnNote" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Return Note</asp:Label>
-                    <div class="col-xs-5">
+                    <div class="col-sm-offset-0 col-sm-5 col-xs-offset-1 col-xs-6">
                         <asp:TextBox runat="server" ID="txtReturnNote" CssClass="form-control" TextMode="MultiLine" Rows="6" Enabled="false" />
                     </div>
                     <div class="col-xs-5">
@@ -466,7 +481,7 @@
                     <asp:Label runat="server" AssociatedControlID="txtStaffNote" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">
                             Staff Note<br />(visible only to other staff)</asp:Label>
-                    <div class="col-xs-5">
+                    <div class="col-sm-offset-0 col-sm-5 col-xs-offset-1 col-xs-6">
                         <asp:TextBox runat="server" ID="txtStaffNote" CssClass="form-control" TextMode="MultiLine" Rows="6"/>
                     </div>
                     <div class="col-xs-5">
@@ -515,11 +530,11 @@
                             </table>
                         </EmptyDataTemplate>
                         <Columns>
-                            <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:MM/dd/yyyy}" />
+                            <asp:BoundField DataField="Date" HeaderText="Date" DataFormatString="{0:g}" />
                             <asp:BoundField DataField="FormerStatus" HeaderText="Former Status" />
                             <asp:BoundField DataField="EstablishedBy" HeaderText="Established By" />
-                            <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />
                             <asp:BoundField DataField="ReasonForChange" HeaderText="Reason For Change" />
+                            <asp:BoundField DataField="UpdatedStatus" HeaderText="Updated Status" />
                             <asp:BoundField DataField="ReturnNote" HeaderText="Return Note" />
                         </Columns>
                     </asp:GridView>
@@ -528,14 +543,12 @@
 
         <!-- Button array -->
         <div class="row col-xs-12">
-            <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-sm-offset-0 col-xs-offset-1 col-xs-2" Enabled="true"
+            <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-danger col-xs-offset-1 col-md-1 col-sm-offset-0 col-xs-offset-1 col-xs-2" Enabled="true"
                 OnClick="btnCancel_Click" CausesValidation="false" ToolTip="Return to the Dashboard without saving" />
-            <asp:Button ID="btnSave" runat="server" Text="Save" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
+            <asp:Button ID="btnSave" runat="server" Text="Save" CssClass="btn btn-warning col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnSave_Click" CausesValidation="false" ToolTip="Save this Deposit Request and return to the Dashboard"/>
-            <asp:Button ID="btnSubmit" runat="server" Text="Submit" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true" 
+            <asp:Button ID="btnSubmit" runat="server" Text="Submit" CssClass="btn btn-success col-xs-offset-1 col-md-1 col-xs-2" Enabled="true" 
                 OnClick="btnSubmit_Click" ToolTip="Save this Deposit Request, submit it for approval and return to the Dashboard" />
-<%--            <asp:Button ID="btnRevise" runat="server" Text="Revise" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
-                OnClick="btnRevise_Click" ToolTip="Make this returned Deposit Request editable and begin editing it" Visible="false" />--%>
             <asp:Button ID="btnShowHistory" runat="server" Text="History" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="btnShowHistory_Click" CausesValidation="false" ToolTip="List the changes that this Deposit Request has gone through" />
         </div>
@@ -575,7 +588,7 @@
 
     <%--Modal dialog box to tollboth our path to the Assign Entity/Person To Project Page--%>
 
-    <div ID="divModal" class="modal fade">
+    <div ID="divModalNew" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -588,11 +601,11 @@
                 </div>
                 <div class="modal-footer">
                     <div class="row col-xs-12">
-                    <asp:Button ID="btnModalCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-xs-2" data-dismiss="modal" CausesValidation="false"
+                    <asp:Button ID="btnModalCancel" runat="server" Text="Cancel" CssClass="btn btn-danger col-xs-2" data-dismiss="modal" CausesValidation="false"
                         ToolTip="Close this window without saving." />
-                    <asp:Button ID="btnModalNo" runat="server" Text="No" CssClass="btn btn-default col-xs-offset-1 col-xs-2" data-dismiss="modal" CausesValidation="false"
+                    <asp:Button ID="btnModalNo" runat="server" Text="No" CssClass="btn btn-warning col-xs-offset-1 col-xs-2" data-dismiss="modal" CausesValidation="false"
                         ToolTip="Do not proceed." />
-                    <asp:Button ID="btnModalYes" runat="server" Text="Yes" CssClass="btn btn-primary col-xs-offset-1 col-xs-2" CausesValidation="false"
+                    <asp:Button ID="btnModalYes" runat="server" Text="Yes" CssClass="btn btn-success col-xs-offset-1 col-xs-2" CausesValidation="false"
                         OnClick="btnModalYes_Click" ToolTip="Save the request, then add a new entity or person." />
                     </div>
                 </div>

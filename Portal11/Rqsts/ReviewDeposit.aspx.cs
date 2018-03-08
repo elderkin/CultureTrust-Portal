@@ -45,6 +45,8 @@ namespace Portal11.Rqsts
                     litSavedDepType.Text = EnumActions.GetEnumDescription(dep.DepType); // Type of Deposit Request
                     litSavedCommand.Text = cmd;
                     litSavedProjectID.Text = dep.ProjectID.ToString();
+                    litSavedProjectName.Text = dep.Project.Name;
+                    litSavedProjectCode.Text = dep.Project.Code;
                     litSavedReturn.Text = ret;
 
                     // If the user is actually in the process of revising this request, the Dashboard comes here anyway to keep the dashboard processing from getting too complex.
@@ -69,10 +71,10 @@ namespace Portal11.Rqsts
                         btnRevise.Enabled = false;                      // Cannot "Revise" the Dep
                         litDangerMessage.Text = "You can view this Deposit Request, but you cannot approve it."; // Explain that to user
                     }
-                    else if (!StateActions.UserCanReviseRequest(dep.CurrentState)) // If false user cannot Revise this Dep. Disable function
-                    {
-                        btnRevise.Enabled = false;                      // Cannot "Revise" the Dep
-                    }
+                    //else if (!StateActions.UserCanReviseRequest(dep.CurrentState)) // If false user cannot Revise this Dep. Disable function
+                    //{
+                    //    btnRevise.Enabled = false;                      // Cannot "Revise" the Dep
+                    //}
                 }
             }
             return;
@@ -85,6 +87,17 @@ namespace Portal11.Rqsts
             btnViewLink.Enabled = true; btnViewLink.Visible = true;
             btnViewLink.NavigateUrl = SupportingActions.ViewDocUrl((ListBox)sender); // Formulate URL to launch viewer page
             return;
+        }
+
+        // The user clicked on the Zip button of the Supporting Docs list.
+
+        protected void btnZip_Click(object sender, EventArgs e)
+        {
+            SupportingActions.DownloadDocsZip(RequestType.Deposit,  // What type of request
+                                Convert.ToInt32(litSavedDepID.Text), // Which request ID
+                                litSavedUserID.Text,                // Which user
+                                litSavedProjectCode.Text,           // Which project code
+                                litSDSuccess, litDangerMessage);    // Error reporting
         }
 
         protected void btnReturnNoteClear_Click(object sender, EventArgs e)
@@ -136,13 +149,12 @@ namespace Portal11.Rqsts
             DepState currentState = EnumActions.ConvertTextToDepState(litSavedState.Text); // Pull ToString version; convert to enum type
             DepState nextState = StateActions.FindNextState(currentState, ReviewAction.Approve); // Now what?
 
-            int projectID = new int(); string projectName = "";
-            SaveDep(nextState, "Approved", out projectID, out projectName); // Update Dep; write new History row
+            SaveDep(nextState, ReviewAction.Approve, "Approved");   // Update Dep; write new History row
 
             string emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
                 StateActions.UserRoleToProcessRequest(nextState),   // Who is in this role
-                projectID,                                          // Request is associated with this project
-                projectName,                                        // Project has a name
+                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+                litSavedProjectName.Text,                           // Project has a name
                 EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
                 litSavedDepType.Text,                               // Here is its type
                 EnumActions.GetEnumDescription(nextState),          // Here is its next state
@@ -164,14 +176,13 @@ namespace Portal11.Rqsts
                 litReturnNoteError.Visible = true;
                 return;
             }
-            int projectID = new int(); string projectName = "";
             DepState currentState = EnumActions.ConvertTextToDepState(litSavedState.Text); // Pull ToString version; convert to enum type
-            SaveDep(StateActions.FindNextState(currentState, ReviewAction.Return), "Returned", out projectID, out projectName); // Update Dep; write new History row
+            SaveDep(StateActions.FindNextState(currentState, ReviewAction.Return), ReviewAction.Return, "Returned"); // Update Dep; write new History row
 
             string emailSent = EmailActions.SendEmailToReviewer(false, // Send "non-rush" email to next reviewer
                 StateActions.UserRoleToProcessRequest(DepState.Returned), // Who is in this role
-                projectID,                                          // Request is associated with this project
-                projectName,                                        // Project has a name
+                Convert.ToInt32(litSavedProjectID.Text),            // Request is associated with this project
+                litSavedProjectName.Text,                           // Project has a name
                 EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
                 litSavedDepType.Text,                               // Here is its type
                 EnumActions.GetEnumDescription(DepState.Returned),  // Here is its next state
@@ -186,11 +197,9 @@ namespace Portal11.Rqsts
 
         protected void btnRevise_Click(object sender, EventArgs e)
         {
-            int projectID = new int(); string projectName = "";
             DepState currentState = EnumActions.ConvertTextToDepState(litSavedState.Text); // Pull ToString version; convert to enum type
-            SaveDep(StateActions.FindNextState(currentState, ReviewAction.Revise), "Revising", out projectID, out projectName); // Update Dep; write new History row
-            DispatchRevise();                                                       // Dispatch to Edit Deposit
-
+            SaveDep(StateActions.FindNextState(currentState, ReviewAction.Revise), ReviewAction.Revise, "Revising"); // Update Dep; write new History row
+            DispatchRevise();                                       // Dispatch to Edit Deposit
         }
 
         void DispatchRevise()
@@ -227,8 +236,9 @@ namespace Portal11.Rqsts
         //  1) Fetch the Dep row to be updated.
         //  2) Create a new DepHistory row and fill it.
         //  3) Update the Dep row with new State and Return Note.
+        //  4) Flip the value of the ReviseUserRole under certain circumstances
 
-        private void SaveDep(DepState nextState, string verb, out int projectID, out string projectName)
+        private void SaveDep(DepState nextState, ReviewAction action, string verb)
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -241,11 +251,13 @@ namespace Portal11.Rqsts
                     hist.ReturnNote = txtReturnNote.Text;                       // Preserve this note in the History trail
                     toUpdate.StaffNote = txtStaffNote.Text;                     // Fetch updated content of the note, if any
                     StateActions.CopyPreviousState(toUpdate, hist, verb);       // Create a Request History log row from "old" version of Request
-                    StateActions.SetNewDepState(toUpdate, nextState, litSavedUserID.Text, hist); // Write down our current State and authorship
+                    StateActions.SetNewState(toUpdate, nextState, litSavedUserID.Text, hist); // Write down our current State and authorship
+
+                    UserRole newReviewUserRole = RoleActions.UpdateReviseUserRole(action, EnumActions.ConvertTextToUserRole(litSavedUserRole.Text), toUpdate.ReviseUserRole);
+                    toUpdate.ReviseUserRole = newReviewUserRole;                // Start or end a revise cycle by updating ReviseUserRole
+
                     context.DepHistorys.Add(hist);                              // Save new DepHistory row
                     context.SaveChanges();                                      // Commit the Add and Modify
-                    projectID = (int)toUpdate.ProjectID;                        // Report project ID to caller
-                    projectName = toUpdate.Project.Name;                        // Report project name to caller
                     return;
                 }
                 catch (Exception ex)
@@ -253,7 +265,6 @@ namespace Portal11.Rqsts
                     LogError.LogDatabaseError(ex, "ReviewDeposit", "Unable to update Dep or DepHistory rows"); // Fatal error
                 }
             }
-            projectID = 0; projectName = "";
         }
 
         // Based on the selected Deposit Type, enable and disable the appropriate panels on the display.
@@ -328,7 +339,7 @@ namespace Portal11.Rqsts
             txtStateDescription.Text = EnumActions.GetEnumDescription(record.CurrentState); // Convert enum value to English
             litSavedState.Text = record.CurrentState.ToString();            // Saved enum value for later "case"
 
-            txtEstablishedTime.Text = DateActions.LoadDateIntoTxt(record.CurrentTime);
+            txtEstablishedTime.Text = DateActions.LoadDateTimeIntoTxt(record.CurrentTime);
             txtEstablishedBy.Text = record.CurrentUser.FullName;
 
             txtAmount.Text = record.Amount.ToString("C");
@@ -381,21 +392,35 @@ namespace Portal11.Rqsts
                 case SourceOfDepFunds.Entity:
                     {
                         rdoSourceOfFunds.SelectedValue = PortalConstants.RDOEntity; // Select "Entity" button
-                        pnlEntity.Visible = true;                       // Make the drop down list appear
-                        if (record.EntityID != null)                    // If != there is an Entity to display
-                            txtEntity.Text = record.Entity.Name;
-                        else if (record.EntityNeeded)                   // If true, PD asks us to create a new Entity
-                            txtEntity.Text = "-- Please create a new " + lblEntity.Text + "--"; // Make that request
+                        if (record.EntityIsAnonymous)                   // If true entity is anonymous. No entity to display
+                        {
+                            pnlEntityAnonymous.Visible = true;          // Turn on the marker for anonymous
+                        }
+                        else
+                        {
+                            pnlEntity.Visible = true;                   // Show the slot for the entity's name
+                            if (record.EntityID != null)                // If != there is an Entity to display
+                                txtEntity.Text = record.Entity.Name;    // Drop it in the slot
+                            else if (record.EntityNeeded)                   // If true, PD asks us to create a new Entity
+                                txtEntity.Text = "-- Please create a new " + lblEntity.Text + "--"; // Make that request
+                        }
                         break;
                     }
                 case SourceOfDepFunds.Individual:
                     {
                         rdoSourceOfFunds.SelectedValue = PortalConstants.RDOIndividual; // Select "Individual" button
-                        pnlPerson.Visible = true;                       // Make the drop down list appear.
-                        if (record.PersonID != null)                    // If != there is a Person to display
-                            txtPerson.Text = record.Person.Name;
-                        else if (record.PersonNeeded)                   // If true, PD asks us to create a new Person
-                            txtPerson.Text = "-- Please create a new " + lblPerson.Text + " --"; // Make that request
+                        if (record.PersonIsAnonymous)                   // If true person is anonymous. No person to display
+                        {
+                            pnlPersonAnonymous.Visible = true;          // Turn on the marker for anonymous
+                        }
+                        else
+                        {
+                            pnlPerson.Visible = true;                   // Show the slot for the person's name
+                            if (record.PersonID != null)                // If != there is a Person to display
+                                txtPerson.Text = record.Person.Name;
+                            else if (record.PersonNeeded)               // If true, PD asks us to create a new Person
+                                txtPerson.Text = "-- Please create a new " + lblPerson.Text + " --"; // Make that request
+                        }
                         break;
                     }
                 default:

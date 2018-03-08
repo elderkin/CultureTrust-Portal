@@ -148,15 +148,6 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.Calendar calBalanceDate;
         
         /// <summary>
-        /// valBalanceDate control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator valBalanceDate;
-        
-        /// <summary>
         /// pnlCurrentFunds control.
         /// </summary>
         /// <remarks>
@@ -193,6 +184,15 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.DropDownList ddlProjectDirector;
         
         /// <summary>
+        /// txtProjectDirectorEmail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtProjectDirectorEmail;
+        
+        /// <summary>
         /// pnlProjectStaff control.
         /// </summary>
         /// <remarks>
@@ -202,13 +202,13 @@ namespace Portal11.Admin {
         protected global::System.Web.UI.WebControls.Panel pnlProjectStaff;
         
         /// <summary>
-        /// lstProjectStaff control.
+        /// gvListProjectStaff control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ListBox lstProjectStaff;
+        protected global::System.Web.UI.WebControls.GridView gvListProjectStaff;
         
         /// <summary>
         /// btnCancel control.

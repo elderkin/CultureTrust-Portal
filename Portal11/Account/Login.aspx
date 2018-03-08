@@ -13,8 +13,11 @@
             margin-left: -300px;
             margin-top: -200px;
         }
+      /*.panel-success .panel-heading {
+          background-color:#6F7CFC;
+ }*/
     </style>
-    <asp:Panel runat="server" BackImageUrl="~/Images/LoginBackground-1024x768.jpg" Height="100%" Width="100%">
+    <asp:Panel runat="server" BackImageUrl="~/Images/LoginBackground.jpg" Height="100%" Width="100%">
         <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; 
         <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; 
         <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; 
@@ -43,8 +46,12 @@
                                 <asp:TextBox runat="server" ID="Email" CssClass="form-control" TextMode="Email" />
                             </div>
                             <div class="col-md-offset-3 col-xs-offset-1 col-xs-11 ">
-                                <asp:RequiredFieldValidator runat="server" ControlToValidate="Email"
-                                    CssClass="text-danger" ErrorMessage="The email field is required." />
+                                <asp:RequiredFieldValidator 
+                                    runat="server" 
+                                    ControlToValidate="Email"
+                                    CssClass="text-danger" 
+                                    ErrorMessage="The email field is required." 
+                                    />
                             </div>
                         </div>
                     </div>
@@ -56,8 +63,12 @@
                                 <asp:TextBox runat="server" ID="Password" TextMode="Password" CssClass="form-control" />
                             </div>
                             <div class="col-md-offset-2 col-xs-offset-1 col-xs-11">
-                                <asp:RequiredFieldValidator runat="server" ControlToValidate="Password"
-                                    CssClass="text-danger" ErrorMessage="The password field is required." />
+                                <asp:RequiredFieldValidator 
+                                    runat="server" 
+                                    ControlToValidate="Password"
+                                    CssClass="text-danger" 
+                                    ErrorMessage="The password field is required." 
+                                    />
                             </div>
                         </div>
                     </div>
@@ -131,9 +142,9 @@
                 <br />&nbsp;
 
                 <asp:Panel runat="server" ID="pnlFirst">
-                <div class="col-xs-offset-2">
-                    <asp:ImageButton ID="imgFirst" runat="server" ImageAlign="Middle" ImageUrl="~/Images/LoginIcon-640x480.jpg"
-                        Height="100" Width="300" OnClick="imgFirst_Click" CausesValidation="false" />
+                <div >
+                    <asp:ImageButton ID="imgFirst" runat="server" class="img-responsive center-block" ImageUrl="~/Images/LoginIcon.jpg"
+                        Height="100" Width="426" OnClick="imgFirst_Click" CausesValidation="false" />
                 </div>
                 </asp:Panel>
 <%--            <p>

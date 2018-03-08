@@ -121,15 +121,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Calendar calDateOfDeposit;
         
         /// <summary>
-        /// valDateOfDeposit control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator valDateOfDeposit;
-        
-        /// <summary>
         /// pnlOptions control.
         /// </summary>
         /// <remarks>

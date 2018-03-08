@@ -255,10 +255,18 @@ namespace Portal11.Admin
 
         protected void btnNew_Click(object sender, EventArgs e)
         {
-            Response.Redirect(PortalConstants.URLEditPerson + "?" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text
-                                                 + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew
-                                                 + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLAssignPersonsToProject // Return to this page
-                                                 + "&" + PortalConstants.QSReturn2 + "=" + litSavedReturn.Text); // But remember who called us
+            string running = PortalConstants.URLEditPerson + "?" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text // Go to EditEntity page
+                                                 + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew // With "New" command
+                                                 + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLAssignPersonsToProject; // Return to this page
+
+            if (!string.IsNullOrEmpty(litSavedReturn.Text))                 // If false parameter present, propagate it
+                running += "&" + PortalConstants.QSReturn2 + "=" + litSavedReturn.Text; // Propagate caller's return
+
+            string per = Request.QueryString[PortalConstants.QSPersonRole]; // Fetch PersonRole parameter, if present
+            if (!string.IsNullOrEmpty(per))                                 // If false parameter present, propagate it
+                running += "&" + PortalConstants.QSPersonRole + "=" + per;  // Propagate caller's parameter
+
+            Response.Redirect(running);                                     // Return to the "caller" with QS parameters
         }
 
         // Done button clicked. Make sure there is at least one Person assigned to the Project. Then return to the Project Dashboard.
@@ -320,39 +328,48 @@ namespace Portal11.Admin
 
         // Fetch all the Persons and load them into a GridView. In the process, filter out all of the Persons that are already
         // associated with this project in the currently selected category.
+        //
+        // If the user is not staff, we restrict what we show them. They must supply a search string and they don't see email addresses.
 
         void LoadgvAllPerson(string projectIDText)
         {
+            UserRole userRole = EnumActions.ConvertTextToUserRole(QueryStringActions.GetUserRole()); // Fetch current user's role from User Cookie
             string selectedValue = rdoPersonRole.SelectedValue;         // Pull value of selected radio button
             PersonRole selectedRole = PersonRole.Contractor;            // An arbitrary default falue. There should always be a button chosen
 
-            if (selectedValue != "")                                    // If != a radio button is selected
+            if (!string.IsNullOrEmpty(selectedValue))                   // If false a radio button is selected
                 selectedRole = EnumActions.ConvertTextToPersonRole(selectedValue); // Fetch selected button, convert to enum
 
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
-
-                // Find all the Project Persons in the selected role. We don't care about the search string at this point.
-
-                int projectID = Convert.ToInt32(projectIDText);         // Convert string version to integer
-                var queryPE = from pe in context.ProjectPersons
-                              where (pe.ProjectID == projectID) && (pe.PersonRole == selectedRole) // On project, in role
-                              select pe.Person;
-
-                // Build a predicate that accounts for the Inactive check box and the Search text box.
-
-                var pred = PredicateBuilder.True<Person>();             // Initialize predicate to select from Person table
-                    pred = pred.And(p => !p.Inactive);                  // Only active Persons
                 string search = txtAllPerson.Text;                      // Fetch the string that the user typed in, if any
-                if (search != "")                                       // If != the search string is not blank, use a Contains clause
-                    pred = pred.And(p => p.Name.Contains(search));      // Only Persons whose name match our search criteria
-                string franchiseKey = SupportingActions.GetFranchiseKey(); // Fetch the current key
-                pred = pred.And(p => p.FranchiseKey == franchiseKey);   // Only for this Franchise
+                List<Person> ps = null;                                 // Assume we have nothing to display
+                if (!((userRole == UserRole.Project) & (string.IsNullOrEmpty(search))))  // If true user is a Project user and search string is blank
+                {
 
-                List<Person> ps = context.Persons.AsExpandable().Where(pred) // Query using the Where predicate we constructed
-                                                                .Except(queryPE) // Exclude Persons already assigned to Project in this role
-                                                                .OrderBy(p => p.Name) // Sort the result by name
-                                                                .ToList(); // Deliver result as a list we can jam into the gv
+                    // Find all the Project Persons in the selected role. We don't care about the search string at this point.
+
+                    int projectID = Convert.ToInt32(projectIDText);     // Convert string version to integer
+                    var queryPE = from pe in context.ProjectPersons
+                                  where (pe.ProjectID == projectID) && (pe.PersonRole == selectedRole) // On project, in role
+                                  select pe.Person;
+
+                    // Build a predicate that accounts for the Inactive check box and the Search text box.
+
+                    var pred = PredicateBuilder.True<Person>();         // Initialize predicate to select from Person table
+                    pred = pred.And(p => !p.Inactive);                  // Only active Persons
+                    if (!string.IsNullOrEmpty(search))                  // If false the search string is not blank, use a Contains clause
+                        pred = pred.And(p => p.Name.Contains(search));  // Only Persons whose name match our search criteria
+                    string franchiseKey = SupportingActions.GetFranchiseKey(); // Fetch the current key
+                    pred = pred.And(p => p.FranchiseKey == franchiseKey); // Only for this Franchise
+
+                    ps = context.Persons.AsExpandable().Where(pred)     // Query using the Where predicate we constructed
+                                                        .Except(queryPE) // Exclude Persons already assigned to Project in this role
+                                                        .OrderBy(p => p.Name) // Sort the result by name
+                                                        .ToList();      // Deliver result as a list we can jam into the gv
+                }
+                if (userRole == UserRole.Project)                       // If == user is a Project user, not staff
+                    gvAllPerson.Columns[PortalConstants.gvAllPersonEmailColumn].Visible = false; // Such a user cannot see email address
 
                 gvAllPerson.Columns[PortalConstants.gvAllPersonW9Column].Visible = (selectedRole == PersonRole.Contractor);
                                                                         // If showing Contractors, display W-9 information

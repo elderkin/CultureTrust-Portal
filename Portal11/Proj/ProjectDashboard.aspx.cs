@@ -10,6 +10,7 @@ using Portal11.Logic;
 using System.Data;
 using Portal11.ErrorLog;
 using System.Drawing;
+using System.Globalization;
 
 namespace Portal11.Proj
 {
@@ -48,7 +49,7 @@ namespace Portal11.Proj
                     if (proj == null)                                   // If == couldn't find the project
                         LogError.LogInternalError("ProjectDashboard", $"Unable to find ProjectID '{projID.Int}' in database"); // Fatal error
 
-                    litBalance.Text = proj.BalanceDate.ToString("MM/dd/yyyy");
+                    litBalance.Text = proj.BalanceDate.ToString("MM/dd/yyyy", DateTimeFormatInfo.CurrentInfo);
                     litCurrentFunds.Text = proj.CurrentFunds.ToString("C");
                 }
 
@@ -375,6 +376,23 @@ namespace Portal11.Proj
 
                 if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
                     e.Row.Cells[rowProjectDepView.CurrentStateDescRow].Font.Bold = true; // Bold Status cell.
+
+                // See if the row is in revision by staff
+
+                //label = (Label)e.Row.FindControl("lblReviseUserRole");  // Find the label control that contains ReviseUserRole in this row
+                //UserRole reviseRole = EnumActions.ConvertTextToUserRole(label.Text); // Carefully convert back into enumeration type
+                //if (reviseRole != UserRole.None)                        // If != row is in revision
+                //{
+                //    ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch Project Role 
+                //    if (RoleActions.ProjectRoleIsStaff(projectRole))    // If true user is staff
+                //        e.Row.ForeColor = PortalConstants.DashboardRevising; // How about something in a nice teal?
+                //}
+            }
+            else if (e.Row.RowType == DataControlRowType.Header)        // If == this is a header row
+            {
+                ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch Project Role 
+                if (RoleActions.ProjectRoleIsStaff(projectRole))        // If true user is staff
+                    e.Row.Cells[rowProjectExpView.TimeRow].Text = "Date Created"; // They see time row was created
             }
             return;
         }
@@ -392,6 +410,29 @@ namespace Portal11.Proj
 
                 if (StateActions.ProjectRoleToProcessRequest(state) == EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text)) // If == user can operate on Request
                     e.Row.Cells[rowProjectDocView.CurrentStateDescRow].Font.Bold = true; // Bold the Status cell of this row
+
+                // See if the row is in revision by staff
+
+                //label = (Label)e.Row.FindControl("lblReviseUserRole");  // Find the label control that contains ReviseUserRole in this row
+                //UserRole reviseRole = EnumActions.ConvertTextToUserRole(label.Text); // Carefully convert back into enumeration type
+                //if (reviseRole != UserRole.None)                        // If != row is in revision
+                //{
+                //    ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch Project Role 
+                //    if (RoleActions.ProjectRoleIsStaff(projectRole))    // If true user is staff
+                //        e.Row.ForeColor = PortalConstants.DashboardRevising; // How about something in a nice teal?
+                //}
+
+                // See if the row is Rush
+
+                label = (Label)e.Row.FindControl("lblRush");            // Find the label control that contains Rush in this row
+                if (label.Text == "True")                               // If == this record is Rush
+                    e.Row.ForeColor = PortalConstants.DashboardRush;    // Use color to indicate Rush status
+            }
+            else if (e.Row.RowType == DataControlRowType.Header)        // If == this is a header row
+            {
+                ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch Project Role 
+                if (RoleActions.ProjectRoleIsStaff(projectRole))        // If true user is staff
+                    e.Row.Cells[rowProjectExpView.TimeRow].Text = "Date Created"; // They see time row was created
             }
             return;
         }
@@ -411,20 +452,26 @@ namespace Portal11.Proj
 
                 // See if the row is in revision by staff
 
-                label = (Label)e.Row.FindControl("lblReviseUserRole");  // Find the label control that contains ReviseUserRole in this row
-                UserRole reviseRole = EnumActions.ConvertTextToUserRole(label.Text); // Carefully convert back into enumeration type
-                if (reviseRole != UserRole.None)                        // If != row is in revision
-                {
-                    ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch Project Role 
-                    if (RoleActions.ProjectRoleIsStaff(projectRole))    // If true user is staff
-                        e.Row.ForeColor = PortalConstants.DashboardRevising; // How about something in a nice teal?
-                }
+                //label = (Label)e.Row.FindControl("lblReviseUserRole");  // Find the label control that contains ReviseUserRole in this row
+                //UserRole reviseRole = EnumActions.ConvertTextToUserRole(label.Text); // Carefully convert back into enumeration type
+                //if (reviseRole != UserRole.None)                        // If != row is in revision
+                //{
+                //    ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch Project Role 
+                //    if (RoleActions.ProjectRoleIsStaff(projectRole))    // If true user is staff
+                //        e.Row.ForeColor = PortalConstants.DashboardRevising; // How about something in a nice teal?
+                //}
 
                 // See if the row is Rush
 
                 label = (Label)e.Row.FindControl("lblRush");            // Find the label control that contains Rush in this row
                 if (label.Text == "True")                               // If == this record is Rush
                     e.Row.ForeColor = PortalConstants.DashboardRush;    // Use color to indicate Rush status
+            }
+            else if (e.Row.RowType == DataControlRowType.Header)        // If == this is a header row
+            {
+                ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch Project Role 
+                if (RoleActions.ProjectRoleIsStaff(projectRole))        // If true user is staff
+                    e.Row.Cells[rowProjectExpView.TimeRow].Text = "Date Created"; // They see time row was created
             }
             return;
         }
@@ -653,6 +700,11 @@ namespace Portal11.Proj
                             case DocState.UnsubmittedByInternalCoordinator:
                                 {
                                     btnDocDelete.Enabled = true;        // IC can Delete own request
+                                    btnDocEdit.Enabled = true;          // In mid-creation, IC can continue editing
+                                    break;
+                                }
+                            case DocState.RevisingByInternalCoordinator:
+                                {
                                     btnDocEdit.Enabled = true;          // In mid-revision, IC can continue editing
                                     break;
                                 }
@@ -1035,7 +1087,7 @@ namespace Portal11.Proj
                     toArchive.Archived = true;                          // Mark request as Archived
                     DepHistory hist = new DepHistory();                 // Get a place to build a new DepHistory row
                     StateActions.CopyPreviousState(toArchive, hist, "Archived"); // Create a DepHistory log row from "old" version of Deposit
-                    StateActions.SetNewDepState(toArchive, hist.PriorDepState, litSavedUserID.Text, hist);
+                    StateActions.SetNewState(toArchive, hist.PriorDepState, litSavedUserID.Text, hist);
                     // Write down our current State (which doesn't change here) and authorship
                     context.DepHistorys.Add(hist);                      // Save new DepHistory row
                     context.SaveChanges();                              // Commit the Add or Modify
@@ -1072,6 +1124,10 @@ namespace Portal11.Proj
                 try
                 {
 
+                    //  0) Delete the GLCodeSplit rows associated with this Dep.
+
+                    SplitActions.DeleteSplitRows(RequestType.Deposit, depID); // Delete all GLCodeSplit rows with this DepID
+
                     //  1) Blow off the Supporting Docs associated with the Dep. This means deleting the files and SupportingDoc rows.
 
                     SupportingActions.DeleteDocs(RequestType.Deposit, depID); // Great idea. Do that!
@@ -1103,11 +1159,16 @@ namespace Portal11.Proj
         protected void btnDepEdit_Click(object sender, EventArgs e)
         {
             string depID = GetSelectedRowID(gvAllDep);               // Extract the text of the control, which is DepID
+            DepState state = EnumActions.ConvertTextToDepState(((Label)gvAllDep.SelectedRow.FindControl("lblCurrentState")).Text); // Carefully find state of row
+            string cmd = PortalConstants.QSCommandEdit;             // Assume the request is editing, not revising
+            if (StateActions.RequestIsRevising(state))              // If true, request is in the midst of a revision
+                cmd = PortalConstants.QSCommandRevise;              // Tell the Edit page that we are revising
+
             Response.Redirect(PortalConstants.URLEditDeposit + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
                                             + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + depID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with an existing request
+                                            + PortalConstants.QSCommand + "=" + cmd + "&" // Edit or Revise
                                             + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
         }
 
@@ -1132,7 +1193,7 @@ namespace Portal11.Proj
             string ID = GetSelectedRowID(gvAllDep);                         // Extract the text of the rowID control, which is DepID
             DepState currState = EnumActions.ConvertTextToDepState(GetSelectedRowCurrentState(gvAllDep)); // Extract and convert Current State of request
 
-            if (StateActions.RequestIsReturned(currState))             // If true dispatch to EditDeposit to revise the request
+            if (StateActions.RequestIsReturned(currState))                  // If true dispatch to EditDeposit to revise the request
             {
                 using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                 {
@@ -1145,7 +1206,7 @@ namespace Portal11.Proj
 
                         DepHistory hist = new DepHistory();                 // Get a place to build a new DepHistory row
                         StateActions.CopyPreviousState(toRevise, hist, "Reviewed"); // Create a DepHistory log row from "old" version of Deposit
-                        StateActions.SetNewDepState(toRevise, StateActions.FindNextState(toRevise.CurrentState, ReviewAction.Revise), litSavedUserID.Text, hist);
+                        StateActions.SetNewState(toRevise, StateActions.FindNextState(toRevise.CurrentState, ReviewAction.Revise), litSavedUserID.Text, hist);
                         // Write down our new state and authorship
                         context.DepHistorys.Add(hist);                      // Save new DepHistory row
                         context.SaveChanges();                              // Commit the Add or Modify
@@ -1208,7 +1269,7 @@ namespace Portal11.Proj
                     toArchive.Archived = true;                          // Mark request as Archived
                     DocHistory hist = new DocHistory();                 // Get a place to build a new DocHistory row
                     StateActions.CopyPreviousState(toArchive, hist, "Archived"); // Create a DocHistory log row from "old" version of Docosit
-                    StateActions.SetNewDocState(toArchive, hist.PriorDocState, litSavedUserID.Text, hist);
+                    StateActions.SetNewState(toArchive, hist.PriorDocState, litSavedUserID.Text, hist);
                     // Write down our current State (which doesn't change here) and authorship
                     context.DocHistorys.Add(hist);                      // Save new DocHistory row
                     context.SaveChanges();                              // Commit the Add or Modify
@@ -1277,11 +1338,16 @@ namespace Portal11.Proj
         protected void btnDocEdit_Click(object sender, EventArgs e)
         {
             string docID = GetSelectedRowID(gvAllDoc);               // Extract the text of the control, which is DocID
+            DocState state = EnumActions.ConvertTextToDocState(((Label)gvAllDoc.SelectedRow.FindControl("lblCurrentState")).Text); // Carefully find state of row
+            string cmd = PortalConstants.QSCommandEdit;             // Assume the request is editing, not revising
+            if (StateActions.RequestIsRevising(state))              // If true, request is in the midst of a revision
+                cmd = PortalConstants.QSCommandRevise;              // Tell the Edit page that we are revising
+
             Response.Redirect(PortalConstants.URLEditDocument + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
                                             + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + docID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with an existing request
+                                            + PortalConstants.QSCommand + "=" + cmd + "&" // Start with an existing request and Revise or Edit
                                             + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard);
         }
 
@@ -1319,7 +1385,7 @@ namespace Portal11.Proj
 
                         DocHistory hist = new DocHistory();                 // Get a place to build a new DocHistory row
                         StateActions.CopyPreviousState(toRevise, hist, "Reviewed"); // Create a DocHistory log row from "old" version of Docosit
-                        StateActions.SetNewDocState(toRevise, StateActions.FindNextState(toRevise.CurrentState, ReviewAction.Revise, toRevise.DocType),
+                        StateActions.SetNewState(toRevise, StateActions.FindNextState(toRevise.CurrentState, ReviewAction.Revise, toRevise.DocType),
                             litSavedUserID.Text, hist);
                         // Write down our new state and authorship
                         context.DocHistorys.Add(hist);                      // Save new DocHistory row
@@ -1383,7 +1449,7 @@ namespace Portal11.Proj
                     toUpdate.Archived = true;                           // Mark request as Archived
                     ExpHistory hist = new ExpHistory();                 // Get a place to build a new ExpHistory row
                     StateActions.CopyPreviousState(toUpdate, hist, "Archived"); // Create a ExpHistory log row from "old" version of Expense
-                    StateActions.SetNewExpState(toUpdate, hist.PriorExpState, litSavedUserID.Text, hist);
+                    StateActions.SetNewState(toUpdate, hist.PriorExpState, litSavedUserID.Text, hist);
                     // Write down our current State (which doesn't change here) and authorship
                     context.ExpHistorys.Add(hist);                      // Save new ExpHistory row
                     context.SaveChanges();                              // Commit the Add or Modify
@@ -1456,11 +1522,16 @@ namespace Portal11.Proj
         protected void btnExpEdit_Click(object sender, EventArgs e)
         {
             string expID = GetSelectedRowID(gvAllExp);               // Extract the text of the control, which is ExpID
+            ExpState state = EnumActions.ConvertTextToExpState(((Label)gvAllExp.SelectedRow.FindControl("lblCurrentState")).Text); // Carefully find state of row
+            string cmd = PortalConstants.QSCommandEdit;             // Assume the request is editing, not revising
+            if (StateActions.RequestIsRevising(state))              // If true, request is in the midst of a revision
+                cmd = PortalConstants.QSCommandRevise;              // Tell the Edit page that we are revising
+
             Response.Redirect(PortalConstants.URLEditExpense + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
                                             + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + expID + "&"
-                                            + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with an existing request
+                                            + PortalConstants.QSCommand + "=" + cmd + "&" // Edit or Revise
                                             + PortalConstants.QSReturn + "=" + PortalConstants.URLProjectDashboard); // Return to this page
         }
 
@@ -1500,7 +1571,7 @@ namespace Portal11.Proj
 
                         ExpHistory hist = new ExpHistory();                 // Get a place to build a new ExpHistory row
                         StateActions.CopyPreviousState(toRevise, hist, "Reviewed"); // Create a ExpHistory log row from "old" version of Expense
-                        StateActions.SetNewExpState(toRevise, StateActions.FindNextState(toRevise.CurrentState, ReviewAction.Revise), litSavedUserID.Text, hist);
+                        StateActions.SetNewState(toRevise, StateActions.FindNextState(toRevise.CurrentState, ReviewAction.Revise), litSavedUserID.Text, hist);
                         // Write down our new state and authorship
                         context.ExpHistorys.Add(hist);                      // Save new ExpHistory row
                         context.SaveChanges();                              // Commit the Add or Modify
@@ -1730,6 +1801,7 @@ namespace Portal11.Proj
 
                 // From this list of Deps, build a list of rows for the gvAllExp GridView
 
+                ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch user's project role and convert to enum
                 List<rowProjectDepView> rows = new List<rowProjectDepView>(); // Create an empty list for the GridView control
                 foreach (var r in deps)                                 // Fill the list row-by-row
                 {
@@ -1770,16 +1842,24 @@ namespace Portal11.Proj
                         rowProjectDepView row = new rowProjectDepView()     // Empty row all ready to fill
                         {
                             RowID = r.DepID.ToString(),                     // Convert ID from int to string for easier retrieval later
-                            CurrentTime = r.CurrentTime,                    // When request was last updated
+                            Time = r.CurrentTime,                    // When request was last updated
                             DepTypeDesc = EnumActions.GetEnumDescription(r.DepType), // Convert enum version to English version for display
                             Description = r.Description,                    // Free text description of deposit
                                                                             // Source Of Funds is trickier, so done below
                             Amount = ExtensionActions.LoadDecimalIntoTxt(r.Amount), // Carefully load decimal amount into text field
                             CurrentState = r.CurrentState,                  // Load enum version for use when row is selected. But not visible
                             CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
-                            Archived = r.Archived                           // Load archived state
+                            Archived = r.Archived,                          // Load archived state
+                            ReviseUserRole = r.ReviseUserRole               // User Role that revised request if any
 
                         };
+
+                        // Insert the CreatedTime for project members to see, CurrentTime for staff to see
+
+                        if (!RoleActions.ProjectRoleIsStaff(projectRole))   // If false user is a project member.
+                            row.Time = r.CurrentTime;                       // Show project member the time of the most recent action on the request
+                        else
+                            row.Time = r.CreatedTime;                       // Show staff member the time when the request was created
 
                         // Produce an elaborate Source Of Funds description
 
@@ -1808,11 +1888,11 @@ namespace Portal11.Proj
                                 }
                             default:
                                 {
-                                    LogError.LogInternalError("ProjectDashboard", string.Format("Invalid SourceOfDepFunds value '{0}' found in database",
-                                        r.SourceOfFunds.ToString())); // Fatal error
+                                    LogError.LogInternalError("ProjectDashboard", $"Invalid SourceOfDepFunds value '{r.SourceOfFunds}' found in database"); // Fatal error
                                     break;
                                 }
                         }
+
                         if (r.Archived)                                     // If true row is Archived
                             row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
 
@@ -1904,6 +1984,7 @@ namespace Portal11.Proj
 
                 // From this list of Docs, build a list of rows for the gvAllExp GridView
 
+                ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch user's project role and convert to enum
                 List<rowProjectDocView> rows = new List<rowProjectDocView>(); // Create an empty list for the GridView control
                 foreach (var r in Docs)                                 // Fill the list row-by-row
                 {
@@ -1956,17 +2037,21 @@ namespace Portal11.Proj
                         rowProjectDocView row = new rowProjectDocView()     // Empty row all ready to fill
                         {
                             RowID = r.DocID.ToString(),                     // Convert ID from int to string for easier retrieval later
-                            CurrentTime = r.CurrentTime,                    // When request was last updated
                             DocTypeDesc = EnumActions.GetEnumDescription(r.DocType), // Convert enum version to English version for display
                             Description = r.Description,                    // Free text description of document
-                                                                            // Source Of Funds is trickier, so done below
-//                            Amount = ExtensionActions.LoadDecimalIntoTxt(r.Amount), // Carefully load decimal amount into text field
                             CurrentState = r.CurrentState,                  // Load enum version for use when row is selected. But not visible
                             CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
-                            Archived = r.Archived                           // Load archived state
-
+                            Archived = r.Archived,                          // Load archived state
+                            Rush = r.Rush,                                  // Whether the request is Rush
+                            ReviseUserRole = r.ReviseUserRole               // User Role that revised request if any
                         };
 
+                        // Insert the CreatedTime for project members to see, CurrentTime for staff to see
+
+                        if (!RoleActions.ProjectRoleIsStaff(projectRole))   // If false user is a project member.
+                            row.Time = r.CurrentTime;                       // Show project member the time of the most recent action on the request
+                        else
+                            row.Time = r.CreatedTime;                       // Show staff member the time when the request was created
 
                         if (r.Archived)                                     // If true row is Archived
                             row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
@@ -2057,11 +2142,12 @@ namespace Portal11.Proj
                     pred = pred.And(r => r.ProjectClassID == id);           // Only requests from selected ProjectClass
                 }
 
-                List<Exp> exps = context.Exps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList(); 
+                List<Exp> exps = context.Exps.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
                 // Do the query using the constructed predicate, sort the result, and create a list of Exp rows
 
                 // From this list of Exps, build a list of rows for the gvAllExp GridView
 
+                ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch user's project role and convert to enum
                 List<rowProjectExpView> rows = new List<rowProjectExpView>(); // Create an empty list for the GridView control
                 foreach (var r in exps)                                // Fill the list row-by-row
                 {
@@ -2089,6 +2175,7 @@ namespace Portal11.Proj
                         case ExpState.PaymentSent:
                         case ExpState.RevisingByCommunityDirector:
                         case ExpState.RevisingByFinanceDirector:
+                        case ExpState.RevisingByFinanceDirectorLate:
                         case ExpState.RevisingByInternalCoordinator:
                         case ExpState.RevisingByPresident:
                             if (ckRAwaitingCWStaff.Checked)             // If true, interested in these states
@@ -2111,20 +2198,25 @@ namespace Portal11.Proj
                             break;
                     }
 
-                    if (useRow)                                         // If true. checkboxes indicate that we should use the row
+                        if (useRow)                                     // If true. checkboxes indicate that we should use the row
                     {
-                        rowProjectExpView row = new rowProjectExpView()   // Empty row all ready to fill
+                        rowProjectExpView row = new rowProjectExpView() // Empty row all ready to fill
                         {
-                            RowID = r.ExpID.ToString(),                    // Convert ID from int to string for easier retrieval later
-                            CurrentTime = r.CurrentTime,                    // When request was last updated
+                            RowID = r.ExpID.ToString(),                     // Convert ID from int to string for easier retrieval later
                             ExpTypeDesc = EnumActions.GetEnumDescription(r.ExpType), // Convert enum version to English version for display
                             Amount = ExtensionActions.LoadDecimalIntoTxt(r.Amount), // Carefully load decimal amount into text field
                             CurrentState = r.CurrentState,                  // Load enum version for use when row is selected
-                            CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum version to English version for display
                             Archived = r.Archived,                          // Whether the request is archived
                             Rush = r.Rush,                                  // Whether the request is Rush
                             ReviseUserRole = r.ReviseUserRole               // User Role that revised request if any
                         };
+
+                        // Insert the CreatedTime for project members to see, CurrentTime for staff to see
+
+                        if (!RoleActions.ProjectRoleIsStaff(projectRole))   // If false user is a project member.
+                            row.Time = r.CurrentTime;                       // Show project member the time of the most recent action on the request
+                        else
+                            row.Time = r.CreatedTime;                       // Show staff member the time when the request was created
 
                         // Fill "Target" with Vendor Name or Person Name. Only one will be present, depending on ExpType.
 
@@ -2140,8 +2232,7 @@ namespace Portal11.Proj
                         }
                         row.Description = r.Description.TrimString(40);     // Load the description, but don't let it get too long
 
-                        if (r.Archived)                                     // If true row is Archived
-                            row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
+                        row.CurrentStateDesc = RequestActions.AdjustCurrentStateDesc(r); // Produce appropriate CurrentStateDesc based on special cases
 
                         rows.Add(row);                                      // Add the filled-in row to the list of rows
                     }

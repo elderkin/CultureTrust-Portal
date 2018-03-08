@@ -39,8 +39,10 @@
                 Text Box trigger the search just like the Search button.--%>
                 <div class="col-xs-12">
                     <asp:Panel runat="server" DefaultButton="btnProjectEntitySearch">
-                        <asp:TextBox ID="txtProjectEntity" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
-                        <asp:Button ID="btnProjectEntityHelper" runat="server" Style="display: none" OnClick="btnProjectEntitySearch_Click" />
+                        <div class="col-xs-10">
+                            <asp:TextBox ID="txtProjectEntity" runat="server" CssClass="form-control has-success"></asp:TextBox>
+                            <asp:Button ID="btnProjectEntityHelper" runat="server" Style="display: none" OnClick="btnProjectEntitySearch_Click" />
+                        </div>
                     </asp:Panel>
                     <asp:LinkButton ID="btnProjectEntitySearch" runat="server" CssClass="btn btn-default" OnClick="btnProjectEntitySearch_Click">
                     <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
@@ -120,7 +122,7 @@
                                 Style="margin-left: 40px; margin-bottom: 10px;" CssClass="rdoColWidth"
                                 
                                 OnSelectedIndexChanged="rdoEntityRole_SelectedIndexChanged">
-                                <asp:ListItem Text="Entity (for Deposit)" Value="DepositEntity" Selected="True"></asp:ListItem>
+                                <asp:ListItem Text="Customer/Donor (for Deposit)" Value="DepositEntity" Selected="True"></asp:ListItem>
                                 <asp:ListItem Text="Vendor (for Expense)" Value="ExpenseVendor"></asp:ListItem>
                             </asp:RadioButtonList>
                         </div>
@@ -178,8 +180,10 @@
                 Text Box trigger the search just like the Search button--%>
                 <div class="col-xs-12">
                     <asp:Panel runat="server" DefaultButton="btnAllEntitySearch">
-                        <asp:TextBox ID="txtAllEntity" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
-                        <asp:Button ID="btnAllEntityHelper" runat="server" Style="display: none" OnClick="btnAllEntitySearch_Click" />
+                        <div class="col-xs-10">
+                            <asp:TextBox ID="txtAllEntity" runat="server" CssClass="form-control has-success"></asp:TextBox>
+                            <asp:Button ID="btnAllEntityHelper" runat="server" Style="display: none" OnClick="btnAllEntitySearch_Click" />
+                        </div>
                     </asp:Panel>
                     <asp:LinkButton ID="btnAllEntitySearch" runat="server" CssClass="btn btn-default" OnClick="btnAllEntitySearch_Click">
                     <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
@@ -223,7 +227,7 @@
                             <EmptyDataTemplate>
                                 <table>
                                     <tr>
-                                        <td>There are no Entitys that match this search criteria</td>
+                                        <td>Please enter a name above to find an Entity within our database</td>
                                     </tr>
                                 </table>
                             </EmptyDataTemplate>

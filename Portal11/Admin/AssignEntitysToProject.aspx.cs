@@ -252,14 +252,22 @@ namespace Portal11.Admin
         }
 
         // New button clicked. Invoke the New Entity page to - maybe - create a new entity. Then return to this page.
-        // That requires propagating this page's context: ProjectID and ProjectName.
+        // That requires propagating this page's context: ProjectID and ProjectName, Return, EntityRole.
 
         protected void btnNew_Click(object sender, EventArgs e)
         {
-            Response.Redirect(PortalConstants.URLEditEntity + "?" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text
-                                                 + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew
-                                                 + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLAssignEntitysToProject // Return to this page
-                                                 + "&" + PortalConstants.QSReturn2 + "=" + litSavedReturn.Text); // But remember who called us
+            string running = PortalConstants.URLEditEntity + "?" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text // Go to EditEntity page
+                                                 + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandNew // With "New" command
+                                                 + "&" + PortalConstants.QSReturn + "=" + PortalConstants.URLAssignEntitysToProject; // Return to this page
+
+            if (!string.IsNullOrEmpty(litSavedReturn.Text))                 // If false parameter present, propagate it
+                running += "&" + PortalConstants.QSReturn2 + "=" + litSavedReturn.Text; // Propagate caller's return
+
+            string ent = Request.QueryString[PortalConstants.QSEntityRole]; // Fetch EntityRole parameter, if present
+            if (!string.IsNullOrEmpty(ent))                                 // If false parameter present, propagate it
+                running += "&" + PortalConstants.QSEntityRole + "=" + ent;  // Propagate caller's parameter
+
+            Response.Redirect(running);                                     // Return to the "caller" with QS parameters
         }
 
         // Done button clicked. Make sure there is at least one Entity assigned to the Project. Then return to the Project Dashboard.
@@ -315,38 +323,43 @@ namespace Portal11.Admin
 
         void LoadgvAllEntity(string projectIDText)
         {
+            UserRole userRole = EnumActions.ConvertTextToUserRole(QueryStringActions.GetUserRole()); // Fetch current user's role from User Cookie
             string selectedValue = rdoEntityRole.SelectedValue;         // Pull value of selected radio button
-            EntityRole selectedRole = EntityRole.DepositEntity;                // An arbitrary default falue. There should always be a button chosen
+            EntityRole selectedRole = EntityRole.DepositEntity;         // An arbitrary default falue. There should always be a button chosen
 
-            if (selectedValue != "")                                    // If != a radio button is selected
+            if (!string.IsNullOrEmpty(selectedValue))                    // If false a radio button is selected
                 selectedRole = EnumActions.ConvertTextToEntityRole(selectedValue); // Fetch selected button, convert to enum
 
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
-
-                // Find all the Project Entitys in the selected role. We don't care about the search string at this point.
-
-                int projectID = Convert.ToInt32(projectIDText);         // Convert string version to integer
-                var queryPE = from pe in context.ProjectEntitys
-                              where (pe.ProjectID == projectID) && (pe.EntityRole == selectedRole) // On project, in role
-                              select pe.Entity;
-
-                // Build a predicate that accounts for the Inactive check box and the Search text box.
-
-                var pred = PredicateBuilder.True<Entity>();             // Initialize predicate to select from Entity table
-                pred = pred.And(p => !p.Inactive);                  // Only active Entitys
                 string search = txtAllEntity.Text;                      // Fetch the string that the user typed in, if any
-                if (search != "")                                       // If != the search string is not blank, use a Contains clause
-                    pred = pred.And(p => p.Name.Contains(search));      // Only Entitys whose name match our search criteria
-                string franchiseKey = SupportingActions.GetFranchiseKey(); // Fetch the current key
-                pred = pred.And(p => p.FranchiseKey == franchiseKey);   // Only for this Franchise
+                gvAllEntity.DataSource = null;                          // Assume we have nothing to display
+                if (!((userRole == UserRole.Project) & (string.IsNullOrEmpty(search))))  // If true user is a Project user and search string is blank
+                {
 
-                List<Entity> ps = context.Entitys.AsExpandable().Where(pred).Except(queryPE).OrderBy(p => p.Name).ToList(); // Query, exclude,sort and make list
+                    // Find all the Project Entitys in the selected role. We don't care about the search string at this point.
 
-                gvAllEntity.DataSource = context.Entitys.AsExpandable().Where(pred) // Query using the predicate we just created
-                                                .Except(queryPE)        // Exclude Entities already in selected role for project
-                                                .OrderBy(p => p.Name)   // Sort the Entities by name
-                                                .ToList();              // Deliver the list to the GridView control
+                    int projectID = Convert.ToInt32(projectIDText);     // Convert string version to integer
+                    var queryPE = from pe in context.ProjectEntitys
+                                  where (pe.ProjectID == projectID) && (pe.EntityRole == selectedRole) // On project, in role
+                                  select pe.Entity;
+
+                    // Build a predicate that accounts for the Inactive check box and the Search text box.
+
+                    var pred = PredicateBuilder.True<Entity>();         // Initialize predicate to select from Entity table
+                    pred = pred.And(p => !p.Inactive);                  // Only active Entitys
+                    if (!string.IsNullOrEmpty(search))                  // If false the search string is not blank, use a Contains clause
+                        pred = pred.And(p => p.Name.Contains(search));  // Only Entitys whose name match our search criteria
+                    string franchiseKey = SupportingActions.GetFranchiseKey(); // Fetch the current key
+                    pred = pred.And(p => p.FranchiseKey == franchiseKey); // Only for this Franchise
+
+                    List<Entity> ps = context.Entitys.AsExpandable().Where(pred).Except(queryPE).OrderBy(p => p.Name).ToList(); // Query, exclude,sort and make list
+
+                    gvAllEntity.DataSource = context.Entitys.AsExpandable().Where(pred) // Query using the predicate we just created
+                                                    .Except(queryPE)    // Exclude Entities already in selected role for project
+                                                    .OrderBy(p => p.Name) // Sort the Entities by name
+                                                    .ToList();          // Deliver the list to the GridView control
+                }
                 gvAllEntity.DataBind();                                 // And display it
 
                 NavigationActions.EnableGridViewNavButtons(gvAllEntity); // Enable appropriate nav buttons based on page count

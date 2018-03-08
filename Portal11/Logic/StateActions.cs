@@ -120,13 +120,13 @@ namespace Portal11.Logic
                     return ProjectRole.InternalCoordinator;
                 case DepState.AwaitingProjectDirector:
                 case DepState.RevisingByProjectDirector:
-                case DepState.RevisedByFinanceDirector:
                     return ProjectRole.ProjectDirector;
                 case DepState.RevisingByFinanceDirector:
                     return ProjectRole.RevisingFinanceDirector;
                 case DepState.DepositComplete:
                 case DepState.AwaitingCommunityDirector:
                 case DepState.AwaitingFinanceDirector:
+                case DepState.RevisedByFinanceDirector:                     // Now obsolete
                 case DepState.ApprovedReadyToDeposit:                       // Now obsolete
                     return ProjectRole.NoRole;
                 default:
@@ -207,7 +207,9 @@ namespace Portal11.Logic
             }
         }
 
-        // Given a current state, determine whether the Return Note field can be edited
+        // Given a current state, determine whether the Return Note field can be edited. The general rule is that the Return Note is available for editing
+        // when a reviewer sees the request - the request is in an "Awaiting" state and the reviewer can say "Return." But when the request is
+        // in revision - the next step is "Submit" - we don't show the Review Note.
 
         public static bool StateToEditReturnNote(DepState currentState)
         {
@@ -217,11 +219,11 @@ namespace Portal11.Logic
                 case DepState.DepositComplete:
                 case DepState.ApprovedReadyToDeposit:                       // Now obsolete
                 case DepState.Returned:
-                    return false;                                           // Return Note is ReadOnly
-                case DepState.AwaitingProjectDirector:
-                case DepState.RevisedByFinanceDirector:
                 case DepState.RevisingByProjectDirector:
                 case DepState.RevisingByFinanceDirector:
+                case DepState.RevisedByFinanceDirector:
+                    return false;                                           // Return Note is ReadOnly
+                case DepState.AwaitingProjectDirector:
                 case DepState.AwaitingCommunityDirector:
                 case DepState.AwaitingFinanceDirector:
                     return true;
@@ -243,15 +245,15 @@ namespace Portal11.Logic
                 case DocState.AwaitingPresident:
                 case DocState.AwaitingProjectDirector:
 
-                case DocState.RevisedByCommunityDirector:
-                case DocState.RevisedByFinanceDirector:
-                case DocState.RevisedByInternalCoordinator:
-                case DocState.RevisedByPresident:
+                //case DocState.RevisedByCommunityDirector:
+                //case DocState.RevisedByFinanceDirector:
+                //case DocState.RevisedByInternalCoordinator:
+                //case DocState.RevisedByPresident:
 
-                case DocState.RevisingByCommunityDirector:
-                case DocState.RevisingByFinanceDirector:
-                case DocState.RevisingByInternalCoordinator:
-                case DocState.RevisingByPresident:
+                //case DocState.RevisingByCommunityDirector:
+                //case DocState.RevisingByFinanceDirector:
+                //case DocState.RevisingByInternalCoordinator:
+                //case DocState.RevisingByPresident:
                 case DocState.RevisingByProjectDirector:
                     return true;
                 default:
@@ -272,15 +274,16 @@ namespace Portal11.Logic
                 case ExpState.AwaitingPresident:
                 case ExpState.AwaitingProjectDirector:
 
-                case ExpState.RevisedByCommunityDirector:
-                case ExpState.RevisedByFinanceDirector:
-                case ExpState.RevisedByInternalCoordinator:
-                case ExpState.RevisedByPresident:
+                //case ExpState.RevisedByCommunityDirector:
+                //case ExpState.RevisedByFinanceDirector:
+                //case ExpState.RevisedByInternalCoordinator:
+                //case ExpState.RevisedByPresident:
 
-                case ExpState.RevisingByCommunityDirector:
-                case ExpState.RevisingByFinanceDirector:
-                case ExpState.RevisingByInternalCoordinator:
-                case ExpState.RevisingByPresident:
+                //case ExpState.RevisingByCommunityDirector:
+                //case ExpState.RevisingByFinanceDirector:
+                //case ExpState.RevisingByFinanceDirectorLate:
+                //case ExpState.RevisingByInternalCoordinator:
+                //case ExpState.RevisingByPresident:
                 case ExpState.RevisingByProjectDirector:
                     return true;
                 default:
@@ -388,7 +391,7 @@ namespace Portal11.Logic
                 case DepState.UnsubmittedByInternalCoordinator:
                 case DepState.Returned:
                 case DepState.AwaitingProjectDirector:
-                case DepState.RevisedByFinanceDirector:
+                case DepState.RevisedByFinanceDirector:                     // Now obsolete
                 case DepState.DepositComplete:
                 case DepState.AwaitingCommunityDirector:
                 case DepState.AwaitingFinanceDirector:
@@ -423,6 +426,7 @@ namespace Portal11.Logic
             {
                 case ExpState.RevisingByCommunityDirector:
                 case ExpState.RevisingByFinanceDirector:
+                case ExpState.RevisingByFinanceDirectorLate:
                 case ExpState.RevisingByInternalCoordinator:
                 case ExpState.RevisingByPresident:
                 case ExpState.RevisingByProjectDirector:
@@ -497,7 +501,7 @@ namespace Portal11.Logic
                 case DepState.AwaitingProjectDirector:
                 case DepState.DepositComplete:
                 case DepState.RevisingByProjectDirector:
-                case DepState.RevisedByFinanceDirector:
+                case DepState.RevisedByFinanceDirector:                     // Now obsolete
                 case DepState.UnsubmittedByInternalCoordinator:
                     return UserRole.Project;
                 case DepState.Returned:
@@ -580,6 +584,7 @@ namespace Portal11.Logic
                     return UserRole.CommunityDirector;
                 case ExpState.AwaitingFinanceDirector:
                 case ExpState.RevisingByFinanceDirector:
+                case ExpState.RevisingByFinanceDirectorLate:
                 case ExpState.Approved:
                 case ExpState.PaymentSent:
                     return UserRole.FinanceDirector;
@@ -679,16 +684,16 @@ namespace Portal11.Logic
 
         // Given a current state, determine whether the user can revise the Dep/Exp. This is based only on state
 
-        internal static bool UserCanReviseRequest(DepState state)
-        {
-            switch (state)
-            {
-                case DepState.RevisedByFinanceDirector:
-                    return false;                                   // In this state, request has been revised once. That's all they get.
-                default:
-                    return true;                                    // Everybody else can revise request
-            }
-        }
+        //internal static bool UserCanReviseRequest(DepState state)
+        //{
+        //    switch (state)
+        //    {
+        //        case DepState.RevisedByFinanceDirector:
+        //            return false;                                   // In this state, request has been revised once. That's all they get.
+        //        default:
+        //            return true;                                    // Everybody else can revise request
+        //    }
+        //}
 
         internal static bool UserCanReviseRequest(DocState state)
         {
@@ -894,10 +899,10 @@ namespace Portal11.Logic
                 case ReviewAction.Approve:
                     switch (currentState)                                   // Break out by current state
                     {
-                        case DepState.UnsubmittedByInternalCoordinator:
-                            return DepState.AwaitingProjectDirector;        // From Coordinator, go to Project Director
+                        //case DepState.UnsubmittedByInternalCoordinator:
+                        //    return DepState.AwaitingProjectDirector;        // From Coordinator, go to Project Director
                         case DepState.AwaitingProjectDirector:
-                        case DepState.RevisedByFinanceDirector:
+//                        case DepState.RevisedByFinanceDirector:
                             return DepState.AwaitingFinanceDirector;        // From PD, go to Finance Director
                         case DepState.AwaitingFinanceDirector:
                             return DepState.DepositComplete;
@@ -912,9 +917,9 @@ namespace Portal11.Logic
                     switch (currentState)                                   // Break out by current state
                     {
                         case DepState.AwaitingProjectDirector:
-                        case DepState.AwaitingCommunityDirector:
+//                        case DepState.AwaitingCommunityDirector:
                         case DepState.AwaitingFinanceDirector:
-                        case DepState.RevisedByFinanceDirector:
+//                        case DepState.RevisedByFinanceDirector:
                             return DepState.Returned;
                         default:                                            // No other states should arrive here. Report error
                             break;
@@ -944,11 +949,11 @@ namespace Portal11.Logic
                     {
                         case DepState.UnsubmittedByInternalCoordinator:
                         case DepState.Returned:
-                            return DepState.AwaitingProjectDirector;
                         case DepState.RevisingByProjectDirector:
-                            return DepState.Returned;
+                            return DepState.AwaitingProjectDirector;
                         case DepState.RevisingByFinanceDirector:
-                            return DepState.RevisedByFinanceDirector;
+                            // return DepState.RevisedByFinanceDirector;
+                            return DepState.AwaitingFinanceDirector;        // From Edit back to Review
                         default:                                            // No other states should arrive here. Report error
                             break;
                     }
@@ -978,18 +983,18 @@ namespace Portal11.Logic
                                     case DocState.AwaitingProjectDirector:
                                         return DocState.AwaitingInternalCoordinator;
                                     case DocState.AwaitingInternalCoordinator:
-                                        return DocState.AwaitingFinanceDirector;
-                                    case DocState.AwaitingFinanceDirector:
                                         return DocState.AwaitingCommunityDirector;
                                     case DocState.AwaitingCommunityDirector:
+                                        return DocState.AwaitingFinanceDirector;
+                                    case DocState.AwaitingFinanceDirector:
                                         return DocState.AwaitingPresident;
                                     case DocState.AwaitingPresident:
                                         return DocState.Executed;
-                                    case DocState.RevisedByInternalCoordinator:
-                                    case DocState.RevisedByFinanceDirector:
-                                    case DocState.RevisedByCommunityDirector:
-                                    case DocState.RevisedByPresident:
-                                        return DocState.AwaitingInternalCoordinator;
+                                    //case DocState.RevisedByInternalCoordinator:
+                                    //case DocState.RevisedByFinanceDirector:
+                                    //case DocState.RevisedByCommunityDirector:
+                                    //case DocState.RevisedByPresident:
+                                    //    return DocState.AwaitingInternalCoordinator;
                                     default:                                            // No other states should arrive here. Report error
                                         break;
                                 }
@@ -1005,10 +1010,10 @@ namespace Portal11.Logic
                                     case DocState.AwaitingFinanceDirector:
                                     case DocState.AwaitingCommunityDirector:
                                     case DocState.AwaitingPresident:
-                                    case DocState.RevisedByInternalCoordinator:
-                                    case DocState.RevisedByFinanceDirector:
-                                    case DocState.RevisedByCommunityDirector:
-                                    case DocState.RevisedByPresident:
+                                    //case DocState.RevisedByInternalCoordinator:
+                                    //case DocState.RevisedByFinanceDirector:
+                                    //case DocState.RevisedByCommunityDirector:
+                                    //case DocState.RevisedByPresident:
                                         return SendDocToOriginator(role);               // Back to right "returned" state
                                     default:                                            // No other states should arrive here. Report error
                                         break;
@@ -1053,15 +1058,15 @@ namespace Portal11.Logic
                                     case DocState.AwaitingProjectDirector:
                                         return DocState.AwaitingInternalCoordinator;
                                     case DocState.RevisingByProjectDirector:
-                                        return SendDocToOriginator(role);                  // Back to right "returned" state
+                                        return DocState.AwaitingProjectDirector;        // Changed from SendToOriginator
                                     case DocState.RevisingByInternalCoordinator:
-                                        return DocState.RevisedByInternalCoordinator;
+                                        return DocState.AwaitingInternalCoordinator;    // Changed from RevisedByInternalCoordinator
                                     case DocState.RevisingByFinanceDirector:
-                                        return DocState.RevisedByFinanceDirector;
+                                        return DocState.AwaitingFinanceDirector;        // Changed from RevisedBYFinanceDirector
                                     case DocState.RevisingByCommunityDirector:
-                                        return DocState.RevisedByCommunityDirector;
+                                        return DocState.AwaitingCommunityDirector;      // Changed from RevisedByComunityDirector
                                     case DocState.RevisingByPresident:
-                                        return DocState.RevisedByPresident;
+                                        return DocState.AwaitingPresident;              // Changed from RevisedByPresident
                                     default:                                            // No other states should arrive here. Report error
                                         break;
                                 }
@@ -1101,11 +1106,11 @@ namespace Portal11.Logic
                             return ExpState.Approved;
                         case ExpState.Approved:
                             return ExpState.Paid;
-                        case ExpState.RevisedByInternalCoordinator:
-                        case ExpState.RevisedByFinanceDirector:
-                        case ExpState.RevisedByCommunityDirector:
-                        case ExpState.RevisedByPresident:
-                            return ExpState.AwaitingInternalCoordinator;
+                        //case ExpState.RevisedByInternalCoordinator:
+                        //case ExpState.RevisedByFinanceDirector:
+                        //case ExpState.RevisedByCommunityDirector:
+                        //case ExpState.RevisedByPresident:
+                        //    return ExpState.AwaitingInternalCoordinator;
                         default:                                            // No other states should arrive here. Report error
                             break;
                     }
@@ -1122,10 +1127,10 @@ namespace Portal11.Logic
                         case ExpState.AwaitingCommunityDirector:
                         case ExpState.AwaitingPresident:
                         case ExpState.Approved:
-                        case ExpState.RevisedByInternalCoordinator:
-                        case ExpState.RevisedByFinanceDirector:
-                        case ExpState.RevisedByCommunityDirector:
-                        case ExpState.RevisedByPresident:
+                        //case ExpState.RevisedByInternalCoordinator:
+                        //case ExpState.RevisedByFinanceDirector:
+                        //case ExpState.RevisedByCommunityDirector:
+                        //case ExpState.RevisedByPresident:
                             return SendExpToOriginator(role);                  // Back to right "returned" state
                         default:                                            // No other states should arrive here. Report error
                             break;
@@ -1154,7 +1159,7 @@ namespace Portal11.Logic
                         case ExpState.AwaitingPresident:
                             return ExpState.RevisingByPresident;
                         case ExpState.Approved:
-                            return ExpState.RevisingByFinanceDirector;
+                            return ExpState.RevisingByFinanceDirectorLate;
                         default:                                            // No other states should arrive here. Report error
                             break;
                     }
@@ -1172,15 +1177,17 @@ namespace Portal11.Logic
 //                        case ExpState.AwaitingProjectDirector:            // This only appears when the browser Back button has brought us back to this page
                             return ExpState.AwaitingInternalCoordinator;
                         case ExpState.RevisingByProjectDirector:
-                            return SendExpToOriginator(role);                  // Back to right "returned" state
+                            return ExpState.AwaitingProjectDirector;        // Back to the reviewer
                         case ExpState.RevisingByInternalCoordinator:
-                            return ExpState.RevisedByInternalCoordinator;
+                            return ExpState.AwaitingInternalCoordinator;
                         case ExpState.RevisingByFinanceDirector:
-                            return ExpState.RevisedByFinanceDirector;
+                            return ExpState.AwaitingFinanceDirector;
                         case ExpState.RevisingByCommunityDirector:
-                            return ExpState.RevisedByCommunityDirector;
+                            return ExpState.AwaitingCommunityDirector;
                         case ExpState.RevisingByPresident:
-                            return ExpState.RevisedByPresident;
+                            return ExpState.AwaitingPresident;
+                        case ExpState.RevisingByFinanceDirectorLate:        // Second shot at review found problem
+                            return ExpState.Approved;
                         default:                                            // No other states should arrive here. Report error
                             break;
                     }
@@ -1228,7 +1235,7 @@ namespace Portal11.Logic
 
         public static bool NextReviewIsSecondFD (ExpState state)
         {
-            if (state == ExpState.Approved)                             // If == FD is next reviewer
+            if ((state == ExpState.Approved) | (state == ExpState.RevisingByFinanceDirectorLate)) // If == FD is next reviewer
                 return true;                                            // Let the caller know
             return false;
         }
@@ -1246,7 +1253,7 @@ namespace Portal11.Logic
         }
 
 
-        public static void SetNewDepState(Dep dep, DepState newState, string userID, DepHistory hist = null)
+        public static void SetNewState(Dep dep, DepState newState, string userID, DepHistory hist = null)
         {
             dep.CurrentState = newState;                                // Store the new state in the Dep row
             dep.CurrentTime = System.DateTime.Now;                      // Timestamp this update
@@ -1256,7 +1263,7 @@ namespace Portal11.Logic
             return;
         }
 
-        public static void SetNewDocState(Doc doc, DocState newState, string userID, DocHistory hist = null)
+        public static void SetNewState(Doc doc, DocState newState, string userID, DocHistory hist = null)
         {
             doc.CurrentState = newState;                                // Store the new state in the Dep row
             doc.CurrentTime = System.DateTime.Now;                      // Timestamp this update
@@ -1268,7 +1275,7 @@ namespace Portal11.Logic
 
         // Write current state variables for a Exp row. If the caller supplies an ExpHistory row, record the new stae there as well.
 
-        public static void SetNewExpState(Exp exp, ExpState newState, string userID, ExpHistory hist = null)
+        public static void SetNewState(Exp exp, ExpState newState, string userID, ExpHistory hist = null)
         {
             exp.CurrentState = newState;                               // Store the new state in the Exp row
             exp.CurrentTime = System.DateTime.Now;                     // Timestamp this update

@@ -11,9 +11,9 @@ namespace Portal11.Logic
         // Try to be a little cute. Among Quantity, Cost Per Item and Amount, if one is blank, try to fill it in for user.
         // Assumes that Quantity is an int, Cost is a decimal, and amount is a decimal.
 
-        public static void FillQCA(TextBox quantity, TextBox cost, TextBox amount)
+        public static bool FillQCA(TextBox quantity, TextBox cost, TextBox amount)
         {
-            if (quantity.Text != "" && cost.Text != "")                         // If true Quantity specified, Cost specified, overwrite Amount
+            if (!string.IsNullOrEmpty(quantity.Text) && !string.IsNullOrEmpty(cost.Text)) // If true Quantity specified, Cost specified, get to work
             {
                 decimal c = ExtensionActions.LoadTxtIntoDecimal(cost);          // Convert cost per item into decimal
                 int q = ExtensionActions.LoadTxtIntoInt(quantity);              // Convert quantity into int
@@ -21,20 +21,28 @@ namespace Portal11.Logic
                 {
                     amount.Text = "Invalid value";                              // The product is therefore invalid
                     cost.Focus();                                               // Go back to the first control
+                    return false;
                 }
                 else if (q == 0)                                                // If == conversion routine encountered an error
                 {
                     amount.Text = "Invalid value";                              // The product is therefore invalid
                     quantity.Focus();                                           // Go back and fix it
+                    return false;
                 }                
                 else
                 {
                     decimal a = q * c;                                          // Calculate total amount
                     amount.Text = a.ToString("C");                              // Convert product to text and display
                     cost.Text = c.ToString("C");                                // While we're here, pretty up the amount
+                    return true;                                                // Calculations successful. Set focus on amount field, if you like
                 }
             }
-            return;
+            if (string.IsNullOrEmpty(quantity.Text))                            // If true quantity is blank
+                quantity.Focus();                                               // Shift input focus to that spot
+            else if (string.IsNullOrEmpty(cost.Text))                           // If true cost is blank
+                cost.Focus();                                                   // Shift input focus to that spot
+            amount.Text = "";                                                   // Blank out any prior content in amount
+            return false;                                                       // Tell caller not to focus on amount field
         }
 
         // Enable/Disable selected list items in the Payment Methods Radio Button List

@@ -163,12 +163,11 @@
                             <a runat="server" href="~/Admin/EditAdvancedOptions.aspx" title="Change the settings of parameters that control portal operations">Edit Advanced Options</a>
                         </li>
                         <li class="list-group-item">
+                            <a runat="server" href="~/Admin/UploadImages.aspx" title="Replace images, logos and files">Upload News and Images</a>
+                        </li>
+                        <li class="list-group-item">
                             <a runat="server" href="~/elmah.axd" title="Open the web page for the ELMAH error log">View Error Log</a>
                         </li>
-<%--                        Next line is temporary--%>
-<%--                        <li class="list-group-item">
-                            <a runat="server" href="~/Proj/TestModal2.aspx" title="Test Modal Dialog Box">Test Modal Dialog Box</a>
-                        </li>--%>
                     </ul>
                 </div>
             </div>

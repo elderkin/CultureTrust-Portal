@@ -182,8 +182,9 @@ namespace Portal11.Logic
         public static void MakeProjectInfoCookie(UserProject up)
         {
             HttpCookie projectInfoCookie = new HttpCookie(PortalConstants.CProjectInfo); // Get a new cookie ready to go
-            projectInfoCookie[PortalConstants.CProjectID] = up.ProjectID.ToString(); // Fill the cookie from the UserProject row
+            projectInfoCookie[PortalConstants.CProjectID] = up.ProjectID.ToString(); // Fill the cookie from the UserProject row (and Project row)
             projectInfoCookie[PortalConstants.CProjectName] = up.Project.Name;
+            projectInfoCookie[PortalConstants.CProjectCode] = up.Project.Code;
             projectInfoCookie[PortalConstants.CProjectRole] = up.ProjectRole.ToString();
             projectInfoCookie[PortalConstants.CProjectRoleDescription] = EnumActions.GetEnumDescription(up.ProjectRole);
 

@@ -39,8 +39,10 @@
                 Text Box trigger the search just like the Search button.--%>
                 <div class="col-xs-12">
                     <asp:Panel runat="server" DefaultButton="btnProjectPersonSearch">
-                        <asp:TextBox ID="txtProjectPerson" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
-                        <asp:Button ID="btnProjectPersonHelper" runat="server" Style="display: none" OnClick="btnProjectPersonSearch_Click" />
+                        <div class="col-xs-10">
+                            <asp:TextBox ID="txtProjectPerson" runat="server" CssClass="form-control has-success"></asp:TextBox>
+                            <asp:Button ID="btnProjectPersonHelper" runat="server" Style="display: none" OnClick="btnProjectPersonSearch_Click" />
+                        </div>
                     </asp:Panel>
                     <asp:LinkButton ID="btnProjectPersonSearch" runat="server" CssClass="btn btn-default" OnClick="btnProjectPersonSearch_Click">
                     <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
@@ -182,8 +184,10 @@
                 Text Box trigger the search just like the Search button--%>
                 <div class="col-xs-12">
                     <asp:Panel runat="server" DefaultButton="btnAllPersonSearch">
-                        <asp:TextBox ID="txtAllPerson" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
-                        <asp:Button ID="btnAllPersonHelper" runat="server" Style="display: none" OnClick="btnAllPersonSearch_Click" />
+                        <div class="col-xs-10">
+                            <asp:TextBox ID="txtAllPerson" runat="server" CssClass="form-control has-success"></asp:TextBox>
+                            <asp:Button ID="btnAllPersonHelper" runat="server" Style="display: none" OnClick="btnAllPersonSearch_Click" />
+                        </div>
                     </asp:Panel>
                     <asp:LinkButton ID="btnAllPersonSearch" runat="server" CssClass="btn btn-default" OnClick="btnAllPersonSearch_Click">
                     <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
@@ -227,7 +231,7 @@
                             <EmptyDataTemplate>
                                 <table>
                                     <tr>
-                                        <td>There are no Persons that match this search criteria</td>
+                                        <td>Please enter a name above to find a Entity within our database</td>
                                     </tr>
                                 </table>
                             </EmptyDataTemplate>

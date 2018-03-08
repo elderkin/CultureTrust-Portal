@@ -2,6 +2,7 @@
 using Portal11.Logic;
 using Portal11.Models;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
@@ -47,8 +48,7 @@ namespace Portal11.Admin
                     case PortalConstants.QSCommandEdit:                 // Process an "Edit" command. Read existing request, save it in same row
                         {
                             if (projectID == 0 || projectName == "")                         // If == Query String was absent. That's an error
-                                LogError.LogQueryStringError("EditProject", string.Format(
-                                    "Invalid Query String 'ProjectID' value {0}", projectID.ToString())); // Fatal error
+                                LogError.LogQueryStringError("EditProject", $"Invalid Query String 'ProjectID' value {projectID}"); // Fatal error
 
                             // Fetch the Project's row from the database. Fill in the panels using data from the existing request. Lotta work!
 
@@ -58,8 +58,7 @@ namespace Portal11.Admin
                                 Project toEdit = context.Projects.Find(projectID); // Fetch Project row by its key
                                 if (toEdit == null)
                                 {
-                                    LogError.LogQueryStringError("EditProject", string.Format(
-                                        "Invalid Query String 'ProjectID' value {0}", projectID.ToString())); // Fatal error
+                                    LogError.LogQueryStringError("EditProject", $"Invalid Query String 'ProjectID' value {projectID}"); // Fatal error
                                 }
                                 LoadPanels(toEdit);                       // Fill in the visible panels from the request
                             }
@@ -67,20 +66,11 @@ namespace Portal11.Admin
                         }
                     default:
                         {
-                            LogError.LogQueryStringError("EditProject", string.Format(
-                                "Invalid Query String 'Command' value '{0}'", cmd)); // Log fatal error
+                            LogError.LogQueryStringError("EditProject", $"Invalid Query String 'Command' value '{cmd}'"); // Log fatal error
                             return;
                         }
                 }
             }
-        }
-
-        // Inner workings of the Balance Date control, which includes a calendar
-
-        protected void txtBalanceDate_TextChanged(object sender, EventArgs e)
-        {
-            DateActions.ValidateDateInput(txtBalanceDate, lblBalanceDate.Text, litDangerMessage); // Do the heavy lifting
-            return;
         }
 
         // Toggle the visibility of a calendar. If becoming visible, load with date from text box, if any
@@ -110,6 +100,15 @@ namespace Portal11.Admin
             DateTime last = start;
             calBalanceDate.Visible = false;                                       // One click and the calendar is gone
             return;
+        }
+
+        protected void gvListProjectStaff_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            if (e.NewPageIndex >= 0)                                    // If >= a value that we can handle
+            {
+                gvListProjectStaff.PageIndex = e.NewPageIndex;          // Propagate the desired page index
+                FillProjectStaffList(Convert.ToInt32(litSavedProjectID.Text)); // Fill the grid
+            }
         }
 
         // Cancel button has been clicked. Just return to the main Admin page.
@@ -252,8 +251,8 @@ namespace Portal11.Admin
                 if (projID != 0)                                        // If != there is a current project
                 {
                     var query2 = from up in context.UserProjects
-                        where (up.ProjectID == projID) && (up.ProjectRole == ProjectRole.ProjectDirector)
-                        select new { up.UserID };                       // Find the User who is PD on this Project
+                        where (up.ProjectID == projID) & (up.ProjectRole == ProjectRole.ProjectDirector)
+                        select new { up.UserID, up.User.Email };        // Find the User who is PD on this Project
                     var row = query2.FirstOrDefault();                  // Pull the row of that user
                     if (row != null)                                    // If != the Project has a Project Director and we found it
                     {
@@ -261,6 +260,7 @@ namespace Portal11.Admin
                         {
                             ddlProjectDirector.ClearSelection();        // Get rid of any existing selection
                             ddlProjectDirector.SelectedValue = row.UserID; // Select this guy
+                            txtProjectDirectorEmail.Text = row.Email;   // Mention their email address
                             return;
                         }
                         catch (NullReferenceException) { }              // No harm, just don't select an item in the ddl
@@ -285,13 +285,25 @@ namespace Portal11.Admin
                 using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                 {
                     var query = from up in context.UserProjects
-                                where (up.ProjectID == projID) && (up.ProjectRole == ProjectRole.ProjectStaff)
+                                where (up.ProjectID == projID) & (up.ProjectRole == ProjectRole.ProjectStaff)
                                 orderby up.User.FullName
-                                select new { up.User.FullName };       // Find the Users who are PS on this Project
-                    foreach (var row in query)
+                                select new { up.User.FullName, up.User.Email }; // Find the Users who are PS on this Project
+
+                    List<rowListProjectStaff> rows = new List<rowListProjectStaff>(); // Create an empty list for the GridView control
+                    foreach (var up in query)
                     {
-                        lstProjectStaff.Items.Add(new ListItem(row.FullName, "")); // Stash each Project Staff user name into list
+                        rowListProjectStaff row = new rowListProjectStaff() // Empty row all ready to fill
+                        {
+                            Name = up.FullName,
+                            Email = up.Email
+                        };
+                        rows.Add(row);                                  // Add the filled-in row to the list of rows
                     }
+                    gvListProjectStaff.DataSource = rows;               // Give it to the GridView control
+                    gvListProjectStaff.DataBind();                      // And display it
+
+                    NavigationActions.EnableGridViewNavButtons(gvListProjectStaff); // Enable appropriate nav buttons based on page count
+
                 }
             }
             return;
@@ -309,6 +321,5 @@ namespace Portal11.Admin
             }
             return;
         }
-
     }
 }

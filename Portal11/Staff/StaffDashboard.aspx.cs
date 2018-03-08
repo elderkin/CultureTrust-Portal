@@ -318,6 +318,15 @@ namespace Portal11.Rqsts
             {
                 Common_RowDataBound(sender, e, "btnDepDblClick");           // Do the common setup work for the row
 
+                // See if the row is in revision
+
+                //Label label = (Label)e.Row.FindControl("lblReviseUserRole");      // Find the label control that contains ReviseUserRole in this row
+                //UserRole reviseRole = EnumActions.ConvertTextToUserRole(label.Text); // Carefully convert back into enumeration type
+                //if (reviseRole != UserRole.None)                            // If != row is in revision
+                //{
+                //    e.Row.ForeColor = PortalConstants.DashboardRevising;    // How about something in a nice teal?
+                //}
+
                 // See whether the User is next to act on this row
 
                 Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
@@ -334,7 +343,6 @@ namespace Portal11.Rqsts
                         btn.ToolTip = "Click to continue editing this request"; // Change flyover help as well
                     }
                 }
-
             }
             return;
         }
@@ -345,9 +353,24 @@ namespace Portal11.Rqsts
             {
                 Common_RowDataBound(sender, e, "btnDocDblClick");           // Do the common setup work for the row
 
+                // See if the row is Rush
+
+                Label label = (Label)e.Row.FindControl("lblRush");          // Find the label control that contains Rush in this row
+                if (label.Text == "True")                                   // If == this record is Rush
+                    e.Row.ForeColor = PortalConstants.DashboardRush;        // Use color to indicate Rush status
+
+                // See if the row is in revision
+
+                //label = (Label)e.Row.FindControl("lblReviseUserRole");      // Find the label control that contains ReviseUserRole in this row
+                //UserRole reviseRole = EnumActions.ConvertTextToUserRole(label.Text); // Carefully convert back into enumeration type
+                //if (reviseRole != UserRole.None)                            // If != row is in revision
+                //{
+                //    e.Row.ForeColor = PortalConstants.DashboardRevising;    // How about something in a nice teal?
+                //}
+
                 // See whether the User is next to act on this row
 
-                Label label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
+                label = (Label)e.Row.FindControl("lblCurrentState");  // Find the label control that contains Current State in this row
                 DocState state = EnumActions.ConvertTextToDocState(label.Text); // Carefully convert back into enumeration type
                 if (StateActions.UserRoleToProcessRequest(state) == EnumActions.ConvertTextToUserRole(litSavedUserRole.Text)) // If == user can approve request
                 {
@@ -379,12 +402,12 @@ namespace Portal11.Rqsts
 
                 // See if the row is in revision
 
-                label = (Label)e.Row.FindControl("lblReviseUserRole");      // Find the label control that contains ReviseUserRole in this row
-                UserRole reviseRole = EnumActions.ConvertTextToUserRole(label.Text); // Carefully convert back into enumeration type
-                if (reviseRole != UserRole.None)                            // If != row is in revision
-                {
-                    e.Row.ForeColor = PortalConstants.DashboardRevising;    // How about something in a nice teal?
-                }
+                //label = (Label)e.Row.FindControl("lblReviseUserRole");      // Find the label control that contains ReviseUserRole in this row
+                //UserRole reviseRole = EnumActions.ConvertTextToUserRole(label.Text); // Carefully convert back into enumeration type
+                //if (reviseRole != UserRole.None)                            // If != row is in revision
+                //{
+                //    e.Row.ForeColor = PortalConstants.DashboardRevising;    // How about something in a nice teal?
+                //}
 
                 // See if user can approve row
 
@@ -912,7 +935,7 @@ namespace Portal11.Rqsts
                                 RequestID = r.DepID.ToString(),             // Convert ID from int to string for easier retrieval later
                                 ProjectID = r.ProjectID.ToString(),         // Same treatment for project ID
                                 ProjectName = r.Project.Name,               // Fetch project name
-                                CurrentTime = r.CurrentTime,                // When request was last updated
+                                Time = r.CreatedTime,                       // When request was created
                                 DepTypeDesc = EnumActions.GetEnumDescription((Enum)r.DepType), // Convert enum form to English for display
                                 Amount = r.Amount,
                                 CurrentState = r.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
@@ -920,7 +943,8 @@ namespace Portal11.Rqsts
                                 ReturnNote = r.ReturnNote,
                                 Owner = EnumActions.GetEnumDescription(StateActions.UserRoleToProcessRequest(r.CurrentState)), // Fetch "English" version of owner
                                 Description = r.Description,
-                                Archived = r.Archived
+                                Archived = r.Archived,
+                                ReviseUserRole = r.ReviseUserRole           // Whether the Request is in revision
                             };
                             if (r.Archived)                                  // If true row is Archived
                                 row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
@@ -1110,14 +1134,16 @@ namespace Portal11.Rqsts
                                 RequestID = r.DocID.ToString(),                 // Convert ID from int to string for easier retrieval later
                                 ProjectID = r.ProjectID.ToString(),         // Same treatment for project ID
                                 ProjectName = r.Project.Name,               // Fetch project name
-                                CurrentTime = r.CurrentTime,                // When request was last updated
+                                Time = r.CreatedTime,                       // When request was created
                                 DocTypeDesc = EnumActions.GetEnumDescription((Enum)r.DocType), // Convert enum form to English for display
                                 CurrentState = r.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
                                 CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum form to English for display
                                 ReturnNote = r.ReturnNote,
                                 Owner = EnumActions.GetEnumDescription(StateActions.UserRoleToProcessRequest(r.CurrentState)), // Fetch "English" version of owner
                                 Description = r.Description,
-                                Archived = r.Archived
+                                Archived = r.Archived,
+                                Rush = r.Rush,                              // Whether the Request is a "Rush"
+                                ReviseUserRole = r.ReviseUserRole           // Whether the Request is in revision
                             };
                             if (r.Archived)                                  // If true row is Archived
                                 row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
@@ -1302,6 +1328,7 @@ namespace Portal11.Rqsts
                                 case ExpState.Approved:
                                 case ExpState.AwaitingFinanceDirector:
                                 case ExpState.RevisingByFinanceDirector:
+                                case ExpState.RevisingByFinanceDirectorLate:
                                 case ExpState.PaymentSent:
                                     {
                                         if (ckRFinanceDirector.Checked)
@@ -1364,11 +1391,10 @@ namespace Portal11.Rqsts
                                 RequestID = r.ExpID.ToString(),             // Convert ID from int to string for easier retrieval later
                                 ProjectID = r.ProjectID.ToString(),         // Same treatment for project ID
                                 ProjectName = r.Project.Name,               // Fetch project name
-                                CurrentTime = r.CurrentTime,                // When request was last updated
+                                Time = r.CreatedTime,                       // When request was created
                                 ExpTypeDesc = EnumActions.GetEnumDescription(r.ExpType), // Convert enum form to English for display
                                 Amount = r.Amount,
                                 CurrentState = r.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
-                                CurrentStateDesc = EnumActions.GetEnumDescription(r.CurrentState), // Convert enum form to English for display
                                 Description = r.Description,
                                 ReturnNote = r.ReturnNote,
                                 Owner = EnumActions.GetEnumDescription(StateActions.UserRoleToProcessRequest(r.CurrentState)), // Fetch "English" version of owner
@@ -1389,10 +1415,7 @@ namespace Portal11.Rqsts
                                 if (r.Person.Name != null)
                                     row.Target = r.Person.Name;
                             }
-//                            row.Summary = r.Summary;
-
-                            if (r.Archived)                                     // If true row is Archived
-                                row.CurrentStateDesc = row.CurrentStateDesc + " (Archived)"; // Append indication that it's archifed
+                            row.CurrentStateDesc = RequestActions.AdjustCurrentStateDesc(r); // Produce appropriate CurrentStateDesc based on special cases
 
                             rows.Add(row);                                  // Add the filled-in row to the list of rows
                         }

@@ -63,40 +63,23 @@ namespace Portal11.Rqsts
 
                             goto case PortalConstants.QSCommandEdit;    // Now edit the destination Exp
                         }
-                    case PortalConstants.QSCommandRevise:               // Like an Edit at the start
-                        {
-                            Page.Title = "Revise Deposit Request";      // Note that we are revising, not editing
-                            goto case PortalConstants.QSCommandEdit;    // Now edit the destination Exp
-                        }
+
+                    // Fetch the row from the database. Set the radio button corresponding to our Expense type,
+                    // then disable the radio button group so the user can't change the Expense type.
+                    // Make appropriate panels visible, then fill in the panels using data rom the existing Expense. Lotta work!
+
                     case PortalConstants.QSCommandEdit:                 // Process an "Edit" command. Read existing Expense, save it in same row
                         {
-
-                            // Fetch the row from the database. Set the radio button corresponding to our Expense type,
-                            // then disable the radio button group so the user can't change the Expense type.
-                            // Make appropriate panels visible, then fill in the panels using data rom the existing Expense. Lotta work!
-
                             if (expID.Int == 0)                     // If == cannot edit a missing Exp
                                 LogError.LogQueryStringError("EditExpense", "Missing Query String 'RequestID'"); // Log fatal error
 
-                            litSavedExpID.Text = expID.String;      // Remember to write record back to its original spot, i.e., modify the row
                             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                             {
                                 Exp exp = context.Exps.Find(expID.Int); // Fetch Exp row by its key
                                 if (exp == null)
                                     LogError.LogInternalError("EditExpense", $"Unable to locate ExpenseID '{expID.String}' in database"); // Log fatal error
 
-                                // Note: The rdo displays TEXT that matches the Description of each ExpType, but the VALUE contains the enumerated ExpType
-
-                                rdoExpType.SelectedValue = exp.ExpType.ToString(); // Select the button corresponding to our type
-                                rdoExpType.Enabled = false;         // Disable the control - cannot change type of existing Expense
-
-                                EnablePanels(exp.ExpType);          // Make the relevant panels visible
-                                LoadPanels(exp);                    // Fill in the visible panels from the Expense
-
-                                if (SplitActions.LoadSplitRows(RequestType.Expense, exp.ExpID, gvExpSplit)) // If true, GLCodeSplits existed and were loaded
-                                    EnergizeSplit();                // Adjust page to accommodate split gridview
-
-                                LoadSupportingDocs(exp);            // Fill in the Supporting Docs list
+                                CommonEditReviseView(exp);          // Do common work
  
                                 // Tidy up the Return Note based on the state of the request. The form wakes up with 
                                 //      pnlReturnNote.Visible = false
@@ -119,51 +102,45 @@ namespace Portal11.Rqsts
                             litSuccessMessage.Text = "Expense Request is ready to edit";
                             break;
                         }
+
+                    // We don't have to "fill" any of the controls on the page, just use them in their initial state.
+                    // The radio button group for Expense type wakes up "enabled" with nothing selected. No other controls are visible.
+                    // When the user selects a Expense type, we'll use that click to make the appropriate panels visible.
+
                     case PortalConstants.QSCommandNew:              // Process a "New" command. Create new, empty Expense, save it in new row
                         {
-
-                            // We don't have to "fill" any of the controls on the page, just use them in their initial state.
-                            // The radio button group for Expense type wakes up "enabled" with nothing selected. No other controls are visible.
-                            // When the user selects a Expense type, we'll use that click to make the appropriate panels visible.
-
                             ExpState newState = StateActions.FindUnsubmittedExpState(projRole); // Figure out which flavor of Unsubmitted state
                             litSavedStateEnum.Text = newState.ToString(); // Stash actual enum value of ExpState
                             txtState.Text = EnumActions.GetEnumDescription(newState); // Display "English" version of enum
                             btnShowHistory.Visible = false;             // New request has no history, so don't show meaningless button
 
                             litSuccessMessage.Text = "New Expense Request is ready to edit";
-
                             break;
                         }
+                    case PortalConstants.QSCommandRevise:               // Like an Edit at the start
+                        {
+                            Page.Title = "Revise Expense Request";      // Note that we are revising, not editing
+                            goto case PortalConstants.QSCommandEdit;    // Proceed as though editing
+                        }
+
+                    // Fetch the row from the database. Set the radio button corresponding to our Expense type,
+                    // then disable the radio button group so the user can't change the Expense type.
+                    // Make appropriate panels visible, then fill in the panels using data from the existing Expense. 
+                    // Set everything to readonly to prevent editing. Disable Save and Submit. Lotta work!
+
                     case PortalConstants.QSCommandView:             // Process an "View" command. Read existing Expense, disable edit and save
                         {
-                            Page.Title = "View Expense Request";    // Note that we are viewing, not editing
-                            litSavedExpID.Text = expID.String;      // Remember the ID of the row that we will view
-
-                            // Fetch the row from the database. Set the radio button corresponding to our Expense type,
-                            // then disable the radio button group so the user can't change the Expense type.
-                            // Make appropriate panels visible, then fill in the panels using data from the existing Expense. 
-                            // Set everything to readonly to prevent editing. Disable Save and Submit. Lotta work!
-
                             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                             {
                                 Exp exp = context.Exps.Find(expID.Int); // Fetch Exp row by its primary key
                                 if (exp == null)
                                     LogError.LogInternalError("EditExpense", $"Unable to find Expense ID '{expID.String}' in database"); // Fatal error
 
-                                rdoExpType.SelectedValue = exp.ExpType.ToString(); // Select the button corresponding to our type
-                                rdoExpType.Enabled = false;         // Disable the control - cannot change type of existing Expense
-                                EnablePanels(exp.ExpType);          // Make the relevant panels visible
-                                LoadPanels(exp);                    // Fill in the visible panels from the Expense
+                                CommonEditReviseView(exp);          // Do the common setup work
+                                ReadOnlyControls();                 // Make all controls readonly for viewing
 
                                 if (!string.IsNullOrEmpty(txtReturnNote.Text)) // If false there is text in the Return Note. Display it
                                     pnlReturnNote.Visible = true;   // Return Note is always visible while Viewing
-
-                                if (SplitActions.LoadSplitRows(RequestType.Expense, exp.ExpID, gvExpSplit)) // If true, GLCodeSplits existed and were loaded
-                                    EnergizeSplit();                // Adjust page to accommodate split gridview
-
-                                LoadSupportingDocs(exp);            // Fill in the Supporting Docs - it takes extra work
-                                ReadOnlyControls();                 // Make all controls readonly for viewing
 
                                 // Adjust the button settings for the View function
 
@@ -175,7 +152,8 @@ namespace Portal11.Rqsts
                                 pnlAdd.Visible = false;             // Can't figure out how to disable Add button, so make it invisible
                                 btnRem.Visible = false;             // Remove button on Supporting Docs is also invisible
 
-                                litSuccessMessage.Text = "Existing Expense Request is ready to view";
+                                Page.Title = "View Expense Request";    // Note that we are viewing, not editing
+                                litSuccessMessage.Text = "Expense Request is ready to view";
                             }
                             break;
                         }
@@ -191,12 +169,32 @@ namespace Portal11.Rqsts
                 {
                     SupportingActions.UploadDoc(fupUpload, lstSupporting, litSavedUserID, litSuccessMessage, litDangerMessage); // Do heavy lifting to get file
                                                                                                                                 // and record information in new SupportingDocTemp row
-                    litSDError.Text = litDangerMessage.Text;        // Replicate error, if any, in more visible location                                                                                                                    
+                    litSDError.Text = litDangerMessage.Text;        // Replicate message, if any, in more visible location                                                                                                                    
                 }
             }
             return;
         }
 
+        // Things that Edit, Revise, and View have in common
+
+        void CommonEditReviseView(Exp exp)
+        {
+            litSavedExpID.Text = exp.ExpID.ToString();      // Remember to write record back to its original spot, i.e., modify the row
+
+            // Note: The rdo displays TEXT that matches the Description of each ExpType, but the VALUE contains the enumerated ExpType
+
+            rdoExpType.SelectedValue = exp.ExpType.ToString(); // Select the button corresponding to our type
+            rdoExpType.Enabled = false;                     // Disable the control - cannot change type of existing Expense
+
+            EnablePanels(exp.ExpType);                      // Make the relevant panels visible
+            LoadPanels(exp);                                // Fill in the visible panels from the Expense
+
+            if (SplitActions.LoadSplitRows(RequestType.Expense, exp.ExpID, gvExpSplit)) // If true, GLCodeSplits existed and were loaded
+                EnergizeSplit();                            // Adjust page to accommodate split gridview
+
+            LoadSupportingDocs(exp);                        // Fill in the Supporting Docs list
+            return;
+        }
         // User pressed a radio button to select a Expense type. Each Expense type uses a different combination of panels.
         // Make visible the appropriate panels and fill the appropriate dropdown lists. Then do some housekeeping to get the
         // appropriate defaults applied. There ought to be a better way to do this, but I can't find it.
@@ -209,6 +207,7 @@ namespace Portal11.Rqsts
             rdoPaymentMethod.SelectedValue = PaymentMethod.Check.ToString(); // Reestablish default payment method. Every Type accepts checks
             if (pnlPOFulFillmentInstructions.Visible)                   // If true Vendor Mode radio buttons are visible. Apply the current setting
                 rdoPOVendorMode_SelectedIndexChanged(0, e);             // React to the setting, which may involve hiding the Vendor DDL again
+            txtAmount.Text = "";                                        // Wipe out result of previous computation, if any
             return;
         }
 
@@ -216,38 +215,14 @@ namespace Portal11.Rqsts
 
         protected void txtNumberOfCards_TextChanged(object sender, EventArgs e)
         {
-            ExtensionActions.FillQCA(txtNumberOfCards, txtEachCard, txtAmount); // Try to get cute and fill a missing field
+            if (ExtensionActions.FillQCA(txtNumberOfCards, txtEachCard, txtAmount)) // if true successfully formatted everything
+                txtAmount.Focus();                                      // Focus on to the read-only amount field so user can keep tabbing through page
         }
 
         protected void txtGoodsCostPerUnit_TextChanged(object sender, EventArgs e)
         {
-            ExtensionActions.FillQCA(txtGoodsQuantity, txtGoodsCostPerUnit, txtAmount); // Try to get cute and fill a missing field
-        }
-
-        // Text boxes for date values
-
-        protected void txtBeginningDate_TextChanged(object sender, EventArgs e)
-        {
-            DateActions.ValidateDateInput(txtBeginningDate, "Beginning Date", litDangerMessage); // Do the heavy lifting
-            return;
-        }
-
-        protected void txtEndingDate_TextChanged(object sender, EventArgs e)
-        {
-            DateActions.ValidateDateInput(txtEndingDate, "Ending Date", litDangerMessage); // Do the heavy lifting
-            return;
-        }
-
-        protected void txtDateOfInvoice_TextChanged(object sender, EventArgs e)
-        {
-            DateActions.ValidateDateInput(txtDateOfInvoice, "Invoice Date", litDangerMessage); // Do the heavy lifting
-            return;
-        }
-
-        protected void txtDateNeeded_TextChanged(object sender, EventArgs e)
-        {
-            DateActions.ValidateDateInput(txtDateNeeded, "Date Needed", litDangerMessage); // Do the heavy lifting
-            return;
+            if (ExtensionActions.FillQCA(txtGoodsQuantity, txtGoodsCostPerUnit, txtAmount)) // If true successfully formatted everything
+                txtAmount.Focus();                                      // Focus on to the read-only amount field so user can keep tabbing through page
         }
 
         // The user has clicked on a date or range in a calendar. Let's see what's up! Suck out the selected date and hide the calendar.
@@ -433,7 +408,7 @@ namespace Portal11.Rqsts
 
         protected void cblDeliveryModeRush_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cblDeliveryModeRush.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected) // If true Rush is checked
+            if (cblDeliveryModeRush.Items.FindByValue(PortalConstants.DeliveryInstructionsRush).Selected) // If true Rush is checked
             {
                 ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch project role and convert to enum
                 if (RoleActions.ProjectRoleIsStaff(projectRole))        // If true user is a staff member. No need for modal dialog box to confirm.
@@ -448,7 +423,8 @@ namespace Portal11.Rqsts
 
         protected void btnModalRushNo_Click(object sender, EventArgs e)
         {
-            cblDeliveryModeRush.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected = false; // Uncheck the Rush checkbox
+            cblDeliveryModeRush.Items.FindByValue(PortalConstants.DeliveryInstructionsRush).Selected = false; // Uncheck the Rush checkbox
+            return;
         }
         //protected void rdoDeliveryMode_SelectedIndexChanged(object sender, EventArgs e)
         //{
@@ -562,13 +538,16 @@ namespace Portal11.Rqsts
         {
             if (ddlGLCode.Enabled)                                      // If true, the function is "Split"
             {
-                LoadFirstSplitRow();                                    // Load gridview with initial values
+                LoadFirstSplitRows();                                   // Load gridview with initial values
                 EnergizeSplit();                                        // Turn the gridview on and other things off
             }
             else                                                        // The function is "Cancel"
             {
                 DeEnergizeSplit();                                      // Turn everything off
+                if (!string.IsNullOrEmpty(litSavedExpID.Text))          // If false we have an ExpID in the database, so we might have split rows
+                    SplitActions.DeleteSplitRows(RequestType.Expense, Convert.ToInt32(litSavedExpID.Text)); // Delete the split rows
             }
+            return;
         }
 
         // As the Split gridview is being loaded, fill the ddls in each row and light appropriate buttons. Complicated!
@@ -598,6 +577,8 @@ namespace Portal11.Rqsts
 
                 if (selectedGLCodeID.Text != "")                        // If != there is a selected row. Selection is the GLCodeID of the row.
                     splitGLCode.SelectedValue = selectedGLCodeID.Text;  // Select that row
+                else
+                    splitGLCode.ClearSelection();                       // Otherwise, no row selected
 
                 // Repeat the process with the ddlProjectClass drop down list
 
@@ -774,16 +755,20 @@ namespace Portal11.Rqsts
 
             // Make sure the user really wants to save, not submit.
 
-            if (litSaveModalActive.Text != "true")                  // If == the modal has not been thrown yet
+            ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch project role and convert to enum
+            if (!RoleActions.ProjectRoleIsStaff(projectRole))   // If false user is a project member. Throw the modal
             {
-                ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Fetch project role and convert to enum
-                if (!RoleActions.ProjectRoleIsStaff(projectRole))   // If false user is a project member. Throw the modal
-                {
-                    litSaveModalActive.Text = "true";               // Note that the modal has been thrown once, which is enough
-                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "divModalSave", "$('#divModalSave').modal();", true); // Open the modal dialog to confirm
-                    return;                                         // See you again in a minute
-                }
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "divModalSave", "$('#divModalSave').modal();", true); // Open the modal dialog to confirm
+                return;                                         // See you again in a minute
             }
+            btnSave1_Click(sender, e);                          // Staff users don't need the modal. Do the heavy lifting.
+            return;
+        }
+
+        // Split into two parts to help the modal dialog box work correctly
+
+        protected void btnSave1_Click(object sender, EventArgs e)
+        {
 
             int dummy = SaveExp();                                  // Do the heavy lifting
             if (dummy == 0) return;                                 // If == hit an error. Let user retry
@@ -823,7 +808,7 @@ namespace Portal11.Rqsts
             // SaveExp just saved the Request, which may or may not have written a ExpHistory row. But now, let's write another
             // ExpHistory row to describe the Submit action.
 
-            string emailSent = "";
+            string emailSent = ""; bool revising = false;
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 try
@@ -848,8 +833,9 @@ namespace Portal11.Rqsts
                     if (!StateActions.StateToEditReturnNote(toSubmit.CurrentState)) // If false current user couldn't edit the note
                         toSubmit.ReturnNote = "";                   // So clear it out
 
+                    revising = StateActions.RequestIsRevising(toSubmit.CurrentState); // Remember where we are in the process
                     ExpState nextState = StateActions.FindNextState(toSubmit.CurrentState, ReviewAction.Submit, toSubmit.SubmitProjectRole); // Figure out what next state is. Nuanced.
-                    StateActions.SetNewExpState(toSubmit, nextState, litSavedUserID.Text, hist); // Move to that state
+                    StateActions.SetNewState(toSubmit, nextState, litSavedUserID.Text, hist); // Move to that state
                     toSubmit.SubmitUserID = litSavedUserID.Text;        // Remember who submitted this Exp. They get notification on Return.
 
                     context.ExpHistorys.Add(hist);                      // Save new ExpHistory row
@@ -857,24 +843,27 @@ namespace Portal11.Rqsts
 
                     // If it's a rush request, first send a broadcast "INCOMING!" email to project staff. Then send the regular email with rush status
 
-                    if (toSubmit.Rush)                                  // If true, this is a rush request. Send broadcast email to alert staff
-                      EmailActions.BroadcastEmailToAllStaff(toSubmit.Rush, // Send email to all staff members. Rush email if rush request
-                        StateActions.UserRoleToProcessRequest(nextState), // Tell next reviewer, who is in this role
-                        toSubmit.ProjectID,                             // Request is associated with this project
-                        toSubmit.Project.Name,                          // Project has this name (for parameter substitution)
-                        EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
-                        EnumActions.GetEnumDescription(toSubmit.ExpType), // Type of Expense Request, e.g., PEX Card
-                        EnumActions.GetEnumDescription(nextState),      // Here is its next state
-                        PortalConstants.CEmailDefaultExpenseBroadcastSubject, PortalConstants.CEmailDefaultExpenseBroadcastBody); // Use this subject and body, if needed
+                    if (!revising)                                      // If false request progressing normally, send email(s)
+                    {
+                        if (toSubmit.Rush)                                  // If true, this is a rush request. Send broadcast email to alert staff
+                            EmailActions.BroadcastEmailToAllStaff(toSubmit.Rush, // Send email to all staff members. Rush email if rush request
+                              StateActions.UserRoleToProcessRequest(nextState), // Tell next reviewer, who is in this role
+                              toSubmit.ProjectID,                             // Request is associated with this project
+                              toSubmit.Project.Name,                          // Project has this name (for parameter substitution)
+                              EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
+                              EnumActions.GetEnumDescription(toSubmit.ExpType), // Type of Expense Request, e.g., PEX Card
+                              EnumActions.GetEnumDescription(nextState),      // Here is its next state
+                              PortalConstants.CEmailDefaultExpenseBroadcastSubject, PortalConstants.CEmailDefaultExpenseBroadcastBody); // Use this subject and body, if needed
 
-                    emailSent = EmailActions.SendEmailToReviewer(toSubmit.Rush, // Send email to next reviewer. Rush email if rush request
-                        StateActions.UserRoleToProcessRequest(nextState), // Tell next reviewer, who is in this role
-                        toSubmit.ProjectID,                             // Request is associated with this project
-                        toSubmit.Project.Name,                          // Project has this name (for parameter substitution)
-                        EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
-                        EnumActions.GetEnumDescription(nextState),      // Here is its next state
-                        EnumActions.GetEnumDescription(toSubmit.ExpType), // Type of Expense Request, e.g., PEX Card
-                        PortalConstants.CEmailDefaultExpenseApprovedSubject, PortalConstants.CEmailDefaultExpenseApprovedBody); // Use this subject and body, if needed
+                        emailSent = EmailActions.SendEmailToReviewer(toSubmit.Rush, // Send email to next reviewer. Rush email if rush request
+                            StateActions.UserRoleToProcessRequest(nextState), // Tell next reviewer, who is in this role
+                            toSubmit.ProjectID,                             // Request is associated with this project
+                            toSubmit.Project.Name,                          // Project has this name (for parameter substitution)
+                            EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
+                            EnumActions.GetEnumDescription(nextState),      // Here is its next state
+                            EnumActions.GetEnumDescription(toSubmit.ExpType), // Type of Expense Request, e.g., PEX Card
+                            PortalConstants.CEmailDefaultExpenseApprovedSubject, PortalConstants.CEmailDefaultExpenseApprovedBody); // Use this subject and body, if needed
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -882,10 +871,26 @@ namespace Portal11.Rqsts
                 }
             }
 
-            // Now go back to Dashboard
+            // Now go back to Dashboard or wherever
 
-            Response.Redirect(litSavedReturn.Text + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                                  + PortalConstants.QSStatus + "=Expense Request submitted." + emailSent);
+            if (!revising)                                          // If false just a regular next step
+            {
+                Response.Redirect(litSavedReturn.Text
+                    + "?" + PortalConstants.QSSeverity
+                    + "=" + PortalConstants.QSSuccess
+                    + "&" + PortalConstants.QSStatus + "=Expense Request submitted." + emailSent);
+            }
+            else
+            {
+                Response.Redirect(PortalConstants.URLReviewExpense
+                    + "?" + PortalConstants.QSSeverity
+                    + "=" + PortalConstants.QSSuccess
+                    + "&" + PortalConstants.QSStatus + "=Document Request revised. Please continue review."
+                    + "&" + PortalConstants.QSRequestID + "=" + savedExpID.ToString()  // Start with just-saved request
+                    + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandReview // Review it
+                    + "&" + PortalConstants.QSReturn + "=" + litSavedReturn.Text); // Return to our caller when done
+
+            }
         }
 
         // Show History Button clicked. Open up and fill a GridView of all the ExpHistory rows for this ExpenseRequest
@@ -1018,7 +1023,7 @@ namespace Portal11.Rqsts
                             DateOfInvoice = (DateTime)SqlDateTime.MinValue
                         };
                         UnloadPanels(toSave);                       // Move from Panels to record
-                        StateActions.SetNewExpState(toSave, EnumActions.ConvertTextToExpState(litSavedStateEnum.Text), litSavedUserID.Text);
+                        StateActions.SetNewState(toSave, EnumActions.ConvertTextToExpState(litSavedStateEnum.Text), litSavedUserID.Text);
                                                                     // Write down our current State and authorship
                         context.Exps.Add(toSave);                   // Save new Rqst row
                         context.SaveChanges();                      // Commit the Add
@@ -1039,16 +1044,15 @@ namespace Portal11.Rqsts
                         //  1) Fetch the existing record using the ExpID key
                         //  2) Unload on-screen fields overwriting the existing record
                         //  3) Update the record to the database
-                        //  4) Create a new ExpHistory row to preserve information about the previous Save
+                        //  4) Create a new ExpHistory row to preserve information about the previous Save (removed as obsolete)
                         //  5) Unload the splits and supporting documents
 
                         Exp toUpdate = context.Exps.Find(expID);    // Fetch the Rqst that we want to update
                         UnloadPanels(toUpdate);                     // Move from Panels to Rqst, modifying it in the process
-                        ExpHistory hist = new ExpHistory();         // Get a place to build a new ExpHistory row
-                        StateActions.CopyPreviousState(toUpdate, hist, "Saved"); // Create a ExpHistory log row from "old" version of Expense
-                        StateActions.SetNewExpState(toUpdate, hist.PriorExpState, litSavedUserID.Text, hist);
-                            // Write down our current State and authorship
-                        context.ExpHistorys.Add(hist);              // Save new ExpHistory row
+                        //ExpHistory hist = new ExpHistory();         // Get a place to build a new ExpHistory row
+                        //StateActions.CopyPreviousState(toUpdate, hist, "Saved"); // Create a ExpHistory log row from "old" version of Expense
+                        //StateActions.SetNewState(toUpdate, hist.PriorExpState, litSavedUserID.Text, hist); // Write down our current State and authorship
+                        //context.ExpHistorys.Add(hist);              // Save new ExpHistory row
                         context.SaveChanges();                      // Commit the Add or Modify
 
                         // Save split rows and supporting documents, if any
@@ -1108,13 +1112,14 @@ namespace Portal11.Rqsts
                     }
                 case ExpType.PEXCard:
                     {
-                        lblAmount.Text = "Total Amount";
+                        lblAmount.Text = "Total Amount"; txtAmount.ReadOnly = true;
                         pnlBeginningEnding.Visible = false;
-                        pnlCards.Visible = true; txtAmount.Enabled = true;     // Cards calculate the total amount. User can't fill it.
+                        pnlCards.Visible = true; txtAmount.Enabled = true;      // Cards calculate total amount. User can't fill it.
                         pnlContractQuestions.Visible = false;
                         pnlDateNeeded.Visible = true;
                         pnlDateOfInvoice.Visible = false;
-                        pnlDeliveryInstructions.Visible = true; pnlDeliveryModeReg.Visible = true; pnlDeliveryModePO.Visible = false; pnlDeliveryModeRush.Visible = true;
+                        pnlDeliveryInstructions.Visible = true; pnlDeliveryModeReg.Visible = false; pnlDeliveryModePO.Visible = false; pnlDeliveryModeRush.Visible = true;
+                        pnlGLCode.Visible = false;
                         pnlGoods.Visible = false;
                         pnlEntity.Visible = false;
                         pnlPaymentMethod.Visible = false;
@@ -1144,7 +1149,7 @@ namespace Portal11.Rqsts
                     }
                 case ExpType.PurchaseOrder:
                     {
-                        lblAmount.Text = "Dollar Amount";
+                        lblAmount.Text = "Dollar Amount"; txtAmount.ReadOnly = true;
                         pnlBeginningEnding.Visible = false;
                         pnlCards.Visible = false;
                         pnlContractQuestions.Visible = false;
@@ -1255,7 +1260,7 @@ namespace Portal11.Rqsts
                     }
 
                     DdlActions.LoadDdl(ddlGLCode, glcodeID, rows,
-                        "-- Error: No GL Codes in Database --", "-- none selected --"); // Put the cherry on top
+                        "-- Error: No GL Codes in Database --", "-- none selected --", alwaysDisplayLeader:true); // Put the cherry on top
 
                 }
             }
@@ -1330,7 +1335,7 @@ namespace Portal11.Rqsts
         void LoadPanels(Exp record)
         {
             litSavedStateEnum.Text = record.CurrentState.ToString();  // Stash enum version of state
-            txtState.Text = EnumActions.GetEnumDescription(record.CurrentState); // Display "English" version of state
+            txtState.Text = RequestActions.AdjustCurrentStateDesc(record); // Produce nuanced version of current state
 
             if (pnlAmount.Visible)
                 txtAmount.Text = ExtensionActions.LoadDecimalIntoTxt(record.Amount);
@@ -1392,6 +1397,7 @@ namespace Portal11.Rqsts
                 txtGoodsSKU.Text = record.GoodsSKU;
                 txtGoodsQuantity.Text = record.GoodsQuantity.ToString();
                 txtGoodsCostPerUnit.Text = record.GoodsCostPerUnit.ToString("C");
+                ExtensionActions.FillQCA(txtGoodsQuantity, txtGoodsCostPerUnit, txtAmount); // Try to get cute and fill a missing field
             }
 
             if (pnlNotes.Visible)
@@ -1420,7 +1426,7 @@ namespace Portal11.Rqsts
 
             ExtensionActions.LoadEnumIntoRdo(record.DeliveryMode, rdoDeliveryModeReg); // Load enum value into Radio Button List
             ExtensionActions.LoadEnumIntoRdo(record.PODeliveryMode, rdoDeliveryModePO); // Load enum value into Radio Button list
-            cblDeliveryModeRush.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected = record.Rush; // Fill value of checkbox
+            cblDeliveryModeRush.Items.FindByValue(PortalConstants.DeliveryInstructionsRush).Selected = record.Rush; // Fill value of checkbox
 
             AdjustDeliveryInstructions(record.DeliveryAddress);         // Turn the right panels on and off, based on other settings
                 
@@ -1503,7 +1509,7 @@ namespace Portal11.Rqsts
 
             record.PODeliveryMode = EnumActions.ConvertTextToPODeliveryMode(rdoDeliveryModePO.SelectedValue); // Convert selection to bool
 
-            record.Rush = cblDeliveryModeRush.Items.FindByValue(Exp.DeliveryInstructionsRush).Selected; // Stash value of checkbox
+            record.Rush = cblDeliveryModeRush.Items.FindByValue(PortalConstants.DeliveryInstructionsRush).Selected; // Stash value of checkbox
 
             // Lots of permutations here - the DeliveryAddress may or may not be meaningful depending on DeliveryMode and PODeliveryMode. (They share txtDeliveryAddress.)
             // Rather than replicating all that logic here, just store whatever is in the text box. When we load it again, either here or in ReviewExpense,
@@ -1646,7 +1652,7 @@ namespace Portal11.Rqsts
         // Create an "empty" gridview row and prime it with existing fields from the page, if any
         // Then create a second, even emptier row, as though the user had pressed the "Add" button on the first row
 
-        void LoadFirstSplitRow()
+        void LoadFirstSplitRows()
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -1737,22 +1743,27 @@ namespace Portal11.Rqsts
             {
                 case ExpType.ContractorInvoice:
                 case ExpType.Payroll:
-                case ExpType.PEXCard:
                 case ExpType.Reimbursement:
                 case ExpType.VendorInvoice:
                     {
                         pnlDeliveryModeReg.Visible = true;
                         pnlDeliveryModePO.Visible = false;
                         pnlDeliveryModeRush.Visible = true;
-                        AdjustDeliveryModeReg(deliveryAddress);     // DeliveryAddress on/off/filled
                         break;
+                    }
+                case ExpType.PEXCard:
+                    {
+                        pnlDeliveryModeReg.Visible = false;
+                        pnlDeliveryModePO.Visible = false;
+                        pnlDeliveryModeRush.Visible = true;         // Only Rush is visible
+                        pnlDeliveryAddress.Visible = false;
+                        return;
                     }
                 case ExpType.PurchaseOrder:
                     {
                         pnlDeliveryModeReg.Visible = false;
                         pnlDeliveryModePO.Visible = true;
                         pnlDeliveryModeRush.Visible = true;
-                        AdjustDeliveryModePO(deliveryAddress);      // DeliveryAddress on/off
                         break;
                     }
                 default:
@@ -1761,6 +1772,7 @@ namespace Portal11.Rqsts
                         break;
                     }
             }
+            AdjustDeliveryModeReg(deliveryAddress);                 // DeliveryAddress on/off/filled
             return;
         }
 
