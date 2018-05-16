@@ -33,7 +33,7 @@ namespace Portal11.Models
         public string HyperLinkTarget { get; set; }
     }
 
-    // One row of the GridView named ExpenseSplit, used by EditExpense
+    // One row of the GridView named ExpenseSplit, used by EditExpense, and DepositSplit, used by EditDeposit
 
     public class rowGLCodeSplit
     {
@@ -42,6 +42,7 @@ namespace Portal11.Models
         public string Amount { get; set; }
         public string SelectedGLCodeID { get; set; }
         public string Note { get; set; }
+        public string SelectedPersonID { get; set; }
     }
 
     // One row of the GridView named ImportCSV, used by ImportProjectBalance
@@ -695,6 +696,33 @@ namespace Portal11.Models
         [DataType(DataType.MultilineText)]
         public string ContractVerifyReason { get; set; }
 
+        // Specifics for Document Type - Campaign
+
+        public bool CampaignVerifyMention { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string CampaignVerifyReason { get; set; }
+
+        // Specifics for Document Type - Certificate
+
+        public string CertificateEventDate { get; set; }
+        public string CertificateEventTime { get; set; }
+        public string CertificateName { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string CertificateAddress { get; set; }
+
+        // Specifics for Document Type - Financial
+
+        public DateTime FinancialBeginningDate { get; set; }
+        public DateTime FinancialEndingDate { get; set; }
+        // Use common GLCode and ProjectClass
+
+        // Specifics for Document Type - Grant
+
+        public bool GrantVerifyNarrative { get; set; }
+        public bool GrantVerifyBudget { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string GrantVerifyReason { get; set; }
+
     }
     public enum DocContractFunds
     {
@@ -1082,7 +1110,8 @@ public class DocHistory
         public DateTime CreatedTime { get; set; }
     }
 
-    // The split GL Code rows for a given Request
+    // The split GL Code rows for a given Request. This has evolved into several flavors of splits. For example, employees can split in Payroll.
+    // So the name of the class is stale, but we'll stick with it.
 
     public class GLCodeSplit
     {
@@ -1095,6 +1124,8 @@ public class DocHistory
         public virtual ProjectClass ProjectClass { get; set; }
         public decimal Amount { get; set; }
         public string Note { get; set; }
+        public int? PersonID { get; set; }
+        public virtual Person Person { get; set; }
     }
 
     // A Grant from a Grant Maker to a Project. Obsolete.
@@ -1795,7 +1826,9 @@ public class DocHistory
             CStaffDocumentsVisible = "StaffDocumentsVisible",
             CStaffCkCContract = "CkCContract",
             CStaffCkCGrant = "CkCGrant",
-            CStaffCkCCOI = "CkCCOI",
+            CStaffCkCCertificate = "CkCertificate",
+            CStaffCkCFinancial = "CkCFinancial",
+            CStaffCkCCampaign = "CkCCampaign",
 
             CStaffExpVisible = "StaffExpVisible",
             CStaffCkEContractorInvoice = "CkEContractorInvoice",
@@ -1813,7 +1846,6 @@ public class DocHistory
 
         public const string
             CStaffPageIndexes = "StaffPageIndexes",
-
             CStaffPIApp = "StaffPIApp",
             CStaffPIDep = "StaffPIDep",
             CStaffPIDoc = "StaffPIDoc",
@@ -1823,6 +1855,8 @@ public class DocHistory
 
         public const string
             AssemblyName = "Portal11",
+            DDLAllGLCodes = "-- All GL Codes --",
+            DDLAllProjectClasses = "-- All Project Classes --",
             DdlID = "ID",
             DdlName = "Name",
             DdlNeededSignal = "-1",
@@ -1892,9 +1926,12 @@ public class DocHistory
             RDOContractPerson = "Person",
             RDOContractReceivingFunds = "ContractReceivingFunds",
             RDOContractPayingFunds = "ContractPayingFunds",
-            CBLContractProjectName = "ContractProjectName",
-            CBLContractPresident = "ContractPresident",
-            CBLContractSchedule = "ContractSchedule";
+            CBLCampaignVerifyMention = "CampaignVerifyMention",
+            CBLContractVerifyProjectName = "ContractVerifyProjectName",
+            CBLContractVerifyCTPresident = "ContractVerifyCTPresident",
+            CBLContractVerifySchedule = "ContractVerifySchedule",
+            CBLGrantVerifyNarrative = "GrantVerifyNarrative",
+            CBLGrantVerifyBudget = "GrantVerifyBudget";
 
         // Names of radio buttons in the Source of Funds panel used by EditDeposit and EditExpense
 
@@ -1926,6 +1963,11 @@ public class DocHistory
         public const string 
             ExpTypePaidPickup = "Check Cut",
             ExpTypePaidPEX = "Card Generated/Funds Transferred";
+
+        // Error message common to Edit Deposit, Edit Document, and Edit Expense. User has pressed <Back> and then <Submit>. That's a no-no.
+
+        public const string
+            RequestReSubmitError = "You have sinned. The request has NOT been submitted. Please use the dashboard to edit or revise this request.";
 
         public const int
             EmailPort = 587;

@@ -733,6 +733,15 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtDeliveryAddress;
         
         /// <summary>
+        /// rfvDeliveryAddress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvDeliveryAddress;
+        
+        /// <summary>
         /// pnlSupporting control.
         /// </summary>
         /// <remarks>
@@ -992,6 +1001,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litSavedExpID;
+        
+        /// <summary>
+        /// litSavedExpState control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSavedExpState;
         
         /// <summary>
         /// litSavedPersonEnum control.

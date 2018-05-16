@@ -17,7 +17,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtCode" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="true">Code</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtCode" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                     <div class="col-lg-6 col-md-6 col-xs-6">
@@ -32,7 +32,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="chkInact" CssClass="col-sm-2 col-xs-10 control-label" Font-Bold="false">GL Code is Inactive</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:CheckBox ID="chkInact" runat="server" CssClass="checkbox col-offset-xs-1 col-xs-1"
                             ToolTip="Turn the GLCode off, disabling its use. Note: This action is difficult to undo!" />
                     </div>
@@ -44,7 +44,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="chkDep" CssClass="col-sm-2 col-xs-10 control-label" Font-Bold="false">For Deposit Requests</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:CheckBox ID="chkDep" runat="server" CssClass="checkbox col-offset-xs-1 col-xs-1"
                             ToolTip="Offer this GL code when creating Deposit Requests" />
                     </div>
@@ -56,7 +56,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="chkExp" CssClass="col-sm-2 col-xs-10 control-label" Font-Bold="false">For Expense Requests</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:CheckBox ID="chkExp" runat="server" CssClass="checkbox col-offset-xs-1 col-xs-1"
                             ToolTip="Offer this GL Code when creating Expense Requests" />
                     </div>
@@ -68,7 +68,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtDescription" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Description</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox runat="server" ID="txtDescription" TextMode="MultiLine" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                 </div>

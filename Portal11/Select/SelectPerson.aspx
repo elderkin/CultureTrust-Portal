@@ -21,22 +21,29 @@
     <!-- Create a search box with a search button for Persons. There's a hidden button that lets an "Enter" in the
         Text Box trigger the search just like the Search button  -->
     <div class="row">
-        <div class="form-group col-lg-4 col-md-5 col-xs-12">
-            <asp:Panel runat="server" DefaultButton="btnPersonSearch">
-                <asp:TextBox ID="txtPerson" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
-                <asp:Button ID="btnPersonHelper" runat="server" Style="display: none" OnClick="btnPersonSearch_Click" />
-            </asp:Panel>
-            <asp:LinkButton ID="btnPersonSearch" runat="server" CssClass="btn btn-default" OnClick="btnPersonSearch_Click">
-                <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
-            </asp:LinkButton>
-        </div>
+        <div class="form-group col-xs-12">
+            <div class="col-xs-3">
+                <asp:Panel runat="server" DefaultButton="btnPersonSearch">
+                    <asp:TextBox ID="txtPerson" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
+                    <asp:Button ID="btnPersonHelper" runat="server" Style="display: none" OnClick="btnPersonSearch_Click" />
+                </asp:Panel>
+            </div>
 
-        <div class="panel panel-default col-md-3 col-xs-7">
-            <asp:Panel runat="server">
-                    <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive Persons" CssClass="checkbox col-xs-12"
-                        OnCheckedChanged="chkInactive_CheckedChanged" AutoPostBack="true"
-                        ToolTip="Check to include Inactive Persons in this list" />
-            </asp:Panel>
+            <div class="col-xs-1">
+                <asp:LinkButton ID="btnPersonSearch" runat="server" CssClass="btn btn-default" OnClick="btnPersonSearch_Click">
+                    <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
+                </asp:LinkButton>
+            </div>
+
+            <div class="col-xs-3">
+                <div class="panel panel-default col-xs-12">
+                    <asp:Panel runat="server">
+                            <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive Persons" CssClass="checkbox col-xs-12"
+                                OnCheckedChanged="chkInactive_CheckedChanged" AutoPostBack="true"
+                                ToolTip="Check to include Inactive Persons in this list" />
+                    </asp:Panel>
+                </div>
+            </div>
         </div>
     </div>
 

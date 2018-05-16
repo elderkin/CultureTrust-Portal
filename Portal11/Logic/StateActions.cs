@@ -970,6 +970,155 @@ namespace Portal11.Logic
         {
             switch (docType)
             {
+                case DocType.Certificate:
+                    {
+                        switch (action)
+                        {
+
+                            // Approve means advance to the next review or be done
+
+                            case ReviewAction.Approve:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.AwaitingInternalCoordinator;
+                                    case DocState.AwaitingInternalCoordinator:
+                                        return DocState.Executed;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Return means go back to originator of the request
+
+                            case ReviewAction.Return:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.AwaitingProjectDirector:
+                                    case DocState.AwaitingInternalCoordinator:
+                                        return SendDocToOriginator(role);               // Back to right "returned" state
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Revise means current reviewer can edit the request
+
+                            case ReviewAction.Revise:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.ReturnedToInternalCoordinator:
+                                        return DocState.UnsubmittedByInternalCoordinator;
+                                    case DocState.ReturnedToProjectDirector:
+                                        return DocState.UnsubmittedByProjectDirector;
+                                    case DocState.ReturnedToProjectStaff:
+                                        return DocState.UnsubmittedByProjectStaff;
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.RevisingByProjectDirector;
+                                    case DocState.AwaitingInternalCoordinator:
+                                        return DocState.RevisingByInternalCoordinator;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Submit means conclude the editing and commence review
+
+                            case ReviewAction.Submit:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.UnsubmittedByInternalCoordinator:
+                                    case DocState.UnsubmittedByProjectStaff:
+                                    case DocState.RevisingByProjectDirector:
+                                        return DocState.AwaitingProjectDirector;
+                                    case DocState.UnsubmittedByProjectDirector:
+                                    case DocState.RevisingByInternalCoordinator:
+                                        return DocState.AwaitingInternalCoordinator;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    }
+
+                case DocType.Financial:
+                    {
+                        switch (action)
+                        {
+
+                            // Approve means advance to the next review or be done
+
+                            case ReviewAction.Approve:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.AwaitingFinanceDirector;
+                                    case DocState.AwaitingFinanceDirector:
+                                        return DocState.Executed;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Return means go back to originator of the request
+
+                            case ReviewAction.Return:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.AwaitingProjectDirector:
+                                    case DocState.AwaitingFinanceDirector:
+                                        return SendDocToOriginator(role);               // Back to right "returned" state
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Revise means current reviewer can edit the request
+
+                            case ReviewAction.Revise:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.ReturnedToInternalCoordinator:
+                                        return DocState.UnsubmittedByInternalCoordinator;
+                                    case DocState.ReturnedToProjectDirector:
+                                        return DocState.UnsubmittedByProjectDirector;
+                                    case DocState.ReturnedToProjectStaff:
+                                        return DocState.UnsubmittedByProjectStaff;
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.RevisingByProjectDirector;
+                                    case DocState.AwaitingFinanceDirector:
+                                        return DocState.RevisingByFinanceDirector;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Submit means conclude the editing and commence review
+
+                            case ReviewAction.Submit:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.UnsubmittedByInternalCoordinator:
+                                    case DocState.UnsubmittedByProjectStaff:
+                                    case DocState.RevisingByProjectDirector:
+                                        return DocState.AwaitingProjectDirector;
+                                    case DocState.UnsubmittedByProjectDirector:
+                                    case DocState.AwaitingProjectDirector:
+                                    case DocState.RevisingByFinanceDirector:
+                                        return DocState.AwaitingFinanceDirector;      // Changed from RevisedByComunityDirector
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    }
+
                 case DocType.Contract:
                     {
                         switch (action)
@@ -1076,6 +1225,83 @@ namespace Portal11.Logic
                         }
                         break;
                     }
+
+                case DocType.Campaign:
+                case DocType.Grant:
+                    {
+                        switch (action)
+                        {
+
+                            // Approve means advance to the next review or be done
+
+                            case ReviewAction.Approve:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.AwaitingCommunityDirector;
+                                    case DocState.AwaitingCommunityDirector:
+                                        return DocState.Executed;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Return means go back to originator of the request
+
+                            case ReviewAction.Return:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.AwaitingProjectDirector:
+                                    case DocState.AwaitingCommunityDirector:
+                                        return SendDocToOriginator(role);               // Back to right "returned" state
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Revise means current reviewer can edit the request
+
+                            case ReviewAction.Revise:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.ReturnedToInternalCoordinator:
+                                        return DocState.UnsubmittedByInternalCoordinator;
+                                    case DocState.ReturnedToProjectDirector:
+                                        return DocState.UnsubmittedByProjectDirector;
+                                    case DocState.ReturnedToProjectStaff:
+                                        return DocState.UnsubmittedByProjectStaff;
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.RevisingByProjectDirector;
+                                    case DocState.AwaitingCommunityDirector:
+                                        return DocState.RevisingByCommunityDirector;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Submit means conclude the editing and commence review
+
+                            case ReviewAction.Submit:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.UnsubmittedByInternalCoordinator:
+                                    case DocState.UnsubmittedByProjectStaff:
+                                    case DocState.RevisingByProjectDirector:
+                                        return DocState.AwaitingProjectDirector;
+                                    case DocState.UnsubmittedByProjectDirector:
+                                    case DocState.AwaitingProjectDirector:
+                                    case DocState.RevisingByCommunityDirector:
+                                        return DocState.AwaitingCommunityDirector;      // Changed from RevisedByComunityDirector
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    }
+
                 default:
                     break;
             }

@@ -58,6 +58,15 @@ namespace Portal11.Lists {
         protected global::System.Web.UI.WebControls.LinkButton btnUserSearch;
         
         /// <summary>
+        /// pnlInactive control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlInactive;
+        
+        /// <summary>
         /// chkInactive control.
         /// </summary>
         /// <remarks>

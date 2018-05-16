@@ -1,4 +1,17 @@
-﻿Version 1.12
+﻿Version 1.13
+
+The Portal has a new color scheme that matches the CultureWorks palette. You may need to ask your browser to clear its cache of images and files to see the new colors.
+
+Edit Document now supports all document types.
+
+In Edit Deposit, you can now change the Destination of Funds when the request includes split GL Codes. 
+
+Version 1.12.2
+
+Several bugs in the Edit Expense page are fixed.
+
+
+Version 1.12
 
 There is a new request type: "Document Request." It replaces the "Approval Request." In this release, only the "Contract" option is supported. Dashboards now list Expenses, then Deposits, then Documents.
 
@@ -28,7 +41,7 @@ Deposit Requests are now called Deposit Notifications.
 
 The Edit Portal User and Edit Project pages now display User-to-Project information in a tabular format.
 
-In Dashboards and Histories, dates are now displayed as "dd/mm/yyyy hh:mm xm." Dates within requests are still displayed as "dd/mm/yyyy."
+In Dashboards and Histories, dates are now displayed as "mm/dd/yyyy hh:mm xm." Dates within requests are still displayed as "mm/dd/yyyy."
 
 In Expenses, PEX Cards now have a single Delivery option available - Rush. In addition, PEX Cards no longer ask for an Expense Code.
 
@@ -143,55 +156,3 @@ Version 1.0 - First production use
 
 On all Select Pages, display Inactive column only if Inactive checkbox is checked.
 Bring Project Director to correct page - Project Dashboard - after reviewing a request.
-
-Version 0.8
-
-On the Project Dashboard, the "Awaiting CW Staff" option is now checked by default.
-
-Version 0.7
-
-Approvals of Certificate of Insurance no longer require any Supporting Documents
-Projects can create Deposit and Expense requests before Entities and Persons are assigned to the project.
-Incorrectly formatted dates are now rejected.
-Select Project now includes the number of outstanding requests for each project.
-
-Version 0.6
-
-All pages: In the Navigation Bar at the top of each page, a new Home button takes project staff to the Project Dashboard and CW Staff to the Staff Dashboard.
-Staff Dashboard and Project Dashboard: Now contains a panel for Search Filters. Filters for search by Date Range, Entity, Person, and Archive status are available.
-Requests can be archived once they are complete. There is an option to include archived requests in the search functions on the Project Dashboard and System Dashboard pages.
-The "Coordinator" role is now called "Internal Coordinator."
-There is a new Admin function called "List Portal Users."
-Staff Dashboard and Project Dashboard: Now wake up with the Search panel collapsed.
-
-Version 0.5
-
-Source code is now controlled by GitHub.
-The new role "Auditor" is now defined. This is a CW Staff role - they see the Staff Dashboard - that has read-only access to "Approved" requests.
-Project Dashboard: The "Request Status" and "Since" filters have floated to the top of the page and affect all Request types.
-Staff Dashboard: The "Next Reviewer" filter has floated to the top of the page where it is joined by the new "Date Range" filter. The "Request Type" filters stay where they were.
-
-Version 0.4
-
-Coordinators can now be System Administrators. The "Admin" menu item is now visible in their page header.
-Login: Coordinators are asked to pick the Project on which to work. If the Coordinator has work waiting for them in a Project, that Project now appears in bold.
-Login: Project Directors who are assigned to multiple Projects receive the same treatment - if they have work waiting on a Project, that Project now appears in bold.
-Staff Dashboard: There is a new "Project Name" filter at the top of the page. If a Project is selected, only Requests for that Project are displayed.
-Assign Person: If the Persons being assigned are Contractors, their W-9 status is displayed.
-
-Version 0.3
-
-Entities and Vendors are now a single table - Entity. The Administrator's Assign Entitys to Project function operates on Entities and Vendors.
-Entities and Persons can now have supporting documents.
-Persons have a new field: W-9 present. It is edited via the Administrator's Edit Person page.
-Deposit Requests and Expense Requests: In the drop down lists of Entities and Persons, there is now an option to request creation of a new Entity or Person.
-
-Version 0.2
-
-All Request Types: All fields of a Request, including Description, must be non-blank.
-Approval Requests now come in five types. Project Staff can now select the Review Type (Express or Full). CW Staff can change the Review Type while approving the Request.
-Project Dashboard: The buttons have been re-ordered.
-Project Dashboard: Only a Coordinator can create a Deposit.
-Staff Dashboard: The grid for Approvals now contains a Review Type column (Express or Full).
-
-

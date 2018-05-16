@@ -119,12 +119,12 @@
                                 <asp:TextBox runat="server" ID="txtVersion" ReadOnly="true" CssClass="form-control" />
                             </div>
                         </div>
-                        <div class="row">
+<%--                        <div class="row">
                             <asp:Label runat="server" AssociatedControlID="txtBuild" CssClass="col-md-offset-0 col-md-3 col-xs-offset-1 control-label">Build</asp:Label>
                             <div class="col-md-offset-0 col-md-6 col-xs-offset-1 col-xs-11">
                                 <asp:TextBox runat="server" ID="txtBuild" ReadOnly="true" CssClass="form-control" />
                             </div>
-                        </div>
+                        </div>--%>
                     </div>
                     </asp:Panel>
 

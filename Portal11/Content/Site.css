@@ -38,7 +38,7 @@ input[type="select"] {
 }
 
 /* Change color from green to purple */
-/*
+
 .navbar-inverse {
     background-color: #6f7cfc;
 }
@@ -56,6 +56,10 @@ input[type="select"] {
     padding: 5px 15px;
 }
 
+.panel-success {
+    border-color: #6f7cfc;
+}
+
 .table > thead > tr > td.success,
 .table > tbody > tr > td.success,
 .table > tfoot > tr > td.success,
@@ -70,4 +74,10 @@ input[type="select"] {
 .table > tfoot > tr.success > th {
     background-color: #6f7cfc;
 }
-    */
+.table-hover > tbody > tr > td.success:hover,
+.table-hover > tbody > tr > th.success:hover,
+.table-hover > tbody > tr.success:hover > td,
+.table-hover > tbody > tr:hover > .success,
+.table-hover > tbody > tr.success:hover > th {
+    background-color: #6f7cfc;
+}

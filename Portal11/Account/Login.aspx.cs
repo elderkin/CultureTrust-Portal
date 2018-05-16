@@ -108,12 +108,13 @@ namespace Portal11.Account
             else
             {
 
-                // Find and display version number
+                // Find and display version number. We manually set major, minor, and build in AssemblyInfo.cs. Ignore revision number.
 
                 Assembly web = Assembly.Load(PortalConstants.AssemblyName);
                 AssemblyName webName = web.GetName();
-                txtVersion.Text = "V " + webName.Version.Major.ToString() + "." + webName.Version.Minor.ToString(); // Fetch version number in two parts
-                txtBuild.Text = webName.Version.Build.ToString() + "." + webName.Version.Revision.ToString(); // Fetch build number in two parts
+                txtVersion.Text = "V " + webName.Version.Major.ToString() // Fetch major version number
+                    + "." + webName.Version.Minor.ToString()        // Append minor version number
+                    + "." + webName.Version.Build.ToString();       // Append build number
                 pnlVersion.Visible = true;                          // Make the panel containing both text boxes visible
 
                 try
@@ -138,7 +139,7 @@ namespace Portal11.Account
                 }
                 catch
                 {
-                    txtBuild.Text = "Cannot access What's New";     // Overwrite build number with bailout message
+                    txtNew.Text = "Cannot access What's New";     // Overwrite build number with bailout message
                 }
             }
             return;

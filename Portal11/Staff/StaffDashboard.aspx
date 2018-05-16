@@ -24,7 +24,7 @@
 
         <%--A panel for Search Criteria--%>
 
-        <div class="panel panel-success">
+        <div class="panel panel-success" style="margin-bottom:10px;">
             <div class="panel-heading">
                 <asp:LinkButton ID="btnSearchCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnSearchCollapse_Click" Visible="false"
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
@@ -342,7 +342,7 @@
  
         <%--And now a panel for Expenses--%>
 
-        <div class="panel panel-success">
+        <div class="panel panel-success" style="margin-bottom:10px;">
             <div class="panel-heading">
                 <asp:LinkButton ID="btnExpCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnExpCollapse_Click"
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
@@ -481,7 +481,7 @@
 
         <%--And now a panel for Deposits--%>
 
-        <div class="panel panel-success">
+        <div class="panel panel-success" style="margin-bottom:10px;">
             <div class="panel-heading">
                 <asp:LinkButton ID="btnDepCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnDepCollapse_Click"
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
@@ -626,13 +626,19 @@
                 <br />
 
                 <div class="row">
-                    <div class="panel panel-default col-xs-offset-1 col-lg-4 col-md-4 col-sm-5 col-xs-6">
+                    <div class="panel panel-default col-xs-offset-1 col-xs-6">
                         Document Type
                     <div class="checkbox">
                         <asp:CheckBox ID="ckCContract" runat="server" Text="Contract" CssClass="col-xs-6" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckCOther" runat="server" Text="(Others coming)" CssClass="col-xs-6" Checked="false"
-                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" Enabled="false" />
+                        <asp:CheckBox ID="ckCFinancial" runat="server" Text="Financial Report" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCGrant" runat="server" Text="Grant Proposal" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCCampaign" runat="server" Text="Marketing/Fundraising Campaign" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCCertificate" runat="server" Text="Certificate of Insurance" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                     </div>
                     </div>
                 </div>

@@ -2,6 +2,12 @@
     Inherits="Portal11.Select.SelectProjectClass" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
+    <style>
+        .panel {
+            padding-bottom: 10px;
+        }
+    </style>
+
     <h2><%: Title %></h2>
     <hr />
     <p class="text-success">
@@ -21,28 +27,33 @@
     <!-- Create a search box with a search button for Project Classes. There's a hidden button that lets an "Enter" in the
         Text Box trigger the search just like the Search button  -->
     <div class="row">
-        <div class="form-group col-lg-4 col-md-5 col-xs-12">
-            <asp:Panel runat="server" DefaultButton="btnProjectClassSearch">
-                <asp:TextBox ID="txtProjectClass" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
-                <asp:Button ID="btnProjectClassHelper" runat="server" Style="display: none" OnClick="btnProjectClassSearch_Click" />
-            </asp:Panel>
-            <asp:LinkButton ID="btnProjectClassSearch" runat="server" CssClass="btn btn-default" OnClick="btnProjectClassSearch_Click">
-                <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
-            </asp:LinkButton>
-        </div>
+        <div class="form-group col-xs-12">
+            <div class="col-xs-3">
+                <asp:Panel runat="server" DefaultButton="btnProjectClassSearch">
+                    <asp:TextBox ID="txtProjectClass" runat="server" CssClass="form-control has-success col-xs-12"></asp:TextBox>
+                    <asp:Button ID="btnProjectClassHelper" runat="server" Style="display: none" OnClick="btnProjectClassSearch_Click" />
+                </asp:Panel>
+            </div>
 
-        <div class="panel panel-default col-md-3 col-xs-7">
-            <asp:Panel runat="server">
-                    <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive Project Classes" CssClass="checkbox col-xs-12"
-                        OnCheckedChanged="chkInactive_CheckedChanged" AutoPostBack="true"
-                        ToolTip="Check to include Inactive Project Classess in this list" />
-            </asp:Panel>
+            <div class="col-xs-1">
+                <asp:LinkButton ID="btnProjectClassSearch" runat="server" CssClass="btn btn-default" OnClick="btnProjectClassSearch_Click">
+                    <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
+                </asp:LinkButton>
+            </div>
+
+            <div class="col-xs-4">
+                <div class="panel panel-default col-xs-12">
+                    <asp:Panel runat="server">
+                            <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive Project Classes" CssClass="checkbox col-xs-12"
+                                OnCheckedChanged="chkInactive_CheckedChanged" AutoPostBack="true"
+                                ToolTip="Check to include Inactive Project Classess in this list" />
+                    </asp:Panel>
+                </div>
+            </div>
         </div>
     </div>
 
- 
-
-    <!-- GridView of Cs -->
+    <!-- GridView of PCs -->
     <div class="row">
         <asp:Panel ID="pnlProjectClass" runat="server">
             <div class="col-md-7 col-xs-12">

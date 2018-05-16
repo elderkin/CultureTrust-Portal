@@ -17,7 +17,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtName" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="true">Name</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtName" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                     <div class="col-lg-6 col-md-6 col-xs-6">
@@ -32,7 +32,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="chkInact" CssClass="col-sm-2 col-xs-10 control-label" Font-Bold="false">Person is Inactive</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:CheckBox ID="chkInact" runat="server" CssClass="checkbox col-offset-xs-1 col-xs-1"
                             ToolTip="Turn the Person off, disabling its use. Note: This action is difficult to undo!" />
                     </div>
@@ -44,7 +44,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtAddress" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Address</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox runat="server" ID="txtAddress" TextMode="MultiLine" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtPhone" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Phone Number</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtPhone" CssClass="form-control" />
                        </div>
                     <div class="col-lg-6 col-md-6 col-xs-6">
@@ -71,7 +71,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtEmail" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Email</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtEmail" CssClass="form-control" />
                     </div>
                     <div class="col-lg-6 col-md-6 col-xs-6">
@@ -89,7 +89,7 @@
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="lstSupporting" 
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label" Font-Bold="false">Supporting Docs</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:ListBox runat="server" ID="lstSupporting" CssClass="form-control" Rows="2" SelectionMode="Single"
                             OnSelectedIndexChanged="lstSupporting_SelectedIndexChanged" AutoPostBack="true" />
                     </div>
@@ -113,7 +113,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="chkW9Present" CssClass="col-sm-2 col-xs-10 control-label" Font-Bold="false">W-9 Form Present</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:CheckBox ID="chkW9Present" runat="server" CssClass="checkbox col-offset-xs-1 col-xs-1"
                             ToolTip="A W-9 form is present for this Person" />
                     </div>
@@ -126,7 +126,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtNotes" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Notes</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox runat="server" ID="txtNotes" TextMode="MultiLine" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                 </div>

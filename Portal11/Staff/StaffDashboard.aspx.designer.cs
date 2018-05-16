@@ -445,13 +445,40 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.CheckBox ckCContract;
         
         /// <summary>
-        /// ckCOther control.
+        /// ckCFinancial control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox ckCOther;
+        protected global::System.Web.UI.WebControls.CheckBox ckCFinancial;
+        
+        /// <summary>
+        /// ckCGrant control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckCGrant;
+        
+        /// <summary>
+        /// ckCCampaign control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckCCampaign;
+        
+        /// <summary>
+        /// ckCCertificate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ckCCertificate;
         
         /// <summary>
         /// gvStaffDoc control.

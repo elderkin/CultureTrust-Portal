@@ -27,7 +27,7 @@
         <asp:Literal runat="server" ID="litSuccessMessage" />
     </p>
     <p class="text-danger">
-        <asp:Literal runat="server" ID="litDangerMessage" />
+        <strong><asp:Literal runat="server" ID="litDangerMessage" /></strong>
     </p>
     <div class="form-horizontal">
 
@@ -338,7 +338,7 @@
 
         <%--Grid of Expense Requests--%>
 
-        <div class="panel panel-success">
+        <div class="panel panel-success" style="margin-bottom:10px;">
             <div class="panel-heading">
                 <asp:LinkButton ID="btnExpCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnExpCollapse_Click"
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
@@ -463,7 +463,7 @@
 
         <%--Grid of Deposit Notifications--%>
 
-        <div class="panel panel-success">
+        <div class="panel panel-success" style="margin-bottom:10px;">
             <div class="panel-heading ">
                 <asp:LinkButton ID="btnDepCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnDepCollapse_Click"
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">

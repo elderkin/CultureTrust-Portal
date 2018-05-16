@@ -128,7 +128,7 @@
                         <asp:CompareValidator
                             ControlToValidate="txtDateOfDeposit"
                             CssClass="text-danger col-xs-12" 
-                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Display="Dynamic" ErrorMessage="The format for a date is mm/dd/yyyy."
                             Operator="DataTypeCheck" Type="Date"
                             runat="server" SetFocusOnError="true"
                             />
@@ -557,6 +557,7 @@
         <asp:Literal ID="litSavedCommand" runat="server" Visible="false" />
         <asp:Literal ID="litSavedDefaultProjectClassID" runat="server" Visible="false" />
         <asp:Literal ID="litSavedDepID" runat="server" Visible="false" />
+        <asp:Literal ID="litSavedDepState" runat="server" Visible="false" />
         <asp:Literal ID="litSavedEntityEnum" runat="server" Visible="false" />
         <asp:Literal ID="litSavedEntityPersonFlag" runat="server" Visible="false" />
         <asp:Literal ID="litSavedPersonEnum" runat="server" Visible="false" />
