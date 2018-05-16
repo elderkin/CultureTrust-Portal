@@ -136,7 +136,7 @@
                         <asp:CompareValidator
                             ControlToValidate="txtBeginningDate"
                             CssClass="text-danger col-xs-12" 
-                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Display="Dynamic" ErrorMessage="The format for a date is mm/dd/yyyy."
                             Operator="DataTypeCheck" Type="Date"
                             runat="server" SetFocusOnError="true"
                             />
@@ -144,7 +144,7 @@
                             ControlToValidate="txtBeginningDate"
                             CssClass="text-danger col-xs-12" 
                             Display="Dynamic" ErrorMessage="The date must be between 1900 and 2099."
-                            MinimumValue="01/01/1900" MaximumValuE="12/31/2099" Type="Date"
+                            MinimumValue="01/01/1900" MaximumValue="12/31/2099" Type="Date"
                             runat="server" SetFocusOnError="true"
                             />
                         </div>
@@ -201,7 +201,7 @@
                         <asp:CompareValidator
                             ControlToValidate="txtEndingDate"
                             CssClass="text-danger col-xs-12" 
-                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Display="Dynamic" ErrorMessage="The format for a date is mm/dd/yyyy."
                             Operator="DataTypeCheck" Type="Date"
                             runat="server" SetFocusOnError="true"
                             />
@@ -277,7 +277,7 @@
                         <asp:CompareValidator
                             ControlToValidate="txtDateNeeded"
                             CssClass="text-danger col-xs-12" 
-                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Display="Dynamic" ErrorMessage="The format for a date is mm/dd/yyyy."
                             Operator="DataTypeCheck" Type="Date"
                             runat="server" SetFocusOnError="true"
                             />
@@ -529,7 +529,7 @@
                         <asp:CompareValidator
                             ControlToValidate="txtDateOfInvoice"
                             CssClass="text-danger col-xs-12" 
-                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Display="Dynamic" ErrorMessage="The format for a date is mm/dd/yyyy."
                             Operator="DataTypeCheck" Type="Date"
                             runat="server" SetFocusOnError="true"
                             />
@@ -655,8 +655,8 @@
                             <!-- Fill this control from code-behind -->
                             <asp:DropDownList runat="server" ID="ddlEntity" CssClass="form-control"></asp:DropDownList>
                         </div>
-                        <div class="col-md-2 col-xs-3">
-                            <asp:Button ID="btnNewEntity" runat="server" Text="New" CssClass="btn btn-default col-xs-6" Visible="true"
+                        <div class="col-md-1 col-xs-3">
+                            <asp:Button ID="btnNewEntity" runat="server" Text="New" CssClass="btn btn-default col-xs-12" Visible="true"
                                 Enabled="true" OnClick="btnNewEntity_Click" CausesValidation="false" ToolTip="Add a new entity to this project. Save changes before pressing this button." />
                         </div>
                         <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
@@ -677,8 +677,8 @@
                             <!-- Fill this control from code-behind -->
                             <asp:DropDownList runat="server" ID="ddlPerson" CssClass="form-control"></asp:DropDownList>
                         </div>
-                        <div class="col-md-2 col-xs-3">
-                            <asp:Button ID="btnNewPerson" runat="server" Text="New" CssClass="btn btn-default col-xs-6" Visible="true"
+                        <div class="col-md-1 col-xs-3">
+                            <asp:Button ID="btnNewPerson" runat="server" Text="New" CssClass="btn btn-default col-xs-12" Visible="true"
                                 Enabled="true" OnClick="btnNewPerson_Click" CausesValidation="false" ToolTip="Add a new person to this project. Save changes before pressing this button." />
                         </div>
                         <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
@@ -748,8 +748,8 @@
                         <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:DropDownList runat="server" ID="ddlGLCode" CssClass="form-control"></asp:DropDownList>
                         </div>
-                        <div class="col-md-2 col-xs-3">
-                            <asp:Button ID="btnSplit" runat="server" Text="Split" CssClass="btn btn-default col-xs-6" Visible="false"
+                        <div class="col-md-1 col-xs-3">
+                            <asp:Button ID="btnSplit" runat="server" Text="Split" CssClass="btn btn-default col-xs-12" Visible="false"
                                 Enabled="true" OnClick="btnSplit_Click" CausesValidation="false" ToolTip="Divide the reimbursement into multiple Expense Accounts" />
                         </div>
                         <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
@@ -971,8 +971,8 @@
                             <asp:TextBox runat="server" ID="txtDeliveryAddress" CssClass="form-control" placeholder="Delivery Address"
                                 TextMode="MultiLine" Visible="true" />
                         </div>
-                        <div class="col-lg-offset-1 col-lg-6 col-md-6 col-sm-4 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDeliveryAddress" SetFocusOnError="true"
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:RequiredFieldValidator runat="server" ID="rfvDeliveryAddress" ControlToValidate="txtDeliveryAddress" SetFocusOnError="true"
                                 CssClass="text-danger col-xs-12" ErrorMessage="Please enter a Delivery Address value." />
                         </div>
                     </div>
@@ -1134,6 +1134,7 @@
             <asp:Literal ID="litSavedEntityEnum" runat="server" Visible="false" />
             <asp:Literal ID="litSavedEntityPersonFlag" runat="server" Visible="false" />
             <asp:Literal ID="litSavedExpID" runat="server" Visible="false" />
+            <asp:Literal ID="litSavedExpState" runat="server" Visible="false" />
             <asp:Literal ID="litSavedPersonEnum" runat="server" Visible="false" />
             <asp:Literal ID="litSavedProjectID" runat="server" Visible="false" />
             <asp:Literal ID="litSavedProjectRole" runat="server" Visible="false" />

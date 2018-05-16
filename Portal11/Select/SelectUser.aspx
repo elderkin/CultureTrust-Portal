@@ -2,6 +2,12 @@
     Inherits="Portal11.Admin.SelectUser" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
+    <style>
+        .panel {
+            padding-bottom: 10px;
+        }
+    </style>
+
     <h2><%: Title %></h2>
     <hr />
     <p class="text-success">
@@ -22,24 +28,32 @@
     <!-- Create a search box with a search button for Users. There's a hidden button that lets an "Enter" in the
         Text Box trigger the search just like the Search button  -->
     <div class="row">
-        <div class="form-group col-lg-4 col-md-5 col-xs-12">
-            <asp:Panel runat="server" DefaultButton="btnUserSearch">
-                <asp:TextBox ID="txtUser" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
-                <asp:Button ID="btnUserHelper" runat="server" Style="display: none" OnClick="btnUserSearch_Click" />
-            </asp:Panel>
-            <asp:LinkButton ID="btnUserSearch" runat="server" CssClass="btn btn-default" OnClick="btnUserSearch_Click">
-                <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
-            </asp:LinkButton>
-        </div>
+        <div class="form-group col-xs-12">
+            <div class="col-xs-3">
+                <asp:Panel runat="server" DefaultButton="btnUserSearch">
+                    <asp:TextBox ID="txtUser" runat="server" CssClass="form-control has-success col-xs-12"></asp:TextBox>
+                    <asp:Button ID="btnUserHelper" runat="server" Style="display: none" OnClick="btnUserSearch_Click" />
+                </asp:Panel>
+            </div>
 
-        <div class="panel panel-default col-md-3 col-xs-7">
-            <asp:Panel runat="server">
-                    <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive Users" CssClass="checkbox col-xs-12"
-                        OnCheckedChanged="chkInactive_CheckedChanged" AutoPostBack="true"
-                        ToolTip="Check to include Inactive Users in this list" />
-            </asp:Panel>
+            <div class="col-xs-1">
+                <asp:LinkButton ID="btnUserSearch" runat="server" CssClass="btn btn-default" OnClick="btnUserSearch_Click">
+                    <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
+                </asp:LinkButton>
+            </div>
+
+            <div class="col-xs-3">
+                <asp:Panel runat="server">
+                    <div class="panel panel-default col-xs-12">
+                        <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive Users" CssClass="checkbox col-xs-12"
+                            OnCheckedChanged="chkInactive_CheckedChanged" AutoPostBack="true"
+                            ToolTip="Check to include Inactive Users in this list" />
+                    </div>
+                </asp:Panel>
+            </div>
         </div>
     </div>
+       
 
  
 

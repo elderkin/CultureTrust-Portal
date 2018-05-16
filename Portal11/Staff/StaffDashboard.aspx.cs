@@ -1040,9 +1040,33 @@ namespace Portal11.Rqsts
 
                     switch (r.DocType)                                  // By DocumentType, look for relevant checkbox
                     {
+                        case DocType.Campaign:
+                            {
+                                if (ckCCampaign.Checked)                // If true relevant checkbox is checked
+                                    useRow = true;                      // Take the row
+                                break;
+                            }
+                        case DocType.Certificate:
+                            {
+                                if (ckCCertificate.Checked)             // If true relevant checkbox is checked
+                                    useRow = true;                      // Take the row
+                                break;
+                            }
                         case DocType.Contract:
                             {
                                 if (ckCContract.Checked)                // If true relevant checkbox is checked
+                                    useRow = true;                      // Take the row
+                                break;
+                            }
+                        case DocType.Financial:
+                            {
+                                if (ckCFinancial.Checked)               // If true relevant checkbox is checked
+                                    useRow = true;                      // Take the row
+                                break;
+                            }
+                        case DocType.Grant:
+                            {
+                                if (ckCGrant.Checked)                   // If true relevant checkbox is checked
                                     useRow = true;                      // Take the row
                                 break;
                             }
@@ -1622,9 +1646,11 @@ namespace Portal11.Rqsts
             staffCheckboxesCookie[PortalConstants.CStaffCkDPledge] = ckDPledge.Checked.ToString();
 
             staffCheckboxesCookie[PortalConstants.CStaffDocumentsVisible] = pnlDoc.Visible.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkCCampaign] = ckCCampaign.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkCCertificate] = ckCCertificate.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkCContract] = ckCContract.Checked.ToString();
-            //staffCheckboxesCookie[PortalConstants.CStaffCkCGrant] = ckCGrant.Checked.ToString();
-            //staffCheckboxesCookie[PortalConstants.CStaffCkCCOI] = ckCCOI.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkCFinancial] = ckCFinancial.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkCGrant] = ckCGrant.Checked.ToString();
 
             staffCheckboxesCookie[PortalConstants.CStaffExpVisible] = pnlExp.Visible.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEContractorInvoice] = ckEContractorInvoice.Checked.ToString();
@@ -1769,14 +1795,12 @@ namespace Portal11.Rqsts
                 else
                     CollapseDocPanel();                                     // Start with Documents panel collapsed
 
-                if (staffCheckboxesCookie[PortalConstants.CStaffCkCContract] == "True") ckCContract.Checked = true;
-                else ckCContract.Checked = false;
+                ckCCampaign.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCCampaign] == "True");
+                ckCCertificate.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCCertificate] == "True");
+                ckCContract.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCContract] == "True");
+                ckCFinancial.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCFinancial] == "True");
+                ckCGrant.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCGrant] == "True");
 
-                //if (staffCheckboxesCookie[PortalConstants.CStaffCkCGrant] == "True") ckCGrant.Checked = true;
-                //else ckCGrant.Checked = false;
-
-                //if (staffCheckboxesCookie[PortalConstants.CStaffCkCCOI] == "True") ckCCOI.Checked = true;
-                //else ckCCOI.Checked = false;
 
                 // Expense Requests panel
 

@@ -184,6 +184,7 @@ namespace Portal11.Rqsts
         void CommonEditReviseView(Dep dep)
         {
             litSavedDepID.Text = dep.DepID.ToString(); // Remember to write record back to its original spot, i.e., modify the row
+            litSavedDepState.Text = dep.CurrentState.ToString(); // Remember the current state of the request
             rdoDepType.SelectedValue = dep.DepType.ToString(); // Select the button corresponding to our type
             rdoDepType.Enabled = false;             // Disable the control - cannot change type of existing Deposit
 
@@ -297,10 +298,26 @@ namespace Portal11.Rqsts
 
         protected void rdoDestOfFunds_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted) // If == Restricted button was clicked. Turn on drop down list
-                pnlProjectClass.Visible = true;                     // Turn on drop down list
-            else
-                pnlProjectClass.Visible = false;                    // Turn off drop down list
+            //if (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted) // If == Restricted button was clicked. Turn on drop down list
+            //    pnlProjectClass.Visible = true;                     // Turn on drop down list
+            //else
+            //    pnlProjectClass.Visible = false;                    // Turn off drop down list
+            pnlProjectClass.Visible = (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted); // Restricted means Project Class is visible
+            if (!pnlProjectClass.Visible)                           // If false we have just made it invisible
+                ddlProjectClass.SelectedValue = litSavedDefaultProjectClassID.Text; // If it becomes visible again, selected value will be our default
+
+            // If we have splits, go through each row of the gridview and toggle ddlProjectClass.Enabled
+
+            if (pnlDepSplit.Visible)                                // If gridview is visible, then we are working on splits
+            {
+                foreach (GridViewRow row in gvDepSplit.Rows)        // Process rows one-by-one. Note that this gridview does not paginate, so all rows are here
+                {
+                    DropDownList splitProjectClass = (DropDownList)row.FindControl("ddlSplitProjectClass"); // Find drop down list within the row
+                    splitProjectClass.Enabled = (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted); // Enable or disable based on Destination
+                    if (!splitProjectClass.Enabled)                 // If false we have just disabled the ddl
+                        splitProjectClass.SelectedValue = litSavedDefaultProjectClassID.Text; // Reset to the default value
+                }
+            }
             return;
         }
 
@@ -338,8 +355,14 @@ namespace Portal11.Rqsts
 
         protected void btnModalYes_Click(object sender, EventArgs e)
         {
-            int depID = SaveDep();                                  // Save the request, return the request ID
-            if (depID == 0) return;                                 // If == hit an error. Let user retry
+            int depID; string statusMessage;
+            if (!SaveDep(out depID, out statusMessage))             // Save the request. If false encountered an error
+            {
+                litSuccessMessage.Text = "";                        // Clear out stale success message
+                litDangerMessage.Text = statusMessage;              // Propagate the error message
+                return;                                             // Let the user retry
+            }
+
             CookieActions.MakeFlowControlCookie(PortalConstants.URLEditDeposit + "?"
                                             + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
@@ -536,58 +559,6 @@ namespace Portal11.Rqsts
             return;
         }
 
-        // Revise button clicked. This is the case where a Dep is in the "Returned" state - it was submitted, but failed during the review process.
-        // To "Revise," we: 
-        //  1) Get a copy of the Request
-        //  2) Create a History row to audit this change.
-        //  3) Change the State of the Request from "Returned" to "Under Construction," erase the ReturnNote comments and save it.
-        //  4) Call this page back and invoke the "Edit" command for an existing Deposit.
-
-        //protected void btnRevise_Click(object sender, EventArgs e)
-        //{
-        //    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-        //    {
-        //        try
-        //        {
-
-        //            //  1) Get a copy of the Dep
-
-        //            int depID = Convert.ToInt32(litSavedDepID.Text); // Fetch the ID of the Dep row to be revised
-        //            Dep toRevise = context.Deps.Find(depID);        // Fetch the Dep that we want to update
-        //            if (toRevise == null)                           // If == the target Dep not found
-        //                LogError.LogInternalError("EditDeposit", string.Format("DepositID from Query String '{0}' could not be found in database",
-        //                    depID.ToString()));                     // Log fatal error
-
-        //            //  2) Create a DepHistory row to audit this change.
-
-        //            DepHistory hist = new DepHistory();               // Get a place to build a new History row
-        //            StateActions.CopyPreviousState(toRevise, hist, "Revised"); // Create a History log row from "old" version of Request
-
-        //            //  3) Change the State of the Rqst from "Returned" to "Unsubmitted," erase the ReturnNote comments and save it.
-
-        //            DepState currentState = toRevise.CurrentState;  // Get a scratch copy
-        //            StateActions.SetNewDepState(toRevise, StateActions.FindNextState(currentState, ReviewAction.Revise), litSavedUserID.Text, hist); // Write down our new State and authorship
-        //            toRevise.ReturnNote = "";                       // Erase the note
-        //            toRevise.EntityNeeded = false; toRevise.PersonNeeded = false; // Assume "Returner" did as we asked
-        //            context.DepHistorys.Add(hist);                  // Save new History row
-        //            context.SaveChanges();                          // Commit the Add and Modify
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            LogError.LogDatabaseError(ex, "EditDeposit", "Error processing DepHistory and Dep rows"); // Fatal error
-        //        }
-
-        //        //  4) Call this page back and invoke the "Edit" command for an existing Expense.
-
-        //        Response.Redirect(PortalConstants.URLEditDeposit + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text
-        //                     + "&" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text
-        //                     + "&" + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text
-        //                     + "&" + PortalConstants.QSRequestID + "=" + Request.QueryString[PortalConstants.QSRequestID]
-        //                     + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit // Start with an existing Dep
-        //                     + "&" + PortalConstants.QSReturn + "=" + litSavedReturn.Text); // Propagate return page
-        //    }
-        //}
-
         // Save button clicked. "Save" means that we unload all the controls for the Deposit into a database row. 
         // If the Deposit is new, we just add a new row. If the Deposit already exists, we update it and add a history record to show the edit.
         // We can tell a Deposit is new if the Query String doesn't contain a mention of a DepID AND the literal litSavedDepID is empty.
@@ -596,8 +567,13 @@ namespace Portal11.Rqsts
 
         protected void btnSave_Click(object sender, EventArgs e)
         {
-            int dummy = SaveDep();                                  // Do the heavy lifting
-            if (dummy == 0) return;                                 // If == hit an error. Let user retry
+            int dummy; string statusMessage;
+            if (!SaveDep(out dummy, out statusMessage))         // Do the heavy lifting. If false there was an error
+            {
+                litSuccessMessage.Text = "";                    // Clear prior success message
+                litDangerMessage.Text = statusMessage;          // Propagate the error message
+                return;                                         // Let the user fix the error
+            }
 
             // Now go back to Dashboard
 
@@ -627,9 +603,14 @@ namespace Portal11.Rqsts
                 return;                                             // Back for more punishment
             }
 
-            int savedDepID = SaveDep();                             // Do the heavy lifting to save the current Deposit
-            if (savedDepID == 0)                                    // If == SaveDep encountered an error. Go no further
-                LogError.LogInternalError("EditDeposit", "Unable to save Deposit before Submitting"); // Fatal error
+            int savedDepID; string errorMessage;
+            if (!SaveDep(out savedDepID, out errorMessage))         // Do the heavy lifting to save the current request. If false, encountered an error
+            {
+                Response.Redirect(litSavedReturn.Text               // Go back to caller reporting the error
+                    + "?" + PortalConstants.QSSeverity
+                    + "=" + PortalConstants.QSDanger
+                    + "&" + PortalConstants.QSStatus + "=" + errorMessage); // Propagate the error so user can see it
+            }
 
             // SaveDep just saved the Request, which may or may not have written a DepHistory row. But now, let's write another
             // DepHistory row to describe the Submit action.
@@ -667,7 +648,7 @@ namespace Portal11.Rqsts
                         toSubmit.Project.Name,                      // Project has this name (for parameter substitution)
                         EnumActions.GetEnumDescription(RequestType.Deposit), // This is a Deposit Request
                         EnumActions.GetEnumDescription(toSubmit.DepType), // Of this type
-                        EnumActions.GetEnumDescription(nextState),      // Here is its next state
+                        EnumActions.GetEnumDescription(nextState),  // Here is its next state
                         PortalConstants.CEmailDefaultDepositApprovedSubject, PortalConstants.CEmailDefaultDepositApprovedBody); // Use this subject and body, if needed
                     }
                 }
@@ -792,9 +773,9 @@ namespace Portal11.Rqsts
 
         // Package the work of the Save so that Submit can do it as well.
 
-        private int SaveDep()
+        private bool SaveDep(out int rqstID, out string statusMessage)
         {
-            litDangerMessage.Text = ""; litSuccessMessage.Text = ""; // Start with a clean slate of message displays
+            rqstID = 0; statusMessage = "";                         // Set default values for return parameters
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 try
@@ -831,9 +812,10 @@ namespace Portal11.Rqsts
                         if (pnlDepSplit.Visible)                // If true, splits are alive and rows need to be written to database
                             SplitActions.UnloadSplitRows(RequestType.Deposit, toSave.DepID, gvDepSplit); // Save the splits from the gridview to the database
                         UnloadSupportingDocs();                     // Save all the supporting documents
-                        //TODO what if there's an error here?
-                        litSuccessMessage.Text = "Deposit Notification successfully saved"; // Let user know we're good
-                        return toSave.DepID;                        // Return the finished Rqst
+
+                        rqstID = toSave.DepID;                      // Report the new request ID to our caller.
+                        statusMessage = "Deposit Notification saved.";   // Give caller a status message trumpeting our success
+                        return true;                                // Report our success to the caller
                     }
                     else                                            // Update an existing Exp row
                     {
@@ -842,28 +824,30 @@ namespace Portal11.Rqsts
                         //  1) Fetch the existing record using the DepID key
                         //  2) Unload on-screen fields overwriting the existing record
                         //  3) Update the record to the database
-                        //  4) Create a new DepHistory row to preserve information about the previous Save (removed as obsolete)
                         //  5) Unload the splits and supporting documents
 
                         Dep toUpdate = context.Deps.Find(depID);    // Fetch the Rqst that we want to update
                         if (toUpdate == null)                       // If == did not successfully locate Dep
                             LogError.LogInternalError("EditDeposit", $"Unable to find Deposit ID '{depID}' in database"); // Fatal error
-                        UnloadPanels(toUpdate);                     // Move from Panels to Rqst, modifying it in the process
+                        if (toUpdate.CurrentState.ToString() != litSavedDepState.Text) // If != user has been evil and navigated back to this
+                        {
+                            statusMessage = PortalConstants.RequestReSubmitError; // Set the message explaining the mistake
+                            return false;                           // Signal error
+                        }
 
-                        //DepHistory hist = new DepHistory();         // Get a place to build a new DepHistory row
-                        //StateActions.CopyPreviousState(toUpdate, hist, "Saved"); // Create a DepHistory log row from "old" version of Deposit
-                        //StateActions.SetNewState(toUpdate, hist.PriorDepState, litSavedUserID.Text, hist); // Write down our current State (which doesn't change here) and authorship
-                        //context.DepHistorys.Add(hist);              // Write new DepHistory row
+                        UnloadPanels(toUpdate);                     // Move from Panels to Rqst, modifying it in the process
 
                         context.SaveChanges();                      // Commit the Add or Modify
 
                         // Unload split rows and supporting documents from page into database
 
-                        if (pnlDepSplit.Visible)                // If true, splits are alive and rows need to be written to database
+                        if (pnlDepSplit.Visible)                    // If true, splits are alive and rows need to be written to database
                             SplitActions.UnloadSplitRows(RequestType.Deposit, toUpdate.DepID, gvDepSplit); // Save the splits from the gridview to the database
                         UnloadSupportingDocs();                     // Save all the new supporting documents
-                        litSuccessMessage.Text = "Deposit Notification successfully updated";    // Let user know we're good
-                        return toUpdate.DepID;                      // Return the finished Rqst
+
+                        rqstID = toUpdate.DepID;                    // Report the updated request ID to our caller
+                        statusMessage = "Deposit Notification successfully updated"; // Brag about it
+                        return true;                                // Tell our caller to proceed.
                     }
                 }
                 catch (Exception ex)
@@ -871,7 +855,7 @@ namespace Portal11.Rqsts
                     LogError.LogDatabaseError(ex, "EditDeposit", "Error writing Dep row"); // Fatal error
                 }
             }
-            return 0;                                               // We never get this far
+            return false;                                               // We never get this far
         }
 
         // Based on the selected Deposit Type, enable and disable the appropriate panels on the display.
@@ -1121,14 +1105,14 @@ namespace Portal11.Rqsts
 
                         foreach (var row in query)
                         {
-                            DataRow dr = rows.NewRow();                  // Build a row from the next query output
+                            DataRow dr = rows.NewRow();                     // Build a row from the next query output
                             dr[PortalConstants.DdlID] = row.ProjectClassID;
                             dr[PortalConstants.DdlName] = row.Name;
-                            rows.Rows.Add(dr);                           // Add the new row to the data table
-                            if (row.Default)                            // If true, this is the default Project Class
+                            rows.Rows.Add(dr);                              // Add the new row to the data table
+                            if (row.Default)                                // If true, this is the default Project Class
                             {
-                                defaultID = row.ProjectClassID;         // Save this for later use
-                                litSavedDefaultProjectClassID.Text = row.ProjectClassID.ToString(); // Save default for use in split expense rows
+                                defaultID = row.ProjectClassID;             // Save this for later use
+                                litSavedDefaultProjectClassID.Text = row.ProjectClassID.ToString(); // Save default for use in split rows
                             }
                         }
 
@@ -1390,7 +1374,7 @@ namespace Portal11.Rqsts
 
         void EnergizeSplit()
         {
-            rdoDestOfFunds.Enabled = false;                         // Can't change destination of funds radio buttons any more
+//            rdoDestOfFunds.Enabled = false;                         // Can't change destination of funds radio buttons any more
             ddlProjectClass.Enabled = false;                        // Can't use "Project Class" field any more
             txtAmount.Enabled = false; rfvAmount.Enabled = false;   // Can't use "Total Dollar Amount" field any more
             ddlGLCode.Enabled = false;                              // Can't use "Expense Account" drop down list any more
@@ -1403,7 +1387,7 @@ namespace Portal11.Rqsts
 
         void DeEnergizeSplit()
         {
-            rdoDestOfFunds.Enabled = true;                          // Radio buttons are back
+//            rdoDestOfFunds.Enabled = true;                          // Radio buttons are back
             ddlProjectClass.Enabled = true;                         // "Project Class" drop down list is back
             txtAmount.Enabled = true; txtAmount.Text = ""; rfvAmount.Enabled = true; // "Total Dollar Amount" field is back and empty
             ddlGLCode.Enabled = true;                               // "Expense Account" drop down list is back

@@ -22,32 +22,37 @@
     <!-- Create a search box with a search button for GL Codes. There's a hidden button that lets an "Enter" in the
         Text Box trigger the search just like the Search button  -->
     <div class="row">
-        <div class="form-group col-lg-4 col-md-5 col-xs-12">
-            <asp:Panel runat="server" DefaultButton="btnGLCodeSearch">
-                <asp:TextBox ID="txtGLCode" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
-                <asp:Button ID="btnGLCodeHelper" runat="server" Style="display: none" OnClick="btnGLCodeSearch_Click" />
-            </asp:Panel>
-            <asp:LinkButton ID="btnGLCodeSearch" runat="server" CssClass="btn btn-default" OnClick="btnGLCodeSearch_Click">
-                <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
-            </asp:LinkButton>
-        </div>
+        <div class="form-group col-xs-12">
+            <div class="col-xs-3">
+                <asp:Panel runat="server" DefaultButton="btnGLCodeSearch">
+                    <asp:TextBox ID="txtGLCode" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
+                    <asp:Button ID="btnGLCodeHelper" runat="server" Style="display: none" OnClick="btnGLCodeSearch_Click" />
+                </asp:Panel>
+            </div>
 
-        <div class="panel panel-default col-md-3 col-xs-7">
-            <asp:Panel runat="server">
-                    <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive GLCodes" CssClass="checkbox col-xs-12"
-                        OnCheckedChanged="chkAny_CheckedChanged" AutoPostBack="true"
-                        ToolTip="Check to include Inactive GLCodes in this list" />
-                    <asp:CheckBox ID="chkDeposit" runat="server" Text="Include Deposit GLCodes" CssClass="checkbox col-xs-12"
-                        OnCheckedChanged="chkAny_CheckedChanged" Checked="true" AutoPostBack="true"
-                        ToolTip="Check to include Deposit GLCodes in this list" />
-                    <asp:CheckBox ID="chkExpense" runat="server" Text="Include Expense GLCodes" CssClass="checkbox col-xs-12"
-                        OnCheckedChanged="chkAny_CheckedChanged" Checked="true" AutoPostBack="true"
-                        ToolTip="Check to include Expense GLCodes in this list" />
-            </asp:Panel>
+            <div class="col-xs-1">
+                <asp:LinkButton ID="btnGLCodeSearch" runat="server" CssClass="btn btn-default" OnClick="btnGLCodeSearch_Click">
+                    <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
+                </asp:LinkButton>
+            </div>
+
+            <div class="col-xs-3">
+                <div class="panel panel-default col-xs-12">
+                    <asp:Panel runat="server">
+                            <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive GLCodes" CssClass="checkbox col-xs-12"
+                                OnCheckedChanged="chkAny_CheckedChanged" AutoPostBack="true"
+                                ToolTip="Check to include Inactive GLCodes in this list" />
+                            <asp:CheckBox ID="chkDeposit" runat="server" Text="Include Deposit GLCodes" CssClass="checkbox col-xs-12"
+                                OnCheckedChanged="chkAny_CheckedChanged" Checked="true" AutoPostBack="true"
+                                ToolTip="Check to include Deposit GLCodes in this list" />
+                            <asp:CheckBox ID="chkExpense" runat="server" Text="Include Expense GLCodes" CssClass="checkbox col-xs-12"
+                                OnCheckedChanged="chkAny_CheckedChanged" Checked="true" AutoPostBack="true"
+                                ToolTip="Check to include Expense GLCodes in this list" />
+                    </asp:Panel>
+                </div>
+            </div>
         </div>
     </div>
-
- 
 
     <!-- GridView of GLCodes -->
     <div class="row">

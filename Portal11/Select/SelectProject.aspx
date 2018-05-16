@@ -4,6 +4,12 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
+    <style>
+        .panel {
+            padding-bottom: 10px;
+        }
+    </style>
+
 <%--This is the Admin version --%>
 
     <h2><%: Title %></h2>
@@ -22,36 +28,43 @@
         </div>
     </div>
 
-    <!-- Create a search box with a search button for Projects. There's a hidden button that lets an "Enter" in the
-        Text Box trigger the search just like the Search button  -->
+    <%--Create a search box with a search button for Projects. There's a hidden button that lets an "Enter" in the
+        Text Box trigger the search just like the Search button,--%>
     <div class="row">
-        <div class="form-group col-lg-4 col-md-5 col-xs-12">
-            <asp:Panel runat="server" DefaultButton="btnProjectSearch">
-                <asp:TextBox ID="txtProject" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
-                <asp:Button ID="btnProjectHelper" runat="server" Style="display: none" OnClick="btnProjectSearch_Click" />
-            </asp:Panel>
+        <div class="form-group col-xs-12">
+            <div class="col-xs-3">
+                <asp:Panel runat="server" DefaultButton="btnProjectSearch">
+                    <asp:TextBox ID="txtProject" runat="server" CssClass="form-control has-success"></asp:TextBox>
+                    <asp:Button ID="btnProjectHelper" runat="server" Style="display: none" OnClick="btnProjectSearch_Click" />
+                </asp:Panel>
+            </div>
+            
+            <div class="col-xs-1">
             <asp:LinkButton ID="btnProjectSearch" runat="server" CssClass="btn btn-default" OnClick="btnProjectSearch_Click">
                 <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
             </asp:LinkButton>
-        </div>
+            </div>
 
-            <asp:Panel ID="pnlInactive" runat="server">
-        <div class="panel panel-default col-md-3 col-xs-7">
-                    <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive Projects" CssClass="checkbox col-xs-12"
-                        OnCheckedChanged="chkInactive_CheckedChanged" AutoPostBack="true"
-                        ToolTip="Check to include Inactive Projects in this list" />
+            <div class="col-xs-3">
+                <asp:Panel ID="pnlInactive" runat="server">
+                    <div class="panel panel-default col-xs-12">
+                            <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive Projects" CssClass="checkbox col-xs-12"
+                                OnCheckedChanged="chkInactive_CheckedChanged" AutoPostBack="true"
+                                ToolTip="Check to include Inactive Projects in this list" />
+                    </div>
+                </asp:Panel>
+            </div>
         </div>
-            </asp:Panel>
     </div>
 
      <div class="row">
  
-       <!-- GridView of All Projects -->
+       <%--GridView of All Projects--%>
 
        <asp:Panel ID="pnlAllProject" runat="server">
             <div class="col-md-10 col-xs-12">
 
-                <!-- Code assumes that ProjectID is the first column of this grid -->
+                <%--Code assumes that ProjectID is the first column of this grid--%>
                 <asp:GridView ID="gvAllProject" runat="server"
                     CssClass="table table-striped table-hover"
                     ItemType="Portal11.Models.rowSelectProjectAllView"
@@ -123,12 +136,12 @@
             </div>
             </asp:Panel>
 
-        <!-- GridView of User Projects -->
+        <%--GridView of User Projects--%>
 
         <asp:Panel ID="pnlUserProject" runat="server">
             <div class="col-md-10 col-xs-12">
 
-                <!-- Code assumes that ProjectID is the first column of this grid -->
+                <%--Code assumes that ProjectID is the first column of this grid--%>
                 <asp:GridView ID="gvUserProject" runat="server"
                     CssClass="table table-striped table-hover"
                     ItemType="Portal11.Models.rowSelectProjectUserView"
@@ -198,7 +211,8 @@
 
     </div>
 
-    <!-- Button array -->
+    <%--Button array--%>
+
     <div class="row">
         <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-md-1 col-xs-2" Enabled="true"
             OnClick="btnCancel_Click" CausesValidation="false" ToolTip="Return to the Dashboard without saving" />
@@ -208,7 +222,8 @@
             OnClick="btnSelect_Click" ToolTip="Choose this Project for further processing" Text="Select" />
     </div>
 
-    <!-- "Scratch" storage used during form processing -->
+    <%--"Scratch" storage used during form processing--%>
+
     <asp:Literal ID="litSavedCommand" runat="server" Visible="false" />
     <asp:Literal ID="litSavedUserID" runat="server" Visible="false" />
     <asp:Literal ID="litSavedRole" runat="server" Visible="false" />

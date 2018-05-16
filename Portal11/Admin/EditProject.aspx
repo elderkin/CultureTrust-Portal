@@ -19,7 +19,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtName" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="true">Project Name</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtName" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                     <div class="col-lg-6 col-md-6 col-xs-6">
@@ -34,7 +34,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="chkInact" CssClass="col-sm-2 col-xs-10 control-label" Font-Bold="false">Project is Inactive</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:CheckBox ID="chkInact" runat="server" CssClass="checkbox col-offset-xs-1 col-xs-1"
                             ToolTip="Turn the Project off, disabling its use. Note: This action is difficult to undo!" />
                     </div>
@@ -46,7 +46,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtCode" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="true">Project Code</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtCode" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                     <div class="col-lg-6 col-md-6 col-xs-6">
@@ -63,7 +63,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtDescription" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Description</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox runat="server" ID="txtDescription" TextMode="MultiLine" CssClass="form-control has-success"></asp:TextBox>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                 <div class="row">
                     <asp:Label ID="lblBalanceDate" runat="server" AssociatedControlID="txtBalanceDate" Font-Bold="false"
                         CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Balance Date</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                    <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <div class="input-group">
                             <asp:TextBox runat="server" ID="txtBalanceDate" CssClass="form-control has-success"
                                  ToolTip="Enter the date on which the balance is known" ></asp:TextBox>
@@ -121,7 +121,7 @@
                         <asp:CompareValidator
                             ControlToValidate="txtBalanceDate"
                             CssClass="text-danger col-xs-12" 
-                            Display="Dynamic" ErrorMessage="The format for a date is dd/mm/yyyy."
+                            Display="Dynamic" ErrorMessage="The format for a date is mm/dd/yyyy."
                             Operator="DataTypeCheck" Type="Date"
                             runat="server" SetFocusOnError="true"
                             />
@@ -142,7 +142,7 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtCurrentFunds" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="true">Current Funds</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtCurrentFunds" CssClass="form-control" />
                     </div>
                     <div class="col-lg-6 col-md-6 col-xs-6">
@@ -202,12 +202,12 @@
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="ddlProjectDirector" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Project Director</asp:Label>
-                    <div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+                    <div class="col-md-3 col-sm-5 col-xs-6">
                         <!-- Fill this control from code-behind -->
                         <asp:DropDownList runat="server" ID="ddlProjectDirector" CssClass="form-control"></asp:DropDownList>
                     </div>
                     <asp:Label runat="server" AssociatedControlID="txtProjectDirectorEmail" CssClass="col-sm-1 col-xs-12 control-label">Email</asp:Label>
-                    <div class="col-lg-4 col-md-4 col-xs-6">
+                    <div class="col-md-3 col-xs-6">
                         <asp:TextBox runat="server" ID="txtProjectDirectorEmail" CssClass="form-control" ReadOnly="true" />
                     </div>
                 </div>

@@ -450,9 +450,9 @@ namespace Portal11.Logic
 
                             SupportingDocTemp sdt = context.SupportingDocTemps.Find(sdtID); // Fetch the row that we want
                             if (sdt == null)                        // If == unable to find the rst row by its ID. An internal error
-                                LogError.LogInternalError("UnloadDocs", string.Format(
-                                    "RqstSupportingTempID '{0}' from selected GridView row not found in database",
-                                    sdtID.ToString())); // Fatal error
+                                LogError.LogInternalError("UnloadDocs", 
+                                    $"RqstSupportingTempID '{sdtID}' from selected GridView row not found in database for requestType '{rqstType.ToString()}' and requestID '{ownerID}'"
+                                    ); // Fatal error
 
                             //  3) Add a new row to the RqstSupporting table, copying RqstSupportingTemp info. This generates an ID
 
@@ -546,24 +546,30 @@ namespace Portal11.Logic
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
+                string name = ""; string type = "";
                 try
                 {
 
                     //  1) Pull the relevant information out of the FileUpload control.
 
-                    string name = fup.PostedFile.FileName;          // Fetch the name of the file to upload
-                    if (name.Contains("#"))                         // If true, the file name contains a character we can't handle
+                    name = fup.PostedFile.FileName;                 // Fetch the name of the file to upload
+                    string illegal = @"\" + "/:?\"<>|#";            // Make list of characters we can't process in a file name
+                    foreach (char c in illegal)                     // Get the next illegal character
                     {
-                        dan.Text = "Name of selected file contains a pound sign character ('#') which the Portal cannot process. Please rename the file or choose another file.";
-                        return;
+                        if (name.Contains(c))                       // If true the file name contains an illegal character
+                        {
+                            dan.Text = $"Name of selected file '{name}' contains a character ('{c}') which the Portal cannot process. Please rename the file or choose another file.";
+                            return;
+                        }
                     }
+
                     int length = fup.PostedFile.ContentLength;      // Fetch the length of the file - it might be too big for us
                     if (length > PortalConstants.MaxSupportingFileSize) // If > file is too big to upload
                     {
                         dan.Text = "Selected file is too large to upload";
                         return;
                     }
-                    string type = fup.PostedFile.ContentType;       // Content type helps with download
+                    type = fup.PostedFile.ContentType;              // Content type helps with download
                     string ext = Path.GetExtension(name);           // We'll propagate the extension
                     string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
 
@@ -605,7 +611,7 @@ namespace Portal11.Logic
                 catch (Exception ex)
                 {
                     dan.Text = "Unable to upload Supporting Document: " + ex.Message;
-                    LogError.LogSupportingDocumentError(ex, "UploadDoc", "Unable to upload Supporting Document"); // Log error
+                    LogError.LogSupportingDocumentError(ex, "UploadDoc", $"Unable to upload Supporting Document '{name}' type:'{type}'"); // Log error
                     return;                                         // This failed, but press on no matter what
                 }
             }

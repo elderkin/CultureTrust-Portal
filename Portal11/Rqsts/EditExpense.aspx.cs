@@ -180,6 +180,7 @@ namespace Portal11.Rqsts
         void CommonEditReviseView(Exp exp)
         {
             litSavedExpID.Text = exp.ExpID.ToString();      // Remember to write record back to its original spot, i.e., modify the row
+            litSavedExpState.Text = exp.CurrentState.ToString(); // Remember the current state of the request
 
             // Note: The rdo displays TEXT that matches the Description of each ExpType, but the VALUE contains the enumerated ExpType
 
@@ -426,43 +427,7 @@ namespace Portal11.Rqsts
             cblDeliveryModeRush.Items.FindByValue(PortalConstants.DeliveryInstructionsRush).Selected = false; // Uncheck the Rush checkbox
             return;
         }
-        //protected void rdoDeliveryMode_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    DeliveryMode mode = EnumActions.ConvertTextToDeliveryMode(rdoDeliveryMode.SelectedValue); // Fetch selected value (text) and convert to Delivery Mode (enum)
-        //    switch (mode)
-        //    {
-        //        case DeliveryMode.Pickup:
-        //            {
-        //                pnlDeliveryAddress.Visible = false;             // Turn off delivery address
-        //                return;
-        //            }
-        //        case DeliveryMode.MailPayee:
-        //            {
-        //                FillDeliveryAddress(litSavedEntityPersonFlag.Text, ddlEntity, ddlPerson, txtDeliveryAddress);
-        //                pnlDeliveryAddress.Visible = true;              // Turn on the panel
-        //                txtDeliveryAddress.ReadOnly = true;             // Only for viewing
-        //                return;
-        //            }
-        //        case DeliveryMode.MailAddress:
-        //            {
-        //                txtDeliveryAddress.Text = "";                   // Clear out any prior address entry
-        //                pnlDeliveryAddress.Visible = true;              // Turn on delivery address
-        //                txtDeliveryAddress.ReadOnly = false;            // Here, it's editable
-        //                return;
-        //            }
-        //        default:
-        //            LogError.LogInternalError("EditExpense", $"Invalid DeliveryMode value '{mode.ToString()}' encountered"); // Fatal error
-        //            break;
-        //    }
-        //    return;
-        //}
-
-        //protected void rdoPODeliveryMode_SelectedIndexChanged(object sender, EventArgs e) // Special for Purchase Orders
-        //{
-        //    pnlDeliveryAddress.Visible = (rdoPODeliveryMode.SelectedValue == PODeliveryMode.DeliverAddress.ToString()); // If == Yes, need to look for an Address
-        //    return;
-        //}
-
+   
         protected void rdoPOVendorMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             pnlEntity.Visible = (rdoPOVendorMode.SelectedValue != POVendorMode.Yes.ToString()); // If != Yes, need to look for an Entity
@@ -503,24 +468,38 @@ namespace Portal11.Rqsts
 
         protected void btnModalNewYes_Click(object sender, EventArgs e)
         {
-            int expID = SaveExp();                                  // Save the request, return the request ID
-            if (expID == 0) return;                                 // If == hit an error. Let user retry
-            CookieActions.MakeFlowControlCookie(PortalConstants.URLEditExpense + "?"
+            int expID; string statusMessage;
+            if (!SaveExp(out expID, out statusMessage))             // Save the request. If false encountered an error
+            {
+                litSuccessMessage.Text = "";                        // Clear out stale success message
+                litDangerMessage.Text = statusMessage;              // Propagate the error message
+                return;                                             // Let the user retry
+            }
+            CookieActions.MakeFlowControlCookie(PortalConstants.URLEditExpense + "?" // Create a return path to get back here
                                             + PortalConstants.QSUserID + "=" + litSavedUserID.Text + "&"
                                             + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text + "&"
                                             + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text + "&"
                                             + PortalConstants.QSRequestID + "=" + expID.ToString() + "&"
                                             + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit + "&" // Start with request just saved
                                             + PortalConstants.QSReturn + "=" + litSavedReturn.Text);
+
             if (litSavedEntityPersonFlag.Text == RequestType.Entity.ToString()) // If == we are processing an Entity
             {
                 RedirectRequest(PortalConstants.URLAssignEntitysToProject, // Do the heavy lifting to get there. Return here to continue editing.
-                    "&" + PortalConstants.QSEntityRole + "=" + EntityRole.ExpenseVendor.ToString()); // Tell Assign the type of Entity
+                                            "&" + PortalConstants.QSSeverity
+                                            + "=" + PortalConstants.QSSuccess
+                                            + "&" + PortalConstants.QSStatus + "=Expense Request saved."
+                                            + "&" + PortalConstants.QSEntityRole 
+                                            + "=" + EntityRole.ExpenseVendor.ToString()); // Tell Assign the type of Entity
             }
             else if (litSavedEntityPersonFlag.Text == RequestType.Person.ToString()) // If == we are processing a Person
             {
                 RedirectRequest(PortalConstants.URLAssignPersonsToProject, // Do the heavy lifting to get there. Return to continue editing.
-                    "&" + PortalConstants.QSPersonRole + "=" + litSavedPersonEnum.Text); // Tell Assign the type of Person
+                                            "&" + PortalConstants.QSSeverity
+                                            + "=" + PortalConstants.QSSuccess
+                                            + "&" + PortalConstants.QSStatus + "=Expense Request saved."
+                                            + "&" + PortalConstants.QSPersonRole 
+                                            + "=" + litSavedPersonEnum.Text); // Tell Assign the type of Person
             }
             LogError.LogInternalError("EditExpense", $"Invalid SavedEntityPersonFlag value '{litSavedEntityPersonFlag.Text}' encountered"); // Fatal error
         }
@@ -692,57 +671,6 @@ namespace Portal11.Rqsts
             Response.Redirect(litSavedReturn.Text);
         }
 
-        // Revise button clicked. This is the case where a Exp is in the "Returned" state - it was submitted, but failed during the review process.
-        // To "Revise," we: 
-        //  1) Get a copy of the Exp
-        //  2) Create a ExpHistory row to audit this change.
-        //  3) Change the State of the Rsq from "Returned" to "Under Construction," erase the ReturnNote comments and save it.
-        //  4) Call this page back and invoke the "Edit" command for an existing Expense.
-
-//        protected void btnRevise_Click(object sender, EventArgs e)
-//        {
-//            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-//            {
-//                try
-//                {
-
-//                    //  1) Get a copy of the Exp
-
-//                    int expID = Convert.ToInt32(litSavedExpID.Text); // Fetch the ID of the Exp row to be revised
-//                    Exp toRevise = context.Exps.Find(expID);        // Fetch the Exp that we want to update
-//                    if (toRevise == null)                           // If == the target Exp not found
-//                        LogError.LogInternalError("EditExpense", $"ExpenseID from Query String '{expID.ToString()}' could not be found in database"); // Log fatal error
-
-//                    //  2) Create a ExpHistory row to audit this change.
-
-//                    ExpHistory hist = new ExpHistory();             // Get a place to build a new ExpHistory row
-//                    StateActions.CopyPreviousState(toRevise, hist, "Revised"); // Create a ExpHistory log row from "old" version of Expense
-////                    hist.ReturnNote = toRevise.ReturnNote;          // Save the Note from the Returned Rqst
-
-//                    //  3) Change the State of the Rqst from "Returned" to "Unsubmitted," erase the ReturnNote comments and save it.
-
-//                    StateActions.SetNewExpState(toRevise, StateActions.FindUnsubmittedExpState(litSavedProjectRole.Text), litSavedUserID.Text, hist); // Write down our current State and authorship
-//                    toRevise.ReturnNote = "";                       // Erase the note
-//                    toRevise.EntityNeeded = false; toRevise.PersonNeeded = false; // Assume "Returner" did as we asked
-//                    context.ExpHistorys.Add(hist);                  // Save new ExpHistory row
-//                    context.SaveChanges();                          // Commit the Add and Modify
-//                }
-//                catch (Exception ex)
-//                {
-//                    LogError.LogDatabaseError(ex, "EditExpense", "Error processing ExpHistory and Rqst rows"); // Fatal error
-//                }
-
-//                //  4) Call this page back and invoke the "Edit" command for an existing Expense.
-
-//                Response.Redirect(PortalConstants.URLEditExpense + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text
-//                            + "&" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text
-//                            + "&" + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text
-//                            + "&" + PortalConstants.QSRequestID + "=" + Request.QueryString[PortalConstants.QSRequestID]
-//                            + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit // Start with an existing Expense
-//                            + "&" + PortalConstants.QSReturn + "=" + litSavedReturn.Text); // Propagate return page from caller
-//            }
-//        }
-
         // Save button clicked. Throw a modal to make sure the user really wants to save, not submit.
         // "Save" means that we unload all the controls for the Expense into a database row. 
         // If the Expense is new, we just add a new row. If the Expense already exists, we update it and add a history record to show the edit.
@@ -769,14 +697,20 @@ namespace Portal11.Rqsts
 
         protected void btnSave1_Click(object sender, EventArgs e)
         {
-
-            int dummy = SaveExp();                                  // Do the heavy lifting
-            if (dummy == 0) return;                                 // If == hit an error. Let user retry
+            int dummy; string statusMessage;
+            if (!SaveExp(out dummy, out statusMessage))         // Do the heavy lifting. If false there was an error
+            {
+                litSuccessMessage.Text = "";                    // Clear prior success message
+                litDangerMessage.Text = statusMessage;          // Propagate the error message
+                return;                                         // Let the user fix the error
+            }
 
             // Now go back to Dashboard
 
-            Response.Redirect(litSavedReturn.Text + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                                  + PortalConstants.QSStatus + "=Expense Request saved");
+            Response.Redirect(litSavedReturn.Text 
+                                    + "?" + PortalConstants.QSSeverity 
+                                    + "=" + PortalConstants.QSSuccess 
+                                    + "&" + PortalConstants.QSStatus + "=Expense Request saved");
         }
 
         // Submit button clicked. Save what we've been working on, set the Expense state to "Submitted," then go back to the dashboard.
@@ -801,9 +735,14 @@ namespace Portal11.Rqsts
                 return;                                             // Back for more punishment
             }
 
-            int savedExpID = SaveExp();                             // Do the heavy lifting to save the current Expense
-            if (savedExpID == 0)                                    // If == SaveExp encountered an error. Go no further
-                LogError.LogInternalError("EditExpense", "Unable to save Expense before Submitting"); // Fatal error
+            int savedExpID; string errorMessage;
+            if (!SaveExp(out savedExpID, out errorMessage))         // Do the heavy lifting to save the current Expense. If false, encountered an error
+            {
+                Response.Redirect(litSavedReturn.Text               // Go back to caller reporting the error
+                    + "?" + PortalConstants.QSSeverity
+                    + "=" + PortalConstants.QSDanger
+                    + "&" + PortalConstants.QSStatus + "=" + errorMessage); // Propagate the error so user can see it
+            }
 
             // SaveExp just saved the Request, which may or may not have written a ExpHistory row. But now, let's write another
             // ExpHistory row to describe the Submit action.
@@ -860,8 +799,8 @@ namespace Portal11.Rqsts
                             toSubmit.ProjectID,                             // Request is associated with this project
                             toSubmit.Project.Name,                          // Project has this name (for parameter substitution)
                             EnumActions.GetEnumDescription(RequestType.Expense), // This is an Expense Request
-                            EnumActions.GetEnumDescription(nextState),      // Here is its next state
                             EnumActions.GetEnumDescription(toSubmit.ExpType), // Type of Expense Request, e.g., PEX Card
+                            EnumActions.GetEnumDescription(nextState),      // Here is its next state
                             PortalConstants.CEmailDefaultExpenseApprovedSubject, PortalConstants.CEmailDefaultExpenseApprovedBody); // Use this subject and body, if needed
                     }
                 }
@@ -913,7 +852,7 @@ namespace Portal11.Rqsts
         //  3) Copy the Supporting Docs
         //  4) Create a ExpHistory row to describe the copy
 
-        private int CopyExp(int sourceID)
+        int CopyExp(int sourceID)
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
@@ -992,15 +931,16 @@ namespace Portal11.Rqsts
 
         // Package the work of the Save so that Submit can do it as well.
 
-        private int SaveExp()
+        bool SaveExp(out int rqstID, out string statusMessage)
         {
-            litDangerMessage.Text = ""; litSuccessMessage.Text = ""; // Start with a clean slate of message displays
+            rqstID = 0; statusMessage = "";                         // Set default values for return parameters
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
                 try
                 {
                     int expID = 0;                                 // Assume no saved ID is available
-                    if (litSavedExpID.Text != "") expID = QueryStringActions.ConvertID(litSavedExpID.Text).Int; // If != saved ID is available, use it  
+                    if (litSavedExpID.Text != "")                  // If != saved ID is available
+                        expID = QueryStringActions.ConvertID(litSavedExpID.Text).Int; // Convert it to an integer  
                     if (expID == 0)                                // If == no doubt about it, Save makes a new row
                     {
 
@@ -1028,31 +968,39 @@ namespace Portal11.Rqsts
                         context.Exps.Add(toSave);                   // Save new Rqst row
                         context.SaveChanges();                      // Commit the Add
                         litSavedExpID.Text = toSave.ExpID.ToString(); // Show that we've saved it once
+                        litSavedExpState.Text = toSave.CurrentState.ToString(); // Also save the state in case of "Back" sins
 
                         // Save split rows and supporting documents, if any
 
                         if (pnlExpenseSplit.Visible)                // If true, splits are alive and rows need to be written to database
                             SplitActions.UnloadSplitRows(RequestType.Expense, toSave.ExpID, gvExpSplit); // Save the splits from the gridview to the database
                         UnloadSupportingDocs(toSave.ExpID);         // Save all the supporting documents
-                        litSuccessMessage.Text = "Expense Request successfully saved"; // Let user know we're good
-                        return toSave.ExpID;                        // Return the finished Rqst
+
+                        rqstID = toSave.ExpID;                      // Report the new request ID to our caller.
+                        statusMessage = "Expense Request saved.";   // Give caller a status message trumpeting our success
+                        return true;                                // Report our success to the caller
                     }
                     else                                            // Update an existing Exp row
                     {
 
                         // To update an existing Exp row:
                         //  1) Fetch the existing record using the ExpID key
-                        //  2) Unload on-screen fields overwriting the existing record
-                        //  3) Update the record to the database
-                        //  4) Create a new ExpHistory row to preserve information about the previous Save (removed as obsolete)
+                        //  2) Check for a cockpit error by user
+                        //  3) Unload on-screen fields overwriting the existing record
+                        //  4) Update the record to the database
                         //  5) Unload the splits and supporting documents
 
-                        Exp toUpdate = context.Exps.Find(expID);    // Fetch the Rqst that we want to update
+                        Exp toUpdate = context.Exps.Find(expID);    // 1) Fetch the Rqst that we want to update
+                        if (toUpdate == null)                       // If == did not successfully locate Dep
+                            LogError.LogInternalError("EditExpense", $"Unable to find Expense ID '{expID}' in database"); // Fatal error
+
+                        if (toUpdate.CurrentState.ToString() != litSavedExpState.Text) // If != user has been evil and navigated back to this
+                        {
+                            statusMessage = PortalConstants.RequestReSubmitError; // Set the message explaining the mistake
+                            return false;                           // Signal error
+                        }
+
                         UnloadPanels(toUpdate);                     // Move from Panels to Rqst, modifying it in the process
-                        //ExpHistory hist = new ExpHistory();         // Get a place to build a new ExpHistory row
-                        //StateActions.CopyPreviousState(toUpdate, hist, "Saved"); // Create a ExpHistory log row from "old" version of Expense
-                        //StateActions.SetNewState(toUpdate, hist.PriorExpState, litSavedUserID.Text, hist); // Write down our current State and authorship
-                        //context.ExpHistorys.Add(hist);              // Save new ExpHistory row
                         context.SaveChanges();                      // Commit the Add or Modify
 
                         // Save split rows and supporting documents, if any
@@ -1060,8 +1008,10 @@ namespace Portal11.Rqsts
                         if (pnlExpenseSplit.Visible)                // If true, splits are alive and rows need to be written to database
                             SplitActions.UnloadSplitRows(RequestType.Expense, toUpdate.ExpID, gvExpSplit); // Save the splits from the gridview to the database
                         UnloadSupportingDocs(toUpdate.ExpID);       // Save all the new supporting documents
-                        litSuccessMessage.Text = "Expense Request successfully updated";    // Let user know we're good
-                        return toUpdate.ExpID;                      // Return the finished Rqst
+
+                        rqstID = toUpdate.ExpID;                    // Report the updated request ID to our caller
+                        statusMessage = "Expense Request successfully updated"; // Brag about it
+                        return true;                                // Tell our caller to proceed.
                     }
                 }
                 catch (Exception ex)
@@ -1069,7 +1019,7 @@ namespace Portal11.Rqsts
                     LogError.LogDatabaseError(ex, "EditExpense", "Error writing Exp row"); // Fatal error
                 }
             }
-            return 0;                                               // We never get this far
+            return false;
         }
 
         // Based on the selected Expense Type, enable and disable the appropriate panels on the display.
@@ -1792,6 +1742,7 @@ namespace Portal11.Rqsts
                         FillDeliveryAddress(litSavedEntityPersonFlag.Text, ddlEntity, ddlPerson, txtDeliveryAddress);
                         pnlDeliveryAddress.Visible = true;              // Turn on the panel containing delivery address
                         txtDeliveryAddress.ReadOnly = true;             // Only for viewing
+                        rfvDeliveryAddress.Enabled = false;             // And not for validating
                         return;
                     }
                 case DeliveryMode.MailAddress:
@@ -1799,6 +1750,7 @@ namespace Portal11.Rqsts
                         txtDeliveryAddress.Text = deliveryAddress;      // Load or clear, as caller requests
                         pnlDeliveryAddress.Visible = true;              // Turn on delivery address
                         txtDeliveryAddress.ReadOnly = false;            // Here, it's editable
+                        rfvDeliveryAddress.Enabled = true;              // And must be present to submit
                         return;
                     }
                 default:
