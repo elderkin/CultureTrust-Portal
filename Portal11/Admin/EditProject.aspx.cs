@@ -176,7 +176,7 @@ namespace Portal11.Admin
             txtCode.Text = record.Code;
             txtDescription.Text = record.Description;
             txtBalanceDate.Text = record.BalanceDate.Date.ToShortDateString();
-            txtCurrentFunds.Text = record.CurrentFunds.ToString("C");
+            txtCurrentFunds.Text = ExtensionActions.LoadDecimalIntoTxt(record.CurrentFunds);
             // Project Director
             FillProjectDirectorDDL();
             FillProjectStaffList(record.ProjectID);

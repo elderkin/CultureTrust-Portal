@@ -32,8 +32,8 @@ namespace Portal11.Logic
                 else
                 {
                     decimal a = q * c;                                          // Calculate total amount
-                    amount.Text = a.ToString("C");                              // Convert product to text and display
-                    cost.Text = c.ToString("C");                                // While we're here, pretty up the amount
+                    amount.Text = a.ToString("C2");                             // Convert product to text and display
+                    cost.Text = c.ToString("C2");                               // While we're here, pretty up the amount
                     return true;                                                // Calculations successful. Set focus on amount field, if you like
                 }
             }
@@ -45,7 +45,7 @@ namespace Portal11.Logic
             return false;                                                       // Tell caller not to focus on amount field
         }
 
-        // Enable/Disable selected list items in the Payment Methods Radio Button List
+        // Hide unselected list items in the Payment Methods Radio Button List
 
         public static void EnableRdoListItems(RadioButtonList rdo, bool check = true, bool creditcard = true, bool eft = true, bool invoice = true)
         {

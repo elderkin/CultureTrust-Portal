@@ -197,8 +197,8 @@
 
         </asp:Panel>
 
-        <!-- Dest of Funds and Project Class -->
-        <asp:Panel ID="pnlDestOfFunds" runat="server">
+        <!-- Dest of Funds and Project Class. No more Dest of Funds; Project Class is unconditionally present. -->
+<%--        <asp:Panel ID="pnlDestOfFunds" runat="server">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Destination of Funds</asp:Label>
@@ -213,18 +213,20 @@
                             </asp:RadioButtonList>
                         </div>
                     </div>
-                </div>
+                </div>--%>
 
-                <asp:Panel ID="pnlProjectClass" runat="server">
+            <asp:Panel ID="pnlProjectClass" runat="server">
+                <div class="form-group">
                     <div class="row">
                         <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Project Class</asp:Label>
                         <div class="col-md-3 col-xs-6">
                             <asp:TextBox runat="server" ID="txtProjectClass" CssClass="form-control" ReadOnly="true" />
                         </div>
                     </div>
-                </asp:Panel>
-            </div>
-        </asp:Panel>
+                </div>
+            </asp:Panel>
+<%--            </div>
+        </asp:Panel>--%>
 
         <!-- Dollar Amount -->
         <asp:Panel ID="pnlAmount" runat="server">

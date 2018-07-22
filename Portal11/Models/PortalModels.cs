@@ -37,12 +37,14 @@ namespace Portal11.Models
 
     public class rowGLCodeSplit
     {
-        public int TotalRows { get; set; }
-        public string SelectedProjectClassID { get; set; }
         public string Amount { get; set; }
-        public string SelectedGLCodeID { get; set; }
+        public decimal HourlyRate { get; set; }
+        public decimal HoursPaid { get; set; }
         public string Note { get; set; }
+        public string SelectedGLCodeID { get; set; }
         public string SelectedPersonID { get; set; }
+        public string SelectedProjectClassID { get; set; }
+        public int TotalRows { get; set; }
     }
 
     // One row of the GridView named ImportCSV, used by ImportProjectBalance
@@ -1124,8 +1126,14 @@ public class DocHistory
         public virtual ProjectClass ProjectClass { get; set; }
         public decimal Amount { get; set; }
         public string Note { get; set; }
+
+        // Specifics for payroll splits. I decided to fold these into the GLSplit logic rather than creating a new split just for it
+
         public int? PersonID { get; set; }
         public virtual Person Person { get; set; }
+        public decimal HourlyRate { get; set; }
+        public decimal HoursPaid { get; set; }
+//        public decimal GrossPay { get; set; }                         // Use Amount instead
     }
 
     // A Grant from a Grant Maker to a Project. Obsolete.
@@ -1956,7 +1964,8 @@ public class DocHistory
             POVendorModeYes = "Yes",
             POVendorModeNo = "No",
             DeliveryInstructionsRush = "Rush",
-            DocumentVerify1Starter = "Project name represented as 'Your Project of ";
+            DocumentVerify1Starter = "Project name represented as 'Your Project of ",
+            SplitGLDeenergized = "Split", SplitGLEnergized = "Cancel";
 
         // Alternate Expense status displays for special cases
 

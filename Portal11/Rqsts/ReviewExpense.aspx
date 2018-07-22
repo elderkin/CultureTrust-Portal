@@ -191,18 +191,6 @@
             </div>
         </asp:Panel>
 
-        <!-- Dollar Amount -->
-        <asp:Panel ID="pnlAmount" runat="server">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" ID="lblAmount" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
-                    <div class="col-md-3 col-xs-6">
-                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control has-success text-right" ReadOnly="true" />
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>
-
         <!-- Date of Invoice -->
         <asp:Panel ID="pnlDateOfInvoice" runat="server">
             <div class="form-group">
@@ -240,6 +228,18 @@
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Contract Reason</asp:Label>
                     <div class="col-md-3 col-sm-5 col-xs-6">
                         <asp:TextBox ID="txtContractReason" runat="server" CssClass="form-control has-success" ReadOnly="true"></asp:TextBox>
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <!-- Dollar Amount -->
+        <asp:Panel ID="pnlAmount" runat="server">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" ID="lblAmount" CssClass="col-sm-2 col-xs-12 control-label">Dollar Amount</asp:Label>
+                    <div class="col-md-3 col-xs-6">
+                        <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control has-success text-right" ReadOnly="true" />
                     </div>
                 </div>
             </div>
@@ -338,15 +338,16 @@
             </div>
         </asp:Panel>
 
-        <!-- Expense Split -->
-        <asp:Panel ID="pnlExpenseSplit" runat="server" Visible="false">
+        <%--Two flavors of split: one for GL splits, one for payroll splits--%>
+
+        <asp:Panel ID="pnlsplitGL" runat="server" Visible="false">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Expense Splits</asp:Label>
                     <div class="col-sm-10 col-xs-offset-0 col-xs-12">
  
                         <div class="col-xs-12" style="padding-left:0">
-                        <asp:GridView ID="gvExpSplit" runat="server"
+                        <asp:GridView ID="gvSplitGL" runat="server"
                             CssClass="table table-striped table-hover"
                             ItemType="Portal11.Models.rowGLCodeSplit"
                             AutoGenerateColumns="false"
@@ -378,6 +379,79 @@
                                     <ItemTemplate>
                                         <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" 
                                             Text='<%# Bind("Amount") %>' style="text-align:right" Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control"  
+                                            Text='<%# Bind("Note") %>' Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </asp:Panel>
+
+        <asp:Panel ID="pnlSplitPayroll" runat="server" Visible="false">
+            <div class="form-group">
+                <div class="row">
+                    <asp:Label runat="server" CssClass="col-sm-2 col-xs-12 control-label">Expense Splits</asp:Label>
+                    <div class="col-sm-10 col-xs-offset-0 col-xs-12">
+ 
+                        <div class="col-xs-12" style="padding-left:0">
+                        <asp:GridView ID="gvSplitPayroll" runat="server"
+                            CssClass="table table-striped table-hover"
+                            ItemType="Portal11.Models.rowGLCodeSplit"
+                            AutoGenerateColumns="false"
+                            AllowPaging="false">
+
+                            <SelectedRowStyle CssClass="success" />
+
+                            <EmptyDataTemplate>
+                                <table>
+                                    <tr>
+                                        <td>There are no Splits for this Request</td>
+                                    </tr>
+                                </table>
+                            </EmptyDataTemplate>
+                            <Columns>
+                                <asp:TemplateField HeaderText="Project Class">
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitProjectClass" runat="server" CssClass="form-control" 
+                                            Text='<%# Bind("SelectedProjectClassID") %>' Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Expense Account">
+                                    <ItemTemplate>
+                                        <asp:TextBox ID="txtSplitGLCode" runat="server" CssClass="form-control" 
+                                            Text='<%# Bind("SelectedGLCodeID") %>' Enabled="false"></asp:TextBox>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Hourly Rate" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                    <ItemTemplate>
+                                        <div style="width:100px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
+                                        <asp:TextBox ID="txtSplitHourlyRate" runat="server" CssClass="form-control" Text='<%# Bind("HourlyRate") %>'
+                                            Style="text-align: right" Enabled="false"/>
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Hours Paid" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                    <ItemTemplate>
+                                        <div style="width:100px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
+                                        <asp:TextBox ID="txtSplitHoursPaid" runat="server" CssClass="form-control" Text='<%# Bind("HoursPaid") %>'
+                                            Style="text-align: right" Enabled="false"/>
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Gross Pay" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                    <ItemTemplate>
+                                        <div style="width:120px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
+                                        <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" Text='<%# Bind("Amount") %>'
+                                            Style="text-align: right" Enabled="false" />
+                                        </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">

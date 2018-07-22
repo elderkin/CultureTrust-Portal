@@ -247,42 +247,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.TextBox txtEachCard;
         
         /// <summary>
-        /// pnlAmount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlAmount;
-        
-        /// <summary>
-        /// lblAmount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblAmount;
-        
-        /// <summary>
-        /// txtAmount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAmount;
-        
-        /// <summary>
-        /// rfvAmount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvAmount;
-        
-        /// <summary>
         /// pnlDateOfInvoice control.
         /// </summary>
         /// <remarks>
@@ -445,6 +409,42 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.RequiredFieldValidator RequiredFieldValidator1;
         
         /// <summary>
+        /// pnlAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlAmount;
+        
+        /// <summary>
+        /// lblAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblAmount;
+        
+        /// <summary>
+        /// txtAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtAmount;
+        
+        /// <summary>
+        /// rfvAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvAmount;
+        
+        /// <summary>
         /// pnlPOFulFillmentInstructions control.
         /// </summary>
         /// <remarks>
@@ -526,6 +526,15 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.DropDownList ddlPerson;
         
         /// <summary>
+        /// txtPersonPayroll control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtPersonPayroll;
+        
+        /// <summary>
         /// btnNewPerson control.
         /// </summary>
         /// <remarks>
@@ -533,6 +542,15 @@ namespace Portal11.Rqsts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnNewPerson;
+        
+        /// <summary>
+        /// rfvPerson control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvPerson;
         
         /// <summary>
         /// pnlURL control.
@@ -589,13 +607,13 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.DropDownList ddlGLCode;
         
         /// <summary>
-        /// btnSplit control.
+        /// btnSplitGL control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSplit;
+        protected global::System.Web.UI.WebControls.Button btnSplitGL;
         
         /// <summary>
         /// rfvGLCode control.
@@ -607,31 +625,58 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvGLCode;
         
         /// <summary>
-        /// pnlExpenseSplit control.
+        /// pnlSplitGL control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlExpenseSplit;
+        protected global::System.Web.UI.WebControls.Panel pnlSplitGL;
         
         /// <summary>
-        /// gvExpSplit control.
+        /// gvSplitGL control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvExpSplit;
+        protected global::System.Web.UI.WebControls.GridView gvSplitGL;
         
         /// <summary>
-        /// litSplitError control.
+        /// litSplitGLError control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litSplitError;
+        protected global::System.Web.UI.WebControls.Literal litSplitGLError;
+        
+        /// <summary>
+        /// pnlSplitPayroll control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlSplitPayroll;
+        
+        /// <summary>
+        /// gvSplitPayroll control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvSplitPayroll;
+        
+        /// <summary>
+        /// litSplitPayrollError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litSplitPayrollError;
         
         /// <summary>
         /// pnlPaymentMethod control.

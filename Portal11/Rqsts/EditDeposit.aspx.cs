@@ -296,30 +296,30 @@ namespace Portal11.Rqsts
 
         // One of the radio buttons in the "Destination of Funds" panel has clicked. Switch the Project Class drop down list on or off.
 
-        protected void rdoDestOfFunds_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //if (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted) // If == Restricted button was clicked. Turn on drop down list
-            //    pnlProjectClass.Visible = true;                     // Turn on drop down list
-            //else
-            //    pnlProjectClass.Visible = false;                    // Turn off drop down list
-            pnlProjectClass.Visible = (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted); // Restricted means Project Class is visible
-            if (!pnlProjectClass.Visible)                           // If false we have just made it invisible
-                ddlProjectClass.SelectedValue = litSavedDefaultProjectClassID.Text; // If it becomes visible again, selected value will be our default
+        //protected void rdoDestOfFunds_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    //if (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted) // If == Restricted button was clicked. Turn on drop down list
+        //    //    pnlProjectClass.Visible = true;                     // Turn on drop down list
+        //    //else
+        //    //    pnlProjectClass.Visible = false;                    // Turn off drop down list
+        //    pnlProjectClass.Visible = (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted); // Restricted means Project Class is visible
+        //    if (!pnlProjectClass.Visible)                           // If false we have just made it invisible
+        //        ddlProjectClass.SelectedValue = litSavedDefaultProjectClassID.Text; // If it becomes visible again, selected value will be our default
 
             // If we have splits, go through each row of the gridview and toggle ddlProjectClass.Enabled
 
-            if (pnlDepSplit.Visible)                                // If gridview is visible, then we are working on splits
-            {
-                foreach (GridViewRow row in gvDepSplit.Rows)        // Process rows one-by-one. Note that this gridview does not paginate, so all rows are here
-                {
-                    DropDownList splitProjectClass = (DropDownList)row.FindControl("ddlSplitProjectClass"); // Find drop down list within the row
-                    splitProjectClass.Enabled = (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted); // Enable or disable based on Destination
-                    if (!splitProjectClass.Enabled)                 // If false we have just disabled the ddl
-                        splitProjectClass.SelectedValue = litSavedDefaultProjectClassID.Text; // Reset to the default value
-                }
-            }
-            return;
-        }
+            //if (pnlDepSplit.Visible)                                // If gridview is visible, then we are working on splits
+            //{
+            //    foreach (GridViewRow row in gvDepSplit.Rows)        // Process rows one-by-one. Note that this gridview does not paginate, so all rows are here
+            //    {
+            //        DropDownList splitProjectClass = (DropDownList)row.FindControl("ddlSplitProjectClass"); // Find drop down list within the row
+            //        splitProjectClass.Enabled = (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted); // Enable or disable based on Destination
+            //        if (!splitProjectClass.Enabled)                 // If false we have just disabled the ddl
+            //            splitProjectClass.SelectedValue = litSavedDefaultProjectClassID.Text; // Reset to the default value
+            //    }
+            //}
+            //return;
+        //}
 
         // The user has pressed the New button next to the Entity DDL or Person DDL.
         //  1) Open a modal dialog box asking if its OK to save the current request.
@@ -450,10 +450,10 @@ namespace Portal11.Rqsts
 
                 // If the Destination of Funds is "Restricted" the ProjectClass panel is visible. Enable our ProjectClass ddl. Otherwise, disable it.
 
-                if (pnlProjectClass.Visible)                        // If true Project Class DDL is visible
-                    splitProjectClass.Enabled = true;               // Turn on drop down list
-                else
-                    splitProjectClass.Enabled = false;              // Turn off drop down list
+                //if (pnlProjectClass.Visible)                        // If true Project Class DDL is visible
+                //    splitProjectClass.Enabled = true;               // Turn on drop down list
+                //else
+                //    splitProjectClass.Enabled = false;              // Turn off drop down list
 
                 // If this is the only row of the gridview, disable the Rem button. Can't delete the only row.
 
@@ -718,7 +718,7 @@ namespace Portal11.Rqsts
                         DateOfDeposit = src.DateOfDeposit,
                         DepType = src.DepType,
                         Description = src.Description + " (copy)",  // Note that this is a copy
-                        DestOfFunds = src.DestOfFunds,
+//                        DestOfFunds = src.DestOfFunds,
                         ProjectClassID = src.ProjectClassID,
                         EntityIsAnonymous = src.EntityIsAnonymous,
                         EntityNeeded = src.EntityNeeded,
@@ -865,9 +865,10 @@ namespace Portal11.Rqsts
             pnlAmount.Visible = true;                                // Unconditionally visible (or invisible) for all Deposit types
             pnlDateOfDeposit.Visible = true;
             pnlDescription.Visible = true;
-            pnlDestOfFunds.Visible = true;
+//            pnlDestOfFunds.Visible = true;
             pnlGLCode.Visible = true;
             pnlNotes.Visible = true;
+            pnlProjectClass.Visible = true;
             litSavedEntityEnum.Text = EntityRole.DepositEntity.ToString(); // Set preferred entity role for Deposit use
             pnlSourceOfFunds.Visible = true; litSavedPersonEnum.Text = PersonRole.Donor.ToString(); // Only type of Person is Donor (so far ;-)
             btnSplit.Visible = false;
@@ -1086,44 +1087,41 @@ namespace Portal11.Rqsts
 
         void FillProjectClassDDL(int? pcID)
         {
-            if (pnlDestOfFunds.Visible)                                   // If true need to populate list
+            if (ddlProjectClass.Items.Count == 0)                   // If = the control is empty. Fill it
             {
-                if (ddlProjectClass.Items.Count == 0)                   // If = the control is empty. Fill it
+                int? defaultID = 0;
+                int projID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int; // Find ID of current project
+                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                 {
-                    int? defaultID = 0;
-                    int projID = QueryStringActions.ConvertID(litSavedProjectID.Text).Int; // Find ID of current project
-                    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+                    var query = from pc in context.ProjectClasses
+                                where pc.ProjectID == projID && !pc.Inactive // Fetch by ProjectID implicitly limits us to current Franchise
+                                orderby pc.Name
+                                select new { pc.ProjectClassID, pc.Name, pc.Default }; // Find all project classes that are assigned to this project
+
+                    DataTable rows = new DataTable();
+                    rows.Columns.Add(PortalConstants.DdlID);
+                    rows.Columns.Add(PortalConstants.DdlName);
+
+                    foreach (var row in query)
                     {
-                        var query = from pc in context.ProjectClasses
-                                    where pc.ProjectID == projID && !pc.Inactive // Fetch by ProjectID implicitly limits us to current Franchise
-                                    orderby pc.Name
-                                    select new { pc.ProjectClassID, pc.Name, pc.Default }; // Find all project classes that are assigned to this project
-
-                        DataTable rows = new DataTable();
-                        rows.Columns.Add(PortalConstants.DdlID);
-                        rows.Columns.Add(PortalConstants.DdlName);
-
-                        foreach (var row in query)
+                        DataRow dr = rows.NewRow();                     // Build a row from the next query output
+                        dr[PortalConstants.DdlID] = row.ProjectClassID;
+                        dr[PortalConstants.DdlName] = row.Name;
+                        rows.Rows.Add(dr);                              // Add the new row to the data table
+                        if (row.Default)                                // If true, this is the default Project Class
                         {
-                            DataRow dr = rows.NewRow();                     // Build a row from the next query output
-                            dr[PortalConstants.DdlID] = row.ProjectClassID;
-                            dr[PortalConstants.DdlName] = row.Name;
-                            rows.Rows.Add(dr);                              // Add the new row to the data table
-                            if (row.Default)                                // If true, this is the default Project Class
-                            {
-                                defaultID = row.ProjectClassID;             // Save this for later use
-                                litSavedDefaultProjectClassID.Text = row.ProjectClassID.ToString(); // Save default for use in split rows
-                            }
+                            defaultID = row.ProjectClassID;             // Save this for later use
+                            litSavedDefaultProjectClassID.Text = row.ProjectClassID.ToString(); // Save default for use in split rows
                         }
-
-                        if (pcID != null)                                   // If != caller specified something
-                        {
-                            if (pcID != 0)                                  // If != caller specified a row to select
-                                defaultID = pcID;                           // Position the DDL to that row
-                        }
-
-                        DdlActions.LoadDdl(ddlProjectClass, defaultID, rows, " -- Error: No Project Classes assigned to Project --", "-- none selected --");
                     }
+
+                    if (pcID != null)                                   // If != caller specified something
+                    {
+                        if (pcID != 0)                                  // If != caller specified a row to select
+                            defaultID = pcID;                           // Position the DDL to that row
+                    }
+
+                    DdlActions.LoadDdl(ddlProjectClass, defaultID, rows, " -- Error: No Project Classes assigned to Project --", "-- none selected --");
                 }
             }
             return;
@@ -1144,20 +1142,20 @@ namespace Portal11.Rqsts
 
             txtDescription.Text = record.Description;
 
-            if (pnlDestOfFunds.Visible)                               // If true, process Destination of Funds and Project Class
-            {
-                if (record.DestOfFunds == SourceOfExpFunds.Restricted) // If == the Source of Funds is a Project Class
-                {
-                    rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsRestricted; // Select the button corresponding to restricted funds
-                    pnlProjectClass.Visible = true;
-                }
-                else if (record.DestOfFunds == SourceOfExpFunds.Unrestricted) // If == the Dest of Funds does not use a Project Class
-                {
-                    rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsUnrestricted; // Select the other button
-                    pnlProjectClass.Visible = false;                    // Unrestricted means no Project Class so don't show the list
-                }
-                FillProjectClassDDL(record.ProjectClassID);             // Fill the DDL even if it's not visible yet. User could change that
-            }
+            //if (pnlDestOfFunds.Visible)                               // If true, process Destination of Funds and Project Class
+            //{
+            //    if (record.DestOfFunds == SourceOfExpFunds.Restricted) // If == the Source of Funds is a Project Class
+            //    {
+            //        rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsRestricted; // Select the button corresponding to restricted funds
+            //        pnlProjectClass.Visible = true;
+            //    }
+            //    else if (record.DestOfFunds == SourceOfExpFunds.Unrestricted) // If == the Dest of Funds does not use a Project Class
+            //    {
+            //        rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsUnrestricted; // Select the other button
+            //        pnlProjectClass.Visible = false;                    // Unrestricted means no Project Class so don't show the list
+            //    }
+                FillProjectClassDDL(record.ProjectClassID);             // Fill the DDL unconditionally
+            //}
 
             if (pnlGLCode.Visible)
                 FillGLCodeDDL(record.GLCodeID, UseOnlyDepositGLCodes(record.DepType)); // Fill drop down list and hightlight the selected item
@@ -1228,7 +1226,8 @@ namespace Portal11.Rqsts
             txtDescription.Enabled = false;
             // Deposit Type - already set
             // Deposit State - already set
-            pnlDestOfFunds.Enabled = false; ddlProjectClass.Enabled = false;
+            //    pnlDestOfFunds.Enabled = false; 
+            ddlProjectClass.Enabled = false;
             ddlGLCode.Enabled = false;
             txtNotes.Enabled = false; btnNotesClear.Visible = false;
             pnlOptions.Enabled = false;
@@ -1256,18 +1255,19 @@ namespace Portal11.Rqsts
 
             record.Description = txtDescription.Text;
 
-            if (pnlDestOfFunds.Visible)                                 // If true the Deposit does have a Destination of Funds
-            {
-                if (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted) // If == Restricted button is clicked. 
-                {
-                    record.DestOfFunds = SourceOfExpFunds.Restricted;   // Remember this setting
-                    record.ProjectClassID = DdlActions.UnloadDdl(ddlProjectClass); // Pull the selected Project Class from the DDL
-                }
-                else
-                    record.DestOfFunds = SourceOfExpFunds.Unrestricted; // Remember this non-setting
-            }
-            else
-                record.DestOfFunds = SourceOfExpFunds.NA;               // Not applicable to this type of Expense Request
+            //if (pnlDestOfFunds.Visible)                                 // If true the Deposit does have a Destination of Funds
+            //{
+            //    if (rdoDestOfFunds.SelectedValue == PortalConstants.RDOFundsRestricted) // If == Restricted button is clicked. 
+            //    {
+            //        record.DestOfFunds = SourceOfExpFunds.Restricted;   // Remember this setting
+            //        record.ProjectClassID = DdlActions.UnloadDdl(ddlProjectClass); // Pull the selected Project Class from the DDL
+            //    }
+            //    else
+            //        record.DestOfFunds = SourceOfExpFunds.Unrestricted; // Remember this non-setting
+            //}
+            //else
+            //    record.DestOfFunds = SourceOfExpFunds.NA;               // Not applicable to this type of Expense Request
+            record.ProjectClassID = DdlActions.UnloadDdl(ddlProjectClass); // Pull the selected Project Class from the DDL
 
             if (pnlGLCode.Visible)
                 record.GLCodeID = DdlActions.UnloadDdl(ddlGLCode);    // Carefully pull selected value into record

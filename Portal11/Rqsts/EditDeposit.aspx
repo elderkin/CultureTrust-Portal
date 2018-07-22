@@ -250,7 +250,7 @@
         </asp:Panel>
 
         <!-- Destination of Funds and Project Class -->
-        <asp:Panel ID="pnlDestOfFunds" runat="server" Visible="false">
+<%--        <asp:Panel ID="pnlDestOfFunds" runat="server" Visible="false">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="rdoDestOfFunds" 
@@ -266,7 +266,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>--%>
 
             <asp:Panel ID="pnlProjectClass" runat="server" Visible="false">
                 <div class="form-group">
@@ -295,9 +295,9 @@
                     <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
                         <asp:RequiredFieldValidator runat="server" ID="rfvAmount" ControlToValidate="txtAmount" SetFocusOnError="true"
                             CssClass="text-danger  col-xs-12" ErrorMessage="Please supply a Dollar Amount value." />
-                        <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount" SetFocusOnError="true"
+<%--                        <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount" SetFocusOnError="true"
                             CssClass="text-danger  col-xs-12" ErrorMessage="Currency values only. For example, $123.45"
-                            ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$" />
+                            ValidationExpression="^\-\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$"--%>
                     </div>
                 </div>
             </div>
@@ -398,7 +398,7 @@
                     </div>
                     <div class="text-danger col-xs-offset-1 col-xs-11">
                         <asp:Literal ID="litSplitError" runat="server" Visible="false" 
-                            Text="Each split expense row must have a selected Account and a valid Dollar Amount" />
+                            Text="Each split row must have a selected Account and a valid Dollar Amount" />
                     </div>
                 </div>
             </div>
