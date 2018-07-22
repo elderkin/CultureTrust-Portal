@@ -458,26 +458,6 @@
                 </div>
             </asp:Panel>
 
-            <!-- Dollar Amount -->
-            <asp:Panel ID="pnlAmount" runat="server" Visible="false">
-                <div class="form-group">
-                    <div class="row">
-                        <asp:Label runat="server" ID="lblAmount" AssociatedControlID="txtAmount"
-                            CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Dollar Amount</asp:Label>
-                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control has-success text-right" />
-                        </div>
-                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" ID="rfvAmount" ControlToValidate="txtAmount" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Please enter a Dollar Amount value." />
-                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount" SetFocusOnError="true"
-                                CssClass="text-danger col-xs-12" ErrorMessage="Currency values only. For example, $123.45"
-                                ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$" />
-                        </div>
-                    </div>
-                </div>
-            </asp:Panel>
-
             <!-- Date of Invoice -->
             <asp:Panel ID="pnlDateOfInvoice" runat="server" Visible="false">
                 <div class="form-group">
@@ -625,6 +605,26 @@
 
             </asp:Panel>
 
+            <!-- Dollar Amount -->
+            <asp:Panel ID="pnlAmount" runat="server" Visible="false">
+                <div class="form-group">
+                    <div class="row">
+                        <asp:Label runat="server" ID="lblAmount" AssociatedControlID="txtAmount"
+                            CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Dollar Amount</asp:Label>
+                        <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:TextBox runat="server" ID="txtAmount" CssClass="form-control has-success text-right" />
+                        </div>
+                        <div class="col-sm-offset-0 col-xs-offset-1 col-xs-6">
+                            <asp:RequiredFieldValidator runat="server" ID="rfvAmount" ControlToValidate="txtAmount" SetFocusOnError="true"
+                                CssClass="text-danger col-xs-12" ErrorMessage="Please enter a Dollar Amount value." />
+                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtAmount" SetFocusOnError="true"
+                                CssClass="text-danger col-xs-12" ErrorMessage="Currency values only. For example, $123.45"
+                                ValidationExpression="^\$?([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$" />
+                        </div>
+                    </div>
+                </div>
+            </asp:Panel>
+
             <!-- Fulfillment Questions -->
             <asp:Panel ID="pnlPOFulFillmentInstructions" runat="server" Visible="false">
                 <div class="form-group">
@@ -676,13 +676,14 @@
                         <div class="col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <!-- Fill this control from code-behind -->
                             <asp:DropDownList runat="server" ID="ddlPerson" CssClass="form-control"></asp:DropDownList>
+                            <asp:TextBox runat="server" ID="txtPersonPayroll" CssClass="form-control" Text="(see splits)" Enabled="false"></asp:TextBox>
                         </div>
                         <div class="col-md-1 col-xs-3">
                             <asp:Button ID="btnNewPerson" runat="server" Text="New" CssClass="btn btn-default col-xs-12" Visible="true"
                                 Enabled="true" OnClick="btnNewPerson_Click" CausesValidation="false" ToolTip="Add a new person to this project. Save changes before pressing this button." />
                         </div>
                         <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                            <asp:RequiredFieldValidator runat="server" InitialValue="" ControlToValidate="ddlPerson" SetFocusOnError="true"
+                            <asp:RequiredFieldValidator ID="rfvPerson" runat="server" InitialValue="" ControlToValidate="ddlPerson" SetFocusOnError="true"
                                 CssClass="text-danger col-xs-12" ErrorMessage="Please select a Person from the list" />
                         </div>
                     </div>
@@ -704,26 +705,6 @@
                     </div>
                 </div>
             </asp:Panel>
-
-            <%--        <!-- Source of Funds and Project Class -->
-        <asp:Panel ID="pnlSourceOfFunds" runat="server" Visible="false">
-            <div class="form-group">
-                <div class="row">
-                    <asp:Label runat="server" AssociatedControlID="rdoSourceOfFunds" 
-                        CssClass="col-sm-offset-0 col-sm-2 col-xs-offset-1 col-xs-11 control-label">Source of Funds</asp:Label>
-                    <div class="panel panel-default col-md-3 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-                        <div class="radio">
-                            <asp:RadioButtonList ID="rdoSourceOfFunds" runat="server" AutoPostBack="true"
-                                Style="margin-left: 20px; margin-bottom: 10px;" CssClass="rdoColWidth"
-                                OnSelectedIndexChanged="rdoSourceOfFunds_SelectedIndexChanged">
-                                <asp:ListItem Text="Unrestricted (Project Activities)" Value="Unrestricted" Selected="True"></asp:ListItem>
-                                <asp:ListItem Text="Restricted (Designated Revenue)" Value="Restricted"></asp:ListItem>
-                            </asp:RadioButtonList>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </asp:Panel>--%>
 
             <!-- Project Class -->
             <asp:Panel ID="pnlProjectClass" runat="server" Visible="false">
@@ -749,8 +730,8 @@
                             <asp:DropDownList runat="server" ID="ddlGLCode" CssClass="form-control"></asp:DropDownList>
                         </div>
                         <div class="col-md-1 col-xs-3">
-                            <asp:Button ID="btnSplit" runat="server" Text="Split" CssClass="btn btn-default col-xs-12" Visible="false"
-                                Enabled="true" OnClick="btnSplit_Click" CausesValidation="false" ToolTip="Divide the reimbursement into multiple Expense Accounts" />
+                            <asp:Button ID="btnSplitGL" runat="server" Text="Split" CssClass="btn btn-default col-xs-12" Visible="false"
+                                Enabled="true" OnClick="btnSplitGL_Click" CausesValidation="false" ToolTip="Divide the request into multiple Expense Accounts" />
                         </div>
                         <div class="col-sm-4 col-sm-offset-0 col-xs-offset-1 col-xs-6">
                             <asp:RequiredFieldValidator ID="rfvGLCode" runat="server" InitialValue="" ControlToValidate="ddlGLCode" SetFocusOnError="true"
@@ -760,19 +741,22 @@
                 </div>
             </asp:Panel>
 
-            <!-- Expense Split -->
-            <asp:Panel ID="pnlExpenseSplit" runat="server" Visible="false">
+<%--We use two gridviews to split Expenses: gvSplitGL to split Expense Accounts for Contractor Invoices, Reimbursements, and Vendor Invoices;
+    and gvSplitPayroll for Payroll. They share an ItemType, so they're often loaded and unloaded by the same code. But their appearance is distinct enough
+    to justify having separate gridviews.--%>
+
+            <asp:Panel ID="pnlSplitGL" runat="server" Visible="false">
                 <div class="form-group">
                     <div class="row">
                         <div class="col-xs-offset-0 col-xs-12">
 
                             <div class="col-xs-12">
-                                <asp:GridView ID="gvExpSplit" runat="server"
+                                <asp:GridView ID="gvSplitGL" runat="server"
                                     CssClass="table table-striped table-hover"
                                     ItemType="Portal11.Models.rowGLCodeSplit"
                                     AutoGenerateColumns="false"
                                     AllowPaging="false"
-                                    OnRowDataBound="gvExpSplit_RowDataBound">
+                                    OnRowDataBound="gvSplitGL_RowDataBound">
 
                                     <SelectedRowStyle CssClass="success" />
 
@@ -812,7 +796,7 @@
                                         <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
                                             <ItemTemplate>
                                                 <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" Text='<%# Bind("Amount") %>'
-                                                    Style="text-align: right" OnTextChanged="txtSplitAmount_TextChanged" AutoPostBack="true" />
+                                                    Style="text-align: right" OnTextChanged="txtSplitGLAmount_TextChanged" AutoPostBack="true" />
                                             </ItemTemplate>
                                         </asp:TemplateField>
                                         <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
@@ -822,10 +806,10 @@
                                         </asp:TemplateField>
                                         <asp:TemplateField HeaderText="Row Actions">
                                             <ItemTemplate>
-                                                <asp:Button ID="btnSplitAdd" runat="server" Text="Add" CssClass="btn btn-default"
-                                                    OnClick="btnSplitAdd_Click" CausesValidation="false" />
-                                                <asp:Button ID="btnSplitRemove" runat="server" Text="Rem" CssClass="btn btn-default"
-                                                    OnClick="btnSplitRemove_Click" CausesValidation="false" />
+                                                <asp:Button ID="btnSplitGLAdd" runat="server" Text="Add" CssClass="btn btn-default"
+                                                    OnClick="btnSplitGLAdd_Click" CausesValidation="false" />
+                                                <asp:Button ID="btnSplitGLRemove" runat="server" Text="Rem" CssClass="btn btn-default"
+                                                    OnClick="btnSplitGLRemove_Click" CausesValidation="false" />
                                             </ItemTemplate>
                                         </asp:TemplateField>
                                     </Columns>
@@ -833,8 +817,108 @@
                             </div>
                         </div>
                         <div class="text-danger col-xs-offset-1 col-xs-11">
-                            <asp:Literal ID="litSplitError" runat="server" Visible="false"
+                            <asp:Literal ID="litSplitGLError" runat="server" Visible="false"
                                 Text="Each split expense row must have a selected Expense Account and a valid Dollar Amount" />
+                        </div>
+                    </div>
+                </div>
+            </asp:Panel>
+
+            <!-- Expense Split for Payroll Split -->
+            <asp:Panel ID="pnlSplitPayroll" runat="server" Visible="true">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-offset-0 col-xs-12">
+
+                            <div class="col-xs-12">
+                                <asp:GridView ID="gvSplitPayroll" runat="server"
+                                    CssClass="table table-striped table-hover"
+                                    ItemType="Portal11.Models.rowGLCodeSplit"
+                                    AutoGenerateColumns="false"
+                                    AllowPaging="false"
+                                    OnRowDataBound="gvSplitPayroll_RowDataBound">
+
+                                    <SelectedRowStyle CssClass="success" />
+
+                                    <EmptyDataTemplate>
+                                        <table>
+                                            <tr>
+                                                <td>There are no Splits for this Request</td>
+                                            </tr>
+                                        </table>
+                                    </EmptyDataTemplate>
+                                    <Columns>
+                                        <asp:TemplateField Visible="false">
+                                            <ItemTemplate>
+                                                <asp:Label ID="txtTotalRows" runat="server" Text='<%# Bind("TotalRows") %>' />
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField Visible="false">
+                                            <ItemTemplate>
+                                                <asp:Label ID="txtSelectedProjectClassID" runat="server" Text='<%# Bind("SelectedProjectClassID") %>' />
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField Visible="false">
+                                            <ItemTemplate>
+                                                <asp:Label ID="txtSelectedPersonID" runat="server" Text='<%# Bind("SelectedPersonID") %>' />
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="Project Class">
+                                            <ItemTemplate>
+                                                <asp:DropDownList ID="ddlSplitProjectClass" runat="server" CssClass="form-control"></asp:DropDownList>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="Employee">
+                                            <ItemTemplate>
+                                                <asp:DropDownList ID="ddlSplitPerson" runat="server" CssClass="form-control"></asp:DropDownList>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="Hourly Rate" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                            <ItemTemplate>
+                                                <div style="width:100px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
+                                                <asp:TextBox ID="txtSplitHourlyRate" runat="server" CssClass="form-control" Text='<%# Bind("HourlyRate") %>'
+                                                    Style="text-align: right" OnTextChanged="txtSplitPayrollAmount_TextChanged" AutoPostBack="true" />
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="Hours Paid" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                            <ItemTemplate>
+                                                <div style="width:100px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
+                                                <asp:TextBox ID="txtSplitHoursPaid" runat="server" CssClass="form-control" Text='<%# Bind("HoursPaid") %>'
+                                                    Style="text-align: right" OnTextChanged="txtSplitPayrollAmount_TextChanged" AutoPostBack="true" />
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="Gross Pay" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                            <ItemTemplate>
+                                                <div style="width:120px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
+                                                <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" Text='<%# Bind("Amount") %>'
+                                                    Style="text-align: right" Enabled="false" />
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                            <ItemTemplate>
+                                                <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control" Text='<%# Bind("Note") %>' />
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="Row Actions">
+                                            <ItemTemplate>
+                                                <div style="width:130px;">
+                                                <asp:Button ID="btnSplitPayrollAdd" runat="server" Text="Add" CssClass="btn btn-default"
+                                                    OnClick="btnSplitPayrollAdd_Click" CausesValidation="false" />
+                                                <asp:Button ID="btnSplitPayrollRemove" runat="server" Text="Rem" CssClass="btn btn-default"
+                                                    OnClick="btnSplitPayrollRemove_Click" CausesValidation="false" />
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                    </Columns>
+                                </asp:GridView>
+                            </div>
+                        </div>
+                        <div class="text-danger col-xs-offset-1 col-xs-11">
+                            <asp:Literal ID="litSplitPayrollError" runat="server" Visible="false"
+                                Text="Each split expense row must have a selected Employee, a non-zero Hourly Rate, and a non-zero Hours Paid" />
                         </div>
                     </div>
                 </div>

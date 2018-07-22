@@ -2,6 +2,7 @@
 using Portal11.Logic;
 using Portal11.Models;
 using System;
+using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -335,10 +336,13 @@ namespace Portal11.Rqsts
                         pnlDateOfInvoice.Visible = false;
                         pnlDeliveryInstructions.Visible = true; pnlDeliveryAddress.Visible = true;
                         pnlEntity.Visible = false;
+                        pnlGLCode.Visible = false;
                         pnlGoods.Visible = false;
                         pnlPaymentMethod.Visible = true;
-                        pnlPerson.Visible = true; lblPerson.Text = EnumActions.GetEnumDescription(PersonRole.Employee);
+                        pnlPerson.Visible = false; lblPerson.Text = EnumActions.GetEnumDescription(PersonRole.Employee); // Only visible inside split
+                        pnlProjectClass.Visible = false;                    // Only visible inside split
                         pnlPOFulfillmentInstructions.Visible = false;
+                        pnlSplitPayroll.Visible = true;                     // Panel of split(s) is unconditionally visible - always at least one split row
                         break;
                     }
                 case ExpType.PurchaseOrder:
@@ -405,7 +409,7 @@ namespace Portal11.Rqsts
             litSavedState.Text = record.CurrentState.ToString();            // Saved enum value for later "case"
             txtStateDescription.Text = RequestActions.AdjustCurrentStateDesc(record); // Produce nuanced version of current state
 
-            txtAmount.Text = record.Amount.ToString("C");
+            txtAmount.Text = ExtensionActions.LoadDecimalIntoTxt(record.Amount);
 
             txtEstablishedTime.Text = DateActions.LoadDateTimeIntoTxt(record.CurrentTime);
             txtEstablishedBy.Text = record.CurrentUser.FullName;
@@ -416,7 +420,7 @@ namespace Portal11.Rqsts
                 txtEndingDate.Text = DateActions.LoadDateIntoTxt(record.EndingDate);
 
             txtNumberOfCards.Text = record.CardsQuantity.ToString();
-            txtEachCard.Text = record.CardsValueEach.ToString("C");
+            txtEachCard.Text = ExtensionActions.LoadDecimalIntoTxt(record.CardsValueEach);
 
             txtExistingContract.Text = EnumActions.GetEnumDescription(record.ContractComing);
             if (record.ContractReason != null)
@@ -454,7 +458,7 @@ namespace Portal11.Rqsts
             if (record.GoodsSKU != null)
                 txtGoodsSKU.Text = record.GoodsSKU;
             txtGoodsQuantity.Text = record.GoodsQuantity.ToString();
-            txtGoodsCostPerUnit.Text = record.GoodsCostPerUnit.ToString("C");
+            txtGoodsCostPerUnit.Text = ExtensionActions.LoadDecimalIntoTxt(record.GoodsCostPerUnit);
 
             if (record.Notes != null)
                 txtNotes.Text = record.Notes;
@@ -499,13 +503,23 @@ namespace Portal11.Rqsts
 
             txtStaffNote.Text = record.StaffNote;                       // Load value, if any
 
-            if (SplitActions.LoadSplitRowsForView(RequestType.Expense, record.ExpID, gvExpSplit)) // If true, ExpSplits existed and were loaded
-                EnergizeSplit();                                        // Adjust page to accommodate split gridview
+            // Deal with splits. If Payroll, the split window is unconditionally open. Otherwise, its only open if we find a split in the database.
+
+            if (record.ExpType == ExpType.Payroll)                      // If == this is a payroll request. Special treatment
+            {
+                if (!SplitActions.LoadSplitRowsForView(RequestType.Expense, record.ExpID, gvSplitPayroll)) // If false a "legacy" payroll request with no split row
+                    LoadFirstSplitPayrollRow(record.Amount, record.ProjectClassID, record.PersonID); // Synthesize a first (and only) row from legacy data
+            }
+            else
+            {
+                if (SplitActions.LoadSplitRowsForView(RequestType.Expense, record.ExpID, gvSplitGL)) // If true, GLCodeSplits existed and were loaded
+                    EnergizeSplitGL();                            // Adjust page to accommodate split gridview
+            }
 
             // Delivery Mode and PO Delivery Mode both use Delivery Instructions and Delivery Address. Delivery Address only makes sense in some modes. 
             // EditExpense has packed this information and saved it in the database. Now we have to unpack it.
 
-            switch(record.ExpType)
+            switch (record.ExpType)
             {
                 case ExpType.PEXCard:                                   // PEX card has no Delivery Mode, so no Delivery Address
                     {
@@ -546,14 +560,40 @@ namespace Portal11.Rqsts
             return;
         }
 
+        // A payroll without splits - something from a prior version of the Portal. Here, we're not invoked by a "Split" button. 
+        // Instead, an old request gets a single row.
+
+        void LoadFirstSplitPayrollRow(decimal amount = 0, int? ProjectClassID = null, int? PersonID = null)
+        {
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+            {
+
+                // Case 1) This request has never had splits before.
+
+                List<rowGLCodeSplit> rows = new List<rowGLCodeSplit>(); // Create a list of rows for the gridview
+                rowGLCodeSplit row1 = new rowGLCodeSplit()              // Prime the first row of the grid from "parent" fields of the page
+                {
+                    TotalRows = 1,                                      // This row only
+                    Amount = ExtensionActions.LoadDecimalIntoTxt(amount),
+                    SelectedProjectClassID = ProjectClassID.ToString(),
+                    SelectedPersonID = PersonID.ToString()
+                };
+                rows.Add(row1);                                         // Add the first row
+
+                gvSplitPayroll.DataSource = rows;                       // Give the rows to the gridview
+                gvSplitPayroll.DataBind();                              // And bind them to display the rows, firing RowDataBound for each row
+            }
+            return;
+        }
+
         // We have a full split gridview. Now adjust the operation of the page to process splits
 
-        void EnergizeSplit()
+        void EnergizeSplitGL()
         {
             pnlProjectClass.Visible = false;                        // Can't see "Project Class" field any more
 //            pnlAmount.Visible = false;                              // Can't see "Total Dollar Amount" field any more
             pnlGLCode.Visible = false;                              // Can't see "Expense Account" drop down list any more
-            pnlExpenseSplit.Visible = true;                         // Turn on the grid for splits
+            pnlsplitGL.Visible = true;                         // Turn on the grid for splits
             return;
         }
     }

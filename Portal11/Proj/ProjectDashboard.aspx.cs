@@ -50,7 +50,7 @@ namespace Portal11.Proj
                         LogError.LogInternalError("ProjectDashboard", $"Unable to find ProjectID '{projID.Int}' in database"); // Fatal error
 
                     litBalance.Text = proj.BalanceDate.ToString("MM/dd/yyyy", DateTimeFormatInfo.CurrentInfo);
-                    litCurrentFunds.Text = proj.CurrentFunds.ToString("C");
+                    litCurrentFunds.Text = ExtensionActions.LoadDecimalIntoTxt(proj.CurrentFunds);
                 }
 
                 // If the User is a Coordinator, they can create a new Deposit.

@@ -342,7 +342,7 @@ namespace Portal11.Rqsts
             txtEstablishedTime.Text = DateActions.LoadDateTimeIntoTxt(record.CurrentTime);
             txtEstablishedBy.Text = record.CurrentUser.FullName;
 
-            txtAmount.Text = record.Amount.ToString("C");
+            txtAmount.Text = ExtensionActions.LoadDecimalIntoTxt(record.Amount);
 
             txtDateOfDeposit.Text = DateActions.LoadDateIntoTxt(record.DateOfDeposit);
 
@@ -350,16 +350,16 @@ namespace Portal11.Rqsts
 
             txtTypeDescription.Text = EnumActions.GetEnumDescription((Enum)record.DepType); // Convert enum value to English value for display
 
-            if (record.DestOfFunds == SourceOfExpFunds.Restricted) // If == the Source of Funds is a Project Class
-            {
-                rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsRestricted; // Select "restricted" button
-                pnlProjectClass.Visible = true;
-            }
-            else if (record.DestOfFunds == SourceOfExpFunds.Unrestricted) // If == the Dest of Funds does not use a Project Class
-            {
-                rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsUnrestricted; // Select "unrestricted" button
-                pnlProjectClass.Visible = false;                    // Unrestricted means no Project Class so don't show the list
-            }
+            //if (record.DestOfFunds == SourceOfExpFunds.Restricted) // If == the Source of Funds is a Project Class
+            //{
+            //    rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsRestricted; // Select "restricted" button
+            //    pnlProjectClass.Visible = true;
+            //}
+            //else if (record.DestOfFunds == SourceOfExpFunds.Unrestricted) // If == the Dest of Funds does not use a Project Class
+            //{
+            //    rdoDestOfFunds.SelectedValue = PortalConstants.RDOFundsUnrestricted; // Select "unrestricted" button
+            //    pnlProjectClass.Visible = false;                    // Unrestricted means no Project Class so don't show the list
+            //}
             if (record.ProjectClassID != null)
                 txtProjectClass.Text = record.ProjectClass.Name;
 

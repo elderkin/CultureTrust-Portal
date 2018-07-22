@@ -265,24 +265,6 @@ namespace Portal11.Rqsts {
         protected global::System.Web.UI.WebControls.Button btnNewPerson;
         
         /// <summary>
-        /// pnlDestOfFunds control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlDestOfFunds;
-        
-        /// <summary>
-        /// rdoDestOfFunds control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList rdoDestOfFunds;
-        
-        /// <summary>
         /// pnlProjectClass control.
         /// </summary>
         /// <remarks>

@@ -1,4 +1,14 @@
-﻿Version 1.13
+﻿Version 1.14
+
+In Expense requests, you can now split information for Contractor Invoices and Vendor Invoices, just as you could for Reimbursements.
+
+In Expense requests, you can now split information for Payroll. Just for Payroll, a "one-row-split" is now unconditionally open on the Expense Request page. You can add additional rows. Split fields are: Project Class, Employee, Hourly Rate, Hourly Pay, Gross Pay (which is computed as the product of Hourly Rate and Hourly Pay), and Notes.
+
+In Expense request for Payroll, the Expense Account is no longer displayed. Payroll requests are always paid from the same Expense Account.
+
+In Deposit requests, you are no longer asked whether the Destination of Funds is Unrestricted or Restricted. The deposit is always Restricted and a Project Class is always required.
+
+Version 1.13
 
 The Portal has a new color scheme that matches the CultureWorks palette. You may need to ask your browser to clear its cache of images and files to see the new colors.
 
