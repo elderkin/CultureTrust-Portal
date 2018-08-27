@@ -78,89 +78,81 @@ namespace Portal11
         {
             if (!Page.IsPostBack)
             {
-                HttpCookie userInfoCookie = Request.Cookies[PortalConstants.CUserInfo]; // Ask for the User Info cookie, if any
-                if ((HttpContext.Current.User.Identity.Name != "") && (userInfoCookie != null)) // If != user is logged in and has UserInfoCookie
+
+                // Get information about the user and the project in order to fill in header
+
+                string userID, fullName; UserRole userRole; string projectName, projectRoleDescription; bool admin; string avatarImageTag;
+                if (CookieActions.GetUserCharacteristics(out userID,            // Account ID for logged in user
+                                                         out fullName,          // User name
+                                                         out userRole,          // User Role, e.g., IC, PR
+                                                         out projectName,       // Name of project, if any, user is working on now
+                                                         out projectRoleDescription, // User role on project, e.g., PD, PS, IC
+                                                         out admin,             // Whether user is an administrator
+                                                         out avatarImageTag)    // Query string to force browser to reload avatar image
+                    )                                           // If true user is logged in
                 {
 
-                    //  1) Display their Full Name
+                    // Load user-specific image into Avatar and describe user in flyover help. 
 
-                    labFullName.Text = userInfoCookie[PortalConstants.CUserFullName]; //Load label with user's full name from cookie
-                    labFullName.ToolTip = "Not associated with a specific project";
+                    imgAvatar.ImageUrl = PortalConstants.AvatarDir + PortalConstants.ImageAvatarName + userID + PortalConstants.ImageExt // Formulate name of user's avatar image using UserID
+                        + "?" + avatarImageTag;                     // If avatar image has changed, this value will change and browser will refresh
 
-                    //  2) If the User has Admin powers - regardless of role - turn on the Admin menu
+                    imgAvatar.ToolTip = fullName                    // Create flyover help
+                        + Environment.NewLine + EnumActions.GetEnumDescription(userRole); // Assume no project
+                    litFullName.Text = fullName;                    // Make user name appear in drop down menu, too
 
-                    if (userInfoCookie[PortalConstants.CUserTypeAdmin] != null) // If != User has Administrator powers
+                    //  Break out by role and light up the appropriate menus
+
+                    switch (userRole)
                     {
-                        mnuAdmin.Visible = true;                                // Make visible the Navbar link to the Admin function
-                    }
-
-                    //  3) Break out by role and light up the appropriate menus
-
-                    UserRole role = EnumActions.ConvertTextToUserRole(userInfoCookie[PortalConstants.CUserRole]); // Fetch role from cookie
-                    switch (role)
-                    {
-                        case UserRole.Administrator:                            // User is an Admin and nothing else
-                            {
-                                litAdminRole.Text = EnumActions.GetEnumDescription(UserRole.Administrator); // Show the Administrator in the Navbar
-                                mnuAdminRole.Visible = true;                        // Switch on the Role menu item, which links to the Admin Main page
-                                break;
-                            }
                         case UserRole.InternalCoordinator:
                         case UserRole.Project:
-                        {
-                            mnuProject.Visible = true;                              // Unconditionally turn on Project menu, which links to Project functions
-                            HttpCookie projectInfoCookie = Request.Cookies[PortalConstants.CProjectInfo]; // Ask for the Project Info cookie, if any
-                            if (projectInfoCookie != null)                          // If != the cookie is present
                             {
-                                mnuHomeProject.Visible = true;                      // Make appropriate Home menu visible
-                                labFullName.ToolTip = projectInfoCookie[PortalConstants.CProjectRoleDescription]; // Load flyover with user role description
-                                litProjectName.Text = projectInfoCookie[PortalConstants.CProjectName]; // Load project name
-                                mnuProjectName.Visible = true;                      // Make it visible
 
-                                // Deal with very long user names and project names.
+                                // These roles work on projects, one project at a time. As soon as we recognize the role,
+                                // we can light the "Project" menu, even if no project is currently selected.
+                                // If a project is current, we react to it with an enhanced ToolTip and more menu items.
 
-                                if ((labFullName.Text.Length + litProjectName.Text.Length) > PortalConstants.MaxProjectNameLength1) // If < names won't fit full size
+                                mnuProject.Visible = true;              // Turn on the Project menu
+
+                                if (!string.IsNullOrEmpty(projectName))  // If false, user assigned to project
                                 {
-                                    labFullNameSmall.Text = labFullName.Text;       // Copy text of user name
-                                    labFullNameSmall.ToolTip = labFullName.ToolTip;      // Copy user role description
-                                    mnuFullName.Visible = false; mnuFullNameSmall.Visible = true; // Flip short name on, regular name off
-                                    litProjectNameSmall.Text = litProjectName.Text; // Copy text of project name
-                                    mnuProjectName.Visible = false; mnuProjectNameSmall.Visible = true; // Flip short name on, regular name off
+                                    imgAvatar.ToolTip = fullName        // Redo flyover to include project info
+                                        + Environment.NewLine + projectRoleDescription
+                                        + Environment.NewLine + projectName;
+
+                                    // Turn on menu options that are specific to a project
+
+                                    mnuHomeProject.Visible = true;      // We now have a Home item that goes to Project Dashboard
+                                    mnuEditProjectClasses.Visible = true; // And the Project menu can act on our current project
                                 }
+                                break;
                             }
-                            else                                                    // Not assigned to a Project - in limbo!
-                            {
-                                litNoProjectRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // No project available. Use "base" role
-                                mnuNoProjectRole.Visible = true;                    // Make menu visible in Navbar; it doesn't link anywhere
-                                mnuEditProjectClasses.Visible = false;              // Doesn't work without a project selected, so turn it off
-                            }
-                            break;
-                        }
                         case UserRole.Auditor:
                         case UserRole.FinanceDirector:
                         case UserRole.CommunityDirector:
                         case UserRole.President:
                             {
-                                mnuHomeStaff.Visible = true;                            // Make appropriate Home menu visible
-                                litStaffRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // Show that role in the Navbar, link to Staff Dashboard
-                                mnuStaffRole.Visible = true;                            // Switch on the Role menu item
-                                                                                        //                            mnuAdminRole.Visible = false;                           // Don't display both Admin Role and Staff Role
+                                mnuHomeStaff.Visible = true;        // Make appropriate Home menu visible
                                 break;
                             }
-                        default:                                                    // We shouldn't get here, but don't throw errors in the friggin' Navbar
+                        default:                                    // All other roles - there aren't any - get no other menus
                             {
-                                litNoProjectRole.Text = userInfoCookie[PortalConstants.CUserRoleDescription]; // No project available. Use "base" role
-                                mnuNoProjectRole.Visible = true;                        // Make menu visible in Navbar; it doesn't link anywhere
                                 break;
                             }
                     }
+
+                    //  If the User has Admin powers - regardless of role - turn on the Admin menu
+
+                    if (admin)                                      // If true User has Administrator powers
+                        mnuAdmin.Visible = true;                    // Make visible the Navbar link to the Admin function
                 }
                 else
                 {
-                    pnlMainBar.Visible = false;                                 // If not logged in, must be logging in. Make main menu bar invisible.
+                    pnlMainBar.Visible = false;                     // If not logged in, must be logging in. Make main menu bar invisible.
                 }
-
             }
+            return;
         }
 
         // User is logging out. If they're present, kill off the UserInfo and ProjectInfo cookies to give the next login a clean start.

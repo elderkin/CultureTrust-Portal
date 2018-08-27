@@ -130,6 +130,9 @@ namespace Portal11
             return HttpUtility.UrlDecode(request.QueryString[UserIdKey]);
         }
 
+        // Note: This code, which is part of the model, does not correctly handle multiple instances
+        // on a single server. So the Portal does not use it.
+
         public static string GetResetPasswordRedirectUrl(string code, HttpRequest request)
         {
             var absoluteUri = "/Account/ResetPassword?" + CodeKey + "=" + HttpUtility.UrlEncode(code);

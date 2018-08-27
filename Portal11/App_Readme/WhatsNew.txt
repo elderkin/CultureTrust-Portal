@@ -1,4 +1,14 @@
-﻿Version 1.14
+﻿Version 1.15
+
+On the Login page, a new "Forgot Password" initiates a dialog to reset your password.
+
+The top menu of every page has been simplified. Now at the right side of the menu, there is an "avatar" - an image. If you fly-over the avatar, the Portal displays your name, role, and project (if any). If you click on the avatar, there is a new menu of functions. The new "Change My Avatar" page lets you change the image for your Avatar.
+
+The new "Portal Information" menu item (in the avatar menu) displays the "News" file, a PDF file that can be uploaded from the Upload News and Images page.
+
+The Edit Advanced Options page has reorganized menus. It also has a new "Reset Password Email" to control the email sent to forgetful users.
+
+Version 1.14
 
 In Expense requests, you can now split information for Contractor Invoices and Vendor Invoices, just as you could for Reimbursements.
 

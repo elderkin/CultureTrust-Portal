@@ -79,37 +79,27 @@
                             <div class="col-md-offset-3 col-xs-offset-1 col-xs-2">
                                 <asp:Button runat="server" OnClick="LogIn" Text="Log in" CssClass="btn btn-primary" />
                             </div>
-                             <div class="col-xs-offset-1 col-xs-3">
+                             <div class="col-xs-offset-2 col-xs-3">
                                 <asp:Button runat="server" ID="btnNew" OnClick="btnNew_Click" Text="What's New" CssClass="btn btn-default" CausesValidation="false" />
                             </div>
                         </div>
                     </div>
 
-                    <asp:Panel runat="server" ID="pnlRememberMe" Visible="false">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-md-offset-4 col-xs-offset-1 col-xs-4">
-                                <div class="checkbox col-xs-2">
-                                    <asp:CheckBox runat="server" ID="RememberMe" />
-                                    <asp:Label runat="server" AssociatedControlID="RememberMe">Remember me?</asp:Label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    </asp:Panel>
-
-                   <asp:Panel runat="server" ID="pnlRememberEmail" Visible="true">
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-offset-3 col-xs-offset-1 col-xs-8">
-                                <div class="checkbox col-xs-12">
-                                    <asp:CheckBox runat="server" ID="ckRememberEmail" />
-                                    <asp:Label runat="server" AssociatedControlID="ckRememberEmail">Remember email?</asp:Label>
+                                <div class="checkbox">
+                                    <div class="col-xs-6">
+                                        <asp:CheckBox runat="server" ID="ckRememberEmail" />
+                                        <asp:Label runat="server" AssociatedControlID="ckRememberEmail">Remember me?</asp:Label>
+                                        </div>
+                                    <div class="col-xs-6">
+                                        <asp:HyperLink runat="server" ID="hlForgotPassword" NavigateUrl="~/Account/Forgot" Text="Forgot Password" /> 
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    </asp:Panel>
 
                     <asp:Panel runat="server" ID="pnlVersion" Visible="false">
                     <div class="form-group">
@@ -119,12 +109,6 @@
                                 <asp:TextBox runat="server" ID="txtVersion" ReadOnly="true" CssClass="form-control" />
                             </div>
                         </div>
-<%--                        <div class="row">
-                            <asp:Label runat="server" AssociatedControlID="txtBuild" CssClass="col-md-offset-0 col-md-3 col-xs-offset-1 control-label">Build</asp:Label>
-                            <div class="col-md-offset-0 col-md-6 col-xs-offset-1 col-xs-11">
-                                <asp:TextBox runat="server" ID="txtBuild" ReadOnly="true" CssClass="form-control" />
-                            </div>
-                        </div>--%>
                     </div>
                     </asp:Panel>
 
@@ -138,7 +122,7 @@
                     </div>
                     </asp:Panel>
 
-                </div>
+                </div> <%--form-horizontal--%>
                 <br />&nbsp;
 
                 <asp:Panel runat="server" ID="pnlFirst">
@@ -149,13 +133,13 @@
                 </asp:Panel>
 <%--            <p>
                     <asp:HyperLink runat="server" ID="RegisterHyperLink" ViewStateMode="Disabled">Temporary: Register as a new user</asp:HyperLink>
-                </p>--%>
-                    <%-- Enable this once you have account confirmation enabled for password reset functionality
+                </p>
+                    Enable this once you have account confirmation enabled for password reset functionality
+
                     <asp:HyperLink runat="server" ID="ForgotPasswordHyperLink" ViewStateMode="Disabled">Forgot your password?</asp:HyperLink>
-                    --%>
+--%>
             </section>
         </div>
     </div>
-
 
 </asp:Content>

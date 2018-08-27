@@ -88,6 +88,8 @@ namespace Portal11.Account
                     LogError.LogDatabaseError(ex, "EditRegistration", "Unable to update User rows in Identity database"); // Fatal error
                 }
 
+                ImageActions.CheckForAvatar(loggedInUser.Id);           // Make sure an avatar image exists, supplying a default if necessary
+
                 // Start building out the Login and UserInfo cookies, starting with the parts that are there for all users.
 
                 if (rememberEmail == "True")                            // If == User wants us to remember their email for next login
