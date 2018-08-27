@@ -81,3 +81,12 @@ input[type="select"] {
 .table-hover > tbody > tr.success:hover > th {
     background-color: #6f7cfc;
 }
+a {
+    color: #6f7cfc;
+    text-decoration: none;
+}
+a:hover,
+a:focus {
+    color: #6f7cfc; 
+    text-decoration: underline;
+}

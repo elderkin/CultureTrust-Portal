@@ -55,7 +55,8 @@ namespace Portal11.Account
 
                 // This doen't count login failures towards account lockout
                 // To enable password failures to trigger lockout, change to shouldLockout: true
-                var result = signinManager.PasswordSignIn(Email.Text, Password.Text, RememberMe.Checked, shouldLockout: false);
+
+                var result = signinManager.PasswordSignIn(Email.Text, Password.Text, ckRememberEmail.Checked, shouldLockout: false);
 
                 switch (result)
                 {
@@ -65,7 +66,7 @@ namespace Portal11.Account
                     case SignInStatus.RequiresVerification:
                         Response.Redirect(String.Format("/Account/TwoFactorAuthenticationSignIn?ReturnUrl={0}&RememberMe={1}",
                                                         Request.QueryString["ReturnUrl"],
-                                                        RememberMe.Checked),
+                                                        ckRememberEmail.Checked),
                                           true);
                         break;
                     case SignInStatus.Failure:
@@ -143,6 +144,13 @@ namespace Portal11.Account
                 }
             }
             return;
+        }
+
+        // The user has forgotten their password. Come here and chain to the Forgot page
+
+        protected void btnForgotPassword_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(PortalConstants.URLForgot);
         }
     }
 }

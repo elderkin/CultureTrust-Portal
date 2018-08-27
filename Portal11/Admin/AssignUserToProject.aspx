@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Assign User to Project" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" 
+﻿<%@ Page Title="Assign Portal User to Project" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" 
     CodeBehind="AssignUserToProject.aspx.cs" Inherits="Portal11.Admin.AssignUserToProject" EnableEventValidation="false" %>
 <%@ Import Namespace="Portal11.Logic" %>
 
@@ -24,14 +24,18 @@
         Text Box trigger the search just like the Search button  -->
 
     <div class="row">
-        <div class="form-group col-lg-4 col-md-5 col-xs-12">
-            <asp:Panel runat="server" DefaultButton="btnProjectSearch">
+        <div class="form-group col-xs-12">
+           <div class="col-xs-4">
+             <asp:Panel runat="server" DefaultButton="btnProjectSearch">
                 <asp:TextBox ID="txtProject" runat="server" CssClass="form-control has-success col-xs-4"></asp:TextBox>
                 <asp:Button ID="btnProjectHelper" runat="server" Style="display: none" OnClick="btnProjectSearch_Click" />
             </asp:Panel>
+               </div>
+            <div class="col-xs-1">
             <asp:LinkButton ID="btnProjectSearch" runat="server" CssClass="btn btn-default" OnClick="btnProjectSearch_Click">
                 <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
             </asp:LinkButton>
+                </div>
         </div>
 
 <%--  Can't assign a User to an Inactive Project, so no need for this control

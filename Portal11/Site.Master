@@ -1,4 +1,5 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="Portal11.SiteMaster" %>
+﻿<%@ Master Language="C#" AutoEventWireup="True" CodeBehind="Site.master.cs" 
+    Inherits="Portal11.SiteMaster" %>
 
 <!DOCTYPE html>
 
@@ -64,56 +65,36 @@
                             <a runat="server" id="mnuProject" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
                                 aria-expanded="false" visible="false">Project <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a runat="server" href="~/Select/SelectProject?Command=Menu">Select Project</a></li>
-<%--                                <li><a runat="server" href="~/Proj/AssignPersons" >Assign Persons to Project</a></li>--%>
-                                <li><a id="mnuEditProjectClasses" runat="server" href="~/Select/SelectProjectClass?Command=Edit">Edit Project Classes</a></li>
-                            </ul>
-                        </li>
-
-                        <li class="dropdown">
-                            <a runat="server" id="mnuUser" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                aria-expanded="false" visible="true">Account Settings <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a runat="server" href="~/Account/ChangeMyPassword">Change My Password</a></li>
-                                <li><a runat="server" href="~/Account/ChangeMyEmailOptions">Change My Email Options</a></li>
+                                <li><a runat="server" id="mnuSelectProject" href="~/Select/SelectProject?Command=Menu">Select Project</a></li>
+                                <li><a runat="server" id="mnuEditProjectClasses" visible="false" href="~/Select/SelectProjectClass?Command=Edit">Edit Project Classes</a></li>
                             </ul>
                         </li>
 
                     </ul>
 
-                    <asp:LoginView runat="server" ViewStateMode="Disabled">
-                        <AnonymousTemplate>
-                            <ul class="nav navbar-nav navbar-right">
-                                <li><a runat="server" href="~/Account/Login">Log in</a></li>
-                            </ul>
-                        </AnonymousTemplate>
-                        <LoggedInTemplate>
-                            <ul class="nav navbar-nav navbar-right">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a runat="server" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"  style="padding-top:5px; padding-bottom:5px;"
+                                aria-expanded="false" visible="true">
+                                <asp:Image runat="server" ID="imgAvatar" ImageUrl="~/Images/DefaultAvatar.jpg" Height="50px" Width="50px"/>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li style="padding-left:20px;"><asp:Literal runat="server" ID="litFullName" Text="fill from code behind"></asp:Literal></li>
+                                <li class="divider"></li>
+                                <li><a runat="server" href="~/Account/ChangeMyAvatarImage">Change My Avatar Image</a></li>
+                                <li><a runat="server" href="~/Account/ChangeMyPassword">Change My Password</a></li>
+                                <li><a runat="server" href="~/Account/ChangeMyEmailOptions">Change My Email Options</a></li>
+<%--                                <li runat="server" id="liProjectDivider" class="divider" visible="false" ></li>
+                                <li><a runat="server" id="mnuSelectProject" href="~/Select/SelectProject?Command=Menu" visible="false">Select Project</a></li>
+                                <li><a runat="server" id="mnuEditProectClasses" href="~/Select/SelectProjectClass?Command=Edit" visible="false">Edit Project Classes</a></li>
+--%>                                <li class="divider"></li>
+                                <li><a runat="server" href="~/Proj/ViewDoc?Directory=~//Images//&ServerFile=News.pdf&MIME=application/pdf&UserFile=CultureWorks News.pdf">Portal Information</a></li>
                                 <li>
                                     <asp:LoginStatus runat="server" LogoutAction="Redirect" LogoutText="Log off"
                                         LogoutPageUrl="~/Account/Login.aspx" OnLoggingOut="Unnamed_LoggingOut" />
                                 </li>
                             </ul>
-                        </LoggedInTemplate>
-                    </asp:LoginView>
-
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a runat="server" id="mnuFullName">
-                            <asp:Label runat="server" ID="labFullName" /></a></li>
-                        <li><a runat="server" id="mnuFullNameSmall" visible="false">
-                            <div style="font-size:60%"> <asp:Label runat="server" ID="labFullNameSmall" /> </div></a></li>
-                        <li><a runat="server" id="mnuNoProjectRole" href="#" visible="false">
-                            <asp:Literal runat="server" ID="litNoProjectRole" /></a></li>
-                        <li><a runat="server" id="mnuProjectName" href="~/Proj/ProjectDashboard" visible="false">
-                            <asp:Literal runat="server" ID="litProjectName"  /></a></li>
-                        <li><a runat="server" id="mnuProjectNameSmall" href="~/Proj/ProjectDashboard" visible="false">
-                            <div style="font-size:60%"> <asp:Literal runat="server" ID="litProjectNameSmall" /> </div></a></li>
-                        <li><a runat="server" id="mnuStaffRole" href="~/Staff/StaffDashboard" visible="false">
-                            <asp:Literal runat="server" ID="litStaffRole" /></a></li>
-                        <li><a runat="server" id="mnuAdminRole" href="~/Admin/Main" visible="false">
-                            <asp:Literal runat="server" ID="litAdminRole" /></a></li>
-<%--                        <li><a runat="server" id="labNewThing" href="~/Account/EditMyPortalSettings" visible="true">
-                            <asp:Literal runat="server" ID="litNewThing" />New Thing</a></li>--%>
+                        </li>
                     </ul>
                 </div>
             </div>

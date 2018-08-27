@@ -1319,6 +1319,10 @@ public class DocHistory
 
         [DataType(DataType.MultilineText)]
         public string EmailControlString { get; set; }                  // Parameterized string to control some emails
+
+        public string EmailForgotPasswordSubject { get; set; }
+        [DataType(DataType.MultilineText)]
+        public string EmailForgotPasswordBody { get; set; }
     }
 
     // The Projects that make the world go 'round
@@ -1627,6 +1631,7 @@ public class DocHistory
         // Values of Query Strings
         public const string
             QSAspxErrorPath = "aspxerrorpath",
+            QSCode = "Code",
             QSCommand = "Command",
             QSCommandAssign = "Assign",
             QSCommandAssignEntitys = "AssignEntitys",
@@ -1701,6 +1706,14 @@ public class DocHistory
             CUserProjectAll = "All",
             CUserProjectUser = "User",
             CUserGridViewRows = "GridViewRows";
+
+        // AvatarImageCookie stores a sequence number for the logged in user. When the avatar changes, the sequence number changes, forcing browser to refresh image.
+
+        public const string
+            CAvatarImage = "AvatarImageCookie",
+            CAvatarImageTag = "AvatarImageTag";
+        public const int
+            CAvatarNextTagRangeStart = 2, CAvatarNextTagRangeEnd = 1000000;
 
         // Default email subjects and bodies
 
@@ -1871,7 +1884,9 @@ public class DocHistory
             EventArgument = "__EVENTARGUMENT",
             EventSupporting = "Supporting",
             ForeColor = "#18bc9c",
-            ImageDir = "~/Images/", ImageTemp = "Temp", ImageType = "image/jpeg",
+            ImageDir = "~/Images/", ImageTempName = "Temp_", ImageFullName = "Full_", ImageAvatarName = "Avatar_", ImageExt = ".jpg", ImageType = "image/jpeg",
+            ImageIntermediateName = "Intermediate_", ImageIntermediateExt = ".temp",
+            AvatarDir = "~/Images/Avatars/", DefaultAvatarDir = ImageDir, DefaultAvatar = "Avatar_Default.jpg", FullAvatar = "Full_Default.jpg", EmptyAvatar = "Avatar_Empty.jpg",
             ReadmeDir = "~/App_Readme/",
             ReturnNotePresent = "You have pressed the Approve button with text in the Return Note field. Please press the 'Clear' button next to the Return Note field to proceed.",
             ReturnNoteMissing = "Please supply a Return Note before pressing the Return button.",
@@ -1879,6 +1894,7 @@ public class DocHistory
             SupportingTempFlag = "T",
             WhatsNewName = "WhatsNew.txt";
         public const int
+            AvatarHeightWidth = 50,
             gvAllPersonEmailColumn = 2,
             gvAllPersonW9Column = 3,
             SingleClickTimeout = 400,
@@ -1909,10 +1925,14 @@ public class DocHistory
             URLErrorDatabase = "~/ErrorLog/DatabaseError.aspx",
             URLErrorFatal = "~/ErrorLog/FatalError.aspx",
             URLFlowControl = "~/Logic/FlowControl.aspx",
+            URLForgot = "~/Account/Forgot.aspx",
+            URLForgot1 = "/Account/Forgot",
             URLListProjectMetadata = "~/Lists/ListProjectMetadata.aspx",
             URLLogin = "~/Account/Login",
             URLLoginDispatch = "~/Account/LoginDispatch",
             URLProjectDashboard = "~/Proj/ProjectDashboard",
+            URLResetPassword = "/Account/ResetPassword",
+            URLResetPasswordConfirmation = "~/Account/ResetPasswordConfirmation",
             URLReviewApproval = "~/Rqsts/ReviewApproval",
             URLReviewDeposit = "~/Rqsts/ReviewDeposit",
             URLReviewDocument = "~/Rqsts/ReviewDocument",
@@ -1980,6 +2000,9 @@ public class DocHistory
 
         public const int
             EmailPort = 587;
+
+        public const decimal
+            BadDecimalValue = -123456;
 
 
         // Highlight colors in Dashboards

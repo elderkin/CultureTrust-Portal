@@ -58,6 +58,15 @@ namespace Portal11 {
         protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuProject;
         
         /// <summary>
+        /// mnuSelectProject control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuSelectProject;
+        
+        /// <summary>
         /// mnuEditProjectClasses control.
         /// </summary>
         /// <remarks>
@@ -67,139 +76,22 @@ namespace Portal11 {
         protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuEditProjectClasses;
         
         /// <summary>
-        /// mnuUser control.
+        /// imgAvatar control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuUser;
+        protected global::System.Web.UI.WebControls.Image imgAvatar;
         
         /// <summary>
-        /// mnuFullName control.
+        /// litFullName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuFullName;
-        
-        /// <summary>
-        /// labFullName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label labFullName;
-        
-        /// <summary>
-        /// mnuFullNameSmall control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuFullNameSmall;
-        
-        /// <summary>
-        /// labFullNameSmall control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label labFullNameSmall;
-        
-        /// <summary>
-        /// mnuNoProjectRole control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuNoProjectRole;
-        
-        /// <summary>
-        /// litNoProjectRole control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litNoProjectRole;
-        
-        /// <summary>
-        /// mnuProjectName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuProjectName;
-        
-        /// <summary>
-        /// litProjectName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litProjectName;
-        
-        /// <summary>
-        /// mnuProjectNameSmall control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuProjectNameSmall;
-        
-        /// <summary>
-        /// litProjectNameSmall control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litProjectNameSmall;
-        
-        /// <summary>
-        /// mnuStaffRole control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuStaffRole;
-        
-        /// <summary>
-        /// litStaffRole control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litStaffRole;
-        
-        /// <summary>
-        /// mnuAdminRole control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor mnuAdminRole;
-        
-        /// <summary>
-        /// litAdminRole control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litAdminRole;
+        protected global::System.Web.UI.WebControls.Literal litFullName;
         
         /// <summary>
         /// MainContent control.

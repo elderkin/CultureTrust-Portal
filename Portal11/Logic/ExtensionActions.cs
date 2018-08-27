@@ -17,7 +17,7 @@ namespace Portal11.Logic
             {
                 decimal c = ExtensionActions.LoadTxtIntoDecimal(cost);          // Convert cost per item into decimal
                 int q = ExtensionActions.LoadTxtIntoInt(quantity);              // Convert quantity into int
-                if (c == -1)                                                    // If == conversion routine encountered an error
+                if (c == PortalConstants.BadDecimalValue)                       // If == conversion routine encountered an error
                 {
                     amount.Text = "Invalid value";                              // The product is therefore invalid
                     cost.Focus();                                               // Go back to the first control
@@ -119,12 +119,12 @@ namespace Portal11.Logic
                 if (convt)                                  // If true conversion as successful
                     return bucks;                           // Return converted value as decimal
             }
-            return -1;                                      // Else, return marker that field is unfilled
+            return PortalConstants.BadDecimalValue;         // Else, return marker that field is unfilled
         }
 
         public static string LoadDecimalIntoTxt(decimal bucks)
         {
-            if (bucks != -1)                                // If != there is a "real" value in the field
+            if (bucks != PortalConstants.BadDecimalValue)   // If != there is a "real" value in the field
                 return bucks.ToString("C2",CultureInfo.CurrentCulture.NumberFormat); // Convert value to a local-format currency string (with 2 digits of precision)
             return "";                                      // Otherwise, return an empty string
         }
@@ -148,6 +148,14 @@ namespace Portal11.Logic
         public static void ReloadDecimalText(TextBox txt)
         {
             decimal amount = ExtensionActions.LoadTxtIntoDecimal(txt); // Pull revised amount from textbox and convert
+            txt.Text = ExtensionActions.LoadDecimalIntoTxt(amount); // Pretty up amount and put it back into textbox
+            return;
+        }
+
+        public static void ReloadDecimalText_NoNegative(TextBox txt)
+        {
+            decimal amount = ExtensionActions.LoadTxtIntoDecimal(txt); // Pull revised amount from textbox and convert
+            if (amount < 0) amount = PortalConstants.BadDecimalValue; // If < amount is negative. That's not allowed in this case
             txt.Text = ExtensionActions.LoadDecimalIntoTxt(amount); // Pretty up amount and put it back into textbox
         }
 

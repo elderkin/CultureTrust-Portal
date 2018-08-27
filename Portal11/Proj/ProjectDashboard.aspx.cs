@@ -9,7 +9,6 @@ using Portal11.Models;
 using Portal11.Logic;
 using System.Data;
 using Portal11.ErrorLog;
-using System.Drawing;
 using System.Globalization;
 
 namespace Portal11.Proj

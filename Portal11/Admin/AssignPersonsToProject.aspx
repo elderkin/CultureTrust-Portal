@@ -39,7 +39,7 @@
                 Text Box trigger the search just like the Search button.--%>
                 <div class="col-xs-12">
                     <asp:Panel runat="server" DefaultButton="btnProjectPersonSearch">
-                        <div class="col-xs-10">
+                        <div class="col-xs-9">
                             <asp:TextBox ID="txtProjectPerson" runat="server" CssClass="form-control has-success"></asp:TextBox>
                             <asp:Button ID="btnProjectPersonHelper" runat="server" Style="display: none" OnClick="btnProjectPersonSearch_Click" />
                         </div>
@@ -184,7 +184,7 @@
                 Text Box trigger the search just like the Search button--%>
                 <div class="col-xs-12">
                     <asp:Panel runat="server" DefaultButton="btnAllPersonSearch">
-                        <div class="col-xs-10">
+                        <div class="col-xs-9">
                             <asp:TextBox ID="txtAllPerson" runat="server" CssClass="form-control has-success"></asp:TextBox>
                             <asp:Button ID="btnAllPersonHelper" runat="server" Style="display: none" OnClick="btnAllPersonSearch_Click" />
                         </div>

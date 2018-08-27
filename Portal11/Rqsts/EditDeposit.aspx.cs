@@ -1443,7 +1443,7 @@ namespace Portal11.Rqsts
                     TextBox txtSplitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Find the text box within gridview row
                     TextBox txtSplitNote = (TextBox)r.FindControl("txtSplitNote"); // Find the text box within gridview row
 
-                    if ((ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount) == -1) || // Carefully check for a valid decimal value in amount. If == error
+                    if ((ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount) == PortalConstants.BadDecimalValue) || // Carefully check for a valid decimal value in amount. If == error
                         (ddlSplitGLCode.SelectedIndex <= 0))        // If <= nothing selected, that's an error
                     {
                         litSplitError.Visible = true;               // Turn on the error message
@@ -1509,7 +1509,7 @@ namespace Portal11.Rqsts
             {
                 TextBox txtSplitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Find the text box within gridview row
                 decimal rowAmount = ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount); // Convert the text into decimal, carefully
-                if (rowAmount != -1)                                // If != there's a legitimate value here
+                if (rowAmount != PortalConstants.BadDecimalValue)   // If != there's a legitimate value here
                     totalDollarAmount += rowAmount;                 // Accumulate amount from this row     
             }
             txtAmount.Text = ExtensionActions.LoadDecimalIntoTxt(totalDollarAmount); // Update "master" amount with total of all rows

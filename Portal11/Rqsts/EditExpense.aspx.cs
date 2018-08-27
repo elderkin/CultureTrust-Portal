@@ -682,8 +682,8 @@ namespace Portal11.Rqsts
 
         protected void txtSplitGLAmount_TextChanged(object sender, EventArgs e)
         {
-            ExtensionActions.ReloadDecimalText((TextBox)sender);    // Pretty up the text just entered
-            RecalculateTotalAmount();                         // Update "master" amount
+            ExtensionActions.ReloadDecimalText_NoNegative((TextBox)sender); // Pretty up the text just entered; don't allow a negative value
+            RecalculateTotalAmount();                               // Update "master" amount
         }
 
         // Buttons and processing within the split Payroll gridview
@@ -1376,7 +1376,7 @@ namespace Portal11.Rqsts
                         rows.Rows.Add(dr);                           // Add the new row to the data table
                         if (row.Default)                            // If true, this is the default Project Class
                         {
-                            defaultID = row.ProjectClassID;         // Save this for later use
+                            defaultID = row.ProjectClassID;         // Save New for later use
                             litSavedDefaultProjectClassID.Text = row.ProjectClassID.ToString(); // Save default for use in split expense rows
                         }
                     }
@@ -1841,7 +1841,7 @@ namespace Portal11.Rqsts
                     TextBox txtSplitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Find the text box within gridview row
                     TextBox txtSplitNote = (TextBox)r.FindControl("txtSplitNote"); // Find the text box within gridview row
 
-                    if ((ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount) == -1) || // Carefully check for a valid decimal value in amount. If == error
+                    if ((ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount) == PortalConstants.BadDecimalValue) || // Carefully check for a valid decimal value in amount. If == error
                         (ddlSplitGLCode.SelectedIndex <= 0))            // If <= nothing selected, that's an error
                     {
                         litSplitGLError.Visible = true;                 // Turn on the error message
@@ -2036,7 +2036,7 @@ namespace Portal11.Rqsts
             {
                 TextBox txtSplitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Find the text box within gridview row
                 decimal rowAmount = ExtensionActions.LoadTxtIntoDecimal(txtSplitAmount); // Convert the text into decimal, carefully
-                if (rowAmount != -1)                                // If != there's a legitimate value here
+                if (rowAmount != PortalConstants.BadDecimalValue)   // If != there's a legitimate value here
                     totalDollarAmount += rowAmount;                 // Accumulate amount from this row     
             }
             txtAmount.Text = ExtensionActions.LoadDecimalIntoTxt(totalDollarAmount); // Update "master" amount with total of all rows
@@ -2066,7 +2066,7 @@ namespace Portal11.Rqsts
             {
                 TextBox splitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Locate text box containing Gross Pay for this row
                 decimal rowAmount = ExtensionActions.LoadTxtIntoDecimal(splitAmount); // Try to convert this row's Gross Pay into a number
-                if (rowAmount != -1)                                // If != there is a good number in the row
+                if (rowAmount != PortalConstants.BadDecimalValue)   // If != there is a good number in the row
                     totalGrossPay += rowAmount;                     // Accumulate the Gross pay of all rows
             }
             txtAmount.Text = ExtensionActions.LoadDecimalIntoTxt(totalGrossPay); // Show the total to the user
