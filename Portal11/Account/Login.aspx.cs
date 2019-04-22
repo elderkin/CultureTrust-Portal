@@ -75,15 +75,24 @@ namespace Portal11.Account
                         break;
                     case SignInStatus.Success:
 
+                        // We need to know the time zone in which the user's browser is operating. The Login.aspx page has queried the browser
+                        // and stashed this value in the hidden field, hdnLogin. Fetch it so we can pass it on to the next step./
+
+                        string GMTOffset = hdnLogin.Value;
+
                         // On a successful login, we have lots of work to do. But let's go somewhere else to do it, because of an odd
                         // ASP.NET "feature." The HttpContext.Current.User.IsInRole function does not seem to get updated until we flip
                         // into a new page. If we check it here, the return is invariably "false." So let's go to the LoginDispatch page. When
                         // we do the same fuction there, we get a correct answer.
+                        //
+                        // We need to know the time zone in which the user's browser is operating. The Login.aspx page has queried the browser
+                        // and stashed this value in the hidden field, hdnLogin. Fetch it so we can pass it on to the next step./
 
                         Response.Redirect(PortalConstants.URLLoginDispatch + "?" +
                                                          PortalConstants.QSCommand + "=" + PortalConstants.QSCommandUserLogin + "&" +
                                                          PortalConstants.QSEmail + "=" + Email.Text + "&" +
-                                                         PortalConstants.QSRememberEmail + "=" + ckRememberEmail.Checked.ToString());
+                                                         PortalConstants.QSRememberEmail + "=" + ckRememberEmail.Checked.ToString() + "&" +
+                                                         PortalConstants.QSUTCOffset + "=" + hdnLogin.Value );
                         break;
                 }                                                               // End of switch by login success/failure
             }

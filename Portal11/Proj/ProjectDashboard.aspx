@@ -406,8 +406,8 @@
                         <asp:BoundField DataField="ExpTypeDesc" HeaderText="Expense Type" />
                         <asp:BoundField DataField="Description" HeaderText="Description" />
                         <asp:BoundField DataField="Target" HeaderText="Destination" />
-                        <asp:BoundField DataField="Amount" HeaderText="Amount" 
-                            ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right">
+                        <asp:BoundField DataField="Amount" HeaderStyle-CssClass="text-right" HeaderText="Amount" 
+                            ItemStyle-HorizontalAlign="Right">
                         </asp:BoundField>
                         <asp:TemplateField HeaderText="Status" Visible="false">
                             <ItemTemplate>
@@ -534,7 +534,7 @@
                         <asp:BoundField DataField="Description" HeaderText="Description" />
                         <asp:BoundField DataField="SourceOfFunds" HeaderText="Source of Funds" />
                         <asp:BoundField DataField="Amount" HeaderText="Amount" 
-                            ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right">
+                            ItemStyle-HorizontalAlign="Right" HeaderStyle-CssClass="text-right">
                         </asp:BoundField>
                         <asp:TemplateField HeaderText="Status" Visible="false">
                             <ItemTemplate>

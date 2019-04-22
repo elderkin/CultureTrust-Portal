@@ -17,6 +17,16 @@
           background-color:#6F7CFC;
  }*/
     </style>
+
+    <script type="text/javascript">
+        function getTimezone() {
+            var dt = new Date();
+            var tz = dt.getTimezoneOffset();
+            return tz;
+        }
+    </script>
+
+
     <asp:Panel runat="server" BackImageUrl="~/Images/LoginBackground.jpg" Height="100%" Width="100%">
         <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; 
         <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; <br /> &nbsp; 
@@ -77,7 +87,12 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-offset-3 col-xs-offset-1 col-xs-2">
-                                <asp:Button runat="server" OnClick="LogIn" Text="Log in" CssClass="btn btn-primary" />
+                                <asp:HiddenField runat="server" ID="hdnLogin" Value="" />
+                                <script type="text/javascript">
+                                    var dt = new Date();
+                                    document.getElementById("<%=hdnLogin.ClientID%>").value = dt.getTimezoneOffset(); // From browser, minutes later than UTC. Stash where code behind can see it.
+                                </script>
+                                <asp:Button runat="server" ID="btnLogin" OnClick="LogIn" Text="Log in" CssClass="btn btn-primary"  />
                             </div>
                              <div class="col-xs-offset-2 col-xs-3">
                                 <asp:Button runat="server" ID="btnNew" OnClick="btnNew_Click" Text="What's New" CssClass="btn btn-default" CausesValidation="false" />

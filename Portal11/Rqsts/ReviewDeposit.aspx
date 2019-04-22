@@ -288,13 +288,13 @@
                                             Text='<%# Bind("SelectedGLCodeID") %>' Enabled="false"></asp:TextBox>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right" >
+                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-CssClass="text-right"  ItemStyle-HorizontalAlign="Right" >
                                     <ItemTemplate>
                                         <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" 
                                             Text='<%# Bind("Amount") %>' style="text-align:right" Enabled="false"></asp:TextBox>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                <asp:TemplateField HeaderText="Note" HeaderStyle-CssClass="text-right" >
                                     <ItemTemplate>
                                         <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control"  
                                             Text='<%# Bind("Note") %>' Enabled="false"></asp:TextBox>

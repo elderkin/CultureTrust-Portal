@@ -70,13 +70,10 @@ namespace Portal11
                         Server.Transfer("UploadError.aspx");
                     }
                 }
-//                elseif (ex == System.Web.HttoUnhand)
             }
-//            LogError.LogInternalException(ex);                                      // Report and record Fatal error, no matter what it is ** Needed? **
 
             // Now fall through to invoke the FatalError.aspx page and report to user
 
         }
- 
     }
 }

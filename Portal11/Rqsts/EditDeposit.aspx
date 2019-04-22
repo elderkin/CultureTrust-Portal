@@ -373,13 +373,13 @@
                                         <asp:DropDownList ID="ddlSplitGLCode" runat="server" CssClass="form-control"></asp:DropDownList>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right" >
+                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-CssClass="text-right" ItemStyle-HorizontalAlign="Right" >
                                     <ItemTemplate>
                                         <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" Text='<%# Bind("Amount") %>' 
                                             style="text-align:right" OnTextChanged="txtSplitAmount_TextChanged" AutoPostBack="true"/>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                <asp:TemplateField HeaderText="Note">
                                     <ItemTemplate>
                                         <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control"  Text='<%# Bind("Note") %>'/>
                                     </ItemTemplate>
