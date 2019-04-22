@@ -38,7 +38,7 @@ namespace Portal11.Models
     public class rowGLCodeSplit
     {
         public string Amount { get; set; }
-        public decimal HourlyRate { get; set; }
+        public string HourlyRate { get; set; }
         public decimal HoursPaid { get; set; }
         public string Note { get; set; }
         public string SelectedGLCodeID { get; set; }
@@ -56,6 +56,40 @@ namespace Portal11.Models
         public string CurrentFunds { get; set; }
         public string Status { get; set; }
         public bool Error { get; set; }
+    }
+
+    // One row of the GridView named gvEntitiess, used by ListEntities
+
+    public class rowListEntities
+    {
+        public string ProjectDepositCodes { get; set; }
+        public string ProjectExpenseCodes { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Email { get; set; }
+        public string URL { get; set; }
+        public string Phone { get; set; }
+        public string Inactive { get; set; }
+        public const int InactiveColumn = 7;
+        public string EntityID { get; set; }
+    }
+
+    // One row of the GridView named gvPersons, used by ListPersons
+
+    public class rowListPersons
+    {
+        public string ProjectContractorCodes { get; set; }
+        public string ProjectDonorCodes { get; set; }
+        public string ProjectEmployeeCodes { get; set; }
+        public string ProjectResponsiblePersonCodes { get; set; }
+        public string ProjectRecipientCodes { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Inactive { get; set; }
+        public const int InactiveColumn = 9;
+        public string PersonID { get; set; }
     }
 
     // One row of the GridView named gvListProjectClasses, used by ListProjectMetadata
@@ -159,6 +193,10 @@ namespace Portal11.Models
         public string Inactive { get; set; }
         public const int InactiveColumn = 8;
         public string ProjectID { get; set; }
+        public int YearExpenses { get; set; }
+        public int YearDeposits { get; set; }
+        public int YearDocuments { get; set; }
+        public decimal TotalAmounts { get; set; }
     }
 
     // One row of the GridView named gvAllAppView, used by ProjectDashboard. Now obsolete. But also ListMetadata
@@ -1391,6 +1429,7 @@ public class DocHistory
         public int ProjectEntityID { get; set; }
         public DateTime StartDate { get; set; }
         public int ProjectID { get; set; }
+        public virtual Project Project { get; set; }
         public int EntityID { get; set; }
         public virtual Entity Entity { get; set; }
         public EntityRole EntityRole { get; set; }
@@ -1417,6 +1456,7 @@ public class DocHistory
         public int ProjectPersonID { get; set; }
         public DateTime StartDate { get; set; }
         public int ProjectID { get; set; }
+        public virtual Project Project { get; set; }
         public int PersonID { get; set; }
         public virtual Person Person { get; set; }
         public PersonRole PersonRole { get; set; }
@@ -1680,7 +1720,8 @@ public class DocHistory
             QSVendorName = "VendorName",
             QSUserFile = "UserFile",
             QSUserID = "UserID",
-            QSUserRole = "UserRole";
+            QSUserRole = "UserRole",
+            QSUTCOffset = "UTCOffset";
 
         // LoginCookie stores information from the login process, like their email address
 
@@ -1705,7 +1746,8 @@ public class DocHistory
             CUserProjectSelector = "ProjectSelector",
             CUserProjectAll = "All",
             CUserProjectUser = "User",
-            CUserGridViewRows = "GridViewRows";
+            CUserGridViewRows = "GridViewRows",
+            CUserUTCOffset = "CUserUTCOffset";                          // Current time zone: Minutes later than UTC
 
         // AvatarImageCookie stores a sequence number for the logged in user. When the avatar changes, the sequence number changes, forcing browser to refresh image.
 

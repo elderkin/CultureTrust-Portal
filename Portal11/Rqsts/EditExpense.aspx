@@ -793,13 +793,13 @@
                                                 <asp:DropDownList ID="ddlSplitGLCode" runat="server" CssClass="form-control"></asp:DropDownList>
                                             </ItemTemplate>
                                         </asp:TemplateField>
-                                        <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                        <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-CssClass="text-right" ItemStyle-HorizontalAlign="Right">
                                             <ItemTemplate>
                                                 <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" Text='<%# Bind("Amount") %>'
                                                     Style="text-align: right" OnTextChanged="txtSplitGLAmount_TextChanged" AutoPostBack="true" />
                                             </ItemTemplate>
                                         </asp:TemplateField>
-                                        <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                        <asp:TemplateField HeaderText="Note">
                                             <ItemTemplate>
                                                 <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control" Text='<%# Bind("Note") %>' />
                                             </ItemTemplate>
@@ -873,7 +873,7 @@
                                                 <asp:DropDownList ID="ddlSplitPerson" runat="server" CssClass="form-control"></asp:DropDownList>
                                             </ItemTemplate>
                                         </asp:TemplateField>
-                                        <asp:TemplateField HeaderText="Hourly Rate" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                        <asp:TemplateField HeaderText="Hourly Rate" HeaderStyle-CssClass="text-right"  ItemStyle-HorizontalAlign="Right">
                                             <ItemTemplate>
                                                 <div style="width:100px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
                                                 <asp:TextBox ID="txtSplitHourlyRate" runat="server" CssClass="form-control" Text='<%# Bind("HourlyRate") %>'
@@ -881,7 +881,7 @@
                                                 </div>
                                             </ItemTemplate>
                                         </asp:TemplateField>
-                                        <asp:TemplateField HeaderText="Hours Paid" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                        <asp:TemplateField HeaderText="Hours Paid" HeaderStyle-CssClass="text-right"  ItemStyle-HorizontalAlign="Right">
                                             <ItemTemplate>
                                                 <div style="width:100px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
                                                 <asp:TextBox ID="txtSplitHoursPaid" runat="server" CssClass="form-control" Text='<%# Bind("HoursPaid") %>'
@@ -889,7 +889,7 @@
                                                 </div>
                                             </ItemTemplate>
                                         </asp:TemplateField>
-                                        <asp:TemplateField HeaderText="Gross Pay" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                        <asp:TemplateField HeaderText="Gross Pay" HeaderStyle-CssClass="text-right"  ItemStyle-HorizontalAlign="Right">
                                             <ItemTemplate>
                                                 <div style="width:120px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
                                                 <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" Text='<%# Bind("Amount") %>'
@@ -897,7 +897,7 @@
                                                 </div>
                                             </ItemTemplate>
                                         </asp:TemplateField>
-                                        <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                        <asp:TemplateField HeaderText="Note">
                                             <ItemTemplate>
                                                 <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control" Text='<%# Bind("Note") %>' />
                                             </ItemTemplate>
@@ -962,8 +962,8 @@
                                     <asp:RadioButtonList ID="rdoDeliveryModeReg" runat="server" AutoPostBack="true"
                                         Style="margin-left: 20px;" CssClass="rdoColWidth" Visible="true"
                                         OnSelectedIndexChanged="rdoDeliveryModeReg_SelectedIndexChanged">
-                                        <asp:ListItem Text="Hold for pickup." Value="Pickup" Selected="True"></asp:ListItem>
-                                        <asp:ListItem Text="Mail to payee." Value="MailPayee"></asp:ListItem>
+                                        <asp:ListItem Text="Hold for pickup." Value="Pickup"></asp:ListItem>
+                                        <asp:ListItem Text="Mail to payee." Value="MailPayee" Selected="True"></asp:ListItem>
                                         <asp:ListItem Text="Mail to the below address." Value="MailAddress"></asp:ListItem>
                                     </asp:RadioButtonList>
                                 </div> <%--End of first radio--%>

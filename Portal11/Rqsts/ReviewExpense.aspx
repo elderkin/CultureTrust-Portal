@@ -375,13 +375,13 @@
                                             Text='<%# Bind("SelectedGLCodeID") %>' Enabled="false"></asp:TextBox>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right" >
+                                <asp:TemplateField HeaderText="Dollar Amount" HeaderStyle-CssClass="text-right"  ItemStyle-HorizontalAlign="Right" >
                                     <ItemTemplate>
                                         <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" 
                                             Text='<%# Bind("Amount") %>' style="text-align:right" Enabled="false"></asp:TextBox>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                <asp:TemplateField HeaderText="Note" HeaderStyle-CssClass="text-right" >
                                     <ItemTemplate>
                                         <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control"  
                                             Text='<%# Bind("Note") %>' Enabled="false"></asp:TextBox>
@@ -424,13 +424,13 @@
                                             Text='<%# Bind("SelectedProjectClassID") %>' Enabled="false"></asp:TextBox>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Expense Account">
+                                <asp:TemplateField HeaderText="Employee">
                                     <ItemTemplate>
-                                        <asp:TextBox ID="txtSplitGLCode" runat="server" CssClass="form-control" 
-                                            Text='<%# Bind("SelectedGLCodeID") %>' Enabled="false"></asp:TextBox>
+                                        <asp:TextBox ID="txtSplitPerson" runat="server" CssClass="form-control" 
+                                            Text='<%# Bind("SelectedPersonID") %>' Enabled="false"></asp:TextBox>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Hourly Rate" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                <asp:TemplateField HeaderText="Hourly Rate" HeaderStyle-CssClass="text-right"  ItemStyle-HorizontalAlign="Right">
                                     <ItemTemplate>
                                         <div style="width:100px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
                                         <asp:TextBox ID="txtSplitHourlyRate" runat="server" CssClass="form-control" Text='<%# Bind("HourlyRate") %>'
@@ -438,7 +438,7 @@
                                         </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Hours Paid" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                <asp:TemplateField HeaderText="Hours Paid" HeaderStyle-CssClass="text-right"  ItemStyle-HorizontalAlign="Right">
                                     <ItemTemplate>
                                         <div style="width:100px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
                                         <asp:TextBox ID="txtSplitHoursPaid" runat="server" CssClass="form-control" Text='<%# Bind("HoursPaid") %>'
@@ -446,7 +446,7 @@
                                         </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Gross Pay" HeaderStyle-HorizontalAlign="Right" ItemStyle-HorizontalAlign="Right">
+                                <asp:TemplateField HeaderText="Gross Pay" HeaderStyle-CssClass="text-right"  ItemStyle-HorizontalAlign="Right">
                                     <ItemTemplate>
                                         <div style="width:120px; overflow: hidden; white-space:nowrap; text-overflow:ellipsis">
                                         <asp:TextBox ID="txtSplitAmount" runat="server" CssClass="form-control" Text='<%# Bind("Amount") %>'
@@ -454,7 +454,7 @@
                                         </div>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Note" HeaderStyle-HorizontalAlign="Right">
+                                <asp:TemplateField HeaderText="Note" HeaderStyle-CssClass="text-right" >
                                     <ItemTemplate>
                                         <asp:TextBox ID="txtSplitNote" runat="server" CssClass="form-control"  
                                             Text='<%# Bind("Note") %>' Enabled="false"></asp:TextBox>

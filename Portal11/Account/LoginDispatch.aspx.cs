@@ -30,6 +30,7 @@ namespace Portal11.Account
             string cmd = Request.QueryString[PortalConstants.QSCommand]; // Fetch Command,"UserLogin"
             string email = Request.QueryString[PortalConstants.QSEmail]; // Fetch "Email" Query String, if any
             string rememberEmail = Request.QueryString[PortalConstants.QSRememberEmail]; // Fetch "RememberEmail" Query String, if any
+            string UTCOffset = Request.QueryString[PortalConstants.QSUTCOffset]; // From browser, time zone offset from UTC in minutes
 //            string status = Request.QueryString[PortalConstants.QSStatus]; // Fetch "Status" Query String, if any
 
             if (cmd == null)                                        // If == there is no command in the Query String.
@@ -109,6 +110,7 @@ namespace Portal11.Account
                 userInfoCookie[PortalConstants.CUserFullName] = loggedInUser.FullName;
                 userInfoCookie[PortalConstants.CUserFranchiseKey] = loggedInUser.FranchiseKey; // Insert current User's Franchise Key
                 userInfoCookie[PortalConstants.CUserGridViewRows] = loggedInUser.GridViewRows.ToString(); // Find number of rows to display in GridView controls
+                userInfoCookie[PortalConstants.CUserUTCOffset] = UTCOffset; // Minutes that browser is offset from UTC
 
                 // The User could be both an Administrator and something else. So we check for Administrator first and fill in one of its cookie fields. 
                 //

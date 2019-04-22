@@ -851,8 +851,6 @@ namespace Portal11.Rqsts
             string emailSent = ""; bool revising = false;
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
-                try
-                {
                     Exp toSubmit = context.Exps.Find(savedExpID);   // Find the Exp that we want to update
                     if (toSubmit == null)                           // If == could not find the Dep
                         LogError.LogInternalError("EditExpense", $"Unable to find saved Expense ID '{savedExpID}' in database"); // Fatal error
@@ -877,13 +875,20 @@ namespace Portal11.Rqsts
                     ExpState nextState = StateActions.FindNextState(toSubmit.CurrentState, ReviewAction.Submit, toSubmit.SubmitProjectRole); // Figure out what next state is. Nuanced.
                     StateActions.SetNewState(toSubmit, nextState, litSavedUserID.Text, hist); // Move to that state
                     toSubmit.SubmitUserID = litSavedUserID.Text;        // Remember who submitted this Exp. They get notification on Return.
+                try
+                {
 
                     context.ExpHistorys.Add(hist);                      // Save new ExpHistory row
                     context.SaveChanges();                              // Update the Exp with new fields
+                }
+                catch (Exception ex)
+                {
+                    LogError.LogDatabaseError(ex, "EditExpense", $"Unable to update Expense into Submitted state. Exception: '{ex.Message}'"); // Fatal error
+                }
 
-                    // If it's a rush request, first send a broadcast "INCOMING!" email to project staff. Then send the regular email with rush status
+                // If it's a rush request, first send a broadcast "INCOMING!" email to project staff. Then send the regular email with rush status
 
-                    if (!revising)                                      // If false request progressing normally, send email(s)
+                if (!revising)                                      // If false request progressing normally, send email(s)
                     {
                         if (toSubmit.Rush)                                  // If true, this is a rush request. Send broadcast email to alert staff
                             EmailActions.BroadcastEmailToAllStaff(toSubmit.Rush, // Send email to all staff members. Rush email if rush request
@@ -904,11 +909,6 @@ namespace Portal11.Rqsts
                             EnumActions.GetEnumDescription(nextState),      // Here is its next state
                             PortalConstants.CEmailDefaultExpenseApprovedSubject, PortalConstants.CEmailDefaultExpenseApprovedBody); // Use this subject and body, if needed
                     }
-                }
-                catch (Exception ex)
-                {
-                    LogError.LogDatabaseError(ex, "EditExpense", "Unable to update Expense into Submitted state"); // Fatal error
-                }
             }
 
             // Now go back to Dashboard or wherever
@@ -1726,7 +1726,7 @@ namespace Portal11.Rqsts
                         TotalRows = totalRows,                      // Note row count of gridview to help RowDataBound get cute
                         SelectedProjectClassID = ddlSplitProjectClass.SelectedValue, // Repeat for Project Class drop down list
                         SelectedPersonID = ddlSplitPerson.SelectedValue, // Spot the selected row of the drop down list, if any. This is the Person ID
-                        HourlyRate = ExtensionActions.LoadTxtIntoDecimal(txtSplitHourlyRate),
+                        HourlyRate = txtSplitHourlyRate.Text,
                         HoursPaid = ExtensionActions.LoadTxtIntoDecimal(txtSplitHoursPaid),
                         Amount = "",
                         Note = txtSplitNote.Text                    // Copy note, if any, into refresh row
@@ -1863,7 +1863,7 @@ namespace Portal11.Rqsts
 
                     if ((ExtensionActions.LoadTxtIntoDecimal(txtSplitHourlyRate) <= 0) || // Carefully check for a valid decimal value in amount. If <= error
                         (ExtensionActions.LoadTxtIntoDecimal(txtSplitHoursPaid) <= 0) || // Carefully check for a valid decimal value. If <= error
-                        (ddlSplitPerson.SelectedIndex < 0))            // If <= nothing selected, that's an error
+                        (ddlSplitPerson.SelectedIndex <= 0))            // If <= nothing selected, that's an error
                     {
                         litSplitPayrollError.Visible = true;            // Turn on the error message
                         return false;                                   // Report the error
@@ -2053,6 +2053,7 @@ namespace Portal11.Rqsts
             {
                 decimal grossPay = ExtensionActions.LoadTxtIntoDecimal(splitHourlyRate) * ExtensionActions.LoadTxtIntoDecimal(splitHoursPaid);
                 splitGrossPay.Text = ExtensionActions.LoadDecimalIntoTxt(grossPay); // Load the product (or default) as Amount - column header is "Gross Pay"
+                splitHourlyRate.Text = ExtensionActions.LoadDecimalIntoTxt(hourlyRate); // Reformat the hourly rate all pretty-like
             }
             return;
         }

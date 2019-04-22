@@ -93,7 +93,7 @@
                         <asp:BoundField DataField="Email" HeaderText="Email" />
                         <asp:BoundField DataField="UserRoleDesc" HeaderText="User Role" />
                         <asp:BoundField DataField="Administrator" HeaderText="Admin" />
-                        <asp:BoundField DataField="LoginCount" HeaderText="Login Count" />
+                        <asp:BoundField DataField="LoginCount" HeaderStyle-CssClass="text-right" ItemStyle-HorizontalAlign="Right" HeaderText="Login Count" />
                         <asp:BoundField DataField="LastLogin" HeaderText="Last Login" DataFormatString="{0:G}" />
                         <asp:TemplateField HeaderText="Inactive">
                             <ItemTemplate>

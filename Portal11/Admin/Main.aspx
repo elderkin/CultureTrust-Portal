@@ -34,6 +34,10 @@
                             <a runat="server" href="~/Select/SelectProject.aspx?Command=AssignEntitys&Return=~/Admin/Main.aspx" 
                                 title="Choose an existing Project and assign Entitys to it">Assign Entitys to Project</a>
                         </li>
+                        <li class="list-group-item">
+                            <a runat="server" href="~/Lists/ListEntitiesByProject.aspx" 
+                                title="List all Entities associated with a Project">List Entities by Project</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -75,6 +79,10 @@
                         <li class="list-group-item">
                             <a runat="server" href="~/Select/SelectProject.aspx?Command=AssignPersons&Return=~/Admin/Main.aspx" 
                                 title="Choose an existing Project and assign Persons to it">Assign Persons to Project</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a runat="server" href="~/Lists/ListPersonsByProject.aspx" 
+                                title="List all Persons associated with a Project">List Persons by Project</a>
                         </li>
                     </ul>
                 </div>

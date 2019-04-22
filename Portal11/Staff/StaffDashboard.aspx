@@ -297,7 +297,7 @@
                             </EmptyDataTemplate>
                             <Columns>
                                 <asp:BoundField DataField="CurrentTime" ItemStyle-HorizontalAlign="Right" HeaderText="Last Modified" DataFormatString="{0:g}" />
-                                <asp:BoundField DataField="ProjectName" ItemStyle-HorizontalAlign="Left" HeaderText="Project" HeaderStyle-HorizontalAlign="Right"/>
+                                <asp:BoundField DataField="ProjectName" ItemStyle-HorizontalAlign="Left" HeaderText="Project" HeaderStyle-CssClass="text-right" />
                                 <asp:BoundField DataField="AppTypeDesc" HeaderText="Approval Type" />
                                 <asp:BoundField DataField="AppReviewType" HeaderText="Review Type" />
                                 <asp:BoundField DataField="CurrentStateDesc" HeaderText="Status" />
@@ -422,7 +422,7 @@
                                 <asp:BoundField DataField="ProjectName" HeaderText="Project" />
                                 <asp:BoundField DataField="ExpTypeDesc" HeaderText="Expense Type" />
                                 <asp:BoundField DataField="Amount" HeaderText="Amount" DataFormatString="${0:###,###.00}"
-                                    HtmlEncode="false" ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right" />
+                                    HtmlEncode="false" ItemStyle-HorizontalAlign="Right" HeaderStyle-CssClass="text-right"  />
                                 <asp:BoundField DataField="CurrentStateDesc" HeaderText="Status" />
                                 <asp:BoundField DataField="Owner" HeaderText="Next Reviewer" />
                                 <asp:BoundField DataField="Target" HeaderText="Destination" />
@@ -559,7 +559,7 @@
                                 <asp:BoundField DataField="ProjectName" HeaderText="Project" />
                                 <asp:BoundField DataField="DepTypeDesc" HeaderText="Deposit Type" />
                                 <asp:BoundField DataField="Amount" HeaderText="Amount" DataFormatString="${0:###,###.00}"
-                                    HtmlEncode="false" ItemStyle-HorizontalAlign="Right" HeaderStyle-HorizontalAlign="Right" />
+                                    HtmlEncode="false" ItemStyle-HorizontalAlign="Right" HeaderStyle-CssClass="text-right"  />
                                 <asp:BoundField DataField="CurrentStateDesc" HeaderText="Status" />
                                 <asp:BoundField DataField="Owner" HeaderText="Next Reviewer" />
                                 <asp:BoundField DataField="Description" HeaderText="Description" />

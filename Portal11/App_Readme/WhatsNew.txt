@@ -1,4 +1,8 @@
-﻿Version 1.15
+﻿Version 1.16
+
+On the Admin page, the List Project function displays a row for each project. The row includes 12-month totals of submitted Expense, Deposit, and Document requests, and total Expendatures. It also includes the total count of Requests for the duration of the project. 
+
+Version 1.15
 
 On the Login page, a new "Forgot Password" initiates a dialog to reset your password.
 

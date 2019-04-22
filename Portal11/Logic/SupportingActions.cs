@@ -451,7 +451,7 @@ namespace Portal11.Logic
                             SupportingDocTemp sdt = context.SupportingDocTemps.Find(sdtID); // Fetch the row that we want
                             if (sdt == null)                        // If == unable to find the rst row by its ID. An internal error
                                 LogError.LogInternalError("UnloadDocs", 
-                                    $"RqstSupportingTempID '{sdtID}' from selected GridView row not found in database for requestType '{rqstType.ToString()}' and requestID '{ownerID}'"
+                                    $"RqstSupportingTempID '{sdtID}' from selected GridView row not found in database for requestType '{rqstType.ToString()}', requestID '{ownerID}', row.Text '{row.Text}', row.Value '{row.Value}'"
                                     ); // Fatal error
 
                             //  3) Add a new row to the RqstSupporting table, copying RqstSupportingTemp info. This generates an ID
