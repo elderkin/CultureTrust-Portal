@@ -218,6 +218,19 @@ namespace Portal11.Logic
             }
         }
 
+        public static PEXType ConvertTextToPEXType(string text)
+        {
+            try
+            {
+                return (PEXType)Enum.Parse(typeof(PEXType), text, true); // Convert back into enumeration type
+            }
+            catch (Exception)
+            {
+                LogError.LogInternalError("EnumActions.ConvertTextToPEXType", $"Unable to parse text '{text}' to PEXType enum"); // Fatal error
+                return 0;                                               // If conversion failed, substitute null value
+            }
+        }
+
         public static PODeliveryMode ConvertTextToPODeliveryMode(string text)
         {
             try

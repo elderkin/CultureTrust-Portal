@@ -47,11 +47,15 @@ namespace Portal11.Logic
         //  2) Copy the Supporting Docs. We know that in the source Rqst, all the supporting docs are "permanent," i.e., we don't need
         //  to worry about "temporary" docs or revisions.
 
-        public static void CopyDocs(ApplicationDbContext context, RequestType rqstType, int srcID, int destID)
+        public static void CopyDocs(ApplicationDbContext context, RequestType srcType, int srcID, int destID, RequestType destTyp=RequestType.ReservedForFutureUse)
         {
+            RequestType destType = destTyp;                         // Fetch parameter from caller, if any
+            if (destType == RequestType.ReservedForFutureUse)       // If == the parameter is blank
+                destType = srcType;                                 // Supply default
+
             string serverRoot = HttpContext.Current.Server.MapPath(PortalConstants.SupportingDir); // Path to Supporting Docs directory on server
             var query = from sd in context.SupportingDocs
-                        where sd.OwnerID == srcID && sd.OwnerType == rqstType
+                        where sd.OwnerID == srcID && sd.OwnerType == srcType
                         select sd;                                  // Find all RqstSupporting rows for the source Rqst
 
             List<SupportingDoc> srcSDs = query.ToList();            // Stuff query results into list so only one active result set
@@ -64,7 +68,7 @@ namespace Portal11.Logic
                     FileLength = srcSD.FileLength,
                     UploadedTime = srcSD.UploadedTime,
                     OwnerID = destID,                               // This belongs to the destination Rqst
-                    OwnerType = rqstType
+                    OwnerType = destType
                 };
                 context.SupportingDocs.Add(destSD);                 // Add the new row
                 context.SaveChanges();                              // Commit change and produce destination RqstSupportingID

@@ -66,7 +66,7 @@
                                 aria-expanded="false" visible="false">Project <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a runat="server" id="mnuSelectProject" href="~/Select/SelectProject?Command=Menu">Select Project</a></li>
-                                <li><a runat="server" id="mnuEditProjectClasses" visible="false" href="~/Select/SelectProjectClass?Command=Edit">Edit Project Classes</a></li>
+                                <li><a runat="server" id="mnuEditProjectClasses" visible="false" href="~/Select/SelectProjectClass?Command=Edit">Edit Departments</a></li>
                             </ul>
                         </li>
 
@@ -86,10 +86,10 @@
                                 <li><a runat="server" href="~/Account/ChangeMyEmailOptions">Change My Email Options</a></li>
 <%--                                <li runat="server" id="liProjectDivider" class="divider" visible="false" ></li>
                                 <li><a runat="server" id="mnuSelectProject" href="~/Select/SelectProject?Command=Menu" visible="false">Select Project</a></li>
-                                <li><a runat="server" id="mnuEditProectClasses" href="~/Select/SelectProjectClass?Command=Edit" visible="false">Edit Project Classes</a></li>
+                                <li><a runat="server" id="mnuEditProectClasses" href="~/Select/SelectProjectClass?Command=Edit" visible="false">Edit Departments</a></li>
 --%>                                <li class="divider"></li>
-                                <li><a runat="server" href="~/Proj/ViewDoc?Directory=~//Images//&ServerFile=News.pdf&MIME=application/pdf&UserFile=CultureWorks News.pdf">Portal Information</a></li>
-                                <li>
+<%--                                <li><a runat="server" href="~/Proj/ViewDoc?Directory=~//Images//&ServerFile=News.pdf&MIME=application/pdf&UserFile=CultureWorks News.pdf">Portal Information</a></li>
+--%>                                <li>
                                     <asp:LoginStatus runat="server" LogoutAction="Redirect" LogoutText="Log off"
                                         LogoutPageUrl="~/Account/Login.aspx" OnLoggingOut="Unnamed_LoggingOut" />
                                 </li>

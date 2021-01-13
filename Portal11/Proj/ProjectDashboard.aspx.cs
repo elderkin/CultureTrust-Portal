@@ -42,20 +42,20 @@ namespace Portal11.Proj
 
                 // Fill project-specific date and amount fields at the top of the page.
 
-                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
-                {
-                    Project proj = context.Projects.Find(projID.Int);   // Fetch target project by ID
-                    if (proj == null)                                   // If == couldn't find the project
-                        LogError.LogInternalError("ProjectDashboard", $"Unable to find ProjectID '{projID.Int}' in database"); // Fatal error
+                //using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+                //{
+                //    Project proj = context.Projects.Find(projID.Int);   // Fetch target project by ID
+                //    if (proj == null)                                   // If == couldn't find the project
+                //        LogError.LogInternalError("ProjectDashboard", $"Unable to find ProjectID '{projID.Int}' in database"); // Fatal error
 
-                    litBalance.Text = proj.BalanceDate.ToString("MM/dd/yyyy", DateTimeFormatInfo.CurrentInfo);
-                    litCurrentFunds.Text = ExtensionActions.LoadDecimalIntoTxt(proj.CurrentFunds);
-                }
+                //    litBalance.Text = proj.BalanceDate.ToString("MM/dd/yyyy", DateTimeFormatInfo.CurrentInfo);
+                //    litCurrentFunds.Text = ExtensionActions.LoadDecimalIntoTxt(proj.CurrentFunds);
+                //}
 
                 // If the User is a Coordinator, they can create a new Deposit.
 
-                if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a InternalCoordinator. Powerful
-                    btnDepNew.Enabled = true;                           // Allow them to create a new Deposit
+                //if (litSavedProjectRole.Text == ProjectRole.InternalCoordinator.ToString()) // If == User is a InternalCoordinator. Powerful
+                //    btnDepNew.Enabled = true;                           // Allow them to create a new Deposit
 
                 RestoreCheckboxes();                                    // Restore more recent checkbox settings from a cookie
 
@@ -588,83 +588,83 @@ namespace Portal11.Proj
 
             // Build up some context for the next set of decisions
 
-            DepState state = EnumActions.ConvertTextToDepState(((Label)gvAllDep.SelectedRow.FindControl("lblCurrentState")).Text); // Carefully find state of row
-            bool archived = EnumActions.ConvertTextToBool(((Label)gvAllDep.SelectedRow.FindControl("lblArchived")).Text); // Carefully find Archived flag of row
-            ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Carefully find Project Role of user
+            //DepState state = EnumActions.ConvertTextToDepState(((Label)gvAllDep.SelectedRow.FindControl("lblCurrentState")).Text); // Carefully find state of row
+            //bool archived = EnumActions.ConvertTextToBool(((Label)gvAllDep.SelectedRow.FindControl("lblArchived")).Text); // Carefully find Archived flag of row
+            //ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Carefully find Project Role of user
 
-            switch(projectRole)
-            {
-                case ProjectRole.InternalCoordinator:
-                    {
-                        btnDepCopy.Enabled = true;                      // No matter what state, IC can copy the request
-                        switch (state)
-                        {
-                            case DepState.UnsubmittedByInternalCoordinator:
-                                {
-                                    btnDepDelete.Enabled = true;        // We created it, we can delete it
-                                    btnDepEdit.Enabled = true;          // In mid-revision, IC can continue editing
-                                    break;
-                                }
-                            case DepState.Returned:
-                                {
-                                    btnDepReview.Enabled = true;        // IC can Review a Returned request
-                                    break;
-                                }
-                            case DepState.DepositComplete:
-                                {
-                                    if (!archived)                      // If false row not archived (yet)
-                                        btnDepArchive.Enabled = true;   // Allow it to be archived
-                                    break;
-                                }
-                            default:
-                                break;                                  // IC is powerless for all other states
-                        }
-                        break;
-                    }
-                case ProjectRole.ProjectDirector:
-                    {
-                        switch (state)
-                        {
-                            case DepState.AwaitingProjectDirector:      // PD can review a submitted request
-                            case DepState.RevisedByFinanceDirector:     // PD can review request that FD has revised
-                                {
-                                    btnDepReview.Enabled = true;
-                                    break;
-                                }
-                            case DepState.RevisingByProjectDirector:
-                                {
-                                    btnDepEdit.Enabled = true;          // In mid-revision, PD can continue editing
-                                    break;
-                                }
-                            case DepState.DepositComplete:
-                                {
-                                    if (!archived)                      // If false row not archived (yet)
-                                        btnDepArchive.Enabled = true;   // Allow it to be archived
-                                    break;
-                                }
-                            default:
-                                break;                                  // PD is powerless for all other states
-                        }
-                        break;
-                    }
-                case ProjectRole.RevisingFinanceDirector:
-                    {
-                        //** I don't think we can get here. FD has no access to Project Dashboard **
-                        switch (state)
-                        {
-                            case DepState.RevisingByFinanceDirector:
-                                {
-                                    btnDepEdit.Enabled = true;          // In mid-revision, FD can continue editing
-                                    break;
-                                }
-                            default:
-                                break;                                  // FD is powerless for all other states
-                        }
-                        break;
-                    }
-                default:
-                    break;                                              // Others are powerless - all buttons off
-            }
+            //switch(projectRole)
+            //{
+            //    case ProjectRole.InternalCoordinator:
+            //        {
+            //            btnDepCopy.Enabled = true;                      // No matter what state, IC can copy the request
+            //            switch (state)
+            //            {
+            //                case DepState.UnsubmittedByInternalCoordinator:
+            //                    {
+            //                        btnDepDelete.Enabled = true;        // We created it, we can delete it
+            //                        btnDepEdit.Enabled = true;          // In mid-revision, IC can continue editing
+            //                        break;
+            //                    }
+            //                case DepState.Returned:
+            //                    {
+            //                        btnDepReview.Enabled = true;        // IC can Review a Returned request
+            //                        break;
+            //                    }
+            //                case DepState.DepositComplete:
+            //                    {
+            //                        if (!archived)                      // If false row not archived (yet)
+            //                            btnDepArchive.Enabled = true;   // Allow it to be archived
+            //                        break;
+            //                    }
+            //                default:
+            //                    break;                                  // IC is powerless for all other states
+            //            }
+            //            break;
+            //        }
+            //    case ProjectRole.ProjectDirector:
+            //        {
+            //            switch (state)
+            //            {
+            //                case DepState.AwaitingProjectDirector:      // PD can review a submitted request
+            //                case DepState.RevisedByFinanceDirector:     // PD can review request that FD has revised
+            //                    {
+            //                        btnDepReview.Enabled = true;
+            //                        break;
+            //                    }
+            //                case DepState.RevisingByProjectDirector:
+            //                    {
+            //                        btnDepEdit.Enabled = true;          // In mid-revision, PD can continue editing
+            //                        break;
+            //                    }
+            //                case DepState.DepositComplete:
+            //                    {
+            //                        if (!archived)                      // If false row not archived (yet)
+            //                            btnDepArchive.Enabled = true;   // Allow it to be archived
+            //                        break;
+            //                    }
+            //                default:
+            //                    break;                                  // PD is powerless for all other states
+            //            }
+            //            break;
+            //        }
+            //    case ProjectRole.RevisingFinanceDirector:
+            //        {
+            //            //** I don't think we can get here. FD has no access to Project Dashboard **
+            //            switch (state)
+            //            {
+            //                case DepState.RevisingByFinanceDirector:
+            //                    {
+            //                        btnDepEdit.Enabled = true;          // In mid-revision, FD can continue editing
+            //                        break;
+            //                    }
+            //                default:
+            //                    break;                                  // FD is powerless for all other states
+            //            }
+            //            break;
+            //        }
+            //    default:
+            //        break;                                              // Others are powerless - all buttons off
+            //}
             return;
         }
 
@@ -782,113 +782,120 @@ namespace Portal11.Proj
 
         protected void gvAllExp_SelectedIndexChanged(object sender, EventArgs e)
         {
-            btnExpArchive.Enabled = false;
-            btnExpCopy.Enabled = true;                                  // If any Request is selected, the project user can always copy it
-            btnExpDelete.Enabled = false;                               // Assume User cannot Delete Request
-            btnExpEdit.Enabled = false;                                 // Assume User cannot Edit Request
-            btnExpReview.Enabled = false;                               // Assume User cannot Review Request
+            //btnExpArchive.Enabled = false;
+            btnExpCopy.Enabled = false;                                  // Assume User cannot Copy Request
+            //btnExpDelete.Enabled = false;                               // Assume User cannot Delete Request
+            //btnExpEdit.Enabled = false;                                 // Assume User cannot Edit Request
+            //btnExpReview.Enabled = false;                               // Assume User cannot Review Request
             btnExpView.Enabled = true;                                  // If any Request is selected, the user can always view it
 
 
             // Build up some context for the next set of decisions
 
-            ExpState state = EnumActions.ConvertTextToExpState(((Label)gvAllExp.SelectedRow.FindControl("lblCurrentState")).Text); // Carefully find state of row
-            bool archived = EnumActions.ConvertTextToBool(((Label)gvAllExp.SelectedRow.FindControl("lblArchived")).Text); // Carefully find Archived flag of row
-            ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Carefully find Project Role of user
+            //ExpState state = EnumActions.ConvertTextToExpState(((Label)gvAllExp.SelectedRow.FindControl("lblCurrentState")).Text); // Carefully find state of row
+            //bool archived = EnumActions.ConvertTextToBool(((Label)gvAllExp.SelectedRow.FindControl("lblArchived")).Text); // Carefully find Archived flag of row
+            //ProjectRole projectRole = EnumActions.ConvertTextToProjectRole(litSavedProjectRole.Text); // Carefully find Project Role of user
+            ExpType expType = EnumActions.ConvertTextToExpType(((Label)gvAllExp.SelectedRow.FindControl("lblExpType")).Text); // Find Expense Type of row
 
-            switch (projectRole)
-            {
-                case ProjectRole.InternalCoordinator:
-                    {
-                        switch (state)
-                        {
-                            case ExpState.AwaitingInternalCoordinator:
-                            case ExpState.ReturnedToInternalCoordinator:
-                                {
-                                    btnExpReview.Enabled = true;        // IC can Review a Returned request
-                                    break;
-                                }
-                            case ExpState.UnsubmittedByInternalCoordinator:
-                                {
-                                    btnExpDelete.Enabled = true;        // IC can Delete own request
-                                    btnExpEdit.Enabled = true;          // In mid-revision, IC can continue editing
-                                    break;
-                                }
-                            case ExpState.Paid:
-                                {
-                                    if (!archived)                      // If false row not archived (yet)
-                                        btnExpArchive.Enabled = true;   // Allow it to be archived
-                                    break;
-                                }
-                            case ExpState.RevisingByInternalCoordinator: // IC can edit a revising request
-                                {
-                                    btnExpEdit.Enabled = true;          // PD can edit own request
-                                    break;
-                                }
-                            default:
-                                break;                                  // IC is powerless for all other states
-                        }
-                        break;
-                    }
-                case ProjectRole.ProjectStaff:
-                    {
-                        switch (state)
-                        {
-                            case ExpState.ReturnedToProjectStaff:
-                                {
-                                    btnExpReview.Enabled = true;        // PS can Review a Returned request
-                                    break;
-                                }
-                            case ExpState.UnsubmittedByProjectStaff:
-                                {
-                                    btnExpDelete.Enabled = true;        // PS can Delete own request
-                                    btnExpEdit.Enabled = true;          // In mid-revision, PS can continue editing
-                                    break;
-                                }
-                            default:
-                                break;                                  // PS is powerless for all other states
-                        }
-                        break;
-                    }
-                case ProjectRole.ProjectDirector:
-                    {
-                        switch (state)
-                        {
-                            case ExpState.ReturnedToProjectDirector:    // PD can review a returned request
-                            case ExpState.AwaitingProjectDirector:      // PD can review a submitted request
-                            case ExpState.RevisedByCommunityDirector:   // PD can review a revised request
-                            case ExpState.RevisedByFinanceDirector:
-                            case ExpState.RevisedByInternalCoordinator:
-                            case ExpState.RevisedByPresident:
-                                {
-                                    btnExpReview.Enabled = true;
-                                    break;
-                                }
-                            case ExpState.UnsubmittedByProjectDirector: // PD can edit an unsubmitted request
-                                {
-                                    btnExpDelete.Enabled = true;        // PD can deelte own request
-                                    btnExpEdit.Enabled = true;          // PD can edit own request
-                                    break;
-                                }
-                            case ExpState.RevisingByProjectDirector:    // PD can edit a revising request
-                                {
-                                    btnExpEdit.Enabled = true;          // PD can edit own request
-                                    break;
-                                }
-                            case ExpState.Paid:                         // PD can archive a completed request
-                                {
-                                    if (!archived)                      // If false row not archived (yet)
-                                        btnExpArchive.Enabled = true;   // Allow it to be archived
-                                    break;
-                                }
-                            default:
-                                break;                                  // PD is powerless for all other states
-                        }
-                        break;
-                    }
-                default:
-                    break;                                              // Others are powerless - all buttons off
-            }
+            //switch (projectRole)
+            //{
+            //    case ProjectRole.InternalCoordinator:
+            //        {
+            //            switch (state)
+            //            {
+            //                case ExpState.AwaitingInternalCoordinator:
+            //                case ExpState.ReturnedToInternalCoordinator:
+            //                    {
+            //                        btnExpReview.Enabled = true;        // IC can Review a Returned request
+            //                        break;
+            //                    }
+            //                case ExpState.UnsubmittedByInternalCoordinator:
+            //                    {
+            //                        btnExpDelete.Enabled = true;        // IC can Delete own request
+            //                        btnExpEdit.Enabled = true;          // In mid-revision, IC can continue editing
+            //                        break;
+            //                    }
+            //                case ExpState.Paid:
+            //                    {
+            //                        if (!archived)                      // If false row not archived (yet)
+            //                            btnExpArchive.Enabled = true;   // Allow it to be archived
+            //                        break;
+            //                    }
+            //                case ExpState.RevisingByInternalCoordinator: // IC can edit a revising request
+            //                    {
+            //                        btnExpEdit.Enabled = true;          // PD can edit own request
+            //                        break;
+            //                    }
+            //                default:
+            //                    break;                                  // IC is powerless for all other states
+            //            }
+            //            break;
+            //        }
+            //    case ProjectRole.ProjectStaff:
+            //        {
+            //            switch (state)
+            //            {
+            //                case ExpState.ReturnedToProjectStaff:
+            //                    {
+            //                        btnExpReview.Enabled = true;        // PS can Review a Returned request
+            //                        break;
+            //                    }
+            //                case ExpState.UnsubmittedByProjectStaff:
+            //                    {
+            //                        btnExpDelete.Enabled = true;        // PS can Delete own request
+            //                        btnExpEdit.Enabled = true;          // In mid-revision, PS can continue editing
+            //                        break;
+            //                    }
+            //                default:
+            //                    break;                                  // PS is powerless for all other states
+            //            }
+            //            break;
+            //        }
+            //    case ProjectRole.ProjectDirector:
+            //        {
+            //            switch (state)
+            //            {
+            //                case ExpState.ReturnedToProjectDirector:    // PD can review a returned request
+            //                case ExpState.AwaitingProjectDirector:      // PD can review a submitted request
+            //                case ExpState.RevisedByCommunityDirector:   // PD can review a revised request
+            //                case ExpState.RevisedByFinanceDirector:
+            //                case ExpState.RevisedByInternalCoordinator:
+            //                case ExpState.RevisedByPresident:
+            //                    {
+            //                        btnExpReview.Enabled = true;
+            //                        break;
+            //                    }
+            //                case ExpState.UnsubmittedByProjectDirector: // PD can edit an unsubmitted request
+            //                    {
+            //                        btnExpDelete.Enabled = true;        // PD can deelte own request
+            //                        btnExpEdit.Enabled = true;          // PD can edit own request
+            //                        break;
+            //                    }
+            //                case ExpState.RevisingByProjectDirector:    // PD can edit a revising request
+            //                    {
+            //                        btnExpEdit.Enabled = true;          // PD can edit own request
+            //                        break;
+            //                    }
+            //                case ExpState.Paid:                         // PD can archive a completed request
+            //                    {
+            //                        if (!archived)                      // If false row not archived (yet)
+            //                            btnExpArchive.Enabled = true;   // Allow it to be archived
+            //                        break;
+            //                    }
+            //                default:
+            //                    break;                                  // PD is powerless for all other states
+            //            }
+            //            break;
+            //        }
+            //    default:
+            //        break;                                              // Others are powerless - all buttons off
+            //}
+
+            // Limit what can be copied
+
+            if ((expType == ExpType.Payroll) | (expType == ExpType.PEXCard)) // If true it's a Payroll or PEX expense request
+                btnExpCopy.Enabled = true;                              // Other ExpTypes can't copy this request
+
             return;
         }
 
@@ -1305,6 +1312,10 @@ namespace Portal11.Proj
             {
                 try
                 {
+
+                    //  0) Delete the GLCodeSplit rows associated with this Exp.
+
+                    SplitActions.DeleteSplitRows(RequestType.Document, docID); // Delete all Split rows with this DocID
 
                     //  1) Blow off the Supporting Docs associated with the Doc. This means deleting the files and SupportingDoc rows.
 
@@ -1972,11 +1983,11 @@ namespace Portal11.Proj
 
                 // If a specific ProjectClass is selected, only select requests from that ProjectClass
 
-                //if (ddlProjectClass.SelectedIndex > 0)                      // If > ProjectClass is selected. Fetch rqsts only for that ProjectClass
-                //{
-                //    int id = Convert.ToInt32(ddlProjectClass.SelectedValue); // Convert ID of selected ProjectClass
-                //    pred = pred.And(r => r.ProjectClassID == id);           // Only requests from selected ProjectClass
-                //}
+                if (ddlProjectClass.SelectedIndex > 0)                      // If > ProjectClass is selected. Fetch rqsts only for that ProjectClass
+                {
+                    int id = Convert.ToInt32(ddlProjectClass.SelectedValue); // Convert ID of selected ProjectClass
+                    pred = pred.And(r => r.ProjectClassID == id);           // Only requests from selected ProjectClass
+                }
 
                 List<Doc> Docs = context.Docs.AsExpandable().Where(pred).OrderByDescending(o => o.CurrentTime).ToList();
                 // Do the query using the constructed predicate, sort the result, and create a list of Doc rows
@@ -2003,8 +2014,10 @@ namespace Portal11.Proj
                                 useRow = true;                          // Process the row, don't skip it
                             break;
 
+                        case DocState.Approved:
                         case DocState.AwaitingCommunityDirector:
                         case DocState.AwaitingFinanceDirector:
+                        case DocState.RevisingByFinanceDirectorLate:
                         case DocState.AwaitingInternalCoordinator:
                         case DocState.AwaitingPresident:
                         case DocState.RevisingByInternalCoordinator:
@@ -2016,6 +2029,7 @@ namespace Portal11.Proj
                             break;
 
                         case DocState.Executed:
+                        case DocState.Paid:
                             if (ckRApproved.Checked)                    // If true, interested in these states
                                 useRow = true;                          // Process the row, don't skip it
                             break;
@@ -2033,6 +2047,7 @@ namespace Portal11.Proj
 
                     if (useRow)                                         // If true. checkboxes indicate that we should use the row
                     {
+
                         rowProjectDocView row = new rowProjectDocView()     // Empty row all ready to fill
                         {
                             RowID = r.DocID.ToString(),                     // Convert ID from int to string for easier retrieval later
@@ -2202,6 +2217,7 @@ namespace Portal11.Proj
                         rowProjectExpView row = new rowProjectExpView() // Empty row all ready to fill
                         {
                             RowID = r.ExpID.ToString(),                     // Convert ID from int to string for easier retrieval later
+                            ExpType = r.ExpType.ToString(),                 // The enum itself for later lookup
                             ExpTypeDesc = EnumActions.GetEnumDescription(r.ExpType), // Convert enum version to English version for display
                             Amount = ExtensionActions.LoadDecimalIntoTxt(r.Amount), // Carefully load decimal amount into text field
                             CurrentState = r.CurrentState,                  // Load enum version for use when row is selected
@@ -2428,7 +2444,7 @@ namespace Portal11.Proj
                 }
 
                 DdlActions.LoadDdl(ddlProjectClass, projectClassID, rows,
-                    "", "-- All Project Classes --", alwaysDisplayLeader: true); // Put the cherry on top
+                    "", "-- All Departments --", alwaysDisplayLeader: true); // Put the cherry on top
             }
             return;
         }

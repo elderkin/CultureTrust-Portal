@@ -262,6 +262,7 @@ namespace Portal11.Models
         public string RowID { get; set; }
         public DateTime Time { get; set; }
         public const int TimeRow = 1;
+        public string ExpType { get; set; }
         public string ExpTypeDesc { get; set; }
         public string Description { get; set; }
         public string Target { get; set; }
@@ -754,7 +755,8 @@ namespace Portal11.Models
 
         public DateTime FinancialBeginningDate { get; set; }
         public DateTime FinancialEndingDate { get; set; }
-        // Use common GLCode and ProjectClass
+        // By legacy, Financial gets to use ProjectClassID. Latecomers must qualify by their Type
+        // Use common GLCode. ProjectClass
 
         // Specifics for Document Type - Grant
 
@@ -763,6 +765,46 @@ namespace Portal11.Models
         [DataType(DataType.MultilineText)]
         public string GrantVerifyReason { get; set; }
 
+        // Specifics for Document Type - Payroll
+
+//        public decimal PayAmount { get; set; }
+        public DateTime PayBeginningDate { get; set; }  // Pay Period for Payroll
+        public DateTime PayEndingDate { get; set; }
+        public PaymentMethod PayPaymentMethod { get; set; }    // How the Payroll gets paid
+        [StringLength(250), DataType(DataType.MultilineText)]
+        public string PayDeliveryAddress { get; set; }         // Delivery Instructions, special for Purchase Order
+        public DeliveryMode PayDeliveryMode { get; set; }
+        public int? PayProjectClassID { get; set; }
+        public virtual ProjectClass PayProjectClass { get; set; }
+
+        // Specifics for Document Type - PEX Card
+
+        public PEXType PEXType { get; set; }
+        public DateTime PEXDateNeeded { get; set; }
+        public int PEXNumberOfCards { get; set; }
+        public decimal PEXEachCard { get; set; }
+        public int? PEXResponsiblePersonID { get; set; }
+        public virtual Person PEXResponsiblePerson { get; set; }
+        public int? PEXProjectClassID { get; set; }
+        public virtual ProjectClass PEXProjectClass { get; set; }
+
+        // Specifics for Document Type - Project To Project
+
+        public DateTime PTPInvoiceDate { get; set; }
+        public string PTPInvoiceNumber { get; set; }
+        public decimal PTPAmount { get; set; }
+        public int? PTPDestinationProjectID { get; set; }
+        public virtual Project PTPDestinationProject { get; set; }
+        public PaymentMethod PTPPaymentMethod { get; set; }    // How the Transfer gets paid
+        public int? PTPProjectClassID { get; set; }
+        public virtual ProjectClass PTPProjectClass { get; set; }
+
+        // Specifics for Document Type - PEX Reconciliation
+
+        public DateTime PXRStatementDate { get; set; }
+        public string PXRStatementDate1 { get; set; }
+        public decimal PXRStatementTotal { get; set; }
+        public bool PXRCompletedInfo { get; set; }
     }
     public enum DocContractFunds
     {
@@ -844,6 +886,12 @@ public class DocHistory
         RevisedByPresident,
         [Description("Error During Processing")]
         Error,
+        [Description("Revising (IC) Late")]
+        RevisingByFinanceDirectorLate,
+        [Description("Approved/Ready to Pay")]
+        Approved,
+        [Description("Paid and Sent")]
+        Paid,
         [Description("Reserved For Future Use")]
         ReservedForFutureUse,
     }
@@ -862,7 +910,17 @@ public class DocHistory
         Financial,
         [Description("Marketing/Fundraising Campaign")]
         Campaign,
-        [Description("Reserved for Future Use")]
+        [Description("Payroll")]
+        Payroll,
+        [Description("PEX Card")]
+        PEXCard,
+        [Description("Project-to-Project Transfer")]
+        ProjectToProject,
+        [Description("PEX Reconciliation")]
+        PEXReconciliation,
+        [Description("Timesheet")]
+        Timesheet,
+        [Description("Reserved For Future Use")]
         ReservedForFutureUse
     }
 
@@ -1275,6 +1333,16 @@ public class DocHistory
         ResponsiblePerson,
         [Description("Recipient")]
         Recipient
+    }
+
+    // A PEX card can come in flavors
+
+    public enum PEXType
+    {
+        [Description("New card")]
+        New = 1,
+        [Description("Existing card")]
+        Existing
     }
 
     public enum PODeliveryMode
@@ -1773,7 +1841,7 @@ public class DocHistory
 
         public const string
             CEmailDefaultDocumentApprovedSubject = "Document Request is ready for your action",
-            CEmailDefaultDocumentApprovedBody = "An Document Request has advanced in the review process. It is ready for your action.",
+            CEmailDefaultDocumentApprovedBody = "A Document Request has advanced in the review process. It is ready for your action.",
             CEmailDefaultDocumentBroadcastSubject = "A rush Document Request has been submitted for project {0}",
             CEmailDefaultDocumentBroadcastBody = "A rush Document Request has been submitted. Expect an email asking for your review.",
             CEmailDefaultDocumentExecutedSubject = "Document Request executed",
@@ -1892,6 +1960,11 @@ public class DocHistory
             CStaffCkCCertificate = "CkCertificate",
             CStaffCkCFinancial = "CkCFinancial",
             CStaffCkCCampaign = "CkCCampaign",
+            CStaffCkCPay = "CkCPay",
+            CStaffCkCPEX = "CkCPEX",
+            CStaffCkCPXR = "CkCPXR",
+            CStaffCkCPTP = "CkCPTP",
+            CStaffCkCTimesheet = "CkCTimesheet",
 
             CStaffExpVisible = "StaffExpVisible",
             CStaffCkEContractorInvoice = "CkEContractorInvoice",
@@ -1919,6 +1992,7 @@ public class DocHistory
         public const string
             AssemblyName = "Portal11",
             DDLAllGLCodes = "-- All GL Codes --",
+            DDLAllProjects = "-- All Projects --",
             DDLAllProjectClasses = "-- All Project Classes --",
             DdlID = "ID",
             DdlName = "Name",
@@ -2026,6 +2100,7 @@ public class DocHistory
             POVendorModeYes = "Yes",
             POVendorModeNo = "No",
             DeliveryInstructionsRush = "Rush",
+            PXRChecked = "true",
             DocumentVerify1Starter = "Project name represented as 'Your Project of ",
             SplitGLDeenergized = "Split", SplitGLEnergized = "Cancel";
 

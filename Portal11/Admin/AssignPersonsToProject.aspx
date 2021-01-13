@@ -231,7 +231,7 @@
                             <EmptyDataTemplate>
                                 <table>
                                     <tr>
-                                        <td>Please enter a name above to find a Entity within our database</td>
+                                        <td>Please enter a name above to find a Person within our database</td>
                                     </tr>
                                 </table>
                             </EmptyDataTemplate>

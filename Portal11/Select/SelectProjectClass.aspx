@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Select Project Class" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SelectProjectClass.aspx.cs" 
+﻿<%@ Page Title="Select Department" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="SelectProjectClass.aspx.cs" 
     Inherits="Portal11.Select.SelectProjectClass" EnableEventValidation="false" MaintainScrollPositionOnPostback="true" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
@@ -20,7 +20,7 @@
 
     <div class="row">
         <div class="col-xs-6">
-            <h4>Project Classes</h4>
+            <h4>Departments</h4>
         </div>
     </div>
 
@@ -44,9 +44,9 @@
             <div class="col-xs-4">
                 <div class="panel panel-default col-xs-12">
                     <asp:Panel runat="server">
-                            <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive Project Classes" CssClass="checkbox col-xs-12"
+                            <asp:CheckBox ID="chkInactive" runat="server" Text="Include Inactive Departments" CssClass="checkbox col-xs-12"
                                 OnCheckedChanged="chkInactive_CheckedChanged" AutoPostBack="true"
-                                ToolTip="Check to include Inactive Project Classess in this list" />
+                                ToolTip="Check to include Inactive Departments in this list" />
                     </asp:Panel>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                     <EmptyDataTemplate>
                         <table>
                             <tr>
-                                <td>There are no Project Classes available for this Project</td>
+                                <td>There are no Departments available for this Project</td>
                             </tr>
                         </table>
                     </EmptyDataTemplate>
@@ -118,11 +118,11 @@
     <!-- Button array -->
     <div class="row">
         <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn btn-default col-md-1 col-xs-2" Enabled="true"
-            OnClick="btnCancel_Click" CausesValidation="false" ToolTip="Return to the Dashboard without selecting an Project Class" />
+            OnClick="btnCancel_Click" CausesValidation="false" ToolTip="Return to the Dashboard without selecting an Department" />
         <asp:Button ID="btnNew" runat="server" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
-            OnClick="btnNew_Click" ToolTip="Create a new Project Class" Text="New" />
+            OnClick="btnNew_Click" ToolTip="Create a new Department" Text="New" />
         <asp:Button ID="btnSelect" runat="server" CssClass="btn btn-primary col-xs-offset-1 col-md-1 col-xs-2" Enabled="false"
-            OnClick="btnSelect_Click" ToolTip="Choose this Project Class for further processing" Text="Select" />
+            OnClick="btnSelect_Click" ToolTip="Choose this Department for further processing" Text="Select" />
     </div>
 
     <!-- "Scratch" storage used during form processing -->

@@ -54,14 +54,26 @@ namespace Portal11.Rqsts
 
                 switch (cmd)
                 {
+
+                    // In the new world, we only copy Exp requests to Doc requests - there are no new Exp requests. So rather than falling through into
+                    // editing, we create a new Doc row and then invoke Edit Document to process it.
+
                     case PortalConstants.QSCommandCopy:                 // Process a "Copy" command. Read existing request, save it in new row
                         {
-                            expID.Int = CopyExp(expID.Int);             // Copy the source Exp into a new destination Exp
-                            expID.String = expID.Int.ToString();        // Also update the string version of the Exp ID
-                            if (expID.Int == 0)                         // If == the copy process failed
-                                LogError.LogInternalError("EditExpense", "Unable to copy existing Expense Request"); // Log fatal error
+                            int newDocID = CopyExpToDoc(expID.Int);     // Copy from the Exp into a new Doc
+                            if (newDocID == 0)                          // If == the copy process failed
+                                LogError.LogInternalError("EditExpense", "Unable to copy existing Expense Request to new Document Request"); // Log fatal error
 
-                            goto case PortalConstants.QSCommandEdit;    // Now edit the destination Exp
+                            Response.Redirect(PortalConstants.URLEditDocument
+                                + "?" + PortalConstants.QSUserID + "=" + litSavedUserID.Text 
+                                + "&" + PortalConstants.QSProjectID + "=" + litSavedProjectID.Text 
+                                + "&" + PortalConstants.QSProjectRole + "=" + litSavedProjectRole.Text 
+                                + "&" + PortalConstants.QSStatus + "=Copy is ready to be edited."
+                                + "&" + PortalConstants.QSRequestID + "=" + newDocID.ToString()  // Start with just-created Doc request
+                                + "&" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandEdit // Edit it
+                                + "&" + PortalConstants.QSReturn + "=" + ret); // Our caller
+
+                            return;
                         }
 
                     // Fetch the row from the database. Set the radio button corresponding to our Expense type,
@@ -638,7 +650,7 @@ namespace Portal11.Rqsts
 
                 // Calculate the Gross Pay. If hourly rate and hours paid are present, Amount is the product. Otherwise, use whatever Amount came out of database.
 
-                RecalculateGrossPay(splitHourlyRate, splitHoursPaid, splitAmount); // Try to calculate gross pay
+                SplitActions.RecalculateGrossPay(splitHourlyRate, splitHoursPaid, splitAmount); // Try to calculate gross pay
 
                 // If this is the only row of the gridview, disable the Rem button. Can't delete the only row.
 
@@ -709,8 +721,8 @@ namespace Portal11.Rqsts
             TextBox splitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Locate text box containing Amount
             TextBox splitHourlyRate = (TextBox)r.FindControl("txtSplitHourlyRate"); // Locate text box containing Amount
             TextBox splitHoursPaid = (TextBox)r.FindControl("txtSplitHoursPaid"); // Locate text box containing Amount
-            RecalculateGrossPay (splitHourlyRate, splitHoursPaid, splitAmount); // React to change in amount
-            RecalculateTotalGrossPay();                             // Update accumulated total
+            SplitActions.RecalculateGrossPay (splitHourlyRate, splitHoursPaid, splitAmount); // React to change in amount
+            SplitActions.RecalculateTotalGrossPay(gvSplitPayroll, txtAmount); // Update accumulated total
         }
 
         // User has clicked on a row of the Supporting Docs list. Just turn on the buttons that work now.
@@ -947,80 +959,184 @@ namespace Portal11.Rqsts
             return;
         }
 
-        // Copy an existing Rqst.
-        //  1) Copy the Rqst row into a new row
+        //// Copy an existing Rqst.
+        ////  1) Copy the Rqst row into a new row
+        ////  2) Copy the splits
+        ////  3) Copy the Supporting Docs
+        ////  4) Create a ExpHistory row to describe the copy
+
+        //int CopyExp(int sourceID)
+        //{
+        //    using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+        //    {
+        //        Exp src = context.Exps.Find(sourceID);              // Fetch Rqst row by its key
+        //        if (src == null)                                    // If == source Rqst could not be found. Internal error
+        //            LogError.LogInternalError("EditExpense", $"ExpenseID '{sourceID.ToString()}' from selected GridView row not found in database"); // Fatal error
+        //        try
+        //        {
+
+        //            //  1) Copy the Rqst row into a new row
+
+        //            Exp dest = new Exp()
+        //            {                                               // Instantiate and fill the destination Rqst
+        //                Inactive = false,
+        //                Archived = false,
+        //                Amount = src.Amount,
+        //                BeginningDate = src.BeginningDate, EndingDate = src.EndingDate,
+        //                CardsQuantity = src.CardsQuantity, CardsValueEach = src.CardsValueEach,
+        //                ContractOnFile = src.ContractOnFile,
+        //                ContractReason = src.ContractReason,
+        //                ContractComing = src.ContractComing,
+        //                CreatedTime = System.DateTime.Now,          // Rqst is created right now
+        //                DateOfInvoice = src.DateOfInvoice,
+        //                DateNeeded = src.DateNeeded,
+        //                DeliveryMode = src.DeliveryMode, DeliveryAddress = src.DeliveryAddress,
+        //                Description = src.Description + " (copy)",  // Note that this is a copy
+        //                EntityNeeded = src.EntityNeeded, EntityRole = src.EntityRole, EntityID = src.EntityID,
+        //                ExpType = src.ExpType,
+        //                GLCodeID = src.GLCodeID,
+        //                GoodsCostPerUnit = src.GoodsCostPerUnit, GoodsDescription = src.GoodsDescription,
+        //                GoodsQuantity = src.GoodsQuantity, GoodsSKU = src.GoodsSKU,
+        //                InvoiceNumber = src.InvoiceNumber,
+        //                Notes = src.Notes,
+        //                PaymentMethod = src.PaymentMethod,
+        //                PersonNeeded = src.PersonNeeded, PersonRole = src.PersonRole, PersonID = src.PersonID,
+        //                PODeliveryMode = src.PODeliveryMode, POVendorMode = src.POVendorMode,
+        //                ProjectID = src.ProjectID,                  // New Rqst is in the same project
+        //                ReturnNote = "",                            // Clear out the return note, if any
+        //                ProjectClassID = src.ProjectClassID,
+        //                ReviseUserRole = UserRole.None,             // No revisions of a new request
+        //                StaffNote = "",                             // Clear out the staff note, if any
+        //                CurrentTime = System.DateTime.Now,
+        //                CurrentState = StateActions.FindUnsubmittedExpState(litSavedProjectRole.Text),
+        //                CurrentUserID = litSavedUserID.Text         // Current user becomes creator of new Rqst
+        //            };
+
+        //            context.Exps.Add(dest);                         // Store the new row
+        //            context.SaveChanges();                          // Commit the change to product the new Rqst ID
+
+        //            //  2) Copy the split rows, if any.
+
+        //            SplitActions.CopySplitRows(RequestType.Expense, src.ExpID, dest.ExpID); // Copy all the split rows, if any
+
+        //            //  3) Copy the Supporting Docs. We know that in the source Rqst, all the supporting docs are "permanent," i.e., we don't need
+        //            //  to worry about "temporary" docs.
+
+        //            SupportingActions.CopyDocs(context, RequestType.Expense, src.ExpID, dest.ExpID); // Copy each of the Supporting Docs
+
+        //            //  4) Create a ExpHistory row to describe the copy
+
+        //            ExpHistory hist = new ExpHistory();
+        //            StateActions.CopyPreviousState(src, hist, "Copied"); // Fill fields of new record
+        //            hist.ExpID = dest.ExpID; hist.NewExpState = dest.CurrentState; hist.ReturnNote = dest.ReturnNote; // Add fields from copied App
+
+        //            context.ExpHistorys.Add(hist);                  // Add the row
+        //            context.SaveChanges();                          // Commit the change
+        //            return dest.ExpID;                              // Return the ID of the new Expense Rqst
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            LogError.LogDatabaseError(ex, "EditExpense", "Error processing ExpHistory and RqstSupporting rows"); // Fatal error
+        //        }
+        //        return 0;
+        //    }
+        //}
+
+        // Copy an existing Exp Rqst to a new Doc request.
+        //  1) Copy the Exp Rqst row into a new Doc row. Only Payroll and PEX fields need to be copied
         //  2) Copy the splits
         //  3) Copy the Supporting Docs
-        //  4) Create a ExpHistory row to describe the copy
+        //  4) Create a DocHistory row to describe the copy
 
-        int CopyExp(int sourceID)
+        int CopyExpToDoc(int sourceID)
         {
             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
-                Exp src = context.Exps.Find(sourceID);              // Fetch Rqst row by its key
-                if (src == null)                                    // If == source Rqst could not be found. Internal error
+                Exp srcExp = context.Exps.Find(sourceID);              // Fetch Rqst row by its key
+                if (srcExp == null)                                    // If == source Rqst could not be found. Internal error
                     LogError.LogInternalError("EditExpense", $"ExpenseID '{sourceID.ToString()}' from selected GridView row not found in database"); // Fatal error
                 try
                 {
 
-                    //  1) Copy the Rqst row into a new row
+                    //  1) Copy the Exp Rqst row into a new Doc row
 
-                    Exp dest = new Exp()
+                    Doc destDoc = new Doc()
                     {                                               // Instantiate and fill the destination Rqst
+
+                        // Start with common fields
+
                         Inactive = false,
                         Archived = false,
-                        Amount = src.Amount,
-                        BeginningDate = src.BeginningDate, EndingDate = src.EndingDate,
-                        CardsQuantity = src.CardsQuantity, CardsValueEach = src.CardsValueEach,
-                        ContractOnFile = src.ContractOnFile,
-                        ContractReason = src.ContractReason,
-                        ContractComing = src.ContractComing,
                         CreatedTime = System.DateTime.Now,          // Rqst is created right now
-                        DateOfInvoice = src.DateOfInvoice,
-                        DateNeeded = src.DateNeeded,
-                        DeliveryMode = src.DeliveryMode, DeliveryAddress = src.DeliveryAddress,
-                        Description = src.Description + " (copy)",  // Note that this is a copy
-                        EntityNeeded = src.EntityNeeded, EntityRole = src.EntityRole, EntityID = src.EntityID,
-                        ExpType = src.ExpType,
-                        GLCodeID = src.GLCodeID,
-                        GoodsCostPerUnit = src.GoodsCostPerUnit, GoodsDescription = src.GoodsDescription,
-                        GoodsQuantity = src.GoodsQuantity, GoodsSKU = src.GoodsSKU,
-                        InvoiceNumber = src.InvoiceNumber,
-                        Notes = src.Notes,
-                        PaymentMethod = src.PaymentMethod,
-                        PersonNeeded = src.PersonNeeded, PersonRole = src.PersonRole, PersonID = src.PersonID,
-                        PODeliveryMode = src.PODeliveryMode, POVendorMode = src.POVendorMode,
-                        ProjectID = src.ProjectID,                  // New Rqst is in the same project
+                        Description = srcExp.Description + " (copy)",  // Note that this is a copy
+                        Notes = srcExp.Notes,
+                        ProjectID = srcExp.ProjectID,                  // New Rqst is in the same project
                         ReturnNote = "",                            // Clear out the return note, if any
-                        ProjectClassID = src.ProjectClassID,
                         ReviseUserRole = UserRole.None,             // No revisions of a new request
                         StaffNote = "",                             // Clear out the staff note, if any
                         CurrentTime = System.DateTime.Now,
-                        CurrentState = StateActions.FindUnsubmittedExpState(litSavedProjectRole.Text),
-                        CurrentUserID = litSavedUserID.Text         // Current user becomes creator of new Rqst
-                    };
+                        CurrentState = StateActions.FindUnsubmittedDocState(litSavedProjectRole.Text),
+                        CurrentUserID = litSavedUserID.Text,         // Current user becomes creator of new Rqst
 
-                    context.Exps.Add(dest);                         // Store the new row
+                        // Links to other tables
+
+                        EntityID = srcExp.EntityID,
+                        GLCodeID = srcExp.GLCodeID,
+                        PersonID = srcExp.PersonID,
+
+                        // Set dates to SQL minimum date
+
+                        ContractBeginningDate = (DateTime)SqlDateTime.MinValue, // Non-null values to satisfy SQL
+                        ContractEndingDate = (DateTime)SqlDateTime.MinValue,
+                        FinancialBeginningDate = (DateTime)SqlDateTime.MinValue,
+                        FinancialEndingDate = (DateTime)SqlDateTime.MinValue,
+                        PTPInvoiceDate = (DateTime)SqlDateTime.MinValue,
+
+
+                        // Payroll
+
+                        PayBeginningDate = srcExp.BeginningDate,
+                        PayEndingDate = srcExp.EndingDate,
+                        PayPaymentMethod = srcExp.PaymentMethod,
+                        PayDeliveryAddress = srcExp.DeliveryAddress,
+                        PayDeliveryMode = srcExp.DeliveryMode,
+                        PayProjectClassID = srcExp.ProjectClassID,
+
+                        // PEX Card
+
+                        PEXType = PEXType.New,
+                        PEXDateNeeded = srcExp.DateNeeded,
+                        PEXNumberOfCards = srcExp.CardsQuantity,
+                        PEXEachCard = srcExp.CardsValueEach,
+                        PEXResponsiblePersonID = srcExp.PersonID,
+                        PEXProjectClassID = srcExp.ProjectClassID,
+                    };
+                    if (srcExp.ExpType == ExpType.Payroll)          // If == this is a Payroll request
+                        destDoc.DocType = DocType.Payroll;          // Note that in new Doc request
+                    else if (srcExp.ExpType == ExpType.PEXCard)     // If == this is a PEX request
+                        destDoc.DocType = DocType.PEXCard;          // Note that ub bew Doc request
+
+                    context.Docs.Add(destDoc);                      // Store the new row
                     context.SaveChanges();                          // Commit the change to product the new Rqst ID
 
                     //  2) Copy the split rows, if any.
 
-                    SplitActions.CopySplitRows(RequestType.Expense, src.ExpID, dest.ExpID); // Copy all the split rows, if any
+                    SplitActions.CopySplitRows(RequestType.Expense, srcExp.ExpID, destDoc.DocID, RequestType.Document); // Copy all the split rows, if any
 
                     //  3) Copy the Supporting Docs. We know that in the source Rqst, all the supporting docs are "permanent," i.e., we don't need
                     //  to worry about "temporary" docs.
 
-                    SupportingActions.CopyDocs(context, RequestType.Expense, src.ExpID, dest.ExpID); // Copy each of the Supporting Docs
+                    SupportingActions.CopyDocs(context, RequestType.Expense, srcExp.ExpID, destDoc.DocID, RequestType.Document); // Copy each of the Supporting Docs
 
                     //  4) Create a ExpHistory row to describe the copy
 
                     ExpHistory hist = new ExpHistory();
-                    StateActions.CopyPreviousState(src, hist, "Copied"); // Fill fields of new record
-                    hist.ExpID = dest.ExpID; hist.NewExpState = dest.CurrentState; hist.ReturnNote = dest.ReturnNote; // Add fields from copied App
+                    StateActions.CopyPreviousState(srcExp, hist, "Copied"); // Fill fields of new record
+                    hist.ExpID = srcExp.ExpID; hist.NewExpState = srcExp.CurrentState; hist.ReturnNote = ""; // Add fields from copied Exp. No return note here
 
                     context.ExpHistorys.Add(hist);                  // Add the row
                     context.SaveChanges();                          // Commit the change
-                    return dest.ExpID;                              // Return the ID of the new Expense Rqst
+                    return destDoc.DocID;                           // Return the ID of the new Document Rqst
                 }
                 catch (Exception ex)
                 {
@@ -2043,35 +2159,35 @@ namespace Portal11.Rqsts
             return;
         }
 
-        // For Payroll, try to calculate gross amount from hourly rate and hours paid in row.
+        //// For Payroll, try to calculate gross amount from hourly rate and hours paid in row.
 
-        void RecalculateGrossPay(TextBox splitHourlyRate, TextBox splitHoursPaid, TextBox splitGrossPay)
-        {
-            decimal hourlyRate = ExtensionActions.LoadTxtIntoDecimal(splitHourlyRate); // Load current value, if any. -1 if error
-            decimal hoursPaid = ExtensionActions.LoadTxtIntoDecimal(splitHoursPaid); // Load current value, if any/ -1 if error
-            if ((hourlyRate > 0) && (hoursPaid > 0)) // If true Hourly Rate and Hours Paid contain something non-blank
-            {
-                decimal grossPay = ExtensionActions.LoadTxtIntoDecimal(splitHourlyRate) * ExtensionActions.LoadTxtIntoDecimal(splitHoursPaid);
-                splitGrossPay.Text = ExtensionActions.LoadDecimalIntoTxt(grossPay); // Load the product (or default) as Amount - column header is "Gross Pay"
-                splitHourlyRate.Text = ExtensionActions.LoadDecimalIntoTxt(hourlyRate); // Reformat the hourly rate all pretty-like
-            }
-            return;
-        }
+        //void RecalculateGrossPay(TextBox splitHourlyRate, TextBox splitHoursPaid, TextBox splitGrossPay)
+        //{
+        //    decimal hourlyRate = ExtensionActions.LoadTxtIntoDecimal(splitHourlyRate); // Load current value, if any. -1 if error
+        //    decimal hoursPaid = ExtensionActions.LoadTxtIntoDecimal(splitHoursPaid); // Load current value, if any/ -1 if error
+        //    if ((hourlyRate > 0) && (hoursPaid > 0)) // If true Hourly Rate and Hours Paid contain something non-blank
+        //    {
+        //        decimal grossPay = ExtensionActions.LoadTxtIntoDecimal(splitHourlyRate) * ExtensionActions.LoadTxtIntoDecimal(splitHoursPaid);
+        //        splitGrossPay.Text = ExtensionActions.LoadDecimalIntoTxt(grossPay); // Load the product (or default) as Amount - column header is "Gross Pay"
+        //        splitHourlyRate.Text = ExtensionActions.LoadDecimalIntoTxt(hourlyRate); // Reformat the hourly rate all pretty-like
+        //    }
+        //    return;
+        //}
 
-        // Accumulate Gross Pay in row and display in Amount
+        //// Accumulate Gross Pay in row and display in Amount
 
-        void RecalculateTotalGrossPay()
-        { 
-            decimal totalGrossPay = 0;                              // Initialize accumulator
-            foreach (GridViewRow r in gvSplitPayroll.Rows)          // Cycle through the rows of the gridview
-            {
-                TextBox splitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Locate text box containing Gross Pay for this row
-                decimal rowAmount = ExtensionActions.LoadTxtIntoDecimal(splitAmount); // Try to convert this row's Gross Pay into a number
-                if (rowAmount != PortalConstants.BadDecimalValue)   // If != there is a good number in the row
-                    totalGrossPay += rowAmount;                     // Accumulate the Gross pay of all rows
-            }
-            txtAmount.Text = ExtensionActions.LoadDecimalIntoTxt(totalGrossPay); // Show the total to the user
-            return;
-        }
+        //void RecalculateTotalGrossPay()
+        //{ 
+        //    decimal totalGrossPay = 0;                              // Initialize accumulator
+        //    foreach (GridViewRow r in gvSplitPayroll.Rows)          // Cycle through the rows of the gridview
+        //    {
+        //        TextBox splitAmount = (TextBox)r.FindControl("txtSplitAmount"); // Locate text box containing Gross Pay for this row
+        //        decimal rowAmount = ExtensionActions.LoadTxtIntoDecimal(splitAmount); // Try to convert this row's Gross Pay into a number
+        //        if (rowAmount != PortalConstants.BadDecimalValue)   // If != there is a good number in the row
+        //            totalGrossPay += rowAmount;                     // Accumulate the Gross pay of all rows
+        //    }
+        //    txtAmount.Text = ExtensionActions.LoadDecimalIntoTxt(totalGrossPay); // Show the total to the user
+        //    return;
+        //}
     }
 }

@@ -97,7 +97,7 @@
                         </asp:TemplateField>
                         <asp:BoundField DataField="Name" HeaderText="Name" />
                         <asp:BoundField DataField="Email" HeaderText="Email" />
-                        <asp:BoundField DataField="W9Present" HeaderText="W-9 Present" />
+                        <asp:BoundField DataField="W9Present" HeaderText="W-9 Present" Visible="false" /> 
                         <asp:TemplateField HeaderText="Inactive">
                             <ItemTemplate>
                                 <asp:Label ID="lblInactive" runat="server" Text='<%# Bind("Inactive") %>'></asp:Label>
