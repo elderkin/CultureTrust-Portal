@@ -225,45 +225,62 @@
         </div>
         <%--End of panel--%>
 
-<%--        <%--And now a panel for Approvals (obsolete)--%>
 
-<%--        <div class="panel panel-success">
+        <%--And now a panel for Documents (abbreviated as "C")--%>
+
+        <div class="panel panel-success">
             <div class="panel-heading">
-                <asp:LinkButton ID="btnAppCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnAppCollapse_Click" Visible="false"
+                <asp:LinkButton ID="btnDocCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnDocCollapse_Click" 
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
                 </asp:LinkButton>
-                <asp:LinkButton ID="btnAppExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnAppExpand_Click" Visible="true">
+                <asp:LinkButton ID="btnDocExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnDocExpand_Click" Visible="false">
                     <span class="glyphicon glyphicon-chevron-down"></span>
                 </asp:LinkButton>
-                <strong>Approval Requests</strong>
+                <strong>Document Requests</strong>
             </div>
-            <asp:Panel ID="pnlApp" runat="server" Visible="false">
+            <asp:Panel ID="pnlDoc" runat="server">
                 <br />
 
                 <div class="row">
-                    <div class="panel panel-default col-xs-offset-1 col-lg-4 col-md-4 col-sm-5 col-xs-6">
-                        Approval Type
+                    <div class="panel panel-default col-xs-offset-1 col-xs-6">
+                        Document Type
                     <div class="checkbox">
-                        <asp:CheckBox ID="ckAExpress" runat="server" Text="Express" CssClass="col-xs-6" Checked="true"
+                        <asp:CheckBox ID="ckCContract" runat="server" Text="Contract" CssClass="col-xs-6" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckAFull" runat="server" Text="Full Review" CssClass="col-xs-6" Checked="true"
+                        <asp:CheckBox ID="ckCFinancial" runat="server" Text="Financial Report" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCGrant" runat="server" Text="Grant Proposal" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCCampaign" runat="server" Text="Marketing/Fundraising Campaign" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCCertificate" runat="server" Text="Certificate of Insurance" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCPay" runat="server" Text="Payroll" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCPEX" runat="server" Text="PEX Cards" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCPXR" runat="server" Text="PEX Reconciliation" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCPTP" runat="server" Text="Project-to-Project" CssClass="col-xs-6" Checked="true"
+                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
+                        <asp:CheckBox ID="ckCTimesheet" runat="server" Text="Timesheet" CssClass="col-xs-6" Checked="true"
                             OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
                     </div>
                     </div>
                 </div>
 
-                <!-- Make a grid of Approvals. Allow Staff to select one for further study. -->
+                <!-- Make a grid of Documents. Allow Staff to select one for further study. -->
                 <div class="row">
                     <div class="col-xs-12">
 
                         <!-- Code assumes that RowID is the first column of this grid -->
-                        <asp:GridView ID="gvStaffApp" runat="server"
+                        <asp:GridView ID="gvStaffDoc" runat="server"
                             CssClass="table table-striped table-hover" 
-                            ItemType="Portal11.Models.rowStaffApp"
+                            ItemType="Portal11.Models.rowStaffDoc"
                             AutoGenerateColumns="false"
                             AllowPaging="true" PageSize="10"
-                            OnRowDataBound="gvStaffApp_RowDataBound"
-                            OnPageIndexChanging="gvStaffApp_PageIndexChanging">
+                            OnRowDataBound="gvStaffDoc_RowDataBound"
+                            OnPageIndexChanging="gvStaffDoc_PageIndexChanging">
 
                             <SelectedRowStyle CssClass="success" />
                             <HeaderStyle HorizontalAlign="Center" />
@@ -284,29 +301,33 @@
                                     CssClass="btn btn-sm btn-default"></asp:Button>
                                 <asp:Label runat="server" >
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    Page <%# gvStaffApp.PageIndex+1 %> of <%# gvStaffApp.PageCount %>
+                                    Page <%# gvStaffDoc.PageIndex+1 %> of <%# gvStaffDoc.PageCount %>
                                 </asp:Label>
                             </PagerTemplate>
 
                             <EmptyDataTemplate>
                                 <table>
                                     <tr>
-                                        <td>There are no Approval Requests that match these criteria</td>
+                                        <td>There are no Document Requests that match these criteria</td>
                                     </tr>
                                 </table>
                             </EmptyDataTemplate>
                             <Columns>
-                                <asp:BoundField DataField="CurrentTime" ItemStyle-HorizontalAlign="Right" HeaderText="Last Modified" DataFormatString="{0:g}" />
-                                <asp:BoundField DataField="ProjectName" ItemStyle-HorizontalAlign="Left" HeaderText="Project" HeaderStyle-CssClass="text-right" />
-                                <asp:BoundField DataField="AppTypeDesc" HeaderText="Approval Type" />
-                                <asp:BoundField DataField="AppReviewType" HeaderText="Review Type" />
+                                <asp:BoundField DataField="Time" ItemStyle-HorizontalAlign="Right" HeaderText="Created" DataFormatString="{0:g}" />
+                                <asp:BoundField DataField="ProjectName" HeaderText="Project" />
+                                <asp:BoundField DataField="DocTypeDesc" HeaderText="Document Type" />
                                 <asp:BoundField DataField="CurrentStateDesc" HeaderText="Status" />
                                 <asp:BoundField DataField="Owner" HeaderText="Next Reviewer" />
                                 <asp:BoundField DataField="Description" HeaderText="Description" />
                                 <asp:TemplateField>
                                     <ItemTemplate>
-                                        <asp:Button ID="btnAppGridReview" runat="server" CssClass="btn btn-xs btn-primary" Text="Review" ToolTip="Click to review this request"
-                                            OnClick="btnAppGridReview_Click" CausesValidation="false" />
+                                        <asp:Button ID="btnGridReview" runat="server" CssClass="btn btn-xs btn-primary" Text="Review"
+                                            OnClick="btnDocGridReview_Click" CausesValidation="false" />
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Archived" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Status" Visible="false">
@@ -314,20 +335,30 @@
                                         <asp:Label ID="lblCurrentState" runat="server" Text='<%# Bind("CurrentState") %>'></asp:Label>
                                     </ItemTemplate>
                                 </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Row Actions" Visible="false">
-                                    <ItemTemplate>
-                                        <asp:Button ID="btnAppDblClick" runat="server" Text='<%# Bind("RowID") %>' CssClass="btn btn-default"
-                                            OnClick="btnAppDblClick_Click" CausesValidation="false" />
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Archived" Visible="false">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>' ></asp:Label>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Project ID" Visible="false">
                                     <ItemTemplate>
                                         <asp:Label ID="lblProjectID" runat="server" Text='<%# Bind("ProjectID") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Request ID" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblRequestID" runat="server" Text='<%# Bind("RequestID") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Rush" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblRush" runat="server" Text='<%# Bind("Rush") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Revise" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="lblReviseUserRole" runat="server" Text='<%# Bind("ReviseUserRole") %>'></asp:Label>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Row Actions" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Button ID="btnDocDblClick" runat="server" CssClass="btn btn-default"
+                                            OnClick="btnDocDblClick_Click" CausesValidation="false" />
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -337,22 +368,22 @@
                 </div>
 
         </asp:Panel>
-        </div>--%>
-        <%--End of App panel--%>
+        </div>
+        <%--End of panel--%>
  
         <%--And now a panel for Expenses--%>
 
-        <div class="panel panel-success" style="margin-bottom:10px;">
+        <div class="panel panel-success" style="margin-bottom:10px;" hidden="hidden"> <!-- Expenses are disabled -->
             <div class="panel-heading">
-                <asp:LinkButton ID="btnExpCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnExpCollapse_Click"
+                <asp:LinkButton ID="btnExpCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnExpCollapse_Click" Visible="false"
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
                 </asp:LinkButton>
-                <asp:LinkButton ID="btnExpExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnExpExpand_Click" Visible="false">
+                <asp:LinkButton ID="btnExpExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnExpExpand_Click" Visible="true">
                     <span class="glyphicon glyphicon-chevron-down"></span>
                 </asp:LinkButton>
                 <strong>Expense Requests</strong>
             </div>
-            <asp:Panel ID="pnlExp" runat="server">
+            <asp:Panel ID="pnlExp" runat="server" Visible="false">
                 <br />
 
                 <div class="row">
@@ -481,17 +512,17 @@
 
         <%--And now a panel for Deposits--%>
 
-        <div class="panel panel-success" style="margin-bottom:10px;">
+        <div class="panel panel-success" style="margin-bottom:10px;" hidden="hidden"> <!-- Deposits are disabled -->
             <div class="panel-heading">
-                <asp:LinkButton ID="btnDepCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnDepCollapse_Click"
+                <asp:LinkButton ID="btnDepCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnDepCollapse_Click" Visible="false"
                     Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
                 </asp:LinkButton>
-                <asp:LinkButton ID="btnDepExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnDepExpand_Click" Visible="false">
+                <asp:LinkButton ID="btnDepExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnDepExpand_Click" Visible="true">
                     <span class="glyphicon glyphicon-chevron-down"></span>
                 </asp:LinkButton>
                 <strong>Deposit Notifications</strong>
             </div>
-            <asp:Panel ID="pnlDep" runat="server">
+            <asp:Panel ID="pnlDep" runat="server" Visible="false">
                 <br />
 
                 <div class="row">
@@ -607,141 +638,6 @@
                 </div>
 
             </asp:Panel>
-        </div>
-        <%--End of panel--%>
-
-        <%--And now a panel for Documents (abbreviated as "C")--%>
-
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <asp:LinkButton ID="btnDocCollapse" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnDocCollapse_Click" 
-                    Text="<i aria-hidden='true' class='glyphicon glyphicon-chevron-up'></i>">
-                </asp:LinkButton>
-                <asp:LinkButton ID="btnDocExpand" runat="server" CssClass="btn btn-default btn-xs" OnClick="btnDocExpand_Click" Visible="false">
-                    <span class="glyphicon glyphicon-chevron-down"></span>
-                </asp:LinkButton>
-                <strong>Document Requests</strong>
-            </div>
-            <asp:Panel ID="pnlDoc" runat="server">
-                <br />
-
-                <div class="row">
-                    <div class="panel panel-default col-xs-offset-1 col-xs-6">
-                        Document Type
-                    <div class="checkbox">
-                        <asp:CheckBox ID="ckCContract" runat="server" Text="Contract" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckCFinancial" runat="server" Text="Financial Report" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckCGrant" runat="server" Text="Grant Proposal" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckCCampaign" runat="server" Text="Marketing/Fundraising Campaign" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                        <asp:CheckBox ID="ckCCertificate" runat="server" Text="Certificate of Insurance" CssClass="col-xs-6" Checked="true"
-                            OnCheckedChanged="SearchCriteriaChanged" AutoPostBack="true" />
-                    </div>
-                    </div>
-                </div>
-
-                <!-- Make a grid of Documents. Allow Staff to select one for further study. -->
-                <div class="row">
-                    <div class="col-xs-12">
-
-                        <!-- Code assumes that RowID is the first column of this grid -->
-                        <asp:GridView ID="gvStaffDoc" runat="server"
-                            CssClass="table table-striped table-hover" 
-                            ItemType="Portal11.Models.rowStaffDoc"
-                            AutoGenerateColumns="false"
-                            AllowPaging="true" PageSize="10"
-                            OnRowDataBound="gvStaffDoc_RowDataBound"
-                            OnPageIndexChanging="gvStaffDoc_PageIndexChanging">
-
-                            <SelectedRowStyle CssClass="success" />
-                            <HeaderStyle HorizontalAlign="Center" />
-
-                            <PagerStyle CssClass="active" HorizontalAlign="Center"></PagerStyle>
-                            <PagerTemplate>
-                                <asp:Button ID="ButtonFirst" runat="server" Text="<<" CommandName="Page"
-                                    CommandArgument="First"
-                                    CssClass="btn btn-sm btn-default"></asp:Button>
-                                <asp:Button ID="ButtonPrev" runat="server" Text="<" CommandName="Page"
-                                    CommandArgument="Prev"
-                                    CssClass="btn btn-sm btn-default"></asp:Button>
-                                <asp:Button ID="ButtonNext" runat="server" Text=">" CommandName="Page"
-                                    CommandArgument="Next"
-                                    CssClass="btn btn-sm btn-default"></asp:Button>
-                                <asp:Button ID="ButtonLast" runat="server" Text=">>" CommandName="Page"
-                                    CommandArgument="Last" Enabled="false"
-                                    CssClass="btn btn-sm btn-default"></asp:Button>
-                                <asp:Label runat="server" >
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    Page <%# gvStaffDoc.PageIndex+1 %> of <%# gvStaffDoc.PageCount %>
-                                </asp:Label>
-                            </PagerTemplate>
-
-                            <EmptyDataTemplate>
-                                <table>
-                                    <tr>
-                                        <td>There are no Document Requests that match these criteria</td>
-                                    </tr>
-                                </table>
-                            </EmptyDataTemplate>
-                            <Columns>
-                                <asp:BoundField DataField="Time" ItemStyle-HorizontalAlign="Right" HeaderText="Created" DataFormatString="{0:g}" />
-                                <asp:BoundField DataField="ProjectName" HeaderText="Project" />
-                                <asp:BoundField DataField="DocTypeDesc" HeaderText="Document Type" />
-                                <asp:BoundField DataField="CurrentStateDesc" HeaderText="Status" />
-                                <asp:BoundField DataField="Owner" HeaderText="Next Reviewer" />
-                                <asp:BoundField DataField="Description" HeaderText="Description" />
-                                <asp:TemplateField>
-                                    <ItemTemplate>
-                                        <asp:Button ID="btnGridReview" runat="server" CssClass="btn btn-xs btn-primary" Text="Review"
-                                            OnClick="btnDocGridReview_Click" CausesValidation="false" />
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Archived" Visible="false">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblArchived" runat="server" Text='<%# Bind("Archived") %>'></asp:Label>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Status" Visible="false">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblCurrentState" runat="server" Text='<%# Bind("CurrentState") %>'></asp:Label>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Project ID" Visible="false">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblProjectID" runat="server" Text='<%# Bind("ProjectID") %>'></asp:Label>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Request ID" Visible="false">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblRequestID" runat="server" Text='<%# Bind("RequestID") %>'></asp:Label>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Rush" Visible="false">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblRush" runat="server" Text='<%# Bind("Rush") %>'></asp:Label>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Revise" Visible="false">
-                                    <ItemTemplate>
-                                        <asp:Label ID="lblReviseUserRole" runat="server" Text='<%# Bind("ReviseUserRole") %>'></asp:Label>
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                                <asp:TemplateField HeaderText="Row Actions" Visible="false">
-                                    <ItemTemplate>
-                                        <asp:Button ID="btnDocDblClick" runat="server" CssClass="btn btn-default"
-                                            OnClick="btnDocDblClick_Click" CausesValidation="false" />
-                                    </ItemTemplate>
-                                </asp:TemplateField>
-                            </Columns>
-                        </asp:GridView>
-
-                    </div>
-                </div>
-
-        </asp:Panel>
         </div>
         <%--End of panel--%>
 

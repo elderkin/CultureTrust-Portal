@@ -1,4 +1,34 @@
-﻿Version 1.16
+﻿Version 1.18
+
+In the Project Dashboard and System Dashboard, Expense Requests and Deposit Requests no longer appear. There are only Document Requests.
+
+The "Financial Report" Document type no longer exists.
+
+For Payroll, the Expense Split columns are now "Employee Name," "Hourly Rate," "Hours Paid," "Gross Pay," "Category." The Expense Splits are displayed on the Edit Document and Review Document pages. However, the Payroll document type has been superseded by the new Timesheet document type.
+
+There is a new "PEX Reconciliation" Document type.
+
+The approval flow for Documents is simplified. Document Requests now flow to fewer approvers.
+
+When creating or editing a project, the Balance Date and Current Funds fields no longer need to be entered. The function to Import Project Balances from an Excel spreadsheet no longer exists. The List Projects page no longer displays balance information.
+
+When adding or editing a person, the Address, Phone Number, and W-9 fields no longer need to be entered.
+
+The "News of the Day" on the Home page is eliminated. The "Portal Inrformatiion" link under the avatar menu is eliminated
+
+Version 1.17
+
+The Project Dashboard and the Staff Dashboard now list Document Requests first. 
+
+New Expense Requests and Deposit Requests can no longer be created. Existing requests can be viewed (and found by searching). Payroll and PEX Card requests can be copied, but the copy becomes a new Document Request.
+
+There are three new types of Document Requests: Payroll, PEX Card, and Project-to-Project Transfer. Financial Reports can no longer be created.
+
+"Project Class" has been renamed "Department" throughout the Portal. You will see this change on the Edit Document and Review Document pages. In addition, the Project drop down menu in the page header now contains an entry for "Edit Departments" instead of "Edit Project Class." On the Project Dashboard page, the Filter formerly known as "Project Class" is now called "Department."
+
+For PEX Cards, "Responsible Person" is now called "Person named on Card."
+
+Version 1.16
 
 On the Admin page, the List Project function displays a row for each project. The row includes 12-month totals of submitted Expense, Deposit, and Document requests, and total Expendatures. It also includes the total count of Requests for the duration of the project. 
 

@@ -35,8 +35,8 @@ namespace Portal11.Proj
                     case PortalConstants.QSCommandNew:                  // Process a "New" command. Create new, empty ProjectClass for editing
                         {
                             // We don't have to "fill" any of the controls on the page, just use them in their initial state.
-                            this.Title = "New Project Class";           // Show that we are creating a new ProjectClass
-                            //litSuccessMessage.Text = "New Project Class is ready to edit";
+                            this.Title = "New Department";           // Show that we are creating a new ProjectClass
+                            //litSuccessMessage.Text = "New Department is ready to edit";
                             break;
                         }
                     case PortalConstants.QSCommandEdit:                 // Process an "Edit" command. Read existing request, save it in same row
@@ -51,7 +51,7 @@ namespace Portal11.Proj
                             }
 
                             // Fetch the row from the database. Fill in the panels using data rom the existing request. Lotta work!
-                            litSuccessMessage.Text = "Selected Project Class is ready to edit";
+                            litSuccessMessage.Text = "Selected Department is ready to edit";
                             using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
                             {
                                 ProjectClass toEdit = context.ProjectClasses.Find(ProjectClassID); // Fetch ProjectClass row by its key
@@ -120,7 +120,7 @@ namespace Portal11.Proj
                 {
                     if (ExceptionActions.IsDuplicateKeyException(ex))       // If true this is a Duplicate Key exception
                     {
-                        litDangerMessage.Text = $"Another Project Class with the name '{txtName.Text}' already exists on this Project. Project Classes must be unique.";
+                        litDangerMessage.Text = $"Another Department with the name '{txtName.Text}' already exists on this Project. Departmentes must be unique.";
                         return;                                             // Report the error to user and try again
                     }
                     LogError.LogDatabaseError(ex, "EditProjectClass", "Error writing ProjectClass row"); // Fatal error
@@ -131,7 +131,7 @@ namespace Portal11.Proj
             // to the Select Project Class page and see if the user wants to edit another one.
 
             Response.Redirect(PortalConstants.URLSelectProjectClass + "?" + PortalConstants.QSSeverity + "=" + PortalConstants.QSSuccess + "&"
-                                                + PortalConstants.QSStatus + "=Project Class saved");
+                                                + PortalConstants.QSStatus + "=Department saved");
         }
 
         // Based on the selected Request Type, enable and disable the appropriate panels on the display.

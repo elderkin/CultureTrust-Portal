@@ -43,6 +43,7 @@ namespace Portal11.Admin
                             litSuccessMessage.Text = "New Project is ready to edit";
 //                            pnlRestrictedGrants.Visible = false;        // No Restricted Grants to show yet
                             FillProjectDirectorDDL();                   // Populate the drop down list
+                            FillProjectStaffList(0);                    // Initialize project staff list to empty
                             break;
                         }
                     case PortalConstants.QSCommandEdit:                 // Process an "Edit" command. Read existing request, save it in same row
@@ -75,32 +76,32 @@ namespace Portal11.Admin
 
         // Toggle the visibility of a calendar. If becoming visible, load with date from text box, if any
 
-        protected void btnBalanceDate_Click(object sender, EventArgs e)
-        {
-            calClick(txtBalanceDate, calBalanceDate);                           // Do the heavy lifting in common code
-            return;
-        }
+        //protected void btnBalanceDate_Click(object sender, EventArgs e)
+        //{
+        //    calClick(txtBalanceDate, calBalanceDate);                           // Do the heavy lifting in common code
+        //    return;
+        //}
 
-        void calClick(TextBox txt, System.Web.UI.WebControls.Calendar cal)
-        {
-            if (cal.Visible)                                                    // If true the calendar control is currently visible
-                cal.Visible = false;                                            // Hide it
-            else
-            {
-                cal.Visible = true;                                             // Make the calendar control visible
-                DateActions.LoadTxtIntoCal(txt, cal);                           // Pull date from text box, store it in calendar
-            }
-            return;
-        }
+        //void calClick(TextBox txt, System.Web.UI.WebControls.Calendar cal)
+        //{
+        //    if (cal.Visible)                                                    // If true the calendar control is currently visible
+        //        cal.Visible = false;                                            // Hide it
+        //    else
+        //    {
+        //        cal.Visible = true;                                             // Make the calendar control visible
+        //        DateActions.LoadTxtIntoCal(txt, cal);                           // Pull date from text box, store it in calendar
+        //    }
+        //    return;
+        //}
 
-        protected void calBalanceDate_SelectionChanged(object sender, EventArgs e)
-        {
-            DateTime start = calBalanceDate.SelectedDate;
-            txtBalanceDate.Text = DateActions.LoadDateIntoTxt(start);             // Convert date to text 
-            DateTime last = start;
-            calBalanceDate.Visible = false;                                       // One click and the calendar is gone
-            return;
-        }
+        //protected void calBalanceDate_SelectionChanged(object sender, EventArgs e)
+        //{
+        //    DateTime start = calBalanceDate.SelectedDate;
+        //    txtBalanceDate.Text = DateActions.LoadDateIntoTxt(start);             // Convert date to text 
+        //    DateTime last = start;
+        //    calBalanceDate.Visible = false;                                       // One click and the calendar is gone
+        //    return;
+        //}
 
         protected void gvListProjectStaff_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
@@ -175,8 +176,8 @@ namespace Portal11.Admin
             chkInact.Checked = record.Inactive;
             txtCode.Text = record.Code;
             txtDescription.Text = record.Description;
-            txtBalanceDate.Text = record.BalanceDate.Date.ToShortDateString();
-            txtCurrentFunds.Text = ExtensionActions.LoadDecimalIntoTxt(record.CurrentFunds);
+//            txtBalanceDate.Text = record.BalanceDate.Date.ToShortDateString();
+//            txtCurrentFunds.Text = ExtensionActions.LoadDecimalIntoTxt(record.CurrentFunds);
             // Project Director
             FillProjectDirectorDDL();
             FillProjectStaffList(record.ProjectID);
@@ -191,16 +192,16 @@ namespace Portal11.Admin
             record.Inactive = chkInact.Checked;
             record.Code = txtCode.Text.ToUpper();                       // Force Code to upper case
             record.Description = txtDescription.Text;
-            if (txtBalanceDate.Text == "")                              // If == field is blank. Supply default
+//            if (txtBalanceDate.Text == "")                              // If == field is blank. Supply default
                 record.BalanceDate = System.DateTime.Now;               // Default date as now.
-            else
-                record.BalanceDate = DateActions.LoadTxtIntoDate(txtBalanceDate); // Carefully convert the text into a date
+//            else
+//                record.BalanceDate = DateActions.LoadTxtIntoDate(txtBalanceDate); // Carefully convert the text into a date
 
             // Current Funds
-            decimal bucks;
-            bool convt = decimal.TryParse(txtCurrentFunds.Text, NumberStyles.Currency, CultureInfo.CurrentCulture.NumberFormat, out bucks);
+//            decimal bucks;
+//            bool convt = decimal.TryParse(txtCurrentFunds.Text, NumberStyles.Currency, CultureInfo.CurrentCulture.NumberFormat, out bucks);
                                                                         // Use a localization-savvy method to convert string to decimal
-            if (convt) record.CurrentFunds = bucks;                     // If true conversion was successful, stash value
+//            if (convt) record.CurrentFunds = bucks;                     // If true conversion was successful, stash value
 
             return;
         }
@@ -280,16 +281,16 @@ namespace Portal11.Admin
 
         void FillProjectStaffList (int projID)
         {
-            if (projID != 0)                                            // If != a project exists and we can look at it
+            using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
             {
-                using (Models.ApplicationDbContext context = new Models.ApplicationDbContext())
+                List<rowListProjectStaff> rows = new List<rowListProjectStaff>(); // Create an empty list for the GridView control
+                if (projID != 0)                                    // If != a project exists and we can look at it
                 {
                     var query = from up in context.UserProjects
                                 where (up.ProjectID == projID) & (up.ProjectRole == ProjectRole.ProjectStaff)
                                 orderby up.User.FullName
                                 select new { up.User.FullName, up.User.Email }; // Find the Users who are PS on this Project
 
-                    List<rowListProjectStaff> rows = new List<rowListProjectStaff>(); // Create an empty list for the GridView control
                     foreach (var up in query)
                     {
                         rowListProjectStaff row = new rowListProjectStaff() // Empty row all ready to fill
@@ -299,12 +300,11 @@ namespace Portal11.Admin
                         };
                         rows.Add(row);                                  // Add the filled-in row to the list of rows
                     }
-                    gvListProjectStaff.DataSource = rows;               // Give it to the GridView control
-                    gvListProjectStaff.DataBind();                      // And display it
-
-                    NavigationActions.EnableGridViewNavButtons(gvListProjectStaff); // Enable appropriate nav buttons based on page count
-
                 }
+                gvListProjectStaff.DataSource = rows;                   // Give it to the GridView control
+                gvListProjectStaff.DataBind();                          // And display it
+
+                NavigationActions.EnableGridViewNavButtons(gvListProjectStaff); // Enable appropriate nav buttons based on page count
             }
             return;
         }

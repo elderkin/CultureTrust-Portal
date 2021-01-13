@@ -105,7 +105,8 @@ namespace Portal11.Account
 
         protected void imgFirst_Click(object sender, System.Web.UI.ImageClickEventArgs e)
         {
-            Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandFirst);
+            return;                                             // Remove this line to restore easter egg
+//            Response.Redirect(PortalConstants.URLAdminMain + "?" + PortalConstants.QSCommand + "=" + PortalConstants.QSCommandFirst);
         }
 
         // The user pressed the "What's New" button. Fill the text box and flip its visibility.

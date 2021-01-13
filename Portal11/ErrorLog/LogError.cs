@@ -18,8 +18,10 @@ namespace Portal11.ErrorLog
             {
                 // log error to Elmah
 
-                string msg = "Application_Error caught internal error"; // Formulate error message
-                ErrorSignal.FromCurrentContext().Raise(new ErrorLog.Application_ErrorException(msg)); // Ask elmah to log this error
+//                string msg = "Application_Error caught internal error"; // Formulate error message
+//                ErrorSignal.FromCurrentContext().Raise(new ErrorLog.Application_ErrorException(msg)); // Ask elmah to log this error
+                var annotatedException = new Exception("Application_Error caught internal error", ex); // Include message with the exception
+                ErrorSignal.FromCurrentContext().Raise(annotatedException); // Ask elmah to log this error with the annotation            
 
             }
             catch (Exception)

@@ -21,7 +21,7 @@
                     </div>
                     <div class="col-lg-6 col-md-6 col-xs-6">
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtName"
-                            CssClass="text-danger" ErrorMessage="Please supply a Project Class name." />
+                            CssClass="text-danger" ErrorMessage="Please supply a Department name." />
                     </div>
                 </div>
             </div>
@@ -30,10 +30,10 @@
         <asp:Panel ID="pnlInactive" runat="server">
             <div class="form-group">
                 <div class="row">
-                    <asp:Label runat="server" AssociatedControlID="chkInact" CssClass="col-sm-2 col-xs-10 control-label" Font-Bold="false">Project Class is Inactive</asp:Label>
+                    <asp:Label runat="server" AssociatedControlID="chkInact" CssClass="col-sm-2 col-xs-10 control-label" Font-Bold="false">Department is Inactive</asp:Label>
                     <div class="col-lg-4 col-md-4 col-xs-6">
                         <asp:CheckBox ID="chkInact" runat="server" CssClass="checkbox col-offset-xs-1 col-xs-1"
-                            ToolTip="Turn the Project Class off, disabling its use. Note: This action is difficult to undo!" />
+                            ToolTip="Turn the Department off, disabling its use. Note: This action is difficult to undo!" />
                     </div>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                     <asp:Label runat="server" AssociatedControlID="chkDefault" CssClass="col-sm-2 col-xs-10 control-label" Font-Bold="false">Default for new Requests</asp:Label>
                     <div class="col-lg-4 col-md-4 col-xs-6">
                         <asp:CheckBox ID="chkDefault" runat="server" CssClass="checkbox col-offset-xs-1 col-xs-1"
-                            ToolTip="Offer this Project Class when creating new Deposit and Expense Requests" />
+                            ToolTip="Offer this Department when creating new Deposit and Expense Requests" />
                     </div>
                 </div>
             </div>
@@ -67,7 +67,7 @@
             <asp:Button ID="btnCancel" runat="server" Text="Done" CssClass="btn btn-default col-sm-offset-1 col-md-1 col-xs-2" Enabled="true"
                 OnClick="Cancel_Click" CausesValidation="false" ToolTip="Return to the main page no further changes" />
             <asp:Button ID="btnSave" runat="server" CssClass="btn btn-default col-xs-offset-1 col-md-1 col-xs-2" Enabled="true"
-                OnClick="Save_Click" ToolTip="Save this Project Class and return to main page" Text="Save" />
+                OnClick="Save_Click" ToolTip="Save this Department and return to main page" Text="Save" />
         </div>
 
         <!-- "Scratch" storage used during form processing -->

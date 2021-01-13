@@ -162,6 +162,8 @@ namespace Portal11.Logic
                 case DocState.AwaitingFinanceDirector:
                 case DocState.AwaitingPresident:
                 case DocState.Executed:
+                case DocState.Approved:
+                case DocState.Paid:
                     return ProjectRole.NoRole;
                 default:
                     {
@@ -304,6 +306,22 @@ namespace Portal11.Logic
             }
         }
 
+        // Given a document type, determine whether the request is a document or some legacy expense
+
+        public static bool RequestISADocument(DocType currentType)
+        {
+            switch (currentType)
+            {
+                case DocType.Payroll:
+                case DocType.PEXCard:
+                case DocType.PEXReconciliation:
+                case DocType.ProjectToProject:
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
         // Given a current state, determine whether the request has reached "Executed" state
 
         public static bool RequestIsExecuted(DocState currentState)
@@ -411,6 +429,7 @@ namespace Portal11.Logic
             {
                 case DocState.RevisingByCommunityDirector:
                 case DocState.RevisingByFinanceDirector:
+                case DocState.RevisingByFinanceDirectorLate:
                 case DocState.RevisingByInternalCoordinator:
                 case DocState.RevisingByPresident:
                 case DocState.RevisingByProjectDirector:
@@ -526,6 +545,7 @@ namespace Portal11.Logic
             {
                 case DocState.AwaitingProjectDirector:
                 case DocState.Executed:
+                case DocState.Paid:
                 case DocState.ReturnedToProjectDirector:
                 case DocState.ReturnedToProjectStaff:
                 case DocState.RevisedByCommunityDirector:
@@ -546,6 +566,7 @@ namespace Portal11.Logic
                     return UserRole.CommunityDirector;
                 case DocState.AwaitingFinanceDirector:
                 case DocState.RevisingByFinanceDirector:
+                case DocState.Approved:
                     return UserRole.FinanceDirector;
                 case DocState.AwaitingPresident:
                 case DocState.RevisingByPresident:
@@ -971,6 +992,9 @@ namespace Portal11.Logic
             switch (docType)
             {
                 case DocType.Certificate:
+                case DocType.Payroll:
+                case DocType.PEXReconciliation:
+                case DocType.Timesheet:
                     {
                         switch (action)
                         {
@@ -983,6 +1007,9 @@ namespace Portal11.Logic
                                     case DocState.AwaitingProjectDirector:
                                         return DocState.AwaitingInternalCoordinator;
                                     case DocState.AwaitingInternalCoordinator:
+                                    case DocState.AwaitingCommunityDirector:
+                                    case DocState.AwaitingFinanceDirector:
+                                    case DocState.AwaitingPresident:
                                         return DocState.Executed;
                                     default:                                            // No other states should arrive here. Report error
                                         break;
@@ -1134,8 +1161,8 @@ namespace Portal11.Logic
                                     case DocState.AwaitingInternalCoordinator:
                                         return DocState.AwaitingCommunityDirector;
                                     case DocState.AwaitingCommunityDirector:
-                                        return DocState.AwaitingFinanceDirector;
-                                    case DocState.AwaitingFinanceDirector:
+//                                        return DocState.AwaitingFinanceDirector;
+//                                    case DocState.AwaitingFinanceDirector:
                                         return DocState.AwaitingPresident;
                                     case DocState.AwaitingPresident:
                                         return DocState.Executed;
@@ -1156,7 +1183,7 @@ namespace Portal11.Logic
                                 {
                                     case DocState.AwaitingProjectDirector:
                                     case DocState.AwaitingInternalCoordinator:
-                                    case DocState.AwaitingFinanceDirector:
+//                                    case DocState.AwaitingFinanceDirector:
                                     case DocState.AwaitingCommunityDirector:
                                     case DocState.AwaitingPresident:
                                     //case DocState.RevisedByInternalCoordinator:
@@ -1184,8 +1211,8 @@ namespace Portal11.Logic
                                         return DocState.RevisingByProjectDirector;
                                     case DocState.AwaitingInternalCoordinator:
                                         return DocState.RevisingByInternalCoordinator;
-                                    case DocState.AwaitingFinanceDirector:
-                                        return DocState.RevisingByFinanceDirector;
+//                                    case DocState.AwaitingFinanceDirector:
+//                                        return DocState.RevisingByFinanceDirector;
                                     case DocState.AwaitingCommunityDirector:
                                         return DocState.RevisingByCommunityDirector;
                                     case DocState.AwaitingPresident:
@@ -1210,8 +1237,8 @@ namespace Portal11.Logic
                                         return DocState.AwaitingProjectDirector;        // Changed from SendToOriginator
                                     case DocState.RevisingByInternalCoordinator:
                                         return DocState.AwaitingInternalCoordinator;    // Changed from RevisedByInternalCoordinator
-                                    case DocState.RevisingByFinanceDirector:
-                                        return DocState.AwaitingFinanceDirector;        // Changed from RevisedBYFinanceDirector
+//                                    case DocState.RevisingByFinanceDirector:
+//                                        return DocState.AwaitingFinanceDirector;        // Changed from RevisedBYFinanceDirector
                                     case DocState.RevisingByCommunityDirector:
                                         return DocState.AwaitingCommunityDirector;      // Changed from RevisedByComunityDirector
                                     case DocState.RevisingByPresident:
@@ -1302,8 +1329,117 @@ namespace Portal11.Logic
                         break;
                     }
 
-                default:
-                    break;
+                // These guys used to live as Expense Requests. So we use the same logic as Expenses.
+
+//                case DocType.Payroll:
+                case DocType.PEXCard:
+//                case DocType.PEXReconciliation:
+                case DocType.ProjectToProject:
+                    {
+                        switch (action)
+                        {
+
+                            // Approve means advance to the next review or be done
+
+                            case ReviewAction.Approve:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.AwaitingInternalCoordinator;
+                                    case DocState.AwaitingInternalCoordinator:
+                                        return DocState.AwaitingFinanceDirector;
+                                    case DocState.AwaitingFinanceDirector:
+                                        return DocState.Executed;
+//                                        return DocState.AwaitingCommunityDirector;
+//                                   case DocState.AwaitingCommunityDirector:
+//                                        return DocState.AwaitingPresident;
+//                                    case DocState.AwaitingPresident:
+//                                        return DocState.Approved;
+//                                    case DocState.Approved:
+//                                        return DocState.Paid;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Return means go back to originator of the request
+
+                            case ReviewAction.Return:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.AwaitingProjectDirector:
+                                    case DocState.AwaitingInternalCoordinator:
+                                    case DocState.AwaitingFinanceDirector:
+//                                  case DocState.AwaitingCommunityDirector:
+//                                  case DocState.AwaitingPresident:
+//                                  case DocState.Approved:
+                                        return SendDocToOriginator(role);               // Back to right "returned" state
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Revise means current reviewer can edit the request
+
+                            case ReviewAction.Revise:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.ReturnedToInternalCoordinator:
+                                        return DocState.UnsubmittedByInternalCoordinator;
+                                    case DocState.ReturnedToProjectDirector:
+                                        return DocState.UnsubmittedByProjectDirector;
+                                    case DocState.ReturnedToProjectStaff:
+                                        return DocState.UnsubmittedByProjectStaff;
+                                    case DocState.AwaitingProjectDirector:
+                                        return DocState.RevisingByProjectDirector;
+                                    case DocState.AwaitingInternalCoordinator:
+                                        return DocState.RevisingByInternalCoordinator;
+                                    case DocState.AwaitingFinanceDirector:
+                                        return DocState.RevisingByFinanceDirector;
+//                                    case DocState.AwaitingCommunityDirector:
+//                                        return DocState.RevisingByCommunityDirector;
+//                                    case DocState.AwaitingPresident:
+//                                        return DocState.RevisingByPresident;
+//                                    case DocState.Approved:
+//                                        return DocState.RevisingByFinanceDirectorLate;
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+
+                            // Submit means conclude the editing and commence review
+
+                            case ReviewAction.Submit:
+                                switch (currentState)                                   // Break out by current state
+                                {
+                                    case DocState.UnsubmittedByInternalCoordinator:
+                                    case DocState.UnsubmittedByProjectStaff:
+                                        return DocState.AwaitingProjectDirector;
+                                    case DocState.UnsubmittedByProjectDirector:
+//                                  case DocState.AwaitingProjectDirector:            // This only appears when the browser Back button has brought us back to this page
+                                        return DocState.AwaitingInternalCoordinator;
+                                    case DocState.RevisingByProjectDirector:
+                                        return DocState.AwaitingProjectDirector;        // Back to the reviewer
+                                    case DocState.RevisingByInternalCoordinator:
+                                        return DocState.AwaitingInternalCoordinator;
+                                    case DocState.RevisingByFinanceDirector:
+                                        return DocState.AwaitingFinanceDirector;
+//                                    case DocState.RevisingByCommunityDirector:
+//                                        return DocState.AwaitingCommunityDirector;
+//                                    case DocState.RevisingByPresident:
+//                                        return DocState.AwaitingPresident;
+                                    case DocState.RevisingByFinanceDirectorLate:        // Second shot at review found problem
+//                                        return DocState.Approved;
+                                        return DocState.Executed;                       // Submit by Finance Director means it's finished
+                                    default:                                            // No other states should arrive here. Report error
+                                        break;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    }
             }
             LogError.LogInternalError("StateActions.FindNextState", $"Inappropriate DocState value '{currentState.ToString()}', DocType value '{docType.ToString()}', ReviewAction value '{action.ToString()}'"); // Fatal error
             return DocState.Error;

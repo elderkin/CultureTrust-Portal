@@ -71,7 +71,7 @@
         </asp:Panel>
 
         <!-- Balance Date -->
-        <asp:Panel ID="pnlBalanceDate" runat="server">
+<%--        <asp:Panel ID="pnlBalanceDate" runat="server">
             <div class="form-group">
                 <div class="row">
                     <asp:Label ID="lblBalanceDate" runat="server" AssociatedControlID="txtBalanceDate" Font-Bold="false"
@@ -112,12 +112,12 @@
                             SelectMonthText="month" />
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-offset-0 col-xs-offset-1 col-xs-6">
-<%--                        <asp:RequiredFieldValidator 
-                            ControlToValidate="txtBalanceDate" 
-                            CssClass="text-danger col-xs-12" 
-                            Display="Dynamic" ErrorMessage="Please supply a date."
-                            runat="server" SetFocusOnError="true"
-                            />--%>
+                        <asp:requiredfieldvalidator 
+                            controltovalidate="txtbalancedate" 
+                            cssclass="text-danger col-xs-12" 
+                            display="dynamic" errormessage="please supply a date."
+                            runat="server" setfocusonerror="true"
+                            />
                         <asp:CompareValidator
                             ControlToValidate="txtBalanceDate"
                             CssClass="text-danger col-xs-12" 
@@ -136,9 +136,9 @@
                 </div>
             </div>
         </asp:Panel>
-
+--%>
         <!-- Current Funds -->
-        <asp:Panel ID="pnlCurrentFunds" runat="server">
+<%--        <asp:Panel ID="pnlCurrentFunds" runat="server">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtCurrentFunds" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="true">Current Funds</asp:Label>
@@ -154,7 +154,7 @@
                     </div>
                 </div>
             </div>
-        </asp:Panel>
+        </asp:Panel>--%>
 
 <%--        <!-- Restricted Grants -->
 
@@ -250,7 +250,7 @@
                             <EmptyDataTemplate>
                                 <table>
                                     <tr>
-                                        <td>There are no Project Staff Membbers for this Project</td>
+                                        <td>There are no Project Staff Members for this Project</td>
                                     </tr>
                                 </table>
                             </EmptyDataTemplate>

@@ -40,7 +40,7 @@
             </div>
         </asp:Panel>
 
-        <asp:Panel ID="pnlAddress" runat="server">
+        <asp:Panel ID="pnlAddress" runat="server" Visible="false">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtAddress" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Address</asp:Label>
@@ -51,7 +51,7 @@
             </div>
         </asp:Panel>
 
-        <asp:Panel ID="pnlPhone" runat="server">
+        <asp:Panel ID="pnlPhone" runat="server" Visible="false">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="txtPhone" CssClass="col-sm-2 col-xs-12 control-label" Font-Bold="false">Phone Number</asp:Label>
@@ -84,7 +84,7 @@
         </asp:Panel>
 
         <!-- Supporting Docs -->
-        <asp:Panel ID="pnlSupporting" runat="server">
+        <asp:Panel ID="pnlSupporting" runat="server" Visible="false">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="lstSupporting" 
@@ -109,7 +109,7 @@
         </asp:Panel>
 
         <!-- W-9 Present --> 
-        <asp:Panel ID="pnlW9Present" runat="server">
+        <asp:Panel ID="pnlW9Present" runat="server" Visible="false">
             <div class="form-group">
                 <div class="row">
                     <asp:Label runat="server" AssociatedControlID="chkW9Present" CssClass="col-sm-2 col-xs-10 control-label" Font-Bold="false">W-9 Form Present</asp:Label>

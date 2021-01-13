@@ -70,6 +70,10 @@ namespace Portal11
                         Server.Transfer("UploadError.aspx");
                     }
                 }
+
+                // Log the Application_Error to Elmah
+
+                LogError.LogApplication_ErrorException(ex);
             }
 
             // Now fall through to invoke the FatalError.aspx page and report to user

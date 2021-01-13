@@ -1069,6 +1069,36 @@ namespace Portal11.Rqsts
                                     useRow = true;                      // Take the row
                                 break;
                             }
+                        case DocType.Payroll:
+                            {
+                                if (ckCPay.Checked)                     // If true relevant checkbox is checked
+                                    useRow = true;                      // Take the row
+                                break;
+                            }
+                        case DocType.PEXCard:
+                            {
+                                if (ckCPEX.Checked)                     // If true relevant checkbox is checked
+                                    useRow = true;                      // Take the row
+                                break;
+                            }
+                        case DocType.PEXReconciliation:
+                            {
+                                if (ckCPXR.Checked)                     // If true relevant checkbox is checked
+                                    useRow = true;                      // Take the row
+                                break;
+                            }
+                        case DocType.ProjectToProject:
+                            {
+                                if (ckCPTP.Checked)                     // If true relevant checkbox is checked
+                                    useRow = true;                      // Take the row
+                                break;
+                            }
+                        case DocType.Timesheet:
+                            {
+                                if (ckCTimesheet.Checked)               // If true relevant checkbox is checked
+                                    useRow = true;                      // Take the row
+                                break;
+                            }
                         default:
                             {
                                 LogError.LogInternalError("StaffDashboard", $"Invalid DocType '{r.DocType.ToString()}' in Document RqstID '{r.DocID.ToString()}'"); // Log fatal error
@@ -1094,8 +1124,10 @@ namespace Portal11.Rqsts
                                             useRow = true;
                                         break;
                                     }
+                                case DocState.Approved:
                                 case DocState.AwaitingFinanceDirector:
                                 case DocState.RevisingByFinanceDirector:
+                                case DocState.RevisingByFinanceDirectorLate:
                                     {
                                         if (ckRFinanceDirector.Checked)
                                             useRow = true;
@@ -1130,6 +1162,7 @@ namespace Portal11.Rqsts
                                         break;
                                     }
                                 case DocState.Executed:
+                                case DocState.Paid:
                                     {
                                         if (ckRCompleted.Checked)
                                             useRow = true;
@@ -1152,11 +1185,12 @@ namespace Portal11.Rqsts
                         }
                         if (useRow)                                         // If true passed the second screen
                         {
+                            Project proj = context.Projects.Find(r.ProjectID); // Find this request's project
                             rowStaffDoc row = new rowStaffDoc()
                             {                                               // Empty row all ready to fill
-                                RequestID = r.DocID.ToString(),                 // Convert ID from int to string for easier retrieval later
+                                RequestID = r.DocID.ToString(),             // Convert ID from int to string for easier retrieval later
                                 ProjectID = r.ProjectID.ToString(),         // Same treatment for project ID
-                                ProjectName = r.Project.Name,               // Fetch project name
+                                ProjectName = proj.Name,                    // Fetch project name
                                 Time = r.CreatedTime,                       // When request was created
                                 DocTypeDesc = EnumActions.GetEnumDescription((Enum)r.DocType), // Convert enum form to English for display
                                 CurrentState = r.CurrentState,              // Put this in so we can get it out later to dispatch; it's not Visible
@@ -1650,6 +1684,11 @@ namespace Portal11.Rqsts
             staffCheckboxesCookie[PortalConstants.CStaffCkCContract] = ckCContract.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkCFinancial] = ckCFinancial.Checked.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkCGrant] = ckCGrant.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkCPay] = ckCPay.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkCPEX] = ckCPEX.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkCPXR] = ckCPXR.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkCPTP] = ckCPTP.Checked.ToString();
+            staffCheckboxesCookie[PortalConstants.CStaffCkCTimesheet] = ckCTimesheet.Checked.ToString();
 
             staffCheckboxesCookie[PortalConstants.CStaffExpVisible] = pnlExp.Visible.ToString();
             staffCheckboxesCookie[PortalConstants.CStaffCkEContractorInvoice] = ckEContractorInvoice.Checked.ToString();
@@ -1799,6 +1838,11 @@ namespace Portal11.Rqsts
                 ckCContract.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCContract] == "True");
                 ckCFinancial.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCFinancial] == "True");
                 ckCGrant.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCGrant] == "True");
+                ckCPay.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCPay] == "True");
+                ckCPEX.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCPEX] == "True");
+                ckCPXR.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCPXR] == "True");
+                ckCPTP.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCPTP] == "True");
+                ckCTimesheet.Checked = (staffCheckboxesCookie[PortalConstants.CStaffCkCTimesheet] == "True");
 
 
                 // Expense Requests panel

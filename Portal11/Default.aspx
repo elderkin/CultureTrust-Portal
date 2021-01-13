@@ -76,10 +76,10 @@
                 CultureTrust is a move-in-ready charitable home and back office support service for the arts and cultural heritage community in Greater Philadelphia.
             </p>
             <p>
-                <a class="btn btn-default" href="http://www.culturetrustphila.org" target="_blank">Learn more &raquo;</a>
+                <a class="btn btn-default" href="http://cultureworksphila.org" target="_blank">Learn more &raquo;</a>
             </p>
         </div>
-        <div class="col-md-4 col-xs-12">
+         <div class="col-md-4 col-xs-12" hidden="hidden">
             <h2>News of the day</h2>
             <p>
                 Click the button below to see a PDF version of the latest Track 2 Member Update.
